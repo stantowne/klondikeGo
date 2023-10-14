@@ -1,5 +1,7 @@
 package main
 
+import "errors"
+
 func last(sl []card) (lastCard card, residue []card, err error) {
 	if len(sl) > 0 {
 		lastIndex := len(sl) - 1
@@ -8,8 +10,10 @@ func last(sl []card) (lastCard card, residue []card, err error) {
 		return lastCard, residue, nil
 	}
 
-	var y card
-	var z []card //empty slice
-	return y, z, nil
+	var x card
 
+	if len(sl) == 0 {
+		return x, nil, nil
+	}
+	return x, nil, errors.New("error in call to last")
 }

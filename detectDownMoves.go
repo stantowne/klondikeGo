@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
 )
 
 func detectDownMoves(b board, mc int, singleGame bool) []move {
-	verbose := 0
 	var moves []move
 	if mc < 0 {
 		return moves
@@ -13,9 +13,8 @@ func detectDownMoves(b board, mc int, singleGame bool) []move {
 	var m move
 	lastWasteCard, _, err := last(b.waste)
 	if err != nil {
-		if verbose > 0 {
-			fmt.Printf("detectDownMoves: %v\n", err)
-		}
+		fmt.Printf("detectDownMoves: error calling last on b.waste %v\n", err)
+		os.Exit(1)
 	}
 	if lastWasteCard.Rank == 1 {
 		m = move{
@@ -40,9 +39,7 @@ func detectDownMoves(b board, mc int, singleGame bool) []move {
 	for i := 0; i < 7; i++ {
 		lastColumnCard, _, err := last(b.columns[i])
 		if err != nil {
-			if verbose > 0 {
-				fmt.Printf("detectDownMoves: examining column %v resulted in %v\n", i, err)
-			}
+			fmt.Printf("detectDownMoves: error calling last on b.columns[%vi] %v\n", i, err)
 			continue
 		}
 		if (lastWasteCard.Rank == lastColumnCard.Rank-1 && lastWasteCard.color() != lastColumnCard.color()) ||

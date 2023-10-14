@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
 )
 
 func detectUpMoves(b board, mc int, singleGame bool) []move {
-	verbose := 0
 	var moves []move
 	if mc < 0 {
 		return moves
@@ -13,10 +13,8 @@ func detectUpMoves(b board, mc int, singleGame bool) []move {
 	for i := 0; i < 7; i++ {
 		lastCard, _, err := last(b.columns[i])
 		if err != nil {
-			if verbose > 0 {
-				fmt.Printf("detectUpMoves: examining cloumn %v result is %v\n", i, err)
-			}
-			continue
+			fmt.Printf("detectUpMoves: error calling last on b.columns[%v] %v\n", i, err)
+			os.Exit(1)
 		}
 		if lastCard.Rank == 1 {
 			m := move{

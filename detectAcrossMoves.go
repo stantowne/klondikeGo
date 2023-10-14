@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
 )
 
 func detectAcrossMoves(b board, mc int, singleGame bool) []move {
-	verbose := 0
 	var moves []move
 	if mc < 0 {
 		return moves
@@ -13,11 +13,10 @@ func detectAcrossMoves(b board, mc int, singleGame bool) []move {
 	var m move
 	lastWasteCard, _, err := last(b.waste)
 	if err != nil {
-		if verbose > 0 {
-			fmt.Printf("detectAcrossMoves: %v\n", err)
-		}
-		return moves
+		fmt.Printf("detectAcrossMoves: error calling last ob b.waste %v\n", err)
+		os.Exit(1)
 	}
+
 	if lastWasteCard.Rank == 1 {
 		m = move{
 			name:       "moveAceAcross",

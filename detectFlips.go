@@ -10,7 +10,7 @@ func detectFlipStockToWaste(b board, mc int, singleGame bool) []move {
 			name:     "flipStockToWaste",
 			priority: 1000,
 		}
-		moves = (append(moves, m))
+		moves = append(moves, m)
 		return moves
 	}
 	return moves
@@ -26,7 +26,7 @@ func detectFlipWasteToStock(b board, mc int, singleGame bool) []move {
 			name:     "flipWasteToStock",
 			priority: 1100,
 		}
-		moves = (append(moves, m))
+		moves = append(moves, m)
 		return moves
 	}
 	return moves

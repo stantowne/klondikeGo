@@ -20,13 +20,13 @@ func printBoard(b board) {
 	for j := 0; j < len(b.stock); j++ {
 		sStock = sStock + b.stock[j].pStr()
 	}
-	fmt.Printf("%v\n", sStock) //print stock
+	fmt.Printf("\n%v\n", sStock) //print stock
 
 	sWaste := "waste(" + strconv.Itoa(len(b.waste)) + "):"
 	for j := 0; j < len(b.waste); j++ {
 		sWaste = sWaste + b.waste[j].pStr()
 	}
-	fmt.Printf("%v\n", sWaste) //print waste
+	fmt.Printf("%v\n\n", sWaste) //print waste
 
 	for i := 0; i < 4; i++ {
 		s := "pile " + strconv.Itoa(i) + ": "
@@ -37,7 +37,7 @@ func printBoard(b board) {
 
 	}
 
-	fmt.Println("Columns:")
+	fmt.Println("\nColumns:")
 	cardwidth := "      " //6 spaces
 	spacer := "    "      //4 space
 	//determine how many rows must be shown

@@ -69,26 +69,26 @@ func main() {
 outer:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 		var b board = dealDeck(decks[deckNum])
-		//fmt.Printf("\nStart play of deck %v\n", deckNum)
 		if singleGame {
+			fmt.Printf("\nStart play of deck %v\n", deckNum)
 			fmt.Printf("Starting board is as follows:\n")
 			printBoard(b)
 		}
 		availableMoveLengthRecord := make([]int, 0, gameLengthLimit)
 		for movecounter := 1; movecounter < gameLengthLimit+2; movecounter++ { //start with 1 to line up with Python version
-			var availableMoves []move
-			for _, m := range detectionFunctions { //find all availableMoves
-				availableMoves = append(availableMoves, m(b, movecounter, singleGame)...)
-			}
 			if singleGame {
 				fmt.Println("\n\n**********************************************************")
 				fmt.Printf("Looking for Move %v\n", movecounter)
 			}
+			var availableMoves []move
+			for _, m := range detectionFunctions { //find all availableMoves
+				availableMoves = append(availableMoves, m(b, movecounter, singleGame)...)
+			}
 			if len(availableMoves) == 0 {
 				if singleGame {
 					fmt.Printf("Deck %v: Game lost after %v moves\n", deckNum, movecounter)
-					fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
-					fmt.Printf("GameWon availableMovesLengthRecord:\n%v\n", availableMoveLengthRecord)
+					fmt.Printf("GameLost: Frequency of each moveType:\n%v\n", moveTypes)
+					fmt.Printf("GameLost: availableMovesLengthRecord:\n%v\n", availableMoveLengthRecord)
 				}
 				continue outer
 			}
@@ -99,7 +99,7 @@ outer:
 			}
 			availableMoveLengthRecord = append(availableMoveLengthRecord, len(availableMoves)) //record their number
 			if singleGame {
-				fmt.Printf("Move %v to be made is %+v\n", movecounter, availableMoves[0])
+				fmt.Printf("\nMove %v to be made is %+v\n", movecounter, availableMoves[0])
 			}
 			b = moveMaker(b, availableMoves[0]) //***Main Program Statement
 			moveTypes[availableMoves[0].name]++
@@ -109,18 +109,21 @@ outer:
 			}
 			if len(b.piles[0])+len(b.piles[1])+len(b.piles[2])+len(b.piles[3]) == 52 {
 				winCounter++
+				if singleGame {
+					fmt.Println("")
+				}
 				fmt.Printf("Deck %v: Game won after %v moves\n", deckNum, movecounter)
 				if singleGame {
 					fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
-					fmt.Printf("GameWon availableMovesLengthRecord:\n%v\n", availableMoveLengthRecord)
+					fmt.Printf("GameWon: availableMovesLengthRecord:\n%v\n", availableMoveLengthRecord)
 				}
 				continue outer
 			}
 		}
 		if singleGame {
 			fmt.Printf("Deck %v: Game not won\n", deckNum)
-			fmt.Printf("Frequency of each moveType:\n%v\n", moveTypes)
-			fmt.Printf("availableMovesLengthRecord:\n%v\n", availableMoveLengthRecord)
+			fmt.Printf("Game Not Won:  Frequency of each moveType:\n%v\n", moveTypes)
+			fmt.Printf("Game Not Won: availableMovesLengthRecord:\n%v\n", availableMoveLengthRecord)
 		}
 
 	}

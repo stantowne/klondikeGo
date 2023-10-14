@@ -11,5 +11,8 @@ func faceUpPortion(col column) (int, []card, error) {
 			return firstFaceUpIndex, faceUpPortion, nil
 		}
 	}
-	return -1, nil, errors.New("call to faceUpPortion resulted in no FaceUp card")
+	if len(col) == 0 {
+		return -1, nil, nil
+	}
+	return -1, nil, errors.New("error in call to faceUpPortion")
 }
