@@ -5,6 +5,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"time"
 )
 
 // type gameResult struct {
@@ -64,7 +65,7 @@ func main() {
 	}
 
 	var decks decks = deckReader("decks-made-2022-01-15_count_1000-dict.json") //contains decks 0-999 from Python version
-
+	startTime := time.Now()
 	winCounter := 0
 outer:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
@@ -127,5 +128,9 @@ outer:
 		}
 
 	}
+	endTime := time.Now()
+	elapsedTime := endTime.Sub(startTime)
+	averageElapsedTime := float64(elapsedTime.Nanoseconds()) / float64(numberOfDecksToBePlayed)
 	fmt.Printf("\nTotal Games PLayed: %v: Total Games Won: %v\n", numberOfDecksToBePlayed, winCounter)
+	fmt.Printf("Elapsed Time is %v; Average Elapsed Time per Game is %fns.\n", elapsedTime, averageElapsedTime)
 }
