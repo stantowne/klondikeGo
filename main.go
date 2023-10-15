@@ -13,17 +13,6 @@ import (
 // }
 
 func main() {
-	// Used to control the order in which the detection functions are executed.
-	// This is not important since the slice of type move is sorted.
-	detectionFunctions := []func(board, int, bool) []move{
-		detectUpMoves,
-		detectAcrossMoves,
-		detectEntireColumnMoves,
-		detectDownMoves,
-		detectPartialColumnMovesAcross,
-		detectFlipStockToWaste,
-		detectFlipWasteToStock,
-	}
 	/*
 		moveBasePriority := map[string]int{ //11 moveTypes + bad Move
 			"moveAceAcross":     300,
@@ -64,7 +53,7 @@ func main() {
 		singleGame = true
 	}
 
-	var decks decks = deckReader("decks-made-2022-01-15_count_1000-dict.json") //contains decks 0-999 from Python version
+	var decks decks = deckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
 	startTime := time.Now()
 	winCounter := 0
 outer:
@@ -81,11 +70,16 @@ outer:
 				fmt.Println("\n\n**********************************************************")
 				fmt.Printf("Looking for Move %v\n", movecounter)
 			}
-			var availableMoves []move
-			for _, m := range detectionFunctions { //find all availableMoves
-				availableMoves = append(availableMoves, m(b, movecounter, singleGame)...)
-			}
-			if len(availableMoves) == 0 {
+			var aMoves []move //available Moves
+			aMoves = append(aMoves, detectUpMoves(b, movecounter, singleGame)...)
+			aMoves = append(aMoves, detectAcrossMoves(b, movecounter, singleGame)...)
+			aMoves = append(aMoves, detectEntireColumnMoves(b, movecounter, singleGame)...)
+			aMoves = append(aMoves, detectDownMoves(b, movecounter, singleGame)...)
+			aMoves = append(aMoves, detectPartialColumnMoves(b, movecounter, singleGame)...)
+			aMoves = append(aMoves, detectFlipStockToWaste(b, movecounter, singleGame)...)
+			aMoves = append(aMoves, detectFlipWasteToStock(b, movecounter, singleGame)...)
+
+			if len(aMoves) == 0 {
 				if singleGame {
 					fmt.Printf("Deck %v: Game lost after %v moves\n", deckNum, movecounter)
 					fmt.Printf("GameLost: Frequency of each moveType:\n%v\n", moveTypes)
@@ -93,30 +87,30 @@ outer:
 				}
 				continue outer
 			}
-			if len(availableMoves) > 1 { //sort them by priority if necessary
-				sort.SliceStable(availableMoves, func(i, j int) bool {
-					return availableMoves[i].priority < availableMoves[j].priority
+			if len(aMoves) > 1 { //sort them by priority if necessary
+				sort.SliceStable(aMoves, func(i, j int) bool {
+					return aMoves[i].priority < aMoves[j].priority
 				})
 			}
-			availableMoveLengthRecord = append(availableMoveLengthRecord, len(availableMoves)) //record their number
+			availableMoveLengthRecord = append(availableMoveLengthRecord, len(aMoves)) //record their number
 			if singleGame {
-				fmt.Printf("\nMove %v to be made is %+v\n", movecounter, availableMoves[0])
+				fmt.Printf("\nMove %v to be made is %+v\n", movecounter, aMoves[0])
 			}
-			b = moveMaker(b, availableMoves[0]) //***Main Program Statement
-			moveTypes[availableMoves[0].name]++
+			b = moveMaker(b, aMoves[0]) //***Main Program Statement
+			moveTypes[aMoves[0].name]++
 			if singleGame {
 				fmt.Printf("After move %v the board is as follows:\n", movecounter)
 				printBoard(b)
 			}
 			if len(b.piles[0])+len(b.piles[1])+len(b.piles[2])+len(b.piles[3]) == 52 {
 				winCounter++
+				longest := longestRunOfOne(availableMoveLengthRecord)
+				fmt.Printf("Deck %v: Game won after %v moves. Longest run of one is: %v\n", deckNum, movecounter, longest)
 				if singleGame {
-					fmt.Println("")
+					fmt.Printf("GameWon: availableMovesLengthRecord:\n%v\n", availableMoveLengthRecord)
 				}
-				fmt.Printf("Deck %v: Game won after %v moves\n", deckNum, movecounter)
 				if singleGame {
 					fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
-					fmt.Printf("GameWon: availableMovesLengthRecord:\n%v\n", availableMoveLengthRecord)
 				}
 				continue outer
 			}
@@ -133,4 +127,20 @@ outer:
 	averageElapsedTime := float64(elapsedTime.Nanoseconds()) / float64(numberOfDecksToBePlayed)
 	fmt.Printf("\nTotal Games PLayed: %v: Total Games Won: %v\n", numberOfDecksToBePlayed, winCounter)
 	fmt.Printf("Elapsed Time is %v; Average Elapsed Time per Game is %fns.\n", elapsedTime, averageElapsedTime)
+}
+
+func longestRunOfOne(aML []int) int { //availableMoveList
+	var runOfOnes int = 0
+	var longestRun int = 0
+	for _, num := range aML {
+		if num == 1 {
+			runOfOnes++
+			if runOfOnes >= longestRun {
+				longestRun = runOfOnes
+			}
+		} else {
+			runOfOnes = 0
+		}
+	}
+	return longestRun
 }
