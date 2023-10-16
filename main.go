@@ -8,26 +8,22 @@ import (
 	"time"
 )
 
-// type gameResult struct {
-// 	result string
-// }
+var moveBasePriority = map[string]int{
+	"moveAceAcross":     300,
+	"moveDeuceAcross":   400,
+	"move3PlusAcross":   900,
+	"moveDown":          600,
+	"moveEntireColumn":  500,
+	"flipWasteToStock":  1000,
+	"flipStockToWaste":  1100,
+	"movePartialColumn": 700,
+	"moveAceUp":         100,
+	"moveDeuceUp":       200,
+	"move3PlusUp":       800,
+	"badMove":           1200,
+}
 
 func main() {
-	/*
-		moveBasePriority := map[string]int{ //11 moveTypes + bad Move
-			"moveAceAcross":     300,
-			"moveDeuceAcross":   400,
-			"move3PlusAcross":   900,
-			"moveDown":          600,
-			"moveEntireColumn":  500,
-			"flipWasteToStock":  1000,
-			"flipStockToWaste":  1100,
-			"movePartialColumn": 700,
-			"moveAceUp":         100,
-			"moveDeuceUp":       200,
-			"move3PlusUp":       800,
-			"badMove":           1200,
-		}*/
 
 	//Used to record how many of each move type is executed during a game.
 	moveTypes := map[string]int{ //11 moveTypes

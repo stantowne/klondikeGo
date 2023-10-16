@@ -43,7 +43,7 @@ outer:
 						if lastCard == sisterCard {
 							m := move{
 								name:                "movePartialColumn",
-								priority:            700,
+								priority:            moveBasePriority["movePartialColumn"],
 								toPile:              candidateMoveUpCard.Suit,
 								toCol:               toColNum,
 								fromCol:             frmColNum,

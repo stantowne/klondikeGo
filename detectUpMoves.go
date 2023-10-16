@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func detectUpMoves(b board, mc int, singleGame bool) []move {
+func detectUpMoves(b board, mc int, _ bool) []move {
 	var moves []move
 	if mc < 0 {
 		return moves
@@ -19,7 +19,7 @@ func detectUpMoves(b board, mc int, singleGame bool) []move {
 		if lastCard.Rank == 1 {
 			m := move{
 				name:       "moveAceUp",
-				priority:   100,
+				priority:   moveBasePriority["moveAceUp"],
 				fromCol:    i,
 				toPile:     lastCard.Suit,
 				cardToMove: lastCard,
@@ -30,7 +30,7 @@ func detectUpMoves(b board, mc int, singleGame bool) []move {
 		if lastCard.Rank == 2 && len(b.piles[lastCard.Suit]) == lastCard.Rank-1 {
 			m := move{
 				name:       "moveDeuceUp",
-				priority:   200,
+				priority:   moveBasePriority["moveDeuceUp"],
 				fromCol:    i,
 				toPile:     lastCard.Suit,
 				cardToMove: lastCard,
@@ -41,7 +41,7 @@ func detectUpMoves(b board, mc int, singleGame bool) []move {
 		if len(b.piles[lastCard.Suit]) == lastCard.Rank-1 {
 			m := move{
 				name:       "move3PlusUp",
-				priority:   1200,
+				priority:   moveBasePriority["badMove"],
 				fromCol:    i,
 				toPile:     lastCard.Suit,
 				cardToMove: lastCard,
@@ -51,11 +51,11 @@ func detectUpMoves(b board, mc int, singleGame bool) []move {
 					containedInAggregateUpPortion(b, card{Rank: lastCard.Rank - 1, Suit: (lastCard.Suit + 3) % 4, FaceUp: true})) ||
 				(len(b.piles[(lastCard.Suit+3)%4]) >= (lastCard.Rank-2) &&
 					containedInAggregateUpPortion(b, card{Rank: lastCard.Rank - 1, Suit: (lastCard.Suit + 1) % 4, FaceUp: true})) {
-				m.priority = 800
+				m.priority = moveBasePriority["move3PlusUp"]
 			}
 			if len(b.piles[(lastCard.Suit+1)%4]) >= (lastCard.Rank-2) &&
 				len(b.piles[(lastCard.Suit+3)%4]) >= (lastCard.Rank-2) {
-				m.priority = 800
+				m.priority = moveBasePriority["move3PlusUp"]
 			}
 
 			moves = append(moves, m)

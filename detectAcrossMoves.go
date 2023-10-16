@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func detectAcrossMoves(b board, mc int, singleGame bool) []move {
+func detectAcrossMoves(b board, mc int, _ bool) []move {
 	var moves []move
 	if mc < 0 {
 		return moves
@@ -20,7 +20,7 @@ func detectAcrossMoves(b board, mc int, singleGame bool) []move {
 	if lastWasteCard.Rank == 1 {
 		m = move{
 			name:       "moveAceAcross",
-			priority:   300,
+			priority:   moveBasePriority["moveAceAcross"],
 			toPile:     lastWasteCard.Suit,
 			cardToMove: lastWasteCard,
 		}
@@ -30,7 +30,7 @@ func detectAcrossMoves(b board, mc int, singleGame bool) []move {
 	if lastWasteCard.Rank == 2 && len(b.piles[lastWasteCard.Suit]) == lastWasteCard.Rank-1 {
 		m = move{
 			name:       "moveDeuceAcross",
-			priority:   400,
+			priority:   moveBasePriority["moveDeuceAcross"],
 			toPile:     lastWasteCard.Suit,
 			cardToMove: lastWasteCard,
 		}
@@ -40,7 +40,7 @@ func detectAcrossMoves(b board, mc int, singleGame bool) []move {
 	if len(b.piles[lastWasteCard.Suit]) == lastWasteCard.Rank-1 {
 		m = move{
 			name:       "move3PlusAcross",
-			priority:   900,
+			priority:   moveBasePriority["move3PlusAcross"],
 			toPile:     lastWasteCard.Suit,
 			cardToMove: lastWasteCard,
 		}

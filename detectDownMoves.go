@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func detectDownMoves(b board, mc int, singleGame bool) []move {
+func detectDownMoves(b board, mc int, _ bool) []move {
 	var moves []move
 	if mc < 0 {
 		return moves
@@ -19,7 +19,7 @@ func detectDownMoves(b board, mc int, singleGame bool) []move {
 	if lastWasteCard.Rank == 1 {
 		m = move{
 			name:       "moveAceAcross", //always better to move an ace across
-			priority:   300,
+			priority:   moveBasePriority["moveAceAcross"],
 			toPile:     lastWasteCard.Suit,
 			cardToMove: lastWasteCard,
 		}
@@ -29,7 +29,7 @@ func detectDownMoves(b board, mc int, singleGame bool) []move {
 	if lastWasteCard.Rank == 2 && len(b.piles[lastWasteCard.Suit]) == 1 {
 		m = move{
 			name:       "moveDeuceAcross", //always better to move a deuce across, if possible
-			priority:   400,
+			priority:   moveBasePriority["moveDeuceAcross"],
 			toPile:     lastWasteCard.Suit,
 			cardToMove: lastWasteCard,
 		}
@@ -46,7 +46,7 @@ func detectDownMoves(b board, mc int, singleGame bool) []move {
 			(lastWasteCard.Rank == 13 && len(b.columns[i]) == 0) {
 			m = move{
 				name:       "moveDown",
-				priority:   600,
+				priority:   moveBasePriority["moveDown"],
 				toCol:      i,
 				cardToMove: lastWasteCard,
 			}
