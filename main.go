@@ -60,6 +60,10 @@ outer:
 			fmt.Printf("Starting board is as follows:\n")
 			printBoard(b)
 		}
+		//for initialFlips := 0; initialFlips < 8; initialFlips++ {
+		//	for flip := 0; flip < initialFlips; flip++ {
+		//	}
+		//}
 		availableMoveLengthRecord := make([]int, 0, gameLengthLimit)
 		for movecounter := 1; movecounter < gameLengthLimit+2; movecounter++ { //start with 1 to line up with Python version
 			if singleGame {

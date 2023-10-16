@@ -60,24 +60,7 @@ func moveMaker(b board, m move) board {
 		return b
 	}
 	if m.name == "flipStockToWaste" {
-		l := len(b.stock)
-		if l > 2 {
-			b.waste = append(b.waste, b.stock[l-1].flipCardUp2(), b.stock[l-2].flipCardUp2(), b.stock[l-3].flipCardUp2())
-			b.stock = b.stock[:l-3]
-			return b
-		}
-		if len(b.stock) == 2 {
-			b.waste = append(b.waste, b.stock[l-1].flipCardUp2(), b.stock[l-2].flipCardUp2())
-			b.stock = b.stock[:l-2]
-			return b
-		}
-		if len(b.stock) == 1 {
-			b.waste = append(b.waste, b.stock[l-1].flipCardUp2())
-			b.stock = b.stock[:l-1]
-			return b
-		}
-		fmt.Printf("Error: attempted to flip from empty stock")
-		os.Exit(1)
+		return flipStockToWaste(b)
 	}
 	if m.name == "flipWasteToStock" {
 		var s card
