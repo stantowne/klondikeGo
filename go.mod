@@ -1,4 +1,4 @@
-module example/m/v2
+module klondikeGo
 
 go 1.21.1
 

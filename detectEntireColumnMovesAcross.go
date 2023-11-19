@@ -6,6 +6,7 @@ import (
 )
 
 func detectEntireColumnMoves(b board, mc int, singleGame bool) []move {
+	specialMove := 200
 	var moves []move
 	if mc < 0 {
 		return moves
@@ -26,7 +27,7 @@ func detectEntireColumnMoves(b board, mc int, singleGame bool) []move {
 				fmt.Printf("detectEntireColumnMovesAcross : error calling last on b.columns[%v] %v\n", toColNum, err)
 				os.Exit(1)
 			}
-			if singleGame && mc == 1 {
+			if singleGame && mc == specialMove {
 				fmt.Printf("within detectEntireColumnMovesAcross: frmColNum is %v, step is %v, toColNum is %v, \nFaceUpPortion[0].Rank is %v, \nlen(b.columns[toColNum] is %v\n", frmColNum, step, toColNum, FaceUpPortion[0].Rank, len(b.columns[toColNum]))
 			}
 			if ((FaceUpPortion[0].Rank == 13) && //if the FaceUpPortion of the fromCol begins with a King AND
@@ -42,7 +43,7 @@ func detectEntireColumnMoves(b board, mc int, singleGame bool) []move {
 					MovePortionStartIdx: firstFaceUpIndex,
 					MovePortion:         FaceUpPortion,
 				}
-				if singleGame && mc == 1 {
+				if singleGame && mc == specialMove {
 					fmt.Printf("within MEC: initially m is %+v\n", m)
 				}
 
@@ -52,7 +53,7 @@ func detectEntireColumnMoves(b board, mc int, singleGame bool) []move {
 					m.priority = moveBasePriority["moveEntireColumn"] - firstFaceUpIndex //
 				}
 
-				if singleGame && mc == 1 {
+				if singleGame && mc == specialMove {
 					fmt.Printf("within MEC: m is then adjusted to %+v\n", m)
 				}
 
