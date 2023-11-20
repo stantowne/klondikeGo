@@ -60,7 +60,7 @@ outer:
 			for flip := 0; flip <= initialFlips; flip++ {
 				b = flipStockToWaste(b)
 			}
-			availableMoveLengthRecord := make([]int, 0, gameLengthLimit)
+			aMovesNumberOf := make([]int, 0, gameLengthLimit)                      //number of available Moves
 			for movecounter := 1; movecounter < gameLengthLimit+2; movecounter++ { //start with 1 to line up with Python version
 				if singleGame {
 					//fmt.Println("\n\n**********************************************************")
@@ -80,7 +80,7 @@ outer:
 						fmt.Printf("InitialFlips: %v\n", initialFlips)
 						fmt.Printf("Deck %v: Game lost after %v moves\n", deckNum, movecounter)
 						fmt.Printf("GameLost: Frequency of each moveType:\n%v\n", moveTypes)
-						fmt.Printf("GameLost: availableMovesLengthRecord:\n%v\n", availableMoveLengthRecord)
+						fmt.Printf("GameLost: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
 					continue outer
 				}
@@ -89,7 +89,7 @@ outer:
 						return aMoves[i].priority < aMoves[j].priority
 					})
 				}
-				availableMoveLengthRecord = append(availableMoveLengthRecord, len(aMoves)) //record their number
+				aMovesNumberOf = append(aMovesNumberOf, len(aMoves)) //record their number
 				if singleGame {
 					fmt.Printf("Move %v to be made is %+v\n", movecounter, aMoves[0])
 				}
@@ -101,10 +101,10 @@ outer:
 				}
 				if len(b.piles[0])+len(b.piles[1])+len(b.piles[2])+len(b.piles[3]) == 52 {
 					winCounter++
-					longest := longestRunOfOne(availableMoveLengthRecord)
+					longest := longestRunOfOne(aMovesNumberOf)
 					fmt.Printf("Deck %v, played with %v initial flips from stock to waste: Game won after %v moves. Longest run of one is: %v\n", deckNum, initialFlips, movecounter, longest)
 					if singleGame {
-						fmt.Printf("GameWon: availableMovesLengthRecord:\n%v\n", availableMoveLengthRecord)
+						fmt.Printf("GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
 					if singleGame {
 						fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
@@ -115,7 +115,7 @@ outer:
 			if singleGame {
 				fmt.Printf("Deck %v, played with %v initial flips from stock to waste: Game not won\n", deckNum, initialFlips)
 				fmt.Printf("Game Not Won:  Frequency of each moveType:\n%v\n", moveTypes)
-				fmt.Printf("Game Not Won: availableMovesLengthRecord:\n%v\n", availableMoveLengthRecord)
+				fmt.Printf("Game Not Won: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 			}
 		}
 
