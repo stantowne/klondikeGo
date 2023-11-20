@@ -1,4 +1,4 @@
-module klondikeGo
+module github.com/stantowne/klondikeGo
 
 go 1.21.1
 
