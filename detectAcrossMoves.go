@@ -13,7 +13,7 @@ func detectAcrossMoves(b board, mc int, _ bool) []move {
 	var m move
 	lastWasteCard, _, err := last(b.waste)
 	if err != nil {
-		fmt.Printf("detectAcrossMoves: error calling last ob b.waste %v\n", err)
+		fmt.Printf("detectAcrossMoves: error calling last on b.waste %v\n", err)
 		os.Exit(1)
 	}
 

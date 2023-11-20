@@ -8,18 +8,26 @@ type board struct {
 }
 
 // detects if there is a king ready to move to empty column
-func kingReady(b board, fromColNum int, toColNum int) bool {
+func kingReady(b board, fromColNum int) bool {
+	//if the top card of waste is a king
 	if len(b.waste) > 0 && b.waste[len(b.waste)-1].Rank == 13 {
 		return true
 	}
+	//examine each column, starting with i == 0
 	for i, col := range b.columns {
+		//if the column being examined is the from column or is empty, go back to the top of the for loop
 		if i == fromColNum || len(col) == 0 {
 			continue
 		}
+		//if the index of the first face up card is zero (no face down cards), then go to the top of the for loop
+		//this makes sense because, if the first face up card
+		//    is not a king, then go to the top of the for loop
+		//    if a king, there is no value in moving it so go to the top of the for loop
 		firstFUIndex, _, _ := faceUpPortion(col)
 		if firstFUIndex == 0 {
 			continue
 		}
+		// the main statement of the function
 		if col[firstFUIndex].Rank == 13 {
 			return true
 		}

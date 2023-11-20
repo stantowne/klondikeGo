@@ -75,7 +75,7 @@ outer:
 				aMoves = append(aMoves, detectFlipStockToWaste(b, movecounter, singleGame)...)
 				aMoves = append(aMoves, detectFlipWasteToStock(b, movecounter, singleGame)...)
 
-				if len(aMoves) == 0 {
+				if len(aMoves) == 0 { //No available moves; game lost.
 					if singleGame {
 						fmt.Printf("InitialFlips: %v\n", initialFlips)
 						fmt.Printf("Deck %v: Game lost after %v moves\n", deckNum, movecounter)
