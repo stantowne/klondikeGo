@@ -52,9 +52,11 @@ func main() {
 	var decks decks = deckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
 	startTime := time.Now()
 	winCounter := 0
+	const initialFlipsMax = 8
+	var winsByInitialFlips [initialFlipsMax]int
 outer:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
-		for initialFlips := 0; initialFlips < 8; initialFlips++ {
+		for initialFlips := 0; initialFlips < initialFlipsMax; initialFlips++ {
 			var b board = dealDeck(decks[deckNum])
 			fmt.Printf("Start play of deck %v after %v initial flips from stock to waste.\n", deckNum, initialFlips)
 			for flip := 0; flip <= initialFlips; flip++ {
@@ -101,6 +103,7 @@ outer:
 				}
 				if len(b.piles[0])+len(b.piles[1])+len(b.piles[2])+len(b.piles[3]) == 52 {
 					winCounter++
+					winsByInitialFlips[initialFlips]++
 					longest := longestRunOfOne(aMovesNumberOf)
 					fmt.Printf("Deck %v, played with %v initial flips from stock to waste: Game won after %v moves. Longest run of one is: %v\n", deckNum, initialFlips, movecounter, longest)
 					if singleGame {
@@ -124,6 +127,7 @@ outer:
 	elapsedTime := endTime.Sub(startTime)
 	averageElapsedTime := float64(elapsedTime.Milliseconds()) / float64(numberOfDecksToBePlayed)
 	fmt.Printf("\nTotal Games PLayed: %v: Total Games Won: %v\n", numberOfDecksToBePlayed, winCounter)
+	fmt.Printf("Wins by Number of Initial Flips is %v\n", winsByInitialFlips)
 	fmt.Printf("Elapsed Time is %v; Average Elapsed Time per Game is %fms.\n", elapsedTime, averageElapsedTime)
 }
 
