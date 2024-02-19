@@ -54,15 +54,22 @@ func main() {
 	winCounter := 0
 	const initialFlipsMax = 8
 	var winsByInitialFlips [initialFlipsMax]int
-outer:
+newDeck:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
+	newInitialFlips:
 		for initialFlips := 0; initialFlips < initialFlipsMax; initialFlips++ {
+			//deal deck onto board
 			var b board = dealDeck(decks[deckNum])
-			fmt.Printf("Start play of deck %v after %v initial flips from stock to waste.\n", deckNum, initialFlips)
+			if singleGame {
+				fmt.Printf("Start play of deck %v after %v initial flips from stock to waste.\n", deckNum, initialFlips)
+			}
+			//make the initial flips
 			for flip := 0; flip <= initialFlips; flip++ {
 				b = flipStockToWaste(b)
 			}
-			aMovesNumberOf := make([]int, 0, gameLengthLimit)                      //number of available Moves
+			//make this slice of int with length = 0 and capacity = gameLengthLimit
+			aMovesNumberOf := make([]int, 0, gameLengthLimit) //number of available Moves
+
 			for movecounter := 1; movecounter < gameLengthLimit+2; movecounter++ { //start with 1 to line up with Python version
 				if singleGame {
 					//fmt.Println("\n\n**********************************************************")
@@ -77,6 +84,7 @@ outer:
 				aMoves = append(aMoves, detectFlipStockToWaste(b, movecounter, singleGame)...)
 				aMoves = append(aMoves, detectFlipWasteToStock(b, movecounter, singleGame)...)
 
+				//detects Loss
 				if len(aMoves) == 0 { //No available moves; game lost.
 					if singleGame {
 						fmt.Printf("InitialFlips: %v\n", initialFlips)
@@ -84,7 +92,7 @@ outer:
 						fmt.Printf("GameLost: Frequency of each moveType:\n%v\n", moveTypes)
 						fmt.Printf("GameLost: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
-					continue outer
+					continue newInitialFlips
 				}
 				if len(aMoves) > 1 { //sort them by priority if necessary
 					sort.SliceStable(aMoves, func(i, j int) bool {
@@ -101,6 +109,7 @@ outer:
 					//fmt.Printf("After move %v the board is as follows:\n", movecounter)
 					printBoard(b)
 				}
+				//Detects Win
 				if len(b.piles[0])+len(b.piles[1])+len(b.piles[2])+len(b.piles[3]) == 52 {
 					winCounter++
 					winsByInitialFlips[initialFlips]++
@@ -112,7 +121,7 @@ outer:
 					if singleGame {
 						fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
 					}
-					continue outer
+					continue newDeck
 				}
 			}
 			if singleGame {
