@@ -44,6 +44,10 @@ func detectEntireColumnMoves(b board, mc int, singleGame bool) []move {
 					MovePortionStartIdx: firstFaceUpIndex,
 					MovePortion:         FaceUpPortion,
 				}
+				if b.columns[frmColNum][0].FaceUp == false { //if fromCol begins with a face down card
+					m.colCardFlip = true
+				}
+
 				if singleGame && mc == specialMove {
 					fmt.Printf("within MEC: initially m is %+v\n", m)
 				}

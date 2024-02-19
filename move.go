@@ -9,5 +9,6 @@ type move struct {
 	MovePortionStartIdx int
 	MovePortion         []card //used in mec, mpc,
 	cardToMove          card   //used in Up, Down, Across and mpc
+	colCardFlip         bool   //does the move result in a column card flip
 
 }

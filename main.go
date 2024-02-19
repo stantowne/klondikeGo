@@ -71,7 +71,7 @@ newDeck:
 		for initialFlips := 0; initialFlips < initialFlipsMax; initialFlips++ {
 			//deal deck onto board
 			var b = dealDeck(decks[deckNum])
-			var priorBoardNullWaste board
+			var priorBoardNullWaste board //used in Loss Detector
 			if singleGame {
 				fmt.Printf("Start play of deck %v after %v initial flips from stock to waste.\n", deckNum, initialFlips)
 			}
