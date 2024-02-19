@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"reflect"
 	"sort"
 	"strconv"
 	"time"
@@ -49,7 +50,7 @@ func main() {
 		singleGame = true
 	}
 
-	var decks decks = deckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
+	var decks = deckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
 	startTime := time.Now()
 	winCounter := 0
 	const initialFlipsMax = 8
@@ -59,7 +60,8 @@ newDeck:
 	newInitialFlips:
 		for initialFlips := 0; initialFlips < initialFlipsMax; initialFlips++ {
 			//deal deck onto board
-			var b board = dealDeck(decks[deckNum])
+			var b = dealDeck(decks[deckNum])
+			var priorBoardNullWaste board
 			if singleGame {
 				fmt.Printf("Start play of deck %v after %v initial flips from stock to waste.\n", deckNum, initialFlips)
 			}
@@ -123,6 +125,19 @@ newDeck:
 					}
 					continue newDeck
 				}
+				///Detects Loss
+				if aMoves[0].name == "flipWasteToStock" {
+					if movecounter < 50 {
+						priorBoardNullWaste = b
+					} else if reflect.DeepEqual(b, priorBoardNullWaste) {
+						if singleGame {
+							fmt.Printf("Loss detected after %v moves\n", movecounter)
+						}
+						continue newInitialFlips
+					} else {
+						priorBoardNullWaste = b
+					}
+				}
 			}
 			if singleGame {
 				fmt.Printf("Deck %v, played with %v initial flips from stock to waste: Game not won\n", deckNum, initialFlips)
@@ -141,8 +156,8 @@ newDeck:
 }
 
 func longestRunOfOne(aML []int) int { //availableMoveList
-	var runOfOnes int = 0
-	var longestRun int = 0
+	var runOfOnes = 0
+	var longestRun = 0
 	for _, num := range aML {
 		if num == 1 {
 			runOfOnes++
