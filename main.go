@@ -9,6 +9,16 @@ import (
 	"time"
 )
 
+// a point in an attempt
+type point struct {
+	board  board  //board before move
+	aMoves []move //available moves
+	move   move   //move to be made
+}
+
+// record of an attempt is a slice of point
+var record []point
+
 var moveBasePriority = map[string]int{
 	"moveAceAcross":     300,
 	"moveDeuceAcross":   400,
@@ -26,7 +36,7 @@ var moveBasePriority = map[string]int{
 
 func main() {
 
-	//Used to record how many of each move type is executed during a game.
+	//Used to record how many of each move type is executed during an attempt.
 	moveTypes := map[string]int{ //11 moveTypes
 		"moveAceAcross":     0,
 		"moveDeuceAcross":   0,
@@ -41,7 +51,8 @@ func main() {
 		"move3PlusUp":       0,
 	}
 
-	gameLengthLimit := 150 //increasing to 200 does not increase win rate
+	const initialFlipsMax = 8
+	const gameLengthLimit = 150 //increasing to 200 does not increase win rate
 	firstDeckNum, _ := strconv.Atoi(os.Args[1])
 	numberOfDecksToBePlayed, _ := strconv.Atoi(os.Args[2])
 
@@ -53,7 +64,6 @@ func main() {
 	var decks = deckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
 	startTime := time.Now()
 	winCounter := 0
-	const initialFlipsMax = 8
 	var winsByInitialFlips [initialFlipsMax]int
 newDeck:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
@@ -105,8 +115,16 @@ newDeck:
 				if singleGame {
 					fmt.Printf("Move %v to be made is %+v\n", movecounter, aMoves[0])
 				}
-				b = moveMaker(b, aMoves[0]) //***Main Program Statement
-				moveTypes[aMoves[0].name]++
+				selectedMove := aMoves[0]
+				//additional logic goes here
+				point := point{
+					board:  b,
+					aMoves: aMoves,
+					move:   selectedMove,
+				}
+				record = append(record, point)
+				b = moveMaker(b, selectedMove) //***Main Program Statement
+				moveTypes[selectedMove.name]++
 				if singleGame {
 					//fmt.Printf("After move %v the board is as follows:\n", movecounter)
 					printBoard(b)
@@ -116,7 +134,9 @@ newDeck:
 					winCounter++
 					winsByInitialFlips[initialFlips]++
 					longest := longestRunOfOne(aMovesNumberOf)
-					fmt.Printf("Deck %v, played with %v initial flips from stock to waste: Game won after %v moves. Longest run of one is: %v\n", deckNum, initialFlips, movecounter, longest)
+					if numberOfDecksToBePlayed < 10000 {
+						fmt.Printf("Deck %v, played with %v initial flips from stock to waste: Game won after %v moves. Longest run of one is: %v\n", deckNum, initialFlips, movecounter, longest)
+					}
 					if singleGame {
 						fmt.Printf("GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
@@ -149,10 +169,19 @@ newDeck:
 	}
 	endTime := time.Now()
 	elapsedTime := endTime.Sub(startTime)
-	averageElapsedTime := float64(elapsedTime.Milliseconds()) / float64(numberOfDecksToBePlayed)
-	fmt.Printf("\nTotal Games PLayed: %v: Total Games Won: %v\n", numberOfDecksToBePlayed, winCounter)
+	averageElapsedTimePerDeck := float64(elapsedTime.Milliseconds()) / float64(numberOfDecksToBePlayed)
+	attempts := initialFlipsMax * numberOfDecksToBePlayed
+	for i, v := range winsByInitialFlips {
+		attempts = attempts - (v * (initialFlipsMax - (i + 1)))
+	}
+	averageElapsedTimePerAttempt := float64(elapsedTime.Milliseconds()) / float64(attempts)
+	averageAttemptsPerDeck := float64(attempts) / float64(numberOfDecksToBePlayed)
+	fmt.Printf("\nElapsed Time is %v.\n", elapsedTime)
+	fmt.Printf("Total Decks PLayed: %v. Total Decks Won: %v\n", numberOfDecksToBePlayed, winCounter)
 	fmt.Printf("Wins by Number of Initial Flips is %v\n", winsByInitialFlips)
-	fmt.Printf("Elapsed Time is %v; Average Elapsed Time per Game is %fms.\n", elapsedTime, averageElapsedTime)
+	fmt.Printf("Total Attempts Made: %v. Attempts per Deck: %f\n", attempts, averageAttemptsPerDeck)
+	fmt.Printf("Average Elapsed Time per Deck is %fms.\n", averageElapsedTimePerDeck)
+	fmt.Printf("Average Elapsed Time per Attempt is %fms.\n", averageElapsedTimePerAttempt)
 }
 
 func longestRunOfOne(aML []int) int { //availableMoveList

@@ -6,6 +6,7 @@ import (
 )
 
 func detectEntireColumnMoves(b board, mc int, singleGame bool) []move {
+	//mc expects movecounter
 	specialMove := 200
 	var moves []move
 	if mc < 0 {
