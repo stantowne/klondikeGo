@@ -55,10 +55,11 @@ func main() {
 	const gameLengthLimit = 150 //increasing to 200 does not increase win rate
 	firstDeckNum, _ := strconv.Atoi(os.Args[1])
 	numberOfDecksToBePlayed, _ := strconv.Atoi(os.Args[2])
+	verbose, _ := strconv.Atoi(os.Args[3]) //the greater the number the more verbose
 
-	singleGame := false
-	if numberOfDecksToBePlayed == 1 {
-		singleGame = true
+	var veryVerbose = false
+	if verbose > 2 {
+		veryVerbose = true
 	}
 
 	var decks = deckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
@@ -67,12 +68,15 @@ func main() {
 	var winsByInitialFlips [initialFlipsMax]int
 newDeck:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
+		if verbose > 0 {
+			fmt.Printf("\nDeck #%d:\n", deckNum)
+		}
 	newInitialFlips:
 		for initialFlips := 0; initialFlips < initialFlipsMax; initialFlips++ {
 			//deal deck onto board
 			var b = dealDeck(decks[deckNum])
 			var priorBoardNullWaste board //used in Loss Detector
-			if singleGame {
+			if verbose > 0 {
 				fmt.Printf("Start play of deck %v after %v initial flips from stock to waste.\n", deckNum, initialFlips)
 			}
 			//make the initial flips
@@ -83,24 +87,22 @@ newDeck:
 			aMovesNumberOf := make([]int, 0, gameLengthLimit) //number of available Moves
 
 			for moveCounter := 1; moveCounter < gameLengthLimit+2; moveCounter++ { //start with 1 to line up with Python version
-				if singleGame {
-					//fmt.Println("\n\n**********************************************************")
-					//fmt.Printf("Looking for Move %v\n", moveCounter)
-				}
 				var aMoves []move //available Moves
-				aMoves = append(aMoves, detectUpMoves(b, moveCounter, singleGame)...)
-				aMoves = append(aMoves, detectAcrossMoves(b, moveCounter, singleGame)...)
-				aMoves = append(aMoves, detectEntireColumnMoves(b, moveCounter, singleGame)...)
-				aMoves = append(aMoves, detectDownMoves(b, moveCounter, singleGame)...)
-				aMoves = append(aMoves, detectPartialColumnMoves(b, moveCounter, singleGame)...)
-				aMoves = append(aMoves, detectFlipStockToWaste(b, moveCounter, singleGame)...)
-				aMoves = append(aMoves, detectFlipWasteToStock(b, moveCounter, singleGame)...)
+				aMoves = append(aMoves, detectUpMoves(b, moveCounter, veryVerbose)...)
+				aMoves = append(aMoves, detectAcrossMoves(b, moveCounter, veryVerbose)...)
+				aMoves = append(aMoves, detectEntireColumnMoves(b, moveCounter, veryVerbose)...)
+				aMoves = append(aMoves, detectDownMoves(b, moveCounter, veryVerbose)...)
+				aMoves = append(aMoves, detectPartialColumnMoves(b, moveCounter, veryVerbose)...)
+				aMoves = append(aMoves, detectFlipStockToWaste(b, moveCounter, veryVerbose)...)
+				aMoves = append(aMoves, detectFlipWasteToStock(b, moveCounter, veryVerbose)...)
 
 				//detects Loss
 				if len(aMoves) == 0 { //No available moves; game lost.
-					if singleGame {
+					if verbose > 0 {
 						fmt.Printf("InitialFlips: %v\n", initialFlips)
 						fmt.Printf("Deck %v: Game lost after %v moves\n", deckNum, moveCounter)
+					}
+					if verbose > 1 {
 						fmt.Printf("GameLost: Frequency of each moveType:\n%v\n", moveTypes)
 						fmt.Printf("GameLost: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
@@ -112,7 +114,7 @@ newDeck:
 					})
 				}
 				aMovesNumberOf = append(aMovesNumberOf, len(aMoves)) //record their number
-				if singleGame {
+				if veryVerbose {
 					fmt.Printf("Move %v to be made is %+v\n", moveCounter, aMoves[0])
 				}
 				selectedMove := aMoves[0]
@@ -125,7 +127,7 @@ newDeck:
 				record = append(record, point)
 				b = moveMaker(b, selectedMove) //***Main Program Statement
 				moveTypes[selectedMove.name]++
-				if singleGame {
+				if veryVerbose {
 					//fmt.Printf("After move %v the board is as follows:\n", moveCounter)
 					printBoard(b)
 				}
@@ -134,24 +136,24 @@ newDeck:
 					winCounter++
 					winsByInitialFlips[initialFlips]++
 					longest := longestRunOfOne(aMovesNumberOf)
-					if numberOfDecksToBePlayed < 10000 {
+					if verbose > 0 {
 						fmt.Printf("Deck %v, played with %v initial flips from stock to waste: Game won after %v moves. Longest run of one is: %v\n", deckNum, initialFlips, moveCounter, longest)
 					}
-					if singleGame {
+					if verbose > 1 {
 						fmt.Printf("GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
-					if singleGame {
+					if verbose > 1 {
 						fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
 					}
 					continue newDeck
 				}
 				//Detects Loss
 				if aMoves[0].name == "flipWasteToStock" {
-					if moveCounter < 50 {
+					if moveCounter < 10 {
 						priorBoardNullWaste = b
 					} else if reflect.DeepEqual(b, priorBoardNullWaste) {
-						if singleGame {
-							fmt.Printf("Loss detected after %v moves\n", moveCounter)
+						if verbose > 0 {
+							fmt.Printf("*****Loss detected after %v moves\n", moveCounter)
 						}
 						continue newInitialFlips
 					} else {
@@ -159,8 +161,10 @@ newDeck:
 					}
 				}
 			}
-			if singleGame {
+			if verbose > 0 {
 				fmt.Printf("Deck %v, played with %v initial flips from stock to waste: Game not won\n", deckNum, initialFlips)
+			}
+			if verbose > 1 {
 				fmt.Printf("Game Not Won:  Frequency of each moveType:\n%v\n", moveTypes)
 				fmt.Printf("Game Not Won: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 			}
