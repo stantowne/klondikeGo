@@ -82,25 +82,25 @@ newDeck:
 			//make this slice of int with length = 0 and capacity = gameLengthLimit
 			aMovesNumberOf := make([]int, 0, gameLengthLimit) //number of available Moves
 
-			for movecounter := 1; movecounter < gameLengthLimit+2; movecounter++ { //start with 1 to line up with Python version
+			for moveCounter := 1; moveCounter < gameLengthLimit+2; moveCounter++ { //start with 1 to line up with Python version
 				if singleGame {
 					//fmt.Println("\n\n**********************************************************")
-					//fmt.Printf("Looking for Move %v\n", movecounter)
+					//fmt.Printf("Looking for Move %v\n", moveCounter)
 				}
 				var aMoves []move //available Moves
-				aMoves = append(aMoves, detectUpMoves(b, movecounter, singleGame)...)
-				aMoves = append(aMoves, detectAcrossMoves(b, movecounter, singleGame)...)
-				aMoves = append(aMoves, detectEntireColumnMoves(b, movecounter, singleGame)...)
-				aMoves = append(aMoves, detectDownMoves(b, movecounter, singleGame)...)
-				aMoves = append(aMoves, detectPartialColumnMoves(b, movecounter, singleGame)...)
-				aMoves = append(aMoves, detectFlipStockToWaste(b, movecounter, singleGame)...)
-				aMoves = append(aMoves, detectFlipWasteToStock(b, movecounter, singleGame)...)
+				aMoves = append(aMoves, detectUpMoves(b, moveCounter, singleGame)...)
+				aMoves = append(aMoves, detectAcrossMoves(b, moveCounter, singleGame)...)
+				aMoves = append(aMoves, detectEntireColumnMoves(b, moveCounter, singleGame)...)
+				aMoves = append(aMoves, detectDownMoves(b, moveCounter, singleGame)...)
+				aMoves = append(aMoves, detectPartialColumnMoves(b, moveCounter, singleGame)...)
+				aMoves = append(aMoves, detectFlipStockToWaste(b, moveCounter, singleGame)...)
+				aMoves = append(aMoves, detectFlipWasteToStock(b, moveCounter, singleGame)...)
 
 				//detects Loss
 				if len(aMoves) == 0 { //No available moves; game lost.
 					if singleGame {
 						fmt.Printf("InitialFlips: %v\n", initialFlips)
-						fmt.Printf("Deck %v: Game lost after %v moves\n", deckNum, movecounter)
+						fmt.Printf("Deck %v: Game lost after %v moves\n", deckNum, moveCounter)
 						fmt.Printf("GameLost: Frequency of each moveType:\n%v\n", moveTypes)
 						fmt.Printf("GameLost: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
@@ -113,7 +113,7 @@ newDeck:
 				}
 				aMovesNumberOf = append(aMovesNumberOf, len(aMoves)) //record their number
 				if singleGame {
-					fmt.Printf("Move %v to be made is %+v\n", movecounter, aMoves[0])
+					fmt.Printf("Move %v to be made is %+v\n", moveCounter, aMoves[0])
 				}
 				selectedMove := aMoves[0]
 				//additional logic goes here
@@ -126,7 +126,7 @@ newDeck:
 				b = moveMaker(b, selectedMove) //***Main Program Statement
 				moveTypes[selectedMove.name]++
 				if singleGame {
-					//fmt.Printf("After move %v the board is as follows:\n", movecounter)
+					//fmt.Printf("After move %v the board is as follows:\n", moveCounter)
 					printBoard(b)
 				}
 				//Detects Win
@@ -135,7 +135,7 @@ newDeck:
 					winsByInitialFlips[initialFlips]++
 					longest := longestRunOfOne(aMovesNumberOf)
 					if numberOfDecksToBePlayed < 10000 {
-						fmt.Printf("Deck %v, played with %v initial flips from stock to waste: Game won after %v moves. Longest run of one is: %v\n", deckNum, initialFlips, movecounter, longest)
+						fmt.Printf("Deck %v, played with %v initial flips from stock to waste: Game won after %v moves. Longest run of one is: %v\n", deckNum, initialFlips, moveCounter, longest)
 					}
 					if singleGame {
 						fmt.Printf("GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
@@ -145,13 +145,13 @@ newDeck:
 					}
 					continue newDeck
 				}
-				///Detects Loss
+				//Detects Loss
 				if aMoves[0].name == "flipWasteToStock" {
-					if movecounter < 50 {
+					if moveCounter < 50 {
 						priorBoardNullWaste = b
 					} else if reflect.DeepEqual(b, priorBoardNullWaste) {
 						if singleGame {
-							fmt.Printf("Loss detected after %v moves\n", movecounter)
+							fmt.Printf("Loss detected after %v moves\n", moveCounter)
 						}
 						continue newInitialFlips
 					} else {

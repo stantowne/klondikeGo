@@ -34,7 +34,7 @@ func detectEntireColumnMoves(b board, mc int, singleGame bool) []move {
 			if ((FaceUpPortion[0].Rank == 13) && //if the FaceUpPortion of the fromCol begins with a King AND
 				b.columns[frmColNum][0].FaceUp == false && //fromCol begins with a face down card AND
 				(len(b.columns[toColNum]) == 0)) || //the toCol is empty OR
-				(FaceUpPortion[0].Rank == lastCard.Rank-1 && //three needs four
+				(FaceUpPortion[0].Rank == lastCard.Rank-1 && //three needs four AND
 					FaceUpPortion[0].color() != lastCard.color()) { //red needs black
 				m := move{
 					name:                "moveEntireColumn",
@@ -44,7 +44,7 @@ func detectEntireColumnMoves(b board, mc int, singleGame bool) []move {
 					MovePortionStartIdx: firstFaceUpIndex,
 					MovePortion:         FaceUpPortion,
 				}
-				if b.columns[frmColNum][0].FaceUp == false { //if fromCol begins with a face down card
+				if firstFaceUpIndex > 0 { //if there is a closed portion of the from column
 					m.colCardFlip = true
 				}
 
@@ -53,7 +53,7 @@ func detectEntireColumnMoves(b board, mc int, singleGame bool) []move {
 				}
 
 				if firstFaceUpIndex > 0 || //if there is a closed portion of the from column OR
-					(firstFaceUpIndex == 0 && kingReady(b, frmColNum)) || //an empty column will result and there is a king ready to move there
+					(firstFaceUpIndex == 0 && kingReady(b, frmColNum)) || //an empty column will result and there is a king ready to move there OR
 					sisterCardInUpPortion(b, lastCard, toColNum, frmColNum) { //sister card in up portion of the other columns combined
 					m.priority = moveBasePriority["moveEntireColumn"] - firstFaceUpIndex //Reassignment of moveBasePriority
 				}
