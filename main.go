@@ -9,16 +9,6 @@ import (
 	"time"
 )
 
-// a point in an attempt
-type point struct {
-	board  board  //board before move
-	aMoves []move //available moves
-	move   move   //move to be made
-}
-
-// record of an attempt is a slice of point
-var record []point
-
 var moveBasePriority = map[string]int{
 	"moveAceAcross":     300,
 	"moveDeuceAcross":   400,
@@ -51,16 +41,17 @@ func main() {
 		"move3PlusUp":       0,
 	}
 
-	//const initialFlipsMax = 1 //the number of initial flips must be less than this amount
-	const length = 10       //length of each initial strategy
+	const gameLengthLimit = 150 //increasing to 200 does not increase win rate
+
+	firstDeckNum, _ := strconv.Atoi(os.Args[1])
+	numberOfDecksToBePlayed, _ := strconv.Atoi(os.Args[2])
+	length, _ := strconv.Atoi(os.Args[3])  //length of each strategy (which also determines the # of strategies - 2^n)
+	verbose, _ := strconv.Atoi(os.Args[4]) //the greater the number the more verbose
+
 	numberOfStrategies := 1 //number of initial strategies
 	for i := 0; i < length; i++ {
 		numberOfStrategies = numberOfStrategies * 2
 	}
-	const gameLengthLimit = 150 //increasing to 200 does not increase win rate
-	firstDeckNum, _ := strconv.Atoi(os.Args[1])
-	numberOfDecksToBePlayed, _ := strconv.Atoi(os.Args[2])
-	verbose, _ := strconv.Atoi(os.Args[3]) //the greater the number the more verbose
 
 	var veryVerbose = false
 	if verbose > 2 {
@@ -73,7 +64,7 @@ func main() {
 	// var winsByInitialFlips [initialFlipsMax]int
 newDeck:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
-		if verbose > 0 {
+		if verbose > 1 {
 			fmt.Printf("\nDeck #%d:\n", deckNum)
 		}
 	newInitialOverrideStrategy:
@@ -81,7 +72,7 @@ newDeck:
 			//deal deck onto board
 			var b = dealDeck(decks[deckNum])
 			var priorBoardNullWaste board //used in Loss Detector
-			if verbose > 0 {
+			if verbose > 1 {
 				fmt.Printf("Start play of deck %v using initial override strategy %v.\n", deckNum, iOS)
 			}
 
@@ -100,26 +91,26 @@ newDeck:
 
 				//detects Loss
 				if len(aMoves) == 0 { //No available moves; game lost.
-					if verbose > 0 {
+					if verbose > 1 {
 						fmt.Printf("Initial Override Strategy: %v\n", iOS)
 						fmt.Printf("****Deck %v: XXXXGame lost after %v moves\n", deckNum, moveCounter)
 					}
-					if verbose > 1 {
+					if verbose > 2 {
 						fmt.Printf("GameLost: Frequency of each moveType:\n%v\n", moveTypes)
 						fmt.Printf("GameLost: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
 					continue newInitialOverrideStrategy
 				}
+
+				// if more than one move is available, sort them
 				if len(aMoves) > 1 { //sort them by priority if necessary
 					sort.SliceStable(aMoves, func(i, j int) bool {
 						return aMoves[i].priority < aMoves[j].priority
 					})
 				}
-				aMovesNumberOf = append(aMovesNumberOf, len(aMoves)) //record their number
-				if veryVerbose {
-					fmt.Printf("Move %v to be made is %+v\n", moveCounter, aMoves[0])
-				}
+
 				selectedMove := aMoves[0]
+
 				//Initial Override Strategy logic
 				mC := moveCounter - 1 // for this part of the program a zero-based move counter is needed
 				if mC < length {
@@ -127,23 +118,12 @@ newDeck:
 						selectedMove = aMoves[len(aMoves)-1]
 					}
 				}
-				point := point{
-					board:  b,
-					aMoves: aMoves,
-					move:   selectedMove,
-				}
-				record = append(record, point)
+
 				b = moveMaker(b, selectedMove) //***Main Program Statement
-				moveTypes[selectedMove.name]++
-				if veryVerbose {
-					//fmt.Printf("After move %v the board is as follows:\n", moveCounter)
-					printBoard(b)
-				}
+
 				//Detects Win
 				if len(b.piles[0])+len(b.piles[1])+len(b.piles[2])+len(b.piles[3]) == 52 {
 					winCounter++
-					// winsByInitialFlips[initialFlips]++
-					// longest := longestRunOfOne(aMovesNumberOf)
 					if verbose > 0 {
 						fmt.Printf("Deck %v, played using initialOverrideStrategy %v: Game won after %v moves. \n", deckNum, iOS, mC)
 					}
@@ -160,7 +140,7 @@ newDeck:
 					if moveCounter < 20 {
 						priorBoardNullWaste = b
 					} else if reflect.DeepEqual(b, priorBoardNullWaste) {
-						if verbose > 0 {
+						if verbose > 1 {
 							fmt.Printf("*****Loss detected after %v moves\n", moveCounter)
 						}
 						continue newInitialOverrideStrategy
@@ -182,31 +162,8 @@ newDeck:
 	endTime := time.Now()
 	elapsedTime := endTime.Sub(startTime)
 	averageElapsedTimePerDeck := float64(elapsedTime.Milliseconds()) / float64(numberOfDecksToBePlayed)
-	// attempts := initialFlipsMax * numberOfDecksToBePlayed
-	// for i, v := range winsByInitialFlips {
-	//	attempts = attempts - (v * (initialFlipsMax - (i + 1)))
-	//}
-	// averageElapsedTimePerAttempt := float64(elapsedTime.Milliseconds()) / float64(attempts)
-	// averageAttemptsPerDeck := float64(attempts) / float64(numberOfDecksToBePlayed)
 	fmt.Printf("\nElapsed Time is %v.\n", elapsedTime)
 	fmt.Printf("Total Decks PLayed: %v. Total Decks Won: %v\n", numberOfDecksToBePlayed, winCounter)
-	//fmt.Printf("Wins by Number of Initial Flips is %v\n", winsByInitialFlips)
-	//fmt.Printf("Total Attempts Made: %v. Attempts per Deck: %f\n", attempts, averageAttemptsPerDeck)
 	fmt.Printf("Average Elapsed Time per Deck is %fms.\n", averageElapsedTimePerDeck)
-	// fmt.Printf("Average Elapsed Time per Attempt is %fms.\n", averageElapsedTimePerAttempt)
-}
 
-//func longestRunOfOne(aML []int) int { //availableMoveList
-//	var runOfOnes = 0
-//	var longestRun = 0
-//	for _, num := range aML {
-//		if num == 1 {
-//			runOfOnes++
-//			if runOfOnes >= longestRun {
-//				longestRun = runOfOnes
-//			}
-//		} else {
-//			runOfOnes = 0
-//		}
-//	}
-//	return longestRun
+}
