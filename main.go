@@ -61,7 +61,9 @@ func main() {
 	var decks = deckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
 	startTime := time.Now()
 	winCounter := 0
-	// var winsByInitialFlips [initialFlipsMax]int
+	attemptsAvoidedCounter := 0
+	lossesAtGLL := 0
+	lossesAtNoMoves := 0
 newDeck:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 		if verbose > 1 {
@@ -99,6 +101,7 @@ newDeck:
 						fmt.Printf("GameLost: Frequency of each moveType:\n%v\n", moveTypes)
 						fmt.Printf("GameLost: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
+					lossesAtNoMoves++
 					continue newInitialOverrideStrategy
 				}
 
@@ -124,6 +127,8 @@ newDeck:
 				//Detects Win
 				if len(b.piles[0])+len(b.piles[1])+len(b.piles[2])+len(b.piles[3]) == 52 {
 					winCounter++
+					attemptsAvoidedCounter = attemptsAvoidedCounter + numberOfStrategies - iOS
+
 					if verbose > 0 {
 						fmt.Printf("Deck %v, played using initialOverrideStrategy %v: Game won after %v moves. \n", deckNum, iOS, mC)
 					}
@@ -149,6 +154,7 @@ newDeck:
 					}
 				}
 			}
+			lossesAtGLL++
 			if verbose > 0 {
 				fmt.Printf("Deck %v, played using Initial Override Strategy %v: Game not won\n", deckNum, iOS)
 			}
@@ -159,11 +165,21 @@ newDeck:
 		}
 
 	}
+	possibleAttempts := numberOfStrategies * numberOfDecksToBePlayed
+	lossCounter := numberOfDecksToBePlayed - winCounter
 	endTime := time.Now()
 	elapsedTime := endTime.Sub(startTime)
+	fmt.Printf("\nNumber of Decks PLayed is %v.\n", numberOfDecksToBePlayed)
+	fmt.Printf("Length of Initial Override Strategies is %v.\n", length)
+	fmt.Printf("Number of Initial Override Strategies is %v.\n", numberOfStrategies)
+	fmt.Printf("Number of Possible Attempts is %v.\n", possibleAttempts)
 	averageElapsedTimePerDeck := float64(elapsedTime.Milliseconds()) / float64(numberOfDecksToBePlayed)
-	fmt.Printf("\nElapsed Time is %v.\n", elapsedTime)
-	fmt.Printf("Total Decks PLayed: %v. Total Decks Won: %v\n", numberOfDecksToBePlayed, winCounter)
+	fmt.Printf("Elapsed Time is %v.\n", elapsedTime)
+	fmt.Printf("Total Decks Won is %v\n", winCounter)
+	fmt.Printf("Total Decks Lost is %v\n", lossCounter)
+	fmt.Printf("Losses at Game Length Limit is %v\n", lossesAtGLL)
+	fmt.Printf("Losses at No Moves Available is %v\n", lossesAtNoMoves)
+	fmt.Printf("Number of Attempts Avoided ia %v\n", attemptsAvoidedCounter)
 	fmt.Printf("Average Elapsed Time per Deck is %fms.\n", averageElapsedTimePerDeck)
 
 }
