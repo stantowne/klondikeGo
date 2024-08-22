@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 	"os"
 	"reflect"
 	"sort"
@@ -64,6 +66,7 @@ func main() {
 	attemptsAvoidedCounter := 0
 	lossesAtGLL := 0
 	lossesAtNoMoves := 0
+	regularLosses := 0
 newDeck:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 		if verbose > 1 {
@@ -148,6 +151,7 @@ newDeck:
 						if verbose > 1 {
 							fmt.Printf("*****Loss detected after %v moves\n", moveCounter)
 						}
+						regularLosses++
 						continue newInitialOverrideStrategy
 					} else {
 						priorBoardNullWaste = b
@@ -169,17 +173,43 @@ newDeck:
 	lossCounter := numberOfDecksToBePlayed - winCounter
 	endTime := time.Now()
 	elapsedTime := endTime.Sub(startTime)
-	fmt.Printf("\nNumber of Decks PLayed is %v.\n", numberOfDecksToBePlayed)
-	fmt.Printf("Length of Initial Override Strategies is %v.\n", length)
-	fmt.Printf("Number of Initial Override Strategies is %v.\n", numberOfStrategies)
-	fmt.Printf("Number of Possible Attempts is %v.\n", possibleAttempts)
+	var p = message.NewPrinter(language.English)
+	_, err := p.Printf("\nNumber of Decks Played is %d.\n", numberOfDecksToBePlayed)
+	if err != nil {
+		fmt.Println("Number of Decks Played cannot print")
+	}
+	fmt.Printf("Length of Initial Override Strategies is %d.\n", length)
+	fmt.Printf("Number of Initial Override Strategies Per Deck is %d.\n", numberOfStrategies)
+	_, err = p.Printf("Number of Possible Attempts is %d.\n", possibleAttempts)
+	if err != nil {
+		fmt.Println("Number of Possible Attempts cannot print")
+	}
 	averageElapsedTimePerDeck := float64(elapsedTime.Milliseconds()) / float64(numberOfDecksToBePlayed)
 	fmt.Printf("Elapsed Time is %v.\n", elapsedTime)
-	fmt.Printf("Total Decks Won is %v\n", winCounter)
-	fmt.Printf("Total Decks Lost is %v\n", lossCounter)
-	fmt.Printf("Losses at Game Length Limit is %v\n", lossesAtGLL)
-	fmt.Printf("Losses at No Moves Available is %v\n", lossesAtNoMoves)
-	fmt.Printf("Number of Attempts Avoided ia %v\n", attemptsAvoidedCounter)
+	_, err = p.Printf("Total Decks Won is %d\n", winCounter)
+	if err != nil {
+		fmt.Println("Total Decks Won cannot print")
+	}
+	_, err = p.Printf("Total Decks Lost is %d\n", lossCounter)
+	if err != nil {
+		fmt.Println("Total Decks Lost cannot print")
+	}
+	_, err = p.Printf("Losses at Game Length Limit is %d\n", lossesAtGLL)
+	if err != nil {
+		fmt.Println("Losses at Game Length Limit cannot print")
+	}
+	_, err = p.Printf("Losses at No Moves Available is %d\n", lossesAtNoMoves)
+	if err != nil {
+		fmt.Println("Losses at No Moves Available cannot print")
+	}
+	_, err = p.Printf("Regular Losses is %d\n", regularLosses)
+	if err != nil {
+		fmt.Println("Regular Losses cannot print")
+	}
+	_, err = p.Printf("Number of Attempts Avoided ia %d\n", attemptsAvoidedCounter)
+	if err != nil {
+		fmt.Println("Number of Attempts Avoided ia cannot print")
+	}
 	fmt.Printf("Average Elapsed Time per Deck is %fms.\n", averageElapsedTimePerDeck)
 
 }
