@@ -63,6 +63,7 @@ func main() {
 	var decks = deckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
 	startTime := time.Now()
 	winCounter := 0
+	earlyWinCounter := 0
 	attemptsAvoidedCounter := 0
 	lossesAtGLL := 0
 	lossesAtNoMoves := 0
@@ -127,6 +128,24 @@ newDeck:
 
 				b = moveMaker(b, selectedMove) //***Main Program Statement
 
+				//Detect Early Win
+				if detectWinEarly(b) {
+					earlyWinCounter++
+					winCounter++
+					attemptsAvoidedCounter = attemptsAvoidedCounter + numberOfStrategies - iOS
+
+					if verbose > 0 {
+						fmt.Printf("Deck %v, played using initialOverrideStrategy %v: Game won early after %v moves. \n", deckNum, iOS, mC)
+					}
+					if verbose > 1 {
+						fmt.Printf("GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
+					}
+					if verbose > 1 {
+						fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
+					}
+					continue newDeck
+				}
+
 				//Detects Win
 				if len(b.piles[0])+len(b.piles[1])+len(b.piles[2])+len(b.piles[3]) == 52 {
 					winCounter++
@@ -145,7 +164,7 @@ newDeck:
 				}
 				//Detects Loss
 				if aMoves[0].name == "flipWasteToStock" {
-					if moveCounter < 20 {
+					if moveCounter < 20 { // changed from < 20
 						priorBoardNullWaste = b
 					} else if reflect.DeepEqual(b, priorBoardNullWaste) {
 						if verbose > 1 {
@@ -186,7 +205,7 @@ newDeck:
 	}
 	averageElapsedTimePerDeck := float64(elapsedTime.Milliseconds()) / float64(numberOfDecksToBePlayed)
 	fmt.Printf("Elapsed Time is %v.\n", elapsedTime)
-	_, err = p.Printf("Total Decks Won is %d\n", winCounter)
+	_, err = p.Printf("Total Decks Won is %d of which %d were Early Wins\n", winCounter, earlyWinCounter)
 	if err != nil {
 		fmt.Println("Total Decks Won cannot print")
 	}
