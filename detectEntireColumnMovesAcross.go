@@ -44,15 +44,20 @@ func detectEntireColumnMoves(b board, mc int, singleGame bool) []move {
 					MovePortionStartIdx: firstFaceUpIndex,
 					MovePortion:         FaceUpPortion,
 				}
-				if firstFaceUpIndex > 0 { //if there is a closed portion of the from column
+				if firstFaceUpIndex > 0 { //if there is a face down portion of the from column
 					m.colCardFlip = true
 				}
 
 				if singleGame && mc == specialMove {
 					fmt.Printf("within MEC: initially m is %+v\n", m)
 				}
+				// recall that lower priority is better
+				// if any of the three conditions which make a mec worth making exist
+				// then lower the priority to the moveBasePriority minus the length of the face down portion of the from column
+				// so a longer face down portion results lower priority
+				// i have confirmed that minus wins more decks than plus
 
-				if firstFaceUpIndex > 0 || //if there is a closed portion of the from column OR
+				if firstFaceUpIndex > 0 || //if there is a face down portion of the from column OR
 					(firstFaceUpIndex == 0 && kingReady(b, frmColNum)) || //an empty column will result and there is a king ready to move there OR
 					sisterCardInUpPortion(b, lastCard, toColNum, frmColNum) { //sister card in up portion of the other columns combined
 					m.priority = moveBasePriority["moveEntireColumn"] - firstFaceUpIndex //Reassignment of moveBasePriority
