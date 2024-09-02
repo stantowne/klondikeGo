@@ -23,7 +23,7 @@ var moveBasePriority = map[string]int{
 	"moveAceUp":         100,
 	"moveDeuceUp":       200,
 	"move3PlusUp":       800,
-	"badMove":           1200,
+	"badMove":           1200, // a legal move which is worse than a mere flip
 }
 
 func main() {
@@ -49,7 +49,9 @@ func main() {
 	numberOfDecksToBePlayed, _ := strconv.Atoi(os.Args[2])
 	length, _ := strconv.Atoi(os.Args[3])  //length of each strategy (which also determines the # of strategies - 2^n)
 	verbose, _ := strconv.Atoi(os.Args[4]) //the greater the number the more verbose
+	offset, _ := strconv.Atoi(os.Args[5])  // delay the application of the strategy by the offset
 
+	// used this loop because could not find integer exponentiation operation.
 	numberOfStrategies := 1 //number of initial strategies
 	for i := 0; i < length; i++ {
 		numberOfStrategies = numberOfStrategies * 2
@@ -120,7 +122,7 @@ newDeck:
 
 				//Initial Override Strategy logic
 				mC := moveCounter - 1 // for this part of the program a zero-based move counter is needed
-				if mC < length {
+				if mC > offset-1 && mC < length+offset {
 					if iOS&(1<<mC) != 0 {
 						selectedMove = aMoves[len(aMoves)-1]
 					}
