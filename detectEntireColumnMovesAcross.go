@@ -5,13 +5,8 @@ import (
 	"os"
 )
 
-func detectEntireColumnMoves(b board, mc int, singleGame bool) []move {
-	//mc expects movecounter
-	specialMove := 200
+func detectMecInner(b board) []move {
 	var moves []move
-	if mc < 0 {
-		return moves
-	}
 	for frmColNum := 0; frmColNum < 7; frmColNum++ {
 		firstFaceUpIndex, FaceUpPortion, err := faceUpPortion(b.columns[frmColNum])
 		if err != nil {
@@ -27,9 +22,6 @@ func detectEntireColumnMoves(b board, mc int, singleGame bool) []move {
 			if err != nil {
 				fmt.Printf("detectEntireColumnMovesAcross : error calling last on b.columns[%v] %v\n", toColNum, err)
 				os.Exit(1)
-			}
-			if singleGame && mc == specialMove {
-				fmt.Printf("within detectEntireColumnMovesAcross: frmColNum is %v, step is %v, toColNum is %v, \nFaceUpPortion[0].Rank is %v, \nlen(b.columns[toColNum] is %v\n", frmColNum, step, toColNum, FaceUpPortion[0].Rank, len(b.columns[toColNum]))
 			}
 			if ((FaceUpPortion[0].Rank == 13) && //if the FaceUpPortion of the fromCol begins with a King AND
 				b.columns[frmColNum][0].FaceUp == false && //fromCol begins with a face down card AND
@@ -48,29 +40,46 @@ func detectEntireColumnMoves(b board, mc int, singleGame bool) []move {
 					m.colCardFlip = true
 				}
 
-				if singleGame && mc == specialMove {
-					fmt.Printf("within MEC: initially m is %+v\n", m)
-				}
 				// recall that lower priority is better
 				// if any of the three conditions which make a mec worth making exist
 				// then lower the priority to the moveBasePriority minus the length of the face down portion of the from column
 				// so a longer face down portion results lower priority
-				// i have confirmed that minus wins more decks than plus
+				// I have confirmed that minus wins more decks than plus
 
 				if firstFaceUpIndex > 0 || //if there is a face down portion of the from column OR
 					(firstFaceUpIndex == 0 && kingReady(b, frmColNum)) || //an empty column will result and there is a king ready to move there OR
 					sisterCardInUpPortion(b, lastCard, toColNum, frmColNum) { //sister card in up portion of the other columns combined
 					m.priority = moveBasePriority["moveEntireColumn"] - firstFaceUpIndex //Reassignment of moveBasePriority
-				}
 
-				if singleGame && mc == specialMove {
-					fmt.Printf("within MEC: m is then adjusted to %+v\n", m)
+					moves = append(moves, m)
 				}
-
-				moves = append(moves, m)
 			}
 			continue
 		}
 	}
 	return moves
+}
+
+func detectMecNotThoughtful(b board) []move {
+	return detectMecInner(b)
+}
+
+func detectMecThoughtful(b board) []move {
+	//mc expects movecounter
+	var movesFirstLevel []move
+	movesFirstLevel = detectMecInner(b)
+	if len(movesFirstLevel) == 0 { // no MEC
+		return movesFirstLevel
+	}
+	if len(movesFirstLevel) == 1 { // only one MEC
+		return movesFirstLevel
+	}
+	//two or more MEC
+	var boards []board // slice of boards
+	for i := 0; i < len(movesFirstLevel); i++ {
+		boards[i] = moveMaker(b, movesFirstLevel[i]) //play each MEC
+
+	}
+
+	return nil
 }
