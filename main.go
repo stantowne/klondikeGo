@@ -17,8 +17,8 @@ var moveBasePriority = map[string]int{
 	"move3PlusAcross":   900,
 	"moveDown":          500,
 	"moveEntireColumn":  600,
-	"flipWasteToStock":  1000,
-	"flipStockToWaste":  1100,
+	"flipWasteToStock":  1000, //flip moves have the lowest priority
+	"flipStockToWaste":  1100, //flip moves have the lowest priority
 	"movePartialColumn": 700,
 	"moveAceUp":         100,
 	"moveDeuceUp":       200,
@@ -88,14 +88,7 @@ newDeck:
 			aMovesNumberOf := make([]int, 0, gameLengthLimit) //number of available Moves
 
 			for moveCounter := 1; moveCounter < gameLengthLimit+2; moveCounter++ { //start with 1 to line up with Python version
-				var aMoves []move //available Moves
-				aMoves = append(aMoves, detectUpMoves(b, moveCounter, veryVerbose)...)
-				aMoves = append(aMoves, detectAcrossMoves(b, moveCounter, veryVerbose)...)
-				aMoves = append(aMoves, detectEntireColumnMoves(b, moveCounter, veryVerbose)...)
-				aMoves = append(aMoves, detectDownMoves(b, moveCounter, veryVerbose)...)
-				aMoves = append(aMoves, detectPartialColumnMoves(b, moveCounter, veryVerbose)...)
-				aMoves = append(aMoves, detectFlipStockToWaste(b, moveCounter, veryVerbose)...)
-				aMoves = append(aMoves, detectFlipWasteToStock(b, moveCounter, veryVerbose)...)
+				aMoves := detectAvailableMoves(b, moveCounter, veryVerbose)
 
 				//detects Loss
 				if len(aMoves) == 0 { //No available moves; game lost.
