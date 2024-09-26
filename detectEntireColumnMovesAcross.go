@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func detectMecInner(b board) []move {
+func detectMecInner(b board, mc int, singleGame bool) []move {
 	var moves []move
 	for frmColNum := 0; frmColNum < 7; frmColNum++ {
 		firstFaceUpIndex, FaceUpPortion, err := faceUpPortion(b.columns[frmColNum])
@@ -57,29 +57,35 @@ func detectMecInner(b board) []move {
 			continue
 		}
 	}
+
 	return moves
 }
 
-func detectMecNotThoughtful(b board) []move {
-	return detectMecInner(b)
+func detectMecNotThoughtful(b board, mc int, singleGame bool) []move {
+	var movesFirstLevel []move
+	movesFirstLevel = detectMecInner(b, mc, singleGame)
+	if singleGame && len(movesFirstLevel) > 0 {
+		fmt.Printf("mc is %d -- moves detected in MEC are %v\n", mc, movesFirstLevel)
+		printBoard(b)
+	}
+	return movesFirstLevel
 }
 
-func detectMecThoughtful(b board) []move {
+func detectMecThoughtful(b board, mc int, singleGame bool) []move {
 	//mc expects movecounter
 	var movesFirstLevel []move
-	movesFirstLevel = detectMecInner(b)
-	if len(movesFirstLevel) == 0 { // no MEC
-		return movesFirstLevel
+	movesFirstLevel = detectMecInner(b, mc, singleGame)
+	if len(movesFirstLevel) > 1 { // if there are two or more MEC
+		var movesNextLevel []move                   // slice of move
+		for i := 0; i < len(movesFirstLevel); i++ { // for each MEC at the first level
+			b = moveMaker(b, movesFirstLevel[i])               // play the MEC
+			movesNextLevel = detectMecInner(b, mc, singleGame) // detect whether the resulting board offers a MEC
+			if len(movesNextLevel) > 0 {                       //if movesNextLevel[i] is not empty, it contains an MEC which means the ith move of movesFirstLevel is preferable
+				var replacementMovesFirstLevel []move                                               // create a new slice of move at First Level
+				replacementMovesFirstLevel = append(replacementMovesFirstLevel, movesFirstLevel[i]) //put the ith move from the First Level into it
+				return replacementMovesFirstLevel
+			}
+		}
 	}
-	if len(movesFirstLevel) == 1 { // only one MEC
-		return movesFirstLevel
-	}
-	//two or more MEC
-	var boards []board // slice of boards
-	for i := 0; i < len(movesFirstLevel); i++ {
-		boards[i] = moveMaker(b, movesFirstLevel[i]) //play each MEC
-
-	}
-
-	return nil
+	return movesFirstLevel
 }

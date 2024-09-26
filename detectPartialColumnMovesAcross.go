@@ -52,7 +52,7 @@ outer:
 								MovePortion:         FaceUpPortion[stepdown+1:],
 							}
 							moves = append(moves, m)
-							if singleGame {
+							if singleGame && mc > 200 {
 								fmt.Printf("detectPartialColumnMoves: moves is %v\n", moves)
 							}
 							continue outer //because each candidateMoveUpCard (e.g., 7 of Hearts) has only a single sister (7 of Diamonds)
