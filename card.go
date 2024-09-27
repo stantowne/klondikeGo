@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/TwiN/go-color"
 	"strconv"
 )
 
@@ -20,22 +19,22 @@ func (c *card) flipCardUp() {
 	(*c).FaceUp = true
 }
 
-func (c card) flipCardUp2() card {
+func (c *card) flipCardUp2() card {
 	return card{c.Rank, c.Suit, true}
 }
 
-func (c card) color() string {
+func (c *card) color() string {
 	var clr string
 	switch c.Suit {
 	case 0, 2:
-		clr = "black"
+		clr = "Black"
 	case 1, 3:
-		clr = "red"
+		clr = "Red"
 	}
 	return clr
 }
 
-func (c card) suitSymbol() rune {
+func (c *card) suitSymbol() rune {
 	var symbol rune
 	switch c.Suit {
 	case 0: //clubs
@@ -50,7 +49,7 @@ func (c card) suitSymbol() rune {
 	return symbol
 }
 
-func (c card) rankSymbol() string {
+func (c *card) rankSymbol() string {
 	var symbol string
 	switch {
 	case c.Rank < 10:
@@ -61,7 +60,7 @@ func (c card) rankSymbol() string {
 	return symbol
 }
 
-func (c card) faceSymbol() string {
+func (c *card) faceSymbol() string {
 	var symbol string
 	switch c.FaceUp {
 	case true:
@@ -72,17 +71,20 @@ func (c card) faceSymbol() string {
 	return symbol
 }
 
-func (c card) pStr() string {
+func (c *card) pStr() string {
 	var sSuit string
+	var Reset = "\033[m" //These are ANSI escape codes for colors
+	var Red = "\033[31m"
+	var Green = "\033[32m"
 	if c.Suit == 0 || c.Suit == 2 {
 		sSuit = string(c.suitSymbol())
 	} else {
-		sSuit = color.Ize(color.Red, string(c.suitSymbol()))
+		sSuit = Red + string(c.suitSymbol()) + Reset
 	}
 
 	var sFace string
 	if c.FaceUp {
-		sFace = color.Ize(color.Green, c.faceSymbol())
+		sFace = Green + c.faceSymbol() + Reset
 	} else {
 		sFace = c.faceSymbol()
 	}
