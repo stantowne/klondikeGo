@@ -64,7 +64,7 @@ func detectMecInner(b board, mc int, singleGame bool) []move {
 func detectMecNotThoughtful(b board, mc int, singleGame bool) []move {
 	var movesFirstLevel []move
 	movesFirstLevel = detectMecInner(b, mc, singleGame)
-	if singleGame && len(movesFirstLevel) > 0 {
+	if singleGame && len(movesFirstLevel) > 1 {
 		fmt.Printf("mc is %d -- moves detected in MEC are %v\n", mc, movesFirstLevel)
 		printBoard(b)
 	}
