@@ -57,9 +57,9 @@ func main() {
 		numberOfStrategies = numberOfStrategies * 2
 	}
 
-	var veryVerbose = false
-	if verbose > 2 {
-		veryVerbose = true
+	var singleGame = true
+	if numberOfDecksToBePlayed > 1 {
+		singleGame = false
 	}
 
 	var decks = deckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
@@ -88,7 +88,7 @@ newDeck:
 			aMovesNumberOf := make([]int, 0, gameLengthLimit) //number of available Moves
 
 			for moveCounter := 1; moveCounter < gameLengthLimit+2; moveCounter++ { //start with 1 to line up with Python version
-				aMoves := detectAvailableMoves(b, moveCounter, veryVerbose)
+				aMoves := detectAvailableMoves(b, moveCounter, singleGame)
 
 				//detects Loss
 				if len(aMoves) == 0 { //No available moves; game lost.
