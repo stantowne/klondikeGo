@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func detectMecInner(b board, mc int, singleGame bool) []move {
+func detectMecInner(b board, _ int, _ bool) []move {
 	var moves []move
 	for frmColNum := 0; frmColNum < 7; frmColNum++ {
 		firstFaceUpIndex, FaceUpPortion, err := faceUpPortion(b.columns[frmColNum])
@@ -53,11 +53,22 @@ func detectMecInner(b board, mc int, singleGame bool) []move {
 
 					moves = append(moves, m)
 				}
+				/*if sisterCardInUpPortion(b, lastCard, toColNum, frmColNum) {
+					m.priority = moveBasePriority["moveEntireColumn"] - firstFaceUpIndex
+					moves = append(moves, m)
+				}
+				if firstFaceUpIndex > 0 {
+					m.priority = moveBasePriority["moveEntireColumn"] - firstFaceUpIndex
+					moves = append(moves, m)
+				}
+				if firstFaceUpIndex == 0 && kingReady(b, frmColNum) {
+					m.priority = moveBasePriority["moveEntireColumn"] - firstFaceUpIndex
+					moves = append(moves, m)
+				}*/
 			}
 			continue
 		}
 	}
-
 	return moves
 }
 
@@ -65,27 +76,43 @@ func detectMecNotThoughtful(b board, mc int, singleGame bool) []move {
 	var movesFirstLevel []move
 	movesFirstLevel = detectMecInner(b, mc, singleGame)
 	if singleGame && len(movesFirstLevel) > 1 {
-		fmt.Printf("mc is %d -- moves detected in MEC are %v\n", mc, movesFirstLevel)
+		fmt.Printf("mc is %d -- MEC detected are %v\n", mc, movesFirstLevel)
 		printBoard(b)
 	}
 	return movesFirstLevel
 }
 
 func detectMecThoughtful(b board, mc int, singleGame bool) []move {
-	//mc expects movecounter
 	var movesFirstLevel []move
 	movesFirstLevel = detectMecInner(b, mc, singleGame)
-	if len(movesFirstLevel) > 1 { // if there are two or more MEC
-		var movesNextLevel []move                   // slice of move
-		for i := 0; i < len(movesFirstLevel); i++ { // for each MEC at the first level
-			b = moveMaker(b, movesFirstLevel[i])               // play the MEC
-			movesNextLevel = detectMecInner(b, mc, singleGame) // detect whether the resulting board offers a MEC
-			if len(movesNextLevel) > 0 {                       //if movesNextLevel[i] is not empty, it contains an MEC which means the ith move of movesFirstLevel is preferable
-				var replacementMovesFirstLevel []move                                               // create a new slice of move at First Level
+	if singleGame && len(movesFirstLevel) > 1 {
+		fmt.Printf("mc is %d -- first level MEC(s) detected is(are) %v\n", mc, movesFirstLevel)
+		printBoard(b)
+	}
+	var replacementMovesFirstLevel []move
+	if len(movesFirstLevel) > 1 { // if there are two or more first level MEC
+		for i := 0; i < len(movesFirstLevel); i++ { // for each first level MEC
+			var movesNextLevel []move
+			nextB := moveMaker(b, movesFirstLevel[i])              // play it
+			movesNextLevel = detectMecInner(nextB, mc, singleGame) // detect whether the resulting board offers a MEC
+			if len(movesNextLevel) > 0 {                           // if movesNextLevel[i] is not empty, it contains an MEC which means the ith move of movesFirstLevel is preferable
 				replacementMovesFirstLevel = append(replacementMovesFirstLevel, movesFirstLevel[i]) //put the ith move from the First Level into it
-				return replacementMovesFirstLevel
+				if singleGame {
+					fmt.Printf("checking element %d of first level MEC after which the board would be\n", i)
+					printBoard(nextB)
+					fmt.Printf("next level MEC detected are %v\n", movesNextLevel)
+				}
 			}
 		}
+		if len(replacementMovesFirstLevel) != 0 {
+			if singleGame {
+				fmt.Printf("return replacementMovesFirstLevel: %v\n", replacementMovesFirstLevel)
+			}
+			return replacementMovesFirstLevel
+		}
+	}
+	if singleGame && len(movesFirstLevel) > 0 {
+		fmt.Printf("return movesFirstLevel: %v\n", movesFirstLevel)
 	}
 	return movesFirstLevel
 }
