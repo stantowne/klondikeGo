@@ -187,6 +187,7 @@ newDeck:
 	lossCounter := numberOfDecksToBePlayed - winCounter
 	endTime := time.Now()
 	elapsedTime := endTime.Sub(startTime)
+	percentageAttemptsAvoided := 100.0 * float64(attemptsAvoidedCounter) / float64(possibleAttempts)
 	var p = message.NewPrinter(language.English)
 	_, err := p.Printf("\nNumber of Decks Played is %d.\n", numberOfDecksToBePlayed)
 	if err != nil {
@@ -222,7 +223,11 @@ newDeck:
 	}
 	_, err = p.Printf("Number of Attempts Avoided ia %d\n", attemptsAvoidedCounter)
 	if err != nil {
-		fmt.Println("Number of Attempts Avoided ia cannot print")
+		fmt.Println("Number of Attempts Avoided cannot print")
+	}
+	_, err = p.Printf("Percentage of Possible Attempts Avoided is %v\n", percentageAttemptsAvoided)
+	if err != nil {
+		fmt.Println("Percentage of Possible Attempts Avoided cannot print")
 	}
 	fmt.Printf("Average Elapsed Time per Deck is %fms.\n", averageElapsedTimePerDeck)
 
