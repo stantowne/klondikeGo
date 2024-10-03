@@ -23,6 +23,55 @@ func (c *card) flipCardUp2() card {
 	return card{c.Rank, c.Suit, true}
 }
 
+func (c *card) packCard() byte {
+	// We only care about the rightmost 4 bits of Rank and, the rightmost 2 bits of Suit and, the 1 bit of FaceUp
+	//     since by definition Rank is never greater than 11 and suit is never greater than 4
+	//
+	// Rank shift bits 3-0 to 7-4
+	r := c.Rank << 3
+	// Suit shift bits 1-0 to 3-2
+	s := c.Suit << 1
+	// FaceUp 's one bit stays at position 0 - convert it to an integer
+	fU := 0
+	if c.FaceUp {
+		fU = 1
+	}
+
+	/*var fU int
+	switch c.FaceUp {
+	case true:
+		fU = 1
+	default:
+		fU = 0
+	}*/
+
+	// Use bitwise OR to overlay s (Suit) and FaceUp on the shifted r (which is an integer)
+	r = r | s | fU
+
+	// return the rightmost byte of the integer
+	return byte(r)
+}
+
+func unPackByte2Card(y byte) card {
+
+	// See method packCard() for structure of the byte
+	// & is binary AND operator, returns for any bit, & results in 1 if that bit in both operands is 1
+	r := int(y & 0b_11110000)
+	s := int(y & 0b_00001100)
+	f := int(y & 0b_00000001)
+
+	fU := true
+	if f != 1 {
+		fU = false
+	}
+
+	return card{
+		Rank:   r,
+		Suit:   s,
+		FaceUp: fU,
+	}
+}
+
 func (c *card) color() string {
 	var clr string
 	switch c.Suit {
