@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"strconv"
 )
 
@@ -23,14 +25,14 @@ func (c *card) flipCardUp2() card {
 	return card{c.Rank, c.Suit, true}
 }
 
-func (c *card) packCard() byte {
+func (c card) packCard() byte {
 	// We only care about the rightmost 4 bits of Rank and, the rightmost 2 bits of Suit and, the 1 bit of FaceUp
 	//     since by definition Rank is never greater than 11 and suit is never greater than 4
 	//
 	// Rank shift bits 3-0 to 7-4
-	r := c.Rank << 3
+	r := c.Rank << 4
 	// Suit shift bits 1-0 to 3-2
-	s := c.Suit << 1
+	s := c.Suit << 2
 	// FaceUp 's one bit stays at position 0 - convert it to an integer
 	fU := 0
 	if c.FaceUp {
@@ -56,9 +58,9 @@ func unPackByte2Card(y byte) card {
 
 	// See method packCard() for structure of the byte
 	// & is binary AND operator, returns for any bit, & results in 1 if that bit in both operands is 1
-	r := int(y & 0b_11110000)
-	s := int(y & 0b_00001100)
-	f := int(y & 0b_00000001)
+	r := int(y&0b_11110000) >> 4
+	s := int(y&0b_00001100) >> 2
+	f := int(y&0b_00000001) >> 0
 
 	fU := true
 	if f != 1 {
@@ -140,4 +142,29 @@ func (c *card) pStr() string {
 
 	return c.rankSymbol() + sSuit + sFace + " "
 
+}
+
+func test(c card) bool {
+	return unPackByte2Card(c.packCard()) == c
+}
+
+func main() {
+	var testCard, rebuiltCard card
+	r, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		fmt.Println("bad input -- first argument")
+	}
+	s, err := strconv.Atoi(os.Args[2])
+	if err != nil {
+		fmt.Println("bad input -- second argument")
+	}
+	testCard.Rank = r
+	testCard.Suit = s
+	testCard.FaceUp = true
+	fmt.Printf("TestCard: %+v\n", testCard)
+	packed := testCard.packCard()
+	fmt.Printf("PackCard: %b\n", packed)
+	rebuiltCard = unPackByte2Card(packed)
+	fmt.Printf("RebuiltCard: %+v\n", rebuiltCard)
+	fmt.Printf("Does the round trip work: %v\n", testCard == rebuiltCard)
 }
