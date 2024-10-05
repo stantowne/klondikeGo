@@ -27,7 +27,7 @@ func (c *card) flipCardUp2() card {
 
 func (c card) packCard() byte {
 	// We only care about the rightmost 4 bits of Rank and, the rightmost 2 bits of Suit and, the 1 bit of FaceUp
-	//     since by definition Rank is never greater than 11 and suit is never greater than 4
+	// since by definition Rank is never greater than 13 and suit is never greater than 4
 	//
 	// Rank shift bits 3-0 to 7-4
 	r := c.Rank << 4
