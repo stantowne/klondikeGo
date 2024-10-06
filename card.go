@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 )
 
@@ -139,21 +140,19 @@ func (c *card) pStr() string {
 	}
 
 	return c.rankSymbol() + sSuit + sFace + " "
-
 }
 
 func test(c card) bool {
 	return unPackByte2Card(c.packCard()) == c
 }
 
-/*
-func main() {
+func testCardPackUnPack(args []string) {
 	var testCard, rebuiltCard card
-	r, err := strconv.Atoi(os.Args[1])
+	r, err := strconv.Atoi(args[1])
 	if err != nil {
 		fmt.Println("bad input -- first argument")
 	}
-	s, err := strconv.Atoi(os.Args[2])
+	s, err := strconv.Atoi(args[2])
 	if err != nil {
 		fmt.Println("bad input -- second argument")
 	}
@@ -167,4 +166,3 @@ func main() {
 	fmt.Printf("RebuiltCard: %+v\n", rebuiltCard)
 	fmt.Printf("Does the round trip work: %v\n", testCard == rebuiltCard)
 }
-*/

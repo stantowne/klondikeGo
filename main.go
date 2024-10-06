@@ -1,9 +1,8 @@
 package main
 
-import (
-	"os"
-)
+import "os"
 
 func main() {
-	play(os.Args)
+	//play(os.Args)
+	testCardPackUnPack(os.Args)
 }
