@@ -11,21 +11,6 @@ import (
 	"time"
 )
 
-var moveBasePriority = map[string]int{
-	"moveAceAcross":     300,
-	"moveDeuceAcross":   400,
-	"move3PlusAcross":   900,
-	"moveDown":          500,
-	"moveEntireColumn":  600,
-	"flipWasteToStock":  1000, //flip moves have the lowest priority
-	"flipStockToWaste":  1100, //flip moves have the lowest priority
-	"movePartialColumn": 700,
-	"moveAceUp":         100,
-	"moveDeuceUp":       200,
-	"move3PlusUp":       800,
-	"badMove":           1200, // a legal move which is worse than a mere flip
-}
-
 func main() {
 
 	//Used to record how many of each move type is executed during an attempt.
