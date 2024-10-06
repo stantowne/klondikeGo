@@ -11,11 +11,6 @@ type card struct {
 	FaceUp bool `json:"faceUp"`
 }
 
-type stock []card
-type waste []card
-type column []card
-type pile []card
-
 func (c *card) flipCardUp() {
 	(*c).FaceUp = true
 }

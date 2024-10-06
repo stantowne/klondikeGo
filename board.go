@@ -5,6 +5,9 @@ import (
 	"strconv"
 )
 
+type column []card
+type pile []card
+
 type board struct {
 	columns [7]column //column[x][0] rests on the table for all x
 	piles   [4]pile   //  pile[y][0] rests on the table for all y
