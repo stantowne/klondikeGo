@@ -13,21 +13,6 @@ import (
 
 func main() {
 
-	//Used to record how many of each move type is executed during an attempt.
-	moveTypes := map[string]int{ //11 moveTypes
-		"moveAceAcross":     0,
-		"moveDeuceAcross":   0,
-		"move3PlusAcross":   0,
-		"moveDown":          0,
-		"moveEntireColumn":  0,
-		"flipWasteToStock":  0,
-		"flipStockToWaste":  0,
-		"movePartialColumn": 0,
-		"moveAceUp":         0,
-		"moveDeuceUp":       0,
-		"move3PlusUp":       0,
-	}
-
 	const gameLengthLimit = 150 //increasing to 200 does not increase win rate
 
 	firstDeckNum, _ := strconv.Atoi(os.Args[1])

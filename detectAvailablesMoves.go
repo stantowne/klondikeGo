@@ -26,3 +26,18 @@ var moveBasePriority = map[string]int{
 	"move3PlusUp":       800,
 	"badMove":           1200, // a legal move which is worse than a mere flip
 }
+
+// Used to record how many of each move type is executed during an attempt.
+var moveTypes = map[string]int{
+	"moveAceAcross":     0,
+	"moveDeuceAcross":   0,
+	"move3PlusAcross":   0,
+	"moveDown":          0,
+	"moveEntireColumn":  0,
+	"flipWasteToStock":  0,
+	"flipStockToWaste":  0,
+	"movePartialColumn": 0,
+	"moveAceUp":         0,
+	"moveDeuceUp":       0,
+	"move3PlusUp":       0,
+}
