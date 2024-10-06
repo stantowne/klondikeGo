@@ -12,14 +12,17 @@ import (
 )
 
 func main() {
+	play(os.Args)
+}
+
+func play(args []string) {
+	firstDeckNum, _ := strconv.Atoi(args[1])
+	numberOfDecksToBePlayed, _ := strconv.Atoi(args[2])
+	length, _ := strconv.Atoi(args[3])  //length of each strategy (which also determines the # of strategies - 2^n)
+	verbose, _ := strconv.Atoi(args[4]) //the greater the number the more verbose
+	offset, _ := strconv.Atoi(args[5])  // delay the application of the strategy by the offset
 
 	const gameLengthLimit = 150 //increasing to 200 does not increase win rate
-
-	firstDeckNum, _ := strconv.Atoi(os.Args[1])
-	numberOfDecksToBePlayed, _ := strconv.Atoi(os.Args[2])
-	length, _ := strconv.Atoi(os.Args[3])  //length of each strategy (which also determines the # of strategies - 2^n)
-	verbose, _ := strconv.Atoi(os.Args[4]) //the greater the number the more verbose
-	offset, _ := strconv.Atoi(os.Args[5])  // delay the application of the strategy by the offset
 
 	// used this loop because could not find integer exponentiation operation.
 	numberOfStrategies := 1 //number of initial strategies
