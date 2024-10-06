@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"strconv"
+)
+
 type board struct {
 	columns [7]column //column[x][0] rests on the table for all x
 	piles   [4]pile   //  pile[y][0] rests on the table for all y
@@ -11,7 +16,7 @@ type (
 	// note array index of course goes from 0 to 65 !!!
 )
 
-func (b board) bCodeFromBoard() bCode {
+func (b board) boardCode() bCode {
 	//
 	// This method takes a struct of type board which contains four fields:
 	//		columns:	an array of 7 column (each column being a slice of card)
@@ -106,7 +111,7 @@ func (b board) bCodeFromBoard() bCode {
 	return bC
 }
 
-func (bC bCode) boardFrombCode() board {
+func (bC bCode) boardDeCode() board {
 	//
 	// See method bCodeFromBoard (a method of board) for comments which will explain how this method (boardFrombCode) , which is the inverse of bCodeFromBoard
 	//
@@ -150,4 +155,30 @@ func (bC bCode) boardFrombCode() board {
 	}
 
 	return b
+}
+
+func testBoardCodeDeCode(args []string) {
+
+	firstDeckNum, _ := strconv.Atoi(args[1])
+	numberOfDecksToBePlayed, _ := strconv.Atoi(args[2])
+	verbose, _ := strconv.Atoi(args[3]) //the greater the number the more verbose
+
+	var decks = deckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
+
+	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
+		if verbose > 1 {
+			fmt.Printf("\nDeck #%d:\n", deckNum)
+		}
+		//TempTest
+		var b = dealDeck(decks[deckNum])
+		fmt.Println("Original Board")
+		printBoard(b)
+
+		var bC = b.boardCode()
+		fmt.Printf("%v \t    %08b \n\n", deckNum, bC)
+
+		var bRoundTrip = bC.boardDeCode()
+		fmt.Println("RoundTrip Board")
+		printBoard(bRoundTrip) //TempTest end
+	}
 }
