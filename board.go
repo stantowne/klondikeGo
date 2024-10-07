@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"reflect"
 	"strconv"
 )
 
@@ -186,5 +188,21 @@ func testBoardCodeDeCode(args []string) {
 		var bRoundTrip = bC.boardDeCode()
 		fmt.Println("RoundTrip Board")
 		printBoard(bRoundTrip) //TempTest end
+	}
+}
+
+func quickTestBoardCodeDeCode(b board, deckNum int, length int, iOS int, mC int) {
+	bCode := b.boardCode()
+	roundTripResult := bCode.boardDeCode()
+	if !reflect.DeepEqual(b, roundTripResult) {
+		fmt.Println("quickTestBoardCodeDeCode() failed")
+		fmt.Println("deckNum: ", deckNum)
+		fmt.Println("length: ", length)
+		fmt.Println("iOS: ", iOS)
+		fmt.Println("moveCounter: ", mC)
+		printBoard(b)
+		fmt.Printf("\t   %08b \n\n", bCode)
+		printBoard(roundTripResult)
+		os.Exit(1)
 	}
 }

@@ -90,6 +90,7 @@ newDeck:
 				}
 
 				b = moveMaker(b, selectedMove) //***Main Program Statement
+				quickTestBoardCodeDeCode(b, deckNum, length, iOS, moveCounter)
 
 				//Detect Early Win
 				if detectWinEarly(b) {
