@@ -137,7 +137,7 @@ func (c *card) pStr() string {
 	return c.rankSymbol() + sSuit + sFace + " "
 }
 
-func test(c card) bool {
+func quickTestCardPackUnPack(c card) bool {
 	return unPackByte2Card(c.packCard()) == c
 }
 
