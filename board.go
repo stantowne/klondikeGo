@@ -119,7 +119,7 @@ func (b board) boardCode() bCode {
 
 func (bC bCode) boardDeCode() board {
 	//
-	// See method bCodeFromBoard (a method of board) for comments which will explain how this method (boardFrombCode) , which is the inverse of bCodeFromBoard
+	// See method boardCode (a method of board) for comments which will explain how this method (boardDeCode), which is the inverse of bCodeFromBoard, works
 	//
 	b := board{}
 	i := 0
