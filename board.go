@@ -29,7 +29,7 @@ func (b board) boardCode() bCode {
 	//		stock:		a slice of Card, and
 	//		waste:		a slice of Card.
 	//
-	//	Thus, there are a total of 13 slices (7+4+1+1) holding the 52 cards of a standard deck.
+	//	Thus, there are a total of 13 slices (7+4+1+1) holding the 52 cards of a standard Deck.
 	//
 	//  Note that the cards in board are originally stored in a Card struct using two integers representing the rank and suit
 	//   	and a bool for faceUp (true is Up, false is Down) (See card.go).

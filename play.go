@@ -45,11 +45,11 @@ newDeck:
 		}
 	newInitialOverrideStrategy:
 		for iOS := 0; iOS < numberOfStrategies; iOS++ {
-			//deal deck onto board
+			//deal Deck onto board
 			var b = dealDeck(decks[deckNum])
 			var priorBoardNullWaste board //used in Loss Detector
 			if verbose > 1 {
-				fmt.Printf("Start play of deck %v using initial override strategy %v.\n", deckNum, iOS)
+				fmt.Printf("Start play of Deck %v using initial override strategy %v.\n", deckNum, iOS)
 			}
 
 			//make this slice of int with length = 0 and capacity = gameLengthLimit

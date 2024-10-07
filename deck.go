@@ -1,13 +1,13 @@
 package main
 
-type deck []Card
+type Deck []Card
 
-func (d deck) firstRest() (Card, deck) {
+func (d Deck) firstRest() (Card, Deck) {
 	first := d[0]
 	rest := d[1:]
 	return first, rest
 }
-func dealDeck(d deck) board {
+func dealDeck(d Deck) board {
 	var b board
 	for j := 0; j < 7; j++ {
 		for i := 0; i+j < 7; i++ {

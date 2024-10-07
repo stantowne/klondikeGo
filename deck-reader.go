@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-type decks []deck
+type decks []Deck
 
 func check(e error) {
 	if e != nil {
@@ -15,7 +15,7 @@ func check(e error) {
 }
 
 /*
-func printRawDeck(d deck) {
+func printRawDeck(d Deck) {
 	for i, c := range d {
 		fmt.Printf("Index: %v : Card: %+v\n", i, c)
 	}
