@@ -48,9 +48,9 @@ func detectUpMoves(b board, mc int, _ bool) []move {
 			}
 			if (lastCard.Rank <= 8) ||
 				(len(b.piles[(lastCard.Suit+1)%4]) >= (lastCard.Rank-2) &&
-					containedInAggregateUpPortion(b, card{Rank: lastCard.Rank - 1, Suit: (lastCard.Suit + 3) % 4, FaceUp: true})) ||
+					containedInAggregateUpPortion(b, Card{Rank: lastCard.Rank - 1, Suit: (lastCard.Suit + 3) % 4, FaceUp: true})) ||
 				(len(b.piles[(lastCard.Suit+3)%4]) >= (lastCard.Rank-2) &&
-					containedInAggregateUpPortion(b, card{Rank: lastCard.Rank - 1, Suit: (lastCard.Suit + 1) % 4, FaceUp: true})) {
+					containedInAggregateUpPortion(b, Card{Rank: lastCard.Rank - 1, Suit: (lastCard.Suit + 1) % 4, FaceUp: true})) {
 				m.priority = moveBasePriority["move3PlusUp"]
 			}
 			if len(b.piles[(lastCard.Suit+1)%4]) >= (lastCard.Rank-2) &&
@@ -64,7 +64,7 @@ func detectUpMoves(b board, mc int, _ bool) []move {
 	return moves
 }
 
-func containedInAggregateUpPortion(b board, c card) bool {
+func containedInAggregateUpPortion(b board, c Card) bool {
 	for _, col := range b.columns {
 		for _, crd := range col {
 			if crd == c {

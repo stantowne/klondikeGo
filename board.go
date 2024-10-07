@@ -7,36 +7,34 @@ import (
 	"strconv"
 )
 
-type column []card
-type pile []card
+type column []Card
+type pile []Card
 
 type board struct {
 	columns [7]column //column[x][0] rests on the table for all x
 	piles   [4]pile   //  pile[y][0] rests on the table for all y
-	stock   []card    //    stock[0] rests on the table
-	waste   []card    //    waste[0] rests on the table
+	stock   []Card    //    stock[0] rests on the table
+	waste   []Card    //    waste[0] rests on the table
 }
 type (
-	bCode [65]byte // byte 0 code + 1 stock + 1 waste + 4 piles + 7 columns + 52 cards = 66
+	bCode [65]byte // 1 stock + 1 waste + 4 piles + 7 columns + 52 cards = 65
 	// note array index of course goes from 0 to 64
-	// NOTE TO DAN:   Is something wrong here?  Comment would suggest an array of length 66
-	// NOTE TO DAN:   What is the function of byte 0?
 )
 
 func (b board) boardCode() bCode {
 	//
 	// This method takes a struct of type board which contains four fields:
-	//		columns:	an array of 7 column (each column being a slice of card)
-	//		piles:		an array of 4 pile (each pile being a slice of card)
-	//		stock:		a slice of card, and
-	//		waste:		a slice of card.
+	//		columns:	an array of 7 column (each column being a slice of Card)
+	//		piles:		an array of 4 pile (each pile being a slice of Card)
+	//		stock:		a slice of Card, and
+	//		waste:		a slice of Card.
 	//
 	//	Thus, there are a total of 13 slices (7+4+1+1) holding the 52 cards of a standard deck.
 	//
-	//  Note that the cards in board are originally stored in a card struct using two integers representing the rank and suit
+	//  Note that the cards in board are originally stored in a Card struct using two integers representing the rank and suit
 	//   	and a bool for faceUp (true is Up, false is Down) (See card.go).
 	//
-	//	This method uses packCard (a method of Card see card.go) to pack each card's rank, suit and FaceUp
+	//	This method uses packCard (a method of Card see card.go) to pack each Card's rank, suit and FaceUp
 	//	   into the 7 rightmost bits of a single byte.
 	//
 	//	So, in order to completely describe a board we need 52 bytes for the cards, and 13 bytes ("Flags") to mark which each slice begins.
@@ -71,11 +69,11 @@ func (b board) boardCode() bCode {
 	//
 	//                3a. All zero bytes MUST be at the end of the array.
 	//                3b. The first 0 byte encountered will cause the method boardDeCode to ignore the remainder of the bytes in bCode
-	//                3c. Note: No packed card can ever have a value of 0 as the ranks start with ace = 1
+	//                3c. Note: No packed Card can ever have a value of 0 as the ranks start with ace = 1
 	//
 	//         4. There is no set order to the flag/groups.  NOTE TO DAN:  Is this so?
 	//
-	//         5. The cards in each group appear in order with the first card after the flag being the card on the surface of the table.
+	//         5. The cards in each group appear in order with the first Card after the flag being the Card on the surface of the table.
 	//
 	//         6. The flags all have a 1 in the leftmost bit so all are >= 127.
 	//

@@ -63,12 +63,12 @@ func moveMaker(b board, m move) board {
 		return flipStockToWaste(b)
 	}
 	if m.name == "flipWasteToStock" {
-		var s card
+		var s Card
 		for i := len(b.waste) - 1; i > -1; i-- {
-			s = card{b.waste[i].Rank, b.waste[i].Suit, false}
+			s = Card{b.waste[i].Rank, b.waste[i].Suit, false}
 			b.stock = append(b.stock, s)
 		}
-		w := make([]card, 0, 24)
+		w := make([]Card, 0, 24)
 		b.waste = w
 	}
 	return b

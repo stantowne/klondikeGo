@@ -24,7 +24,7 @@ func detectMecInner(b board, _ int, _ bool) []move {
 				os.Exit(1)
 			}
 			if ((FaceUpPortion[0].Rank == 13) && //if the FaceUpPortion of the fromCol begins with a King AND
-				b.columns[frmColNum][0].FaceUp == false && //fromCol begins with a face down card AND
+				b.columns[frmColNum][0].FaceUp == false && //fromCol begins with a face down Card AND
 				(len(b.columns[toColNum]) == 0)) || //the toCol is empty OR
 				(FaceUpPortion[0].Rank == lastCard.Rank-1 && //three needs four AND
 					FaceUpPortion[0].color() != lastCard.color()) { //red needs black
@@ -48,7 +48,7 @@ func detectMecInner(b board, _ int, _ bool) []move {
 
 				if firstFaceUpIndex > 0 || //if there is a face down portion of the from column OR
 					(firstFaceUpIndex == 0 && kingReady(b, frmColNum)) || //an empty column will result and there is a king ready to move there OR
-					sisterCardInUpPortion(b, lastCard, toColNum, frmColNum) { //sister card in up portion of the other columns combined
+					sisterCardInUpPortion(b, lastCard, toColNum, frmColNum) { //sister Card in up portion of the other columns combined
 					m.priority = moveBasePriority["moveEntireColumn"] - firstFaceUpIndex //Reassignment of moveBasePriority
 
 					moves = append(moves, m)
@@ -119,7 +119,7 @@ func detectMecThoughtful(b board, mc int, singleGame bool) []move {
 
 // detects if there is a king ready to move to empty column
 func kingReady(b board, fromColNum int) bool {
-	//if the top card of waste is a king
+	//if the top Card of waste is a king
 	if len(b.waste) > 0 && b.waste[len(b.waste)-1].Rank == 13 {
 		return true
 	}
@@ -129,8 +129,8 @@ func kingReady(b board, fromColNum int) bool {
 		if i == fromColNum || len(col) == 0 {
 			continue
 		}
-		//if the index of the first face up card is zero (no face down cards), then go to the top of the for loop
-		//this makes sense because, if the first face up card
+		//if the index of the first face up Card is zero (no face down cards), then go to the top of the for loop
+		//this makes sense because, if the first face up Card
 		//    is not a king, then go to the top of the for loop
 		//    if a king, there is no value in moving it so go to the top of the for loop
 		firstFUIndex, _, _ := faceUpPortion(col)
@@ -145,8 +145,8 @@ func kingReady(b board, fromColNum int) bool {
 	return false
 }
 
-func sisterCardInUpPortion(b board, c card, toColNum int, fromColNum int) bool {
-	sisterCard := card{
+func sisterCardInUpPortion(b board, c Card, toColNum int, fromColNum int) bool {
+	sisterCard := Card{
 		Rank:   c.Rank,
 		Suit:   (c.Suit + 2) % 4,
 		FaceUp: true,

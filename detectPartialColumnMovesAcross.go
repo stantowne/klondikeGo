@@ -28,8 +28,8 @@ outer:
 					fmt.Printf("within detectPartialColumnMoves: stepdown is %v, candidateMoveUpCard is %v\n", stepdown, candidateMoveUpCard)
 				}
 				if candidateMoveUpCard.Rank == len(b.piles[candidateMoveUpCard.Suit])+1 {
-					sisterCard := card{Rank: candidateMoveUpCard.Rank, Suit: (candidateMoveUpCard.Suit + 2) % 4, FaceUp: true}
-					// now, see if the sisterCard is the last card of another column
+					sisterCard := Card{Rank: candidateMoveUpCard.Rank, Suit: (candidateMoveUpCard.Suit + 2) % 4, FaceUp: true}
+					// now, see if the sisterCard is the last Card of another column
 					for step := 1; step < 7; step++ {
 						toColNum := (frmColNum + step) % 7
 						lastCard, _, _ := last(b.columns[toColNum])

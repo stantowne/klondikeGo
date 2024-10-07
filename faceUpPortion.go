@@ -3,7 +3,7 @@ package main
 import "errors"
 
 // returns the index of the first FaceUpCard and the entire FaceUp portion
-func faceUpPortion(col column) (int, []card, error) {
+func faceUpPortion(col column) (int, []Card, error) {
 	for i, crd := range col {
 		if crd.FaceUp {
 			firstFaceUpIndex := i

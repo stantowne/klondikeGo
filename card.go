@@ -5,21 +5,21 @@ import (
 	"strconv"
 )
 
-type card struct {
+type Card struct {
 	Rank   int  `json:"rank"` // 1 ace; 11 jack, etc.
 	Suit   int  `json:"suit"` // 0 clubs; 1 diamonds; 2 spades; 3 hearts
 	FaceUp bool `json:"faceUp"`
 }
 
-func (c *card) flipCardUp() {
+func (c *Card) flipCardUp() {
 	(*c).FaceUp = true
 }
 
-func (c *card) flipCardUp2() card {
-	return card{c.Rank, c.Suit, true}
+func (c *Card) flipCardUp2() Card {
+	return Card{c.Rank, c.Suit, true}
 }
 
-func (c card) packCard() byte {
+func (c Card) packCard() byte {
 	// We only care about the rightmost 4 bits of Rank and, the rightmost 2 bits of Suit and, the 1 bit of FaceUp
 	// since by definition Rank is never greater than 13 and suit is never greater than 4
 	//
@@ -48,7 +48,7 @@ func (c card) packCard() byte {
 	return byte(r)
 }
 
-func unPackByte2Card(y byte) card {
+func unPackByte2Card(y byte) Card {
 
 	// See method packCard() for structure of the byte
 	// & is binary AND operator, returns for any bit, & results in 1 if that bit in both operands is 1
@@ -61,14 +61,14 @@ func unPackByte2Card(y byte) card {
 		fU = false
 	}
 
-	return card{
+	return Card{
 		Rank:   r,
 		Suit:   s,
 		FaceUp: fU,
 	}
 }
 
-func (c *card) color() string {
+func (c *Card) color() string {
 	var clr string
 	switch c.Suit {
 	case 0, 2:
@@ -79,7 +79,7 @@ func (c *card) color() string {
 	return clr
 }
 
-func (c *card) suitSymbol() rune {
+func (c *Card) suitSymbol() rune {
 	var symbol rune
 	switch c.Suit {
 	case 0: //clubs
@@ -94,7 +94,7 @@ func (c *card) suitSymbol() rune {
 	return symbol
 }
 
-func (c *card) rankSymbol() string {
+func (c *Card) rankSymbol() string {
 	var symbol string
 	switch {
 	case c.Rank < 10:
@@ -105,7 +105,7 @@ func (c *card) rankSymbol() string {
 	return symbol
 }
 
-func (c *card) faceSymbol() string {
+func (c *Card) faceSymbol() string {
 	var symbol string
 	switch c.FaceUp {
 	case true:
@@ -116,7 +116,7 @@ func (c *card) faceSymbol() string {
 	return symbol
 }
 
-func (c *card) pStr() string {
+func (c *Card) pStr() string {
 	var sSuit string
 	var Reset = "\033[m" //These are ANSI escape codes for colors
 	var Red = "\033[31m"
@@ -137,12 +137,12 @@ func (c *card) pStr() string {
 	return c.rankSymbol() + sSuit + sFace + " "
 }
 
-func quickTestCardPackUnPack(c card) bool {
+func quickTestCardPackUnPack(c Card) bool {
 	return unPackByte2Card(c.packCard()) == c
 }
 
 func testCardPackUnPack(args []string) {
-	var testCard, rebuiltCard card
+	var testCard, rebuiltCard Card
 	r, err := strconv.Atoi(args[1])
 	if err != nil {
 		fmt.Println("bad input -- first argument")

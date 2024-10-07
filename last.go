@@ -2,7 +2,7 @@ package main
 
 import "errors"
 
-func last(sl []card) (lastCard card, residue []card, err error) {
+func last(sl []Card) (lastCard Card, residue []Card, err error) {
 	if len(sl) > 0 {
 		lastIndex := len(sl) - 1
 		lastCard := sl[lastIndex]
@@ -10,7 +10,7 @@ func last(sl []card) (lastCard card, residue []card, err error) {
 		return lastCard, residue, nil
 	}
 
-	var x card
+	var x Card
 
 	if len(sl) == 0 {
 		return x, nil, nil

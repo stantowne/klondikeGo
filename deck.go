@@ -1,8 +1,8 @@
 package main
 
-type deck []card
+type deck []Card
 
-func (d deck) firstRest() (card, deck) {
+func (d deck) firstRest() (Card, deck) {
 	first := d[0]
 	rest := d[1:]
 	return first, rest
@@ -25,8 +25,8 @@ func dealDeck(d deck) board {
 
 	return b
 }
-func reverseSlice(input []card) []card {
-	var output []card
+func reverseSlice(input []Card) []Card {
+	var output []Card
 	for i := len(input) - 1; i > -1; i-- {
 		output = append(output, input[i])
 	}
