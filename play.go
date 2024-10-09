@@ -1,9 +1,13 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
+	"io"
+	"log"
+	"os"
 	"reflect"
 	"sort"
 	"strconv"
@@ -18,6 +22,18 @@ func play(args []string) {
 	offset, _ := strconv.Atoi(args[5])  // delay the application of the strategy by the offset
 
 	const gameLengthLimit = 150 //increasing to 200 does not increase win rate
+	inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
+	file, err := os.Open(inputFileName)
+	if err != nil {
+		log.Println("Cannot open inputFileName:", err)
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			println("could not close file:", err)
+		}
+	}(file)
+	reader := csv.NewReader(file)
 
 	// used this loop because could not find integer exponentiation operation.
 	numberOfStrategies := 1 //number of initial strategies
@@ -30,7 +46,6 @@ func play(args []string) {
 		singleGame = false
 	}
 
-	var decks = DeckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
 	startTime := time.Now()
 	winCounter := 0
 	earlyWinCounter := 0
@@ -40,13 +55,35 @@ func play(args []string) {
 	regularLosses := 0
 newDeck:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
+		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Println("Cannot read from inputFileName:", err)
+		}
+
 		if verbose > 1 {
 			fmt.Printf("\nDeck #%d:\n", deckNum)
 		}
+		var d Deck
+
+		for i := 0; i < 52; i++ {
+			rank, _ := strconv.Atoi(protoDeck[i*2])
+			suit, _ := strconv.Atoi(protoDeck[i*2+1])
+			c := Card{
+				Rank:   rank,
+				Suit:   suit,
+				FaceUp: false,
+			}
+			d = append(d, c)
+
+		}
+
 	newInitialOverrideStrategy:
 		for iOS := 0; iOS < numberOfStrategies; iOS++ {
 			//deal Deck onto board
-			var b = dealDeck(decks[deckNum])
+			var b = dealDeck(d)
 			var priorBoardNullWaste board //used in Loss Detector
 			if verbose > 1 {
 				fmt.Printf("Start play of Deck %v using initial override strategy %v.\n", deckNum, iOS)
@@ -158,7 +195,7 @@ newDeck:
 	elapsedTime := endTime.Sub(startTime)
 	percentageAttemptsAvoided := 100.0 * float64(attemptsAvoidedCounter) / float64(possibleAttempts)
 	var p = message.NewPrinter(language.English)
-	_, err := p.Printf("\nNumber of Decks Played is %d.\n", numberOfDecksToBePlayed)
+	_, err = p.Printf("\nNumber of Decks Played is %d.\n", numberOfDecksToBePlayed)
 	if err != nil {
 		fmt.Println("Number of Decks Played cannot print")
 	}
