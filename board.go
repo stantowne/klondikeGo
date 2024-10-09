@@ -169,7 +169,7 @@ func testBoardCodeDeCode(args []string) {
 	numberOfDecksToBePlayed, _ := strconv.Atoi(args[2])
 	verbose, _ := strconv.Atoi(args[3]) //the greater the number the more verbose
 
-	var decks = deckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
+	var decks = DeckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
 
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 		if verbose > 1 {

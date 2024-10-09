@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-type decks []Deck
+type Decks []Deck
 
 func check(e error) {
 	if e != nil {
@@ -21,12 +21,12 @@ func printRawDeck(d Deck) {
 	}
 } */
 
-func deckReader(s string) decks {
+func DeckReader(s string) Decks {
 
 	dat, err := os.ReadFile(s)
 	check(err)
 
-	var o decks
+	var o Decks
 	errJ := json.Unmarshal(dat, &o)
 	if errJ != nil {
 		fmt.Println("unmarshall error:", errJ)

@@ -30,7 +30,7 @@ func play(args []string) {
 		singleGame = false
 	}
 
-	var decks = deckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
+	var decks = DeckReader("decks-made-2022-01-15_count_10000-dict.json") //contains decks 0-999 from Python version
 	startTime := time.Now()
 	winCounter := 0
 	earlyWinCounter := 0
@@ -90,7 +90,7 @@ newDeck:
 				}
 
 				b = moveMaker(b, selectedMove) //***Main Program Statement
-				quickTestBoardCodeDeCode(b, deckNum, length, iOS, moveCounter)
+				// quickTestBoardCodeDeCode(b, deckNum, length, iOS, moveCounter)
 
 				//Detect Early Win
 				if detectWinEarly(b) {
