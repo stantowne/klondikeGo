@@ -1,0 +1,19 @@
+This is what play.go produced before creation of playBestOrIOS.
+
+Development of playBestOrIOS is not complete until it produces identical output (minor time differences are ok).
+
+Number of Decks Played is 100.
+Length of Initial Override Strategies is 8.
+Number of Initial Override Strategies Per Deck is 256.
+Number of Possible Attempts is 25,600.
+Elapsed Time is 749.719ms.
+Total Decks Won is 33 of which 33 were Early Wins
+Total Decks Lost is 67
+Losses at Game Length Limit is 0
+Losses at No Moves Available is 107
+Regular Losses is 17,957
+Number of Attempts Avoided ia 7,536
+Percentage of Possible Attempts Avoided is 29.4375
+Average Elapsed Time per Deck is 7.490000ms.
+
+Process finished with the exit code 0
