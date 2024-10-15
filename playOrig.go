@@ -13,30 +13,33 @@ import (
 	"time"
 )
 
-func playOrig(firstDeckNum int, numberOfDecksToBePlayed int, length int, reader)
-) {
+func playOrig(firstDeckNum int, numberOfDecksToBePlayed int, length int, verbose int, reader csv.Reader) {
 	const gameLengthLimit = 150 //increasing to 200 does not increase win rate
-	/* Below Moved to main and passed
-		firstDeckNum, _ := strconv.Atoi(args[1])
-		numberOfDecksToBePlayed, _ := strconv.Atoi(args[2])
-		length, _ := strconv.Atoi(args[3])  //length of each strategy (which also determines the # of strategies - 2^n)
-		verbose, _ := strconv.Atoi(args[4]) //the greater the number the more verbose
-	// offset variable eliminated
-		offset, _ := strconv.Atoi(args[5])  // delay the application of the strategy by the offset
 
-		inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
-		file, err := os.Open(inputFileName)
+	//  STAN to delete reference to offset on line 128 Dan not sure what to do
+	// For now just create it here with a value of 0 eliminate next line after changing line 128
+	offset := 0
+
+	/* Below Moved to main and passed
+	firstDeckNum, _ := strconv.Atoi(args[1])
+	numberOfDecksToBePlayed, _ := strconv.Atoi(args[2])
+	length, _ := strconv.Atoi(args[3])  //length of each strategy (which also determines the # of strategies - 2^n)
+	verbose, _ := strconv.Atoi(args[4]) //the greater the number the more verbose
+	offset, _ := strconv.Atoi(args[5])  // delay the application of the strategy by the offset
+
+	inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
+	file, err := os.Open(inputFileName)
+	if err != nil {
+		log.Println("Cannot open inputFileName:", err)
+	}
+	defer func(file *os.File) {
+		err := file.Close()
 		if err != nil {
-			log.Println("Cannot open inputFileName:", err)
+			println("could not close file:", err)
 		}
-		defer func(file *os.File) {
-			err := file.Close()
-			if err != nil {
-				println("could not close file:", err)
-			}
-		}(file)
-		reader := csv.NewReader(file)
-		// Above  Moved to main and passed	 */
+	}(file)
+	reader := csv.NewReader(file)
+	// Above  Moved to main and passed	 */
 
 	// used this loop because could not find integer exponentiation operation.
 	numberOfStrategies := 1 //number of initial strategies

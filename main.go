@@ -11,7 +11,9 @@ func main() {
 	args := os.Args[1:]
 	firstDeckNum, _ := strconv.Atoi(args[1])
 	numberOfDecksToBePlayed, _ := strconv.Atoi(args[2])
-	length, _ := strconv.Atoi(args[3]) //length of each strategy (which also determines the # of strategies - 2^n)
+	length, _ := strconv.Atoi(args[3])  //length of each strategy (which also determines the # of strategies - 2^n)
+	verbose, _ := strconv.Atoi(args[4]) //the greater the number the more verbose
+
 	// open the deck file here in main - will be read in both playOrig and PlayNew
 	inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
 	file, err := os.Open(inputFileName)
@@ -31,7 +33,7 @@ func main() {
 	// and developed under a function of that name in project branch "tree".
 	// To avoid issues with old "tree" branch code the function playOrig has been created by refactoring and adding passed arguments.
 	//
-	playOrig(firstDeckNum, numberOfDecksToBePlayed, length, reader)
+	playOrig(firstDeckNum, numberOfDecksToBePlayed, length, verbose, *reader)
 	//testCardPackUnPack(os.Args)
 	//testBoardCodeDeCode(os.Args)
 }
