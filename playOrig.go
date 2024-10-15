@@ -16,6 +16,11 @@ import (
 func playOrig(firstDeckNum int, numberOfDecksToBePlayed int, length int, verbose int, reader csv.Reader) {
 	const gameLengthLimit = 150 //increasing to 200 does not increase win rate
 
+	// Need to define variable err type error here.  Originally it was implicitly created by the following statement and then reused many times
+	//   inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
+	// That statement has been moved up into main so we need to explicitly create it here.
+	var err error
+
 	//  STAN to delete reference to offset on line 128 Dan not sure what to do
 	// For now just create it here with a value of 0 eliminate next line after changing line 128
 	offset := 0

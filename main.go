@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	args := os.Args[1:]
+	args := os.Args[0]
 	firstDeckNum, _ := strconv.Atoi(args[1])
 	numberOfDecksToBePlayed, _ := strconv.Atoi(args[2])
 	length, _ := strconv.Atoi(args[3])  //length of each strategy (which also determines the # of strategies - 2^n)
