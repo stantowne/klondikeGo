@@ -31,7 +31,7 @@ func main() {
 	// and developed under a function of that name in project branch "tree".
 	// To avoid issues with old "tree" branch code the function playOrig has been created by refactoring and adding passed arguments.
 	//
-	playOrig(firstDeckNum, numberOfDecksToBePlayed, length, *reader)
+	playOrig(firstDeckNum, numberOfDecksToBePlayed, length, reader)
 	//testCardPackUnPack(os.Args)
 	//testBoardCodeDeCode(os.Args)
 }

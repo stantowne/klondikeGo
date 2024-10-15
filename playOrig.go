@@ -13,7 +13,8 @@ import (
 	"time"
 )
 
-func playOrig(firstDeckNum int, numberOfDecksToBePlayed int, length int, reader *csv.NewReader) {
+func playOrig(firstDeckNum int, numberOfDecksToBePlayed int, length int, reader)
+) {
 	const gameLengthLimit = 150 //increasing to 200 does not increase win rate
 	/* Below Moved to main and passed
 		firstDeckNum, _ := strconv.Atoi(args[1])
