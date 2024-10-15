@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func play(args []string) {
+func playOrig(args []string) {
 	firstDeckNum, _ := strconv.Atoi(args[1])
 	numberOfDecksToBePlayed, _ := strconv.Atoi(args[2])
 	length, _ := strconv.Atoi(args[3])  //length of each strategy (which also determines the # of strategies - 2^n)

@@ -3,7 +3,7 @@ package main
 import "os"
 
 func main() {
-	play(os.Args)
+	playOrig(os.Args)
 	//testCardPackUnPack(os.Args)
 	//testBoardCodeDeCode(os.Args)
 }
