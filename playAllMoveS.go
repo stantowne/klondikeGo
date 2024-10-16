@@ -10,7 +10,7 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 		printBoard(bIn)
 		// printMove(doThisMove)  NOT written yet
 		fmt.Printf("moveNum: %v\n", moveNum)
-		fmt.Printf("gameLengthLimitNew: %v", gameLengthLimitNew)
+		fmt.Printf("gameLengthLimitNew: %v", gameLengthLimit)
 	}
 
 	// Make the indicated move

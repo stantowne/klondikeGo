@@ -10,6 +10,9 @@ import (
 
 const gameLengthLimitOrig = 150 // max moveCounter; increasing to 200 does not increase win rate
 const gameLengthLimitNew = 150  // max moveNum
+var gameLengthLimit int
+
+// do similar to above with movePriority
 
 var firstDeckNum int
 var numberOfDecksToBePlayed int
@@ -52,6 +55,7 @@ func main() {
 
 	numberOfDecksToBePlayed, err = strconv.Atoi(args[2])
 	//the line below should be changed if the input file contains more than 10,000 decks
+
 	if err != nil || numberOfDecksToBePlayed < 1 || numberOfDecksToBePlayed > (10000-firstDeckNum) {
 		println("second argument invalid")
 		println("numberOfDecksToBePlayed must be 1 or more, but not more than 10,000 minus firstDeckNum")
@@ -140,8 +144,10 @@ func main() {
 		// of substituting FlipToWaste as described in more detail below.  This was formally known as the "playBestOrIOS" strategy
 		// and developed under a function of that name in project branch "tree".
 		// To avoid issues with old "tree" branch code the function playOrig has been created by refactoring and adding passed arguments.
+		gameLengthLimit = gameLengthLimitOrig
 		playOrig(*reader)
 	} else {
+		gameLengthLimit = gameLengthLimitNew
 		playNew(*reader)
 	}
 
