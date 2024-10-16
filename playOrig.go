@@ -14,7 +14,6 @@ import (
 )
 
 func playOrig(firstDeckNum int, numberOfDecksToBePlayed int, length int, verbose int, reader csv.Reader) {
-	const gameLengthLimit = 150 //increasing to 200 does not increase win rate
 
 	// Need to define variable err type error here.  Originally it was implicitly created by the following statement and then reused many times
 	//   inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
@@ -100,10 +99,10 @@ newDeck:
 				fmt.Printf("Start play of Deck %v using initial override strategy %v.\n", deckNum, iOS)
 			}
 
-			//make this slice of int with length = 0 and capacity = gameLengthLimit
-			aMovesNumberOf := make([]int, 0, gameLengthLimit) //number of available Moves
+			//make this slice of int with length = 0 and capacity = gameLengthLimitOrig
+			aMovesNumberOf := make([]int, 0, gameLengthLimitOrig) //number of available Moves
 
-			for moveCounter := 1; moveCounter < gameLengthLimit+2; moveCounter++ { //start with 1 to line up with Python version
+			for moveCounter := 1; moveCounter < gameLengthLimitOrig+2; moveCounter++ { //start with 1 to line up with Python version
 				aMoves := detectAvailableMoves(b, moveCounter, singleGame)
 
 				//detects Loss
