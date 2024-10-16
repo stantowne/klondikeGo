@@ -27,6 +27,13 @@ var moveBasePriorityOrig = map[string]int{
 	"moveDeuceUp":       200,
 	"move3PlusUp":       800,
 	"badMove":           1200, // a legal move which is worse than a mere flip
+	"flipSt->W Max-0":   9999, //flip MAX - 0 * 3 i.e. Up to 21 cards
+	"flipSt->W Max-1":   9999, //flip MAX - 0 * 3 i.e. Up to 18 cards
+	"flipSt->W Max-2":   9999, //flip MAX - 0 * 3 i.e. Up to 15 cards
+	"flipSt->W Max-3":   9999, //flip MAX - 0 * 3 i.e. Up to 12 cards
+	"flipSt->W Max-4":   9999, //flip MAX - 0 * 3 i.e. Up to  9 cards
+	"flipSt->W Max-5":   9999, //flip MAX - 0 * 3 i.e. Up to  6 cards
+	"flipSt->W Max-6":   9999, //flip MAX - 0 * 3 i.e. Up to  3 cards
 }
 
 var moveBasePriorityNew = map[string]int{
@@ -42,6 +49,13 @@ var moveBasePriorityNew = map[string]int{
 	"moveDeuceUp":       200,
 	"move3PlusUp":       800,
 	"badMove":           1200, // a legal move which is worse than a mere flip
+	"flipSt->W Max-0":   9999, //flip MAX - 0 * 3 i.e. Up to 21 cards
+	"flipSt->W Max-1":   9999, //flip MAX - 0 * 3 i.e. Up to 18 cards
+	"flipSt->W Max-2":   9999, //flip MAX - 0 * 3 i.e. Up to 15 cards
+	"flipSt->W Max-3":   9999, //flip MAX - 0 * 3 i.e. Up to 12 cards
+	"flipSt->W Max-4":   9999, //flip MAX - 0 * 3 i.e. Up to  9 cards
+	"flipSt->W Max-5":   9999, //flip MAX - 0 * 3 i.e. Up to  6 cards
+	"flipSt->W Max-6":   9999, //flip MAX - 0 * 3 i.e. Up to  3 cards
 }
 
 var moveShortNameNew = map[string]string{
@@ -57,6 +71,13 @@ var moveShortNameNew = map[string]string{
 	"moveDeuceUp":       " 2 Up ",
 	"move3PlusUp":       " 3+Up ",
 	"badMove":           "badMve", // a legal move which is worse than a mere flip
+	"flipSt->W Max-0":   "S>W M0", //flip MAX - 0 * 3 i.e. Up to 21 cards
+	"flipSt->W Max-1":   "S>W M1", //flip MAX - 0 * 3 i.e. Up to 18 cards
+	"flipSt->W Max-2":   "S>W M2", //flip MAX - 0 * 3 i.e. Up to 15 cards
+	"flipSt->W Max-3":   "S>W M3", //flip MAX - 0 * 3 i.e. Up to 12 cards
+	"flipSt->W Max-4":   "S>W M4", //flip MAX - 0 * 3 i.e. Up to  9 cards
+	"flipSt->W Max-5":   "S>W M5", //flip MAX - 0 * 3 i.e. Up to  6 cards
+	"flipSt->W Max-6":   "S>W M6", //flip MAX - 0 * 3 i.e. Up to  3 cards
 }
 
 // Used to record how many of each move type is executed during an attempt.
@@ -72,4 +93,12 @@ var moveTypes = map[string]int{
 	"moveAceUp":         0,
 	"moveDeuceUp":       0,
 	"move3PlusUp":       0,
+	"badMove":           0,
+	"flipSt->W Max-0":   0,
+	"flipSt->W Max-1":   0,
+	"flipSt->W Max-2":   0,
+	"flipSt->W Max-3":   0,
+	"flipSt->W Max-4":   0,
+	"flipSt->W Max-5":   0,
+	"flipSt->W Max-6":   0,
 }
