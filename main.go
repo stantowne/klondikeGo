@@ -11,6 +11,17 @@ import (
 const gameLengthLimitOrig = 150 // max moveCounter; increasing to 200 does not increase win rate
 const gameLengthLimitNew = 150  // max moveNum
 
+var firstDeckNum int
+var numberOfDecksToBePlayed int
+var length int
+var verbose int
+var findAllSuccessfulStrategies bool
+var printTree string
+
+var err error
+var singleGame = true
+var AllMvStratNum int
+
 func main() {
 	/*
 
@@ -32,19 +43,23 @@ func main() {
 
 	println("Calling Program:  ", args[0])
 
-	firstDeckNum, err := strconv.Atoi(args[1])
+	firstDeckNum, err = strconv.Atoi(args[1])
 	if err != nil || firstDeckNum < 0 || firstDeckNum > 9999 {
 		println("first argument invalid")
 		println("firstDeckNum must be non-negative integer less than 10,000")
 		os.Exit(1)
 	}
 
-	numberOfDecksToBePlayed, err := strconv.Atoi(args[2])
+	numberOfDecksToBePlayed, err = strconv.Atoi(args[2])
 	//the line below should be changed if the input file contains more than 10,000 decks
 	if err != nil || numberOfDecksToBePlayed < 1 || numberOfDecksToBePlayed > (10000-firstDeckNum) {
 		println("second argument invalid")
 		println("numberOfDecksToBePlayed must be 1 or more, but not more than 10,000 minus firstDeckNum")
 		os.Exit(1)
+	}
+
+	if numberOfDecksToBePlayed > 1 {
+		singleGame = false
 	}
 
 	//
@@ -55,7 +70,7 @@ func main() {
 	//    length >  1 playBestOrIOS will just play the best move or force a flip
 	//
 
-	length, err := strconv.Atoi(args[3]) //length of each strategy (which also determines the # of strategies - 2^n)
+	length, err = strconv.Atoi(args[3]) //length of each strategy (which also determines the # of strategies - 2^n)
 
 	// 		In the line below, 24 is arbitrarily set; 24 would result in 16,777,216 attempts per deck
 	// 		I have never run the program with length greater than 16
@@ -66,7 +81,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	verbose, err := strconv.Atoi(args[4]) //the greater the number the more printing to standard output (terminal)
+	verbose, err = strconv.Atoi(args[4]) //the greater the number the more printing to standard output (terminal)
 	// in the line below, 10 is arbitrarily set; at present all values greater than 1 result in the same
 	if err != nil || verbose < 0 || verbose > 10 {
 		println("fourth argument invalid")
@@ -76,7 +91,6 @@ func main() {
 
 	// Arguments 5 & 6 below applies only to playNew			****************************************************
 	// But they must be on command line anyway
-	var findAllSuccessfulStrategies bool
 	switch strings.TrimSpace(args[5])[0:1] {
 	case "A", "a":
 		findAllSuccessfulStrategies = true
@@ -90,7 +104,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	var printTree string
 	switch strings.TrimSpace(args[6])[0:1] {
 	case "X", "x":
 		printTree = "X" // Do Not Print Tree
@@ -127,9 +140,9 @@ func main() {
 		// of substituting FlipToWaste as described in more detail below.  This was formally known as the "playBestOrIOS" strategy
 		// and developed under a function of that name in project branch "tree".
 		// To avoid issues with old "tree" branch code the function playOrig has been created by refactoring and adding passed arguments.
-		playOrig(firstDeckNum, numberOfDecksToBePlayed, length, verbose, *reader)
+		playOrig(*reader)
 	} else {
-		playNew(firstDeckNum, numberOfDecksToBePlayed, verbose, findAllSuccessfulStrategies, printTree, *reader)
+		playNew(*reader)
 	}
 
 }

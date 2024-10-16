@@ -13,20 +13,19 @@ import (
 	"time"
 )
 
-func playOrig(firstDeckNum int, numberOfDecksToBePlayed int, length int, verbose int, reader csv.Reader) {
+func playOrig(reader csv.Reader) {
 
 	// Need to define variable err type error here.  Originally it was implicitly created by the following statement and then reused many times
 	//   inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
 	// That statement has been moved up into main so we need to explicitly create it here.
-	var err error
 
 	//  STAN to delete reference to offset on line 128 Dan not sure what to do
 	// For now just create it here with a value of 0 eliminate next line after changing line 128
 	offset := 0
 
-	/* Below Moved to main and passed
-	firstDeckNum, _ := strconv.Atoi(args[1])
-	numberOfDecksToBePlayed, _ := strconv.Atoi(args[2])
+	/* Below  Moved to main and made package level
+	firstDeckNum, _ = strconv.Atoi(args[1])
+	numberOfDecksToBePlayed, _ = strconv.Atoi(args[2])
 	length, _ := strconv.Atoi(args[3])  //length of each strategy (which also determines the # of strategies - 2^n)
 	verbose, _ := strconv.Atoi(args[4]) //the greater the number the more verbose
 	offset, _ := strconv.Atoi(args[5])  // delay the application of the strategy by the offset
@@ -43,7 +42,7 @@ func playOrig(firstDeckNum int, numberOfDecksToBePlayed int, length int, verbose
 		}
 	}(file)
 	reader := csv.NewReader(file)
-	// Above  Moved to main and passed	 */
+	// Above  Moved to main and made package level	 */
 
 	// used this loop because could not find integer exponentiation operation.
 	numberOfStrategies := 1 //number of initial strategies
@@ -51,10 +50,12 @@ func playOrig(firstDeckNum int, numberOfDecksToBePlayed int, length int, verbose
 		numberOfStrategies = numberOfStrategies * 2
 	}
 
+	/* Below  Moved to main and made package level
 	var singleGame = true
 	if numberOfDecksToBePlayed > 1 {
 		singleGame = false
 	}
+	// Above  Moved to main and made package level	 */
 
 	startTime := time.Now()
 	winCounter := 0

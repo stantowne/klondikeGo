@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func playNew(firstDeckNum int, numberOfDecksToBePlayed int, verbose int, findAllSuccessfulStrategies bool, printTree string, reader csv.Reader) {
+func playNew(reader csv.Reader) {
 	if verbose > 1 {
 		fmt.Printf("firstDeckNum: %v, numberOfDecksToBePlayed: %v, verbose: %v, findAllSuccessfulStrategies: %v, printTree: %v, reader: %v", firstDeckNum, numberOfDecksToBePlayed, verbose, findAllSuccessfulStrategies, printTree, reader)
 	}
@@ -56,7 +56,7 @@ func playNew(firstDeckNum int, numberOfDecksToBePlayed int, verbose int, findAll
 		AllMvStratNum := 0
 		var b = dealDeck(d)
 		firstMoveNull := move{}
-		playAllMoveS(b, firstMoveNull, 0, deckNum, verbose, findAllSuccessfulStrategies, printTree, AllMvStratNum)
+		playAllMoveS(b, firstMoveNull, 0, deckNum)
 
 	}
 }

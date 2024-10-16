@@ -5,11 +5,11 @@ import (
 	"sort"
 )
 
-func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int, verbose int, findAllSuccessfulStrategies bool, printTree string, AllMvStratNum int) {
+func playAllMoveS(bIn board, doThisMove move, moveNum int) {
 	if verbose > 2 {
 		printBoard(bIn)
 		// printMove(doThisMove)  NOT written yet
-		fmt.Printf("moveNum: %v, deckNum: %v, verbose: %v, findAllSuccessfulStrategies: %v, printTree: %v, AllMvStratNum: %v\n", moveNum, deckNum, verbose, findAllSuccessfulStrategies, printTree, AllMvStratNum)
+		fmt.Printf("moveNum: %v\n", moveNum)
 		fmt.Printf("gameLengthLimitNew: %v", gameLengthLimitNew)
 	}
 

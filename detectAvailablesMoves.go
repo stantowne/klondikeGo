@@ -27,6 +27,21 @@ var moveBasePriority = map[string]int{
 	"badMove":           1200, // a legal move which is worse than a mere flip
 }
 
+var moveShortName = map[string]string{
+	"moveAceAcross":     "AAccr ",
+	"moveDeuceAcross":   "2Accr ",
+	"move3PlusAcross":   "3+Accr",
+	"moveDown":          " Down ",
+	"moveEntireColumn":  "EntCol",
+	"flipWasteToStock":  "W->Stk", //flip moves have the lowest priority
+	"flipStockToWaste":  "Stk->W", //flip moves have the lowest priority
+	"movePartialColumn": "ParCol",
+	"moveAceUp":         " A Up ",
+	"moveDeuceUp":       " 2 Up ",
+	"move3PlusUp":       " 3+Up ",
+	"badMove":           "badMve", // a legal move which is worse than a mere flip
+}
+
 // Used to record how many of each move type is executed during an attempt.
 var moveTypes = map[string]int{
 	"moveAceAcross":     0,
