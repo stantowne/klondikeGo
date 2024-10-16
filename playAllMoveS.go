@@ -5,7 +5,7 @@ import (
 	"sort"
 )
 
-func playAllMoveS(bIn board, doThisMove move, moveNum int) {
+func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 	if verbose > 2 {
 		printBoard(bIn)
 		// printMove(doThisMove)  NOT written yet

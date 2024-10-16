@@ -53,7 +53,7 @@ func playNew(reader csv.Reader) {
 
 		}
 		//deal Deck onto board
-		AllMvStratNum := 0
+		//temp		AllMvStratNum := 0
 		var b = dealDeck(d)
 		firstMoveNull := move{}
 		playAllMoveS(b, firstMoveNull, 0, deckNum)
