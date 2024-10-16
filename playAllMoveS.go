@@ -33,7 +33,7 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 			for i := 1; i <= moveNum-1; i++ {
 				fmt.Printf("        ")
 			}
-			fmt.Printf(" %v", "x" /*moveShortName[doThisMove.name]*/)
+			fmt.Printf("%v", moveShortNameNew[doThisMove.name])
 		}
 	}
 
