@@ -12,7 +12,9 @@ func detectAvailableMoves(b board, moveCounter int, singleGame bool) []move {
 	return aMoves
 }
 
-var moveBasePriority = map[string]int{
+var moveBasePriority = map[string]int{}
+
+var moveBasePriorityOrig = map[string]int{
 	"moveAceAcross":     300,
 	"moveDeuceAcross":   400,
 	"move3PlusAcross":   900,
@@ -27,7 +29,22 @@ var moveBasePriority = map[string]int{
 	"badMove":           1200, // a legal move which is worse than a mere flip
 }
 
-var moveShortName = map[string]string{
+var moveBasePriorityNew = map[string]int{
+	"moveAceAcross":     300,
+	"moveDeuceAcross":   400,
+	"move3PlusAcross":   900,
+	"moveDown":          500,
+	"moveEntireColumn":  600,
+	"flipWasteToStock":  1000, //flip moves have the lowest priority
+	"flipStockToWaste":  1100, //flip moves have the lowest priority
+	"movePartialColumn": 700,
+	"moveAceUp":         100,
+	"moveDeuceUp":       200,
+	"move3PlusUp":       800,
+	"badMove":           1200, // a legal move which is worse than a mere flip
+}
+
+var moveShortNameNew = map[string]string{
 	"moveAceAcross":     "AAccr ",
 	"moveDeuceAcross":   "2Accr ",
 	"move3PlusAcross":   "3+Accr",

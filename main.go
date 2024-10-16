@@ -12,8 +12,6 @@ const gameLengthLimitOrig = 150 // max moveCounter; increasing to 200 does not i
 const gameLengthLimitNew = 150  // max moveNum
 var gameLengthLimit int
 
-// do similar to above with movePriority
-
 var firstDeckNum int
 var numberOfDecksToBePlayed int
 var length int
@@ -145,9 +143,11 @@ func main() {
 		// and developed under a function of that name in project branch "tree".
 		// To avoid issues with old "tree" branch code the function playOrig has been created by refactoring and adding passed arguments.
 		gameLengthLimit = gameLengthLimitOrig
+		moveBasePriority = moveBasePriorityOrig
 		playOrig(*reader)
 	} else {
 		gameLengthLimit = gameLengthLimitNew
+		moveBasePriority = moveBasePriorityNew
 		playNew(*reader)
 	}
 
