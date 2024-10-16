@@ -22,14 +22,16 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 			printBoard(bIn)
 			fmt.Printf("\n\n Strat #")
 			for i := 1; i <= 200; i++ {
-				fmt.Printf("    %3i ", i)
+				fmt.Printf("    %3v ", i)
 			}
 			fmt.Printf("\n")
-		} else {
-			bNew = moveMaker(bIn, doThisMove)
-			moveNum++
-			AllMvStratNum++
-			fmt.Printf("%8i", AllMvStratNum)
+		}
+	} else {
+		bNew = moveMaker(bIn, doThisMove)
+		moveNum++
+		AllMvStratNum++
+		if printTree == "C" {
+			fmt.Printf("%8v", AllMvStratNum)
 			for i := 1; i <= moveNum-1; i++ {
 				fmt.Printf("        ")
 			}
@@ -44,16 +46,15 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 	// Check for loss
 
 	// Find Next Moves
-
-	// Now Try all moves
-	aMoves := detectAvailableMoves(bNew, moveNum, false /*singleGame*/)
+	test := 1 //test
+	test++    //test
+	aMoves := detectAvailableMoves(bNew, moveNum, singleGame)
 	// if more than one move is available, sort them
 	if len(aMoves) > 1 { //sort them by priority if necessary
 		sort.SliceStable(aMoves, func(i, j int) bool {
 			return aMoves[i].priority < aMoves[j].priority
 		})
 	}
-
 	//detects Loss
 	if len(aMoves) == 0 { //No available moves; game lost.
 		if verbose > 1 {
@@ -66,6 +67,8 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 		//lossesAtNoMoves++
 		return // something
 	} else {
+		// Now Try all moves
+
 		/*	for i, move := range aMoves {
 				playAllMoveS(bNew, aMoves[i], moveNum+1, deckNum, verbose, findAllSuccessfulStrategies, printTree, AllMvStratNum)
 			}
