@@ -19,7 +19,7 @@ var numberOfDecksToBePlayed int
 var length int
 var verbose int
 
-// var verboseSpecial int
+var verboseSpecial int
 var findAllSuccessfulStrategies bool
 var printTree string
 
