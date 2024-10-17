@@ -70,7 +70,7 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 				AllMvStratNum++
 			}
 			if verboseSpecial == 1 {
-				fmt.Printf("\n\nDeck:%v   moveNum:%v   AllMvStratNum:%v   moveName:%v\n", deckNum, moveNum, AllMvStratNum, moveShortNameNew[doThisMove.name])
+				fmt.Printf("\n \nDeck:%v   moveNum:%v   AllMvStratNum:%v   moveName:%v\n", deckNum, moveNum, AllMvStratNum, moveShortNameNew[doThisMove.name])
 				fmt.Printf("all Moves:%v\n", aMoves)
 				printBoard(bNew)
 			}
