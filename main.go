@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"io"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -93,8 +94,8 @@ func main() {
 		println("verbose must be a non-negative integer no greater than 10")
 		os.Exit(1)
 	} else {
-		//	var vF float32 = (float32(verbose) + .4) / 10.
-		//verboseSpecial = math.floor(vF)
+		vF := (float32(verbose) + .4) / 10.
+		verboseSpecial = math.floor(vF)
 		//verbose = mod
 	}
 
