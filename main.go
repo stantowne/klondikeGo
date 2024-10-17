@@ -87,8 +87,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	verbose, err = strconv.Atoi(args[4]) //the greater the number the more printing to standard output (terminal)
-	// in the line below, 10 is arbitrarily set; at present all values greater than 1 result in the same
+	// Verbose is a value from 0 to 99
+	//  the 10's digit (if it exists) becomes verboseSpecial and the ones digit becomes verbose
+	//  verbose: the greater the number the more printing to standard output (terminal) and is typically used with if verbose > x ...
+	//  verboseSpecial is used to control special cases of printing without engaging verbose levels 1-9 typically used as verboseSpecial = x
+	verbose, err = strconv.Atoi(args[4])
 	if err != nil || verbose < 0 || verbose > 99 {
 		println("fourth argument invalid")
 		println("verbose must be a non-negative integer no greater than 10")
