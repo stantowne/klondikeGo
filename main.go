@@ -95,7 +95,7 @@ func main() {
 	} else {
 		vF := (float64(verbose) + .4) / 10.
 		verboseSpecial = int(vF)
-		verbose = mod(verbose, 10)
+		verbose = Mod(verbose, 10)
 
 	}
 
