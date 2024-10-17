@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"io"
 	"log"
-	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -95,8 +94,11 @@ func main() {
 		os.Exit(1)
 	} else {
 		vF := (float64(verbose) + .4) / 10.
-		verboseSpecial = math.floor(vF)
+		verboseSpecial = int(vF)
 		//verbose = mod
+		if verboseSpecial == 99 {
+			verboseSpecial == 99
+		} //dummy just to avoid unused for now
 	}
 
 	// Arguments 5 & 6 below applies only to playNew			****************************************************
@@ -163,11 +165,11 @@ func main() {
 		// and developed under a function of that name in project branch "tree".
 		// To avoid issues with old "tree" branch code the function playOrig has been created by refactoring and adding passed arguments.
 
-		gameLengthLimit = gameLengthLimitOrig
+		//gameLengthLimit = gameLengthLimitOrig
 		moveBasePriority = moveBasePriorityOrig
 		playOrig(*reader)
 	} else {
-		gameLengthLimit = gameLengthLimitNew
+		//gameLengthLimit = gameLengthLimitNew
 		moveBasePriority = moveBasePriorityNew
 		playNew(*reader)
 	}
