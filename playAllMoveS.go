@@ -9,7 +9,7 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 	if verbose > 2 {
 		printBoard(bIn)
 		// printMove(doThisMove)  NOT written yet
-		fmt.Printf("moveNum: %v\n", moveNum)
+		fmt.Printf("moveNum: %v\n gameLengthLimit: %v", moveNum, gameLengthLimit)
 	}
 
 	// Make the indicated move
