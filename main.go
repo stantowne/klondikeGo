@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/csv"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -16,6 +17,7 @@ var firstDeckNum int
 var numberOfDecksToBePlayed int
 var length int
 var verbose int
+var verboseSpecial int
 var findAllSuccessfulStrategies bool
 var printTree string
 
@@ -85,10 +87,14 @@ func main() {
 
 	verbose, err = strconv.Atoi(args[4]) //the greater the number the more printing to standard output (terminal)
 	// in the line below, 10 is arbitrarily set; at present all values greater than 1 result in the same
-	if err != nil || verbose < 0 || verbose > 10 {
+	if err != nil || verbose < 0 || verbose > 99 {
 		println("fourth argument invalid")
 		println("verbose must be a non-negative integer no greater than 10")
 		os.Exit(1)
+	} else {
+		var vF float32 = (float32(verbose) + .4) / 10.
+		verboseSpecial = math.floor(vF)
+		verbose = mod
 	}
 
 	// Arguments 5 & 6 below applies only to playNew			****************************************************
