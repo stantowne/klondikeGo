@@ -94,7 +94,7 @@ func main() {
 		println("verbose must be a non-negative integer no greater than 10")
 		os.Exit(1)
 	} else {
-		vF := (float32(verbose) + .4) / 10.
+		vF := (float64(verbose) + .4) / 10.
 		verboseSpecial = math.floor(vF)
 		//verbose = mod
 	}
