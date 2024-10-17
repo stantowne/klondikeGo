@@ -95,10 +95,8 @@ func main() {
 	} else {
 		vF := (float64(verbose) + .4) / 10.
 		verboseSpecial = int(vF)
-		//verbose = mod
-		if verboseSpecial == 99 {
-			verboseSpecial == 99
-		} //dummy just to avoid unused for now
+		verbose = mod(verbose, 10)
+
 	}
 
 	// Arguments 5 & 6 below applies only to playNew			****************************************************
