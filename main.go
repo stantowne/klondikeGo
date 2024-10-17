@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/csv"
 	"log"
-	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -93,8 +92,8 @@ func main() {
 		os.Exit(1)
 	} else {
 		var vF float32 = (float32(verbose) + .4) / 10.
-		verboseSpecial = math.floor(vF)
-		verbose = mod
+		//verboseSpecial = math.floor(vF)
+		//verbose = mod
 	}
 
 	// Arguments 5 & 6 below applies only to playNew			****************************************************
