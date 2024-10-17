@@ -10,13 +10,14 @@ import (
 
 const gameLengthLimitOrig = 150 // max moveCounter; increasing to 200 does not increase win rate
 const gameLengthLimitNew = 150  // max moveNum
-var gameLengthLimit int
+//var gameLengthLimit int
 
 var firstDeckNum int
 var numberOfDecksToBePlayed int
 var length int
 var verbose int
-var verboseSpecial int
+
+// var verboseSpecial int
 var findAllSuccessfulStrategies bool
 var printTree string
 
@@ -91,7 +92,7 @@ func main() {
 		println("verbose must be a non-negative integer no greater than 10")
 		os.Exit(1)
 	} else {
-		var vF float32 = (float32(verbose) + .4) / 10.
+		//	var vF float32 = (float32(verbose) + .4) / 10.
 		//verboseSpecial = math.floor(vF)
 		//verbose = mod
 	}
