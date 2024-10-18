@@ -29,9 +29,9 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 	} else {
 		bNew = moveMaker(bIn, doThisMove)
 		moveNum++
-		//AllMvStratNum++ test
+		MovesTriedThisDeck++
 		if printTree == "C" {
-			fmt.Printf("%8v", AllMvStratNum)
+			fmt.Printf("%8v", AllMvStratNumThisDeck)
 			for i := 1; i <= moveNum-1; i++ {
 				fmt.Printf("        ")
 			}
@@ -68,19 +68,20 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 
 		for i, move := range aMoves {
 			if i != 1 {
-				AllMvStratNum++
+				AllMvStratNumThisDeck++
 			}
 			if strings.Contains(verboseSpecial, "A") {
-				fmt.Printf("\n \nDeck:%v   moveNum:%v   AllMvStratNum:%v   PriorMove: %v\n", deckNum, moveNum, AllMvStratNum, printMove(doThisMove))
+				fmt.Printf("\n \nDeck:%v   moveNum:%v   AllMvStratNumThisDeck:%v   PriorMove: %v\n", deckNum, moveNum, AllMvStratNumThisDeck, printMove(doThisMove, moveNum))
 				printBoard(bNew)
 				fmt.Printf("All Possible Next Moves: ")
 				for j, _ := range aMoves {
 					if j != 0 {
 						fmt.Printf("                         ")
 					}
-					fmt.Printf("%v", aMoves[j])
+					//fmt.Printf("%v", aMoves[j])
+					fmt.Printf("%v", printMove(aMoves[j]))
 					if i == j {
-						fmt.Printf("           <- Next Move")
+						fmt.Printf("                <- Next Move")
 					}
 					fmt.Printf("\n")
 				}

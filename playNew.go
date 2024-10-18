@@ -14,8 +14,7 @@ func playNew(reader csv.Reader) {
 	}
 
 	const gameLengthLimitNew = 150 // max moveCounter
-	/*	AllMvStratNumAllDecks := 0
-		startTime := time.Now()
+	/*	startTime := time.Now()
 		winCounter := 0
 		earlyWinCounter := 0
 		attemptsAvoidedCounter := 0
@@ -23,11 +22,13 @@ func playNew(reader csv.Reader) {
 		lossesAtNoMoves := 0
 		regularLosses := 0
 
-		AllMvStratNumAllDecks = AllMvStratNumAllDecks + AllMvStratNum
-		AllMvStratNum = 0
 	*/
+	var AllMvStratNumAllDecks int = 0
+	var MovesTriedAllDecks int = 0
 
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
+		AllMvStratNumThisDeck = 0
+		MovesTriedThisDeck = 0
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {
 			break
@@ -57,6 +58,9 @@ func playNew(reader csv.Reader) {
 		var b = dealDeck(d)
 		firstMoveNull := move{}
 		playAllMoveS(b, firstMoveNull, 0, deckNum)
-
+		AllMvStratNumAllDecks += AllMvStratNumThisDeck
+		AllMvStratNumThisDeck = 0
+		MovesTriedAllDecks += MovesTriedThisDeck
+		MovesTriedThisDeck = 0
 	}
 }
