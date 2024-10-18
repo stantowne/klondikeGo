@@ -7,11 +7,11 @@ func printMove(m move, moveNum int) string {
 	outS := moveShortName[m.name] + "  "
 	switch m.name {
 	case "moveAceAcross", "moveDeuceAcross", "move3PlusAcross":
-		outS += "Move: " + m.cardToMove.pStr() + " to the: " + string(m.cardToMove.suitSymbol()) + "Pile  Priority: " + strconv.Itoa(m.priority)
+		outS += "Move: " + m.cardToMove.pStr() + " from waste to the: " + string(m.cardToMove.suitSymbol()) + "Pile  Priority: " + strconv.Itoa(m.priority)
 	case "moveAceUp", "moveDeuceUp", "move3PlusUp":
-		outS += "Move: " + m.cardToMove.pStr() + " From column: " + strconv.Itoa(m.fromCol) + " To: " + string(m.cardToMove.suitSymbol()) + "Pile  Priority: " + strconv.Itoa(m.priority)
+		outS += "Move: " + m.cardToMove.pStr() + " from column: " + strconv.Itoa(m.fromCol) + " To: " + string(m.cardToMove.suitSymbol()) + "Pile  Priority: " + strconv.Itoa(m.priority)
 	case "moveDown":
-		outS += "Move: " + m.cardToMove.pStr() + " From waste to column: " + strconv.Itoa(m.toCol) + "  Priority: " + strconv.Itoa(m.priority)
+		outS += "Move: " + m.cardToMove.pStr() + " from waste to column: " + strconv.Itoa(m.toCol) + "  Priority: " + strconv.Itoa(m.priority)
 	case "moveEntireColumn":
 		outS += "Move the cards starting with: " + m.MovePortion[0].pStr() + " From column: " + strconv.Itoa(m.fromCol) + " To column: " + strconv.Itoa(m.toCol) + "  Priority: " + strconv.Itoa(m.priority)
 	case "movePartialColumn":
