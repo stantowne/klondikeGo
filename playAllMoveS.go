@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sort"
+	"strings"
 )
 
 func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
@@ -34,7 +35,7 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 			for i := 1; i <= moveNum-1; i++ {
 				fmt.Printf("        ")
 			}
-			fmt.Printf("%v\n", moveShortNameNew[doThisMove.name])
+			fmt.Printf("%v\n", moveShortName[doThisMove.name])
 		}
 	}
 	// Check for repetitive move
@@ -69,10 +70,21 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 			if i != 1 {
 				AllMvStratNum++
 			}
-			if verboseSpecial == 1 {
-				fmt.Printf("\n \nDeck:%v   moveNum:%v   AllMvStratNum:%v   moveName:%v\n", deckNum, moveNum, AllMvStratNum, moveShortNameNew[doThisMove.name])
-				fmt.Printf("all Moves:%v\n", aMoves)
+			if strings.Contains(verboseSpecial, "A") {
+				fmt.Printf("\n \nDeck:%v   moveNum:%v   AllMvStratNum:%v   PriorMove: %v\n", deckNum, moveNum, AllMvStratNum, printMove(doThisMove))
 				printBoard(bNew)
+				fmt.Printf("All Possible Next Moves: ")
+				for j, _ := range aMoves {
+					if j != 0 {
+						fmt.Printf("                         ")
+					}
+					fmt.Printf("%v", aMoves[j])
+					if i == j {
+						fmt.Printf("           <- Next Move")
+					}
+					fmt.Printf("\n")
+				}
+				fmt.Printf("\n\n****************************************\n")
 			}
 			playAllMoveS(bNew, move, moveNum+1, deckNum)
 		}
