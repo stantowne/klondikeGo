@@ -25,7 +25,7 @@ func playNew(reader csv.Reader) {
 	var MovesTriedAllDecks int = 0
 
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
-		AllMvStratNumThisDeck = 0
+		AllMvStratNumThisDeck = 1
 		MovesTriedThisDeck = 0
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {

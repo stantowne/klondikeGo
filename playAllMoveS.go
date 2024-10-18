@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"sort"
 	"strings"
 )
@@ -19,7 +20,6 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 		bNew = bIn
 		if printTree == "C" {
 			fmt.Printf("\n\nDeck %v\n", deckNum)
-			printBoard(bIn)
 			fmt.Printf("\n\n Strat #")
 			for i := 1; i <= 200; i++ {
 				fmt.Printf("    %3v ", i)
@@ -28,7 +28,6 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 		}
 	} else {
 		bNew = moveMaker(bIn, doThisMove)
-		moveNum++
 		MovesTriedThisDeck++
 		if printTree == "C" {
 			fmt.Printf("%8v", AllMvStratNumThisDeck)
@@ -67,24 +66,29 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 		// Now Try all moves
 
 		for i, move := range aMoves {
-			if i != 1 {
+			if i != 0 {
 				AllMvStratNumThisDeck++
 			}
 			if strings.Contains(verboseSpecial, "A") {
-				fmt.Printf("\n \nDeck:%v   moveNum:%v   AllMvStratNumThisDeck:%v   PriorMove: %v\n", deckNum, moveNum, AllMvStratNumThisDeck, printMove(doThisMove, moveNum))
-				printBoard(bNew)
+				fmt.Printf("\n \nDeck: %v   moveNum: %v   AllMvStratNumThisDeck: %v   PriorMove: %v\n", deckNum, moveNum, AllMvStratNumThisDeck, printMove(doThisMove, moveNum))
+				if moveNum >= 23 {
+					printBoard(bNew)
+				} //if test
 				fmt.Printf("All Possible Next Moves: ")
 				for j, _ := range aMoves {
 					if j != 0 {
 						fmt.Printf("                         ")
 					}
 					//fmt.Printf("%v", aMoves[j])
-					fmt.Printf("%v", printMove(aMoves[j]), moveNum)
+					fmt.Printf("%v", printMove(aMoves[j], moveNum))
 					if i == j {
 						fmt.Printf("                <- Next Move")
 					}
 					fmt.Printf("\n")
 				}
+				if math.Mod(float64(moveNum), 20) == 0 { //test
+					fmt.Printf("\n") //test
+				} //test
 				fmt.Printf("\n\n****************************************\n")
 			}
 			playAllMoveS(bNew, move, moveNum+1, deckNum)

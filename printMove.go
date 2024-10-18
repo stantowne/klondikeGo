@@ -19,7 +19,7 @@ func printMove(m move, moveNum int) string {
 	case "flipStockToWaste":
 		outS += "Move: Flip just the 3 top cards from stock to waste"
 	case "flipWasteToStock":
-		outS += "Move: Flip the entire waste pile"
+		outS += "Move: Flip the entire waste pile to stock"
 	default:
 		if moveNum == 0 {
 			outS += "N/A "
