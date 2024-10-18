@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"io"
 	"log"
-	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -19,7 +18,7 @@ var numberOfDecksToBePlayed int
 var length int
 var verbose int
 
-var verboseSpecial int
+var verboseSpecial string
 var findAllSuccessfulStrategies bool
 var printTree string
 
@@ -87,20 +86,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Verbose is a value from 0 to 99
-	//  the 10's digit (if it exists) becomes verboseSpecial and the ones digit becomes verbose
-	//  verbose: the greater the number the more printing to standard output (terminal) and is typically used with if verbose > x ...
-	//  verboseSpecial is used to control special cases of printing without engaging verbose levels 1-9 typically used as verboseSpecial = x
-	verbose, err = strconv.Atoi(args[4])
+	// The first character of verbose must be a value from 0 - 9.  Higher numbers indicate more detailed msgs should be printed
+	//  The remaining characters are used to form verboseSpecial.  Code in the program will look for specific values within
+	//  verbose special to indicate that optional printing should be done.
+	verboseSpecial = args[4]
+	verbose, err = strconv.Atoi(verboseSpecial[0:1])
 	if err != nil || verbose < 0 || verbose > 99 {
 		println("fourth argument invalid")
 		println("verbose must be a non-negative integer no greater than 10")
 		os.Exit(1)
-	} else {
-		vF := (float64(verbose) + .4) / 10.
-		verboseSpecial = int(vF)
-		verbose = int(math.Mod(float64(verbose), 10))
 	}
+	verboseSpecial = verboseSpecial[1:]
 
 	// Arguments 5 & 6 below applies only to playNew			****************************************************
 	// But they must be on command line anyway

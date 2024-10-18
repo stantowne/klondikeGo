@@ -58,7 +58,7 @@ var moveBasePriorityNew = map[string]int{
 	"flipSt->W Max-6":   9999, //flip MAX - 0 * 3 i.e. Up to  3 cards
 }
 
-var moveShortNameNew = map[string]string{
+var moveShortName = map[string]string{
 	"moveAceAcross":     "AAccr ",
 	"moveDeuceAcross":   "2Accr ",
 	"move3PlusAcross":   "3+Accr",

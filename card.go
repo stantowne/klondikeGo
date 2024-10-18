@@ -33,14 +33,6 @@ func (c Card) packCard() byte {
 		fU = 1
 	}
 
-	/*var fU int
-	switch c.FaceUp {
-	case true:
-		fU = 1
-	default:
-		fU = 0
-	}*/
-
 	// Use bitwise OR to overlay s (Suit) and FaceUp on the shifted r (which is an integer)
 	r = r | s | fU
 
@@ -96,9 +88,19 @@ func (c *Card) suitSymbol() rune {
 
 func (c *Card) rankSymbol() string {
 	var symbol string
-	switch {
-	case c.Rank < 10:
+	switch c.Rank {
+	case 0:
+		symbol = "Ac"
+	case 1, 2, 3, 4, 5, 6, 7, 8, 9:
 		symbol = "0" + strconv.Itoa(c.Rank)
+	case 10:
+		symbol = "10"
+	case 11:
+		symbol = "Jk"
+	case 12:
+		symbol = "Qu"
+	case 13:
+		symbol = "Ki"
 	default:
 		symbol = strconv.Itoa(c.Rank)
 	}
