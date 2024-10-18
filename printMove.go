@@ -17,9 +17,9 @@ func printMove(m move) string {
 	case "movePartialColumn":
 		outS += "Move: "
 	case "flipStockToWaste":
-		outS += "Move: "
+		outS += "Move: just the 3 top cards from stock to waste"
 	case "flipWasteToStock":
-		outS += "Move: "
+		outS += "Move: Regenerate stock with the entire waste pile"
 	}
 
 	return outS
