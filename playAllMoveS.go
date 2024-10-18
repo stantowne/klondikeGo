@@ -79,7 +79,7 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 						fmt.Printf("                         ")
 					}
 					//fmt.Printf("%v", aMoves[j])
-					fmt.Printf("%v", printMove(aMoves[j]))
+					fmt.Printf("%v", printMove(aMoves[j]), moveNum)
 					if i == j {
 						fmt.Printf("                <- Next Move")
 					}

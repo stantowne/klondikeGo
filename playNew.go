@@ -12,8 +12,6 @@ func playNew(reader csv.Reader) {
 	if verbose > 1 {
 		fmt.Printf("firstDeckNum: %v, numberOfDecksToBePlayed: %v, verbose: %v, verboseSpecial: %v, findAllSuccessfulStrategies: %v, printTree: %v, reader: %v", firstDeckNum, numberOfDecksToBePlayed, verbose, findAllSuccessfulStrategies, printTree, reader)
 	}
-
-	const gameLengthLimitNew = 150 // max moveCounter
 	/*	startTime := time.Now()
 		winCounter := 0
 		earlyWinCounter := 0
