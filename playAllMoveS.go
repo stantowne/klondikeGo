@@ -7,11 +7,14 @@ import (
 	"strings"
 )
 
-func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
+func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) string {
+
+	// add code for findAllSuccessfulStrategies
+
 	if verbose > 2 {
 		printBoard(bIn)
 		// printMove(doThisMove)  NOT written yet
-		fmt.Printf("moveNum: %v\n gameLengthLimit: %v", moveNum, gameLengthLimit)
+		fmt.Printf("moveNum: %v\n gameLengthLimit: %v NOT IMPLEMENTED YET", moveNum, gameLengthLimit)
 	}
 
 	// Make the indicated move
@@ -28,71 +31,133 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) {
 		}
 	} else {
 		bNew = moveMaker(bIn, doThisMove)
-		MovesTriedThisDeck++
+		aMmvsTriedThisDeck++
 		if printTree == "C" {
-			fmt.Printf("%8v", AllMvStratNumThisDeck)
-			for i := 1; i <= moveNum-1; i++ {
-				fmt.Printf("        ")
-			}
-			fmt.Printf("%v\n", moveShortName[doThisMove.name])
+			fmt.Printf("%v  ", moveShortName[doThisMove.name])
 		}
 	}
 	// Check for repetitive move
+	bNewBcode := bNew.boardCode()      //  consider modifying the boardCode and boardDeCode methods to produce strings
+	bNewBcodeS := string(bNewBcode[:]) //  consider modifying the boardCode and boardDeCode methods to produce strings
+	if priorBoards[bNewBcodeS] {
+		if printTree == "C" {
+			fmt.Printf("  Repetitive Move - Loop:end strategy")
+			aMlossesAtLoop++
+		}
+		if verbose > 1 {
+			fmt.Printf("Deck %v Strategy #: %v lost after %v moves - repetitive.  Total moves tried: %v \n", deckNum, AmStratNumThisDeck, moveNum, aMmvsTriedThisDeck)
+		}
+		return "RM" // Repetitive Move
+	} else {
+		priorBoards[bNewBcodeS] = true
+	}
 
-	// Check for win
+	//Detect Early Win
+	if detectWinEarly(bNew) {
+		aMearlyWinCounter++
+		aMwinCounter++
 
-	// Check for loss
+		if verbose > 0 {
+			fmt.Printf("Deck %v Game won early on strategy #: %v after %v moves.  Total moves tried: %v \n", deckNum, AmStratNumThisDeck, moveNum, aMmvsTriedThisDeck)
+		}
+		//	if verbose > 1 {
+		//		fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
+		//	}
+		return "EW" //  Early Win
+	}
+
+	//Detects Win
+	if len(bNew.piles[0])+len(bNew.piles[1])+len(bNew.piles[2])+len(bNew.piles[3]) == 52 {
+		aMwinCounter++
+
+		if verbose > 0 {
+			fmt.Printf("Deck %v Game won on strategy #: %v after %v moves.  Total moves tried: %v \n", deckNum, AmStratNumThisDeck, moveNum, aMmvsTriedThisDeck)
+		}
+		//if verbose > 1 {
+		//	fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
+		//}
+		return "SW" //  Standard Win
+	}
+	/*
+		This code is now performed by Repetitive Move test above
+		//Detects Loss
+
+		if aMoves[0].name == "flipWasteToStock" {
+			if moveCounter < 20 { // changed from < 20
+				priorBoardNullWaste = b
+			} else if reflect.DeepEqual(b, priorBoardNullWaste) {
+				if verbose > 1 {
+					fmt.Printf("*****Loss detected after %v moves\n", moveCounter)
+				}
+				regularLosses++
+				continue newInitialOverrideStrategy
+			} else {
+				priorBoardNullWaste = b
+			}
+		}
+	*/
 
 	// Find Next Moves
 	aMoves := detectAvailableMoves(bNew, moveNum, singleGame)
+
+	//detects Loss
+	if len(aMoves) == 0 { //No available moves; game lost.
+		if verbose > 1 {
+			fmt.Printf("Deck %v Strategy #: %v lost after %v moves.  Total moves tried: %v \n", deckNum, AmStratNumThisDeck, moveNum, aMmvsTriedThisDeck)
+		}
+		//	if verbose > 2 {
+		//		fmt.Printf("Strategy Lost: Frequency of each moveType:\n%v\n", moveTypes)
+		//		}
+		aMlossesAtNoMoves++
+		return "NM" // No Moves available
+	}
+
 	// if more than one move is available, sort them
 	if len(aMoves) > 1 { //sort them by priority if necessary
 		sort.SliceStable(aMoves, func(i, j int) bool {
 			return aMoves[i].priority < aMoves[j].priority
 		})
 	}
-	//detects Loss
-	if len(aMoves) == 0 { //No available moves; game lost.
-		if verbose > 1 {
-			fmt.Printf("****Deck %v: XXXXGame lost after %v moves\n", deckNum, moveNum)
-		}
-		if verbose > 2 {
-			fmt.Printf("GameLost: Frequency of each moveType:\n%v\n", moveTypes)
-			fmt.Printf("GameLost: aMovesNumberOf:\n%v\n", 0 /*aMovesNumberOf*/)
-		}
-		//lossesAtNoMoves++
-		return // something
-	} else {
-		// Now Try all moves
 
-		for i, move := range aMoves {
-			if i != 0 {
-				AllMvStratNumThisDeck++
-			}
-			if strings.Contains(verboseSpecial, "A") {
-				fmt.Printf("\n \nDeck: %v   moveNum: %v   AllMvStratNumThisDeck: %v   PriorMove: %v\n", deckNum, moveNum, AllMvStratNumThisDeck, printMove(doThisMove, moveNum))
-				if moveNum >= 23 {
-					printBoard(bNew)
-				} //if test
-				fmt.Printf("All Possible Next Moves: ")
-				for j, _ := range aMoves {
-					if j != 0 {
-						fmt.Printf("                         ")
-					}
-					//fmt.Printf("%v", aMoves[j])
-					fmt.Printf("%v", printMove(aMoves[j], moveNum))
-					if i == j {
-						fmt.Printf("                <- Next Move")
-					}
-					fmt.Printf("\n")
+	// Now Try all moves
+
+	for i, move := range aMoves {
+		if i != 0 {
+			AmStratNumThisDeck++
+		}
+
+		// Verbose Special Starts Here - No effect on operation
+		if strings.Contains(verboseSpecial, "A") {
+			fmt.Printf("\n \nDeck: %v   moveNum: %v   AmStratNumThisDeck: %v  aMmvsTriedThisDeck: %v   PriorMove: %v\n", deckNum, moveNum, AmStratNumThisDeck, aMmvsTriedThisDeck, printMove(doThisMove, moveNum))
+			if moveNum >= 21 {
+				printBoard(bNew)
+			} //if test
+			fmt.Printf("All Possible Moves: ")
+			for j, _ := range aMoves {
+				if j != 0 {
+					fmt.Printf("                         ")
 				}
-				if math.Mod(float64(moveNum), 20) == 0 { //test
-					fmt.Printf("\n") //test
-				} //test
-				fmt.Printf("\n\n****************************************\n")
+				//fmt.Printf("%v", aMoves[j])
+				fmt.Printf("%v", printMove(aMoves[j], moveNum))
+				if i == j {
+					fmt.Printf("                <- Next Move")
+				}
+				fmt.Printf("\n")
 			}
-			playAllMoveS(bNew, move, moveNum+1, deckNum)
+			if math.Mod(float64(aMmvsTriedThisDeck), 20) == 0 { //test
+				fmt.Printf("\n") //test
+			} //test
+			fmt.Printf("\n\n****************************************\n")
+		}
+		// Verbose Special Ends Here - No effect on operation
+
+		playAllMoveS(bNew, move, moveNum+1, deckNum)
+		if printTree == "C" {
+			fmt.Printf("\n%8v", AmStratNumThisDeck)
+			for i := 1; i <= moveNum-1; i++ {
+				fmt.Printf("        ")
+			}
 		}
 	}
-
+	return "DL" //  Deck Lost ie Game Lost        // loss COUNTER NEEDED
 }

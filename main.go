@@ -24,8 +24,6 @@ var printTree string
 
 var err error
 var singleGame = true
-var AllMvStratNumThisDeck int
-var MovesTriedThisDeck int
 
 func main() {
 	/*
