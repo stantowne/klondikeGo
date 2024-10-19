@@ -3,25 +3,24 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
 	"io"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 )
 
-var aMwinCounter = 0
-var aMearlyWinCounter = 0
-var aMstandardWinCounter = 0
-var aMlossCounter = 0
+var aMwinCounterThisDeck = 0
+var aMearlyWinCounterThisDeck = 0
+var aMstandardWinCounterThisDeck = 0
+var aMlossCounterThisDeck = 0
 
-// var aMStratlossesAtGLL = 0
+// var aMStratlossesAtGLLThisDeck = 0
 var aMStratlossesAtNoMovesThisDeck = 0
 var aMStratlossesAtRepMveThisDeck = 0
 var aMStratlossesExhaustedThisDeck = 0
-var aMStratNumThisDeck int
-var aMmvsTriedThisDeck int
+var aMStratNumThisDeck = 1
+var aMmvsTriedThisDeck = 0
 
 var priorBoards = make(map[string]bool)
 
@@ -30,17 +29,27 @@ func playNew(reader csv.Reader) {
 		fmt.Printf("firstDeckNum: %v, numberOfDecksToBePlayed: %v, verbose: %v, verboseSpecial: %v, findAllSuccessfulStrategies: %v, printTree: %v, reader: %v", firstDeckNum, numberOfDecksToBePlayed, verbose, findAllSuccessfulStrategies, printTree, reader)
 	}
 
+	var aMwinCounterAllDecks = 0
+	var aMearlyWinCounterAllDecks = 0
+	var aMstandardWinCounterAllDecks = 0
+	var aMlossCounterAllDecks = 0
+	// var aMStratlossesAtGLLAllDecks = 0
 	var aMStratlossesAtNoMovesAllDecks = 0
 	var aMStratlossesAtRepMveAllDecks = 0
 	var aMStratlossesExhaustedAllDecks = 0
 	var aMStratNumAllDecks int = 0
 	var MovesTriedAllDecks int = 0
 
-	aMstartTime := time.Now()
+	aMstartTimeAllDecks := time.Now()
 
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
-		aMStratNumThisDeck = 1
-		aMmvsTriedThisDeck = 0
+
+		// Verbose Special Starts Here - No effect on operation
+		if strings.Contains(verboseSpecial, "D") {
+			aMstartTimeThisDeck := time.Now()
+		}
+		// Verbose Special Ends Here - No effect on operation
+
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {
 			break
@@ -73,6 +82,38 @@ func playNew(reader csv.Reader) {
 
 		playAllMoveS(b, firstMoveNull, 0, deckNum)
 
+		// Verbose Special Starts Here - No effect on operation
+		if strings.Contains(verboseSpecial, "D") { // Deck Statistics
+			fmt.Printf("\nDeck #%d:\n", deckNum)
+			lossCounter := 1 - aMwinCounterAllDecks
+			endTime := time.Now()
+			elapsedTime := endTime.Sub(aMstartTimeAllDecks)
+			fmt.Printf("Total Decks Won is: %d of which: %d were Early Wins and %d were Standard Wins\n", aMwinCounterAllDecks, aMearlyWinCounterAllDecks, aMstandardWinCounterAllDecks)
+			fmt.Printf("Total Decks Lost is: %d which should equal Counted losses: %d\n", lossCounter, aMlossCounterThisDeck)
+			//fmt.Printf("Strategy Losses at Game Length Limit is: %d\n", aMStratlossesAtGLL)
+			fmt.Printf("Strategies Played %d\n", aMStratNumAllDecks)
+			fmt.Printf("     Strategy Losses at No Moves Available is %d\n", aMStratlossesAtNoMovesAllDecks)
+			fmt.Printf("     Strategy Losses at Repetitive Move is %d\n", aMStratlossesAtRepMveAllDecks)
+			fmt.Printf("     Strategy Losses at Repetitive Move is %d\n", aMStratlossesAtNoMovesAllDecks)
+			fmt.Printf("     Total Strategy Losses %d + Games Won %d = %d",
+				aMStratlossesAtNoMovesAllDecks+aMStratlossesAtRepMveAllDecks+aMStratlossesExhaustedAllDecks,
+				aMwinCounterThisDeck,
+				aMStratlossesAtNoMovesAllDecks+aMStratlossesAtRepMveAllDecks+aMStratlossesExhaustedAllDecks+aMwinCounterThisDeck)
+			fmt.Printf("          Should equal Strategies Played %d\n", aMStratNumAllDecks)
+			fmt.Printf("Elapsed Time is %v.\n", elapsedTime)
+		}
+		// Verbose Special Ends Here - No effect on operation
+
+		aMwinCounterAllDecks += aMwinCounterThisDeck
+		aMwinCounterThisDeck = 0
+		aMearlyWinCounterAllDecks += aMearlyWinCounterThisDeck
+		aMearlyWinCounterThisDeck = 0
+		aMstandardWinCounterAllDecks += aMstandardWinCounterThisDeck
+		aMstandardWinCounterThisDeck = 0
+		aMlossCounterAllDecks += aMlossCounterThisDeck
+		aMlossCounterThisDeck = 0
+		// aMStratlossesAtGLLAllDecks += aMStratlossesAtGLLThisDeck
+		//aMStratlossesAtGLLThisDeck = 0
 		aMStratlossesAtNoMovesAllDecks += aMStratlossesAtNoMovesThisDeck
 		aMStratlossesAtNoMovesThisDeck = 0
 		aMStratlossesAtRepMveAllDecks += aMStratlossesAtRepMveThisDeck
@@ -85,38 +126,22 @@ func playNew(reader csv.Reader) {
 		aMmvsTriedThisDeck = 0
 		clear(priorBoards)
 	}
-	lossCounter := numberOfDecksToBePlayed - aMwinCounter
+	lossCounter := numberOfDecksToBePlayed - aMwinCounterAllDecks
 	endTime := time.Now()
-	elapsedTime := endTime.Sub(aMstartTime)
-	var p = message.NewPrinter(language.English)
-	_, err = p.Printf("\nNumber of Decks Played is %d.\n", numberOfDecksToBePlayed)
-	if err != nil {
-		fmt.Println("Number of Decks Played cannot print")
-	}
-	_, err = p.Printf("Total Decks Won is %d of which %d were Early Wins and %d were Standard Wins\n", aMwinCounter, aMearlyWinCounter, aMstandardWinCounter)
-	if err != nil {
-		fmt.Println("Total Decks Won cannot print")
-	}
-	_, err = p.Printf("Total Decks Lost is %d   Counted losses are %d should equal.\n", lossCounter, aMlossCounter)
-	if err != nil {
-		fmt.Println("Total Decks Lost cannot print")
-	}
-	//	_, err = p.Printf("Strategy Losses at Game Length Limit is %d\n", aMStratlossesAtGLL)
-	//	if err != nil {
-	//		fmt.Println("Strategy Losses at Game Length Limit cannot print")
-	//	}
-	_, err = p.Printf("Strategy Losses at No Moves Available is %d\n", aMStratlossesAtNoMovesAllDecks)
-	if err != nil {
-		fmt.Println("Strategy Losses at No Moves Available cannot print")
-	}
-	_, err = p.Printf("Strategy Losses at Repetitive Move is %d\n", aMStratlossesAtRepMveAllDecks)
-	if err != nil {
-		fmt.Println("Strategy Losses at Repetitive Move cannot print")
-	}
-	_, err = p.Printf("Strategy Losses at Repetitive Move is %d\n", aMStratlossesExhaustedAllDecks)
-	if err != nil {
-		fmt.Println("Strategy Losses at Repetitive Move cannot print")
-	}
+	elapsedTime := endTime.Sub(aMstartTimeAllDecks)
+	fmt.Printf("\nNumber of Decks Played is: %d.\n", numberOfDecksToBePlayed)
+	fmt.Printf("Total Decks Won is: %d of which: %d were Early Wins and %d were Standard Wins\n", aMwinCounterAllDecks, aMearlyWinCounterAllDecks, aMstandardWinCounterAllDecks)
+	fmt.Printf("Total Decks Lost is: %d which should equal Counted losses: %d\n", lossCounter, aMlossCounterThisDeck)
+	//fmt.Printf("Strategy Losses at Game Length Limit is: %d\n", aMStratlossesAtGLL)
+	fmt.Printf("Strategies Played %d\n", aMStratNumAllDecks)
+	fmt.Printf("     Strategy Losses at No Moves Available is %d\n", aMStratlossesAtNoMovesAllDecks)
+	fmt.Printf("     Strategy Losses at Repetitive Move is %d\n", aMStratlossesAtRepMveAllDecks)
+	fmt.Printf("     Strategy Losses at Repetitive Move is %d\n", aMStratlossesAtNoMovesAllDecks)
+	fmt.Printf("     Total Strategy Losses %d + Games Won %d = %d",
+		aMStratlossesAtNoMovesAllDecks+aMStratlossesAtRepMveAllDecks+aMStratlossesExhaustedAllDecks,
+		aMwinCounterThisDeck,
+		aMStratlossesAtNoMovesAllDecks+aMStratlossesAtRepMveAllDecks+aMStratlossesExhaustedAllDecks+aMwinCounterThisDeck)
+	fmt.Printf("          Should equal Strategies Played %d\n", aMStratNumAllDecks)
 	averageElapsedTimePerDeck := float64(elapsedTime.Milliseconds()) / float64(numberOfDecksToBePlayed)
 	fmt.Printf("Elapsed Time is %v.\n", elapsedTime)
 	fmt.Printf("Average Elapsed Time per Deck is %fms.\n", averageElapsedTimePerDeck)

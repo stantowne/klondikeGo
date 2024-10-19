@@ -97,9 +97,9 @@ func main() {
 	}
 	verboseSpecial = verboseSpecial[1:]
 
-	/* Verbose Special codes implemented:
+	/* Verbose Special codes implemented:  CASE IS IMPORTANT!!!!!!!!!!!
 	   M = print detail info after each Move 			playNew Only (in playAllMovesS)
-	   D = print deck level statistics 				playNew Only (in playNew)
+	   D = print deck level statistics 					playNew Only (in playNew)
 	*/
 
 	// Arguments 5 & 6 below applies only to playNew			****************************************************

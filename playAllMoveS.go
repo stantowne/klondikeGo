@@ -41,9 +41,9 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) string {
 	bNewBcodeS := string(bNewBcode[:]) //  consider modifying the boardCode and boardDeCode methods to produce strings
 	if priorBoards[bNewBcodeS] {
 		aMStratlossesAtRepMveThisDeck++
-		if printTree == "C" {
-			fmt.Printf("  Repetitive Move - Loop:end strategy")
-		}
+		//		if printTree == "C" {
+		//			fmt.Printf("  Repetitive Move - Loop:end strategy")
+		//		}
 		if verbose > 1 {
 			fmt.Printf("Deck %v Strategy #: %v lost after %v moves - repetitive.  Total moves tried: %v \n", deckNum, aMStratNumThisDeck, moveNum, aMmvsTriedThisDeck)
 		}
@@ -54,8 +54,8 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) string {
 
 	//Detect Early Win
 	if detectWinEarly(bNew) {
-		aMearlyWinCounter++
-		aMwinCounter++
+		aMearlyWinCounterThisDeck++
+		aMwinCounterThisDeck++
 
 		if verbose > 0 {
 			fmt.Printf("Deck %v Game won early on strategy #: %v after %v moves.  Total moves tried: %v \n", deckNum, aMStratNumThisDeck, moveNum, aMmvsTriedThisDeck)
@@ -68,8 +68,8 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) string {
 
 	//Detects Win
 	if len(bNew.piles[0])+len(bNew.piles[1])+len(bNew.piles[2])+len(bNew.piles[3]) == 52 {
-		aMstandardWinCounter++
-		aMwinCounter++
+		aMstandardWinCounterThisDeck++
+		aMwinCounterThisDeck++
 
 		if verbose > 0 {
 			fmt.Printf("Deck %v Game won on strategy #: %v after %v moves.  Total moves tried: %v \n", deckNum, aMStratNumThisDeck, moveNum, aMmvsTriedThisDeck)
@@ -152,12 +152,18 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) string {
 		}
 		// Verbose Special Ends Here - No effect on operation
 
-		playAllMoveS(bNew, move, moveNum+1, deckNum)
+		result := playAllMoveS(bNew, move, moveNum+1, deckNum)
 		if printTree == "C" {
+			if result != "Win" {
+				fmt.Printf(" %v", result)
+			}
 			fmt.Printf("\n%8v", aMStratNumThisDeck)
 			for i := 1; i <= moveNum-1; i++ {
 				fmt.Printf("        ")
 			}
+		}
+		if result == "EW" || result == "SW" || result == "Win" && findAllSuccessfulStrategies != true {
+			return "Win"
 		}
 	}
 	aMStratlossesExhaustedThisDeck++
