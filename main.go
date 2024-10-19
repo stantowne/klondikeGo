@@ -97,6 +97,11 @@ func main() {
 	}
 	verboseSpecial = verboseSpecial[1:]
 
+	/* Verbose Special codes implemented:
+	   M = print detail info after each Move 			playNew Only (in playAllMovesS)
+	   D = print deck level statistics 				playNew Only (in playNew)
+	*/
+
 	// Arguments 5 & 6 below applies only to playNew			****************************************************
 	// But they must be on command line anyway
 	switch strings.TrimSpace(args[5])[0:1] {

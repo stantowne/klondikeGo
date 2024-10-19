@@ -11,15 +11,18 @@ import (
 	"time"
 )
 
-var aMstartTime = time.Now()
 var aMwinCounter = 0
 var aMearlyWinCounter = 0
-var aMlossesAtGLL = 0
-var aMlossesAtNoMoves = 0
-var aMregularLosses = 0
-var aMlossesAtLoop = 0
-var AmStratNumThisDeck int
+var aMstandardWinCounter = 0
+var aMlossCounter = 0
+
+// var aMStratlossesAtGLL = 0
+var aMStratlossesAtNoMovesThisDeck = 0
+var aMStratlossesAtRepMveThisDeck = 0
+var aMStratlossesExhaustedThisDeck = 0
+var aMStratNumThisDeck int
 var aMmvsTriedThisDeck int
+
 var priorBoards = make(map[string]bool)
 
 func playNew(reader csv.Reader) {
@@ -27,12 +30,16 @@ func playNew(reader csv.Reader) {
 		fmt.Printf("firstDeckNum: %v, numberOfDecksToBePlayed: %v, verbose: %v, verboseSpecial: %v, findAllSuccessfulStrategies: %v, printTree: %v, reader: %v", firstDeckNum, numberOfDecksToBePlayed, verbose, findAllSuccessfulStrategies, printTree, reader)
 	}
 
-	var AllMvStratNumAllDecks int = 0
+	var aMStratlossesAtNoMovesAllDecks = 0
+	var aMStratlossesAtRepMveAllDecks = 0
+	var aMStratlossesExhaustedAllDecks = 0
+	var aMStratNumAllDecks int = 0
 	var MovesTriedAllDecks int = 0
+
 	aMstartTime := time.Now()
 
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
-		AmStratNumThisDeck = 1
+		aMStratNumThisDeck = 1
 		aMmvsTriedThisDeck = 0
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {
@@ -61,10 +68,19 @@ func playNew(reader csv.Reader) {
 		//deal Deck onto board
 		//temp		AllMvStratNum := 0
 		var b = dealDeck(d)
+
 		firstMoveNull := move{}
+
 		playAllMoveS(b, firstMoveNull, 0, deckNum)
-		AllMvStratNumAllDecks += AmStratNumThisDeck
-		AmStratNumThisDeck = 0
+
+		aMStratlossesAtNoMovesAllDecks += aMStratlossesAtNoMovesThisDeck
+		aMStratlossesAtNoMovesThisDeck = 0
+		aMStratlossesAtRepMveAllDecks += aMStratlossesAtRepMveThisDeck
+		aMStratlossesAtRepMveThisDeck = 0
+		aMStratlossesExhaustedAllDecks += aMStratlossesExhaustedThisDeck
+		aMStratlossesExhaustedThisDeck = 0
+		aMStratNumAllDecks += aMStratNumThisDeck
+		aMStratNumThisDeck = 0
 		MovesTriedAllDecks += aMmvsTriedThisDeck
 		aMmvsTriedThisDeck = 0
 		clear(priorBoards)
@@ -77,25 +93,29 @@ func playNew(reader csv.Reader) {
 	if err != nil {
 		fmt.Println("Number of Decks Played cannot print")
 	}
-	_, err = p.Printf("Total Decks Won is %d of which %d were Early Wins\n", aMwinCounter, aMearlyWinCounter)
+	_, err = p.Printf("Total Decks Won is %d of which %d were Early Wins and %d were Standard Wins\n", aMwinCounter, aMearlyWinCounter, aMstandardWinCounter)
 	if err != nil {
 		fmt.Println("Total Decks Won cannot print")
 	}
-	_, err = p.Printf("Total Decks Lost is %d\n", lossCounter)
+	_, err = p.Printf("Total Decks Lost is %d   Counted losses are %d should equal.\n", lossCounter, aMlossCounter)
 	if err != nil {
 		fmt.Println("Total Decks Lost cannot print")
 	}
-	_, err = p.Printf("Losses at Game Length Limit is %d\n", aMlossesAtGLL)
+	//	_, err = p.Printf("Strategy Losses at Game Length Limit is %d\n", aMStratlossesAtGLL)
+	//	if err != nil {
+	//		fmt.Println("Strategy Losses at Game Length Limit cannot print")
+	//	}
+	_, err = p.Printf("Strategy Losses at No Moves Available is %d\n", aMStratlossesAtNoMovesAllDecks)
 	if err != nil {
-		fmt.Println("Losses at Game Length Limit cannot print")
+		fmt.Println("Strategy Losses at No Moves Available cannot print")
 	}
-	_, err = p.Printf("Losses at No Moves Available is %d\n", aMlossesAtNoMoves)
+	_, err = p.Printf("Strategy Losses at Repetitive Move is %d\n", aMStratlossesAtRepMveAllDecks)
 	if err != nil {
-		fmt.Println("Losses at No Moves Available cannot print")
+		fmt.Println("Strategy Losses at Repetitive Move cannot print")
 	}
-	_, err = p.Printf("Regular Losses is %d\n", aMregularLosses)
+	_, err = p.Printf("Strategy Losses at Repetitive Move is %d\n", aMStratlossesExhaustedAllDecks)
 	if err != nil {
-		fmt.Println("Regular Losses cannot print")
+		fmt.Println("Strategy Losses at Repetitive Move cannot print")
 	}
 	averageElapsedTimePerDeck := float64(elapsedTime.Milliseconds()) / float64(numberOfDecksToBePlayed)
 	fmt.Printf("Elapsed Time is %v.\n", elapsedTime)
