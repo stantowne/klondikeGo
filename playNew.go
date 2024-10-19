@@ -91,16 +91,16 @@ func playNew(reader csv.Reader) {
 			elapsedTime := endTime.Sub(aMstartTimeThisDeck)
 			fmt.Printf("Total Decks Won is: %d of which: %d were Early Wins and %d were Standard Wins\n", aMwinCounterAllDecks, aMearlyWinCounterAllDecks, aMstandardWinCounterAllDecks)
 			fmt.Printf("Total Decks Lost is: %d which should equal Counted losses: %d\n", lossCounter, aMlossCounterThisDeck)
-			//fmt.Printf("Strategy Losses at Game Length Limit is: %d\n", aMStratlossesAtGLL)
-			fmt.Printf("Strategies Played %d\n", aMStratNumAllDecks)
-			fmt.Printf("     Strategy Losses at No Moves Available is %d\n", aMStratlossesAtNoMovesAllDecks)
-			fmt.Printf("     Strategy Losses at Repetitive Move is %d\n", aMStratlossesAtRepMveAllDecks)
-			fmt.Printf("     Strategy Losses at Repetitive Move is %d\n", aMStratlossesAtNoMovesAllDecks)
+			//fmt.Printf("Strategy Losses at Game Length Limit is: %d\n", aMStratlossesAtGLLThisDeck)
+			fmt.Printf("Strategies Played %d\n", aMStratNumThisDeck)
+			fmt.Printf("     Strategy Losses at No Moves Available is %d\n", aMStratlossesAtNoMovesThisDeck)
+			fmt.Printf("     Strategy Losses at Repetitive Move is %d\n", aMStratlossesAtRepMveThisDeck)
+			fmt.Printf("     Strategy Losses at Moves Exhausted is %d\n", aMStratlossesExhaustedThisDeck)
 			fmt.Printf("     Total Strategy Losses %d + Games Won %d = %d",
-				aMStratlossesAtNoMovesAllDecks+aMStratlossesAtRepMveAllDecks+aMStratlossesExhaustedAllDecks,
+				aMStratlossesAtNoMovesThisDeck+aMStratlossesAtRepMveThisDeck+aMStratlossesExhaustedThisDeck,
 				aMwinCounterThisDeck,
-				aMStratlossesAtNoMovesAllDecks+aMStratlossesAtRepMveAllDecks+aMStratlossesExhaustedAllDecks+aMwinCounterThisDeck)
-			fmt.Printf("          Should equal Strategies Played %d\n", aMStratNumAllDecks)
+				aMStratlossesAtNoMovesThisDeck+aMStratlossesAtRepMveThisDeck+aMStratlossesExhaustedThisDeck+aMwinCounterThisDeck)
+			fmt.Printf("          Should equal Strategies Played %d\n", aMStratNumThisDeck)
 			fmt.Printf("Elapsed Time is %v.\n", elapsedTime)
 		}
 		// Verbose Special Ends Here - No effect on operation
@@ -130,20 +130,20 @@ func playNew(reader csv.Reader) {
 	lossCounter := numberOfDecksToBePlayed - aMwinCounterAllDecks
 	endTime := time.Now()
 	elapsedTime := endTime.Sub(aMstartTimeAllDecks)
-	fmt.Printf("\nNumber of Decks Played is: %d.\n", numberOfDecksToBePlayed)
+	fmt.Printf("\n\n******************\n\nNumber of Decks Played is: %d.\n", numberOfDecksToBePlayed)
 	fmt.Printf("Total Decks Won is: %d of which: %d were Early Wins and %d were Standard Wins\n", aMwinCounterAllDecks, aMearlyWinCounterAllDecks, aMstandardWinCounterAllDecks)
 	fmt.Printf("Total Decks Lost is: %d which should equal Counted losses: %d\n", lossCounter, aMlossCounterThisDeck)
 	//fmt.Printf("Strategy Losses at Game Length Limit is: %d\n", aMStratlossesAtGLL)
 	fmt.Printf("Strategies Played %d\n", aMStratNumAllDecks)
 	fmt.Printf("     Strategy Losses at No Moves Available is %d\n", aMStratlossesAtNoMovesAllDecks)
 	fmt.Printf("     Strategy Losses at Repetitive Move is %d\n", aMStratlossesAtRepMveAllDecks)
-	fmt.Printf("     Strategy Losses at Repetitive Move is %d\n", aMStratlossesAtNoMovesAllDecks)
+	fmt.Printf("     Strategy Losses at Moves Exhausted is %d\n", aMStratlossesExhaustedAllDecks)
 	fmt.Printf("     Total Strategy Losses %d + Games Won %d = %d",
 		aMStratlossesAtNoMovesAllDecks+aMStratlossesAtRepMveAllDecks+aMStratlossesExhaustedAllDecks,
 		aMwinCounterThisDeck,
 		aMStratlossesAtNoMovesAllDecks+aMStratlossesAtRepMveAllDecks+aMStratlossesExhaustedAllDecks+aMwinCounterThisDeck)
 	fmt.Printf("          Should equal Strategies Played %d\n", aMStratNumAllDecks)
-	averageElapsedTimePerDeck := float64(elapsedTime.Milliseconds()) / float64(numberOfDecksToBePlayed)
+	averageElapsedTimePerDeck := float64(elapsedTime.Microseconds()) / float64(numberOfDecksToBePlayed)
 	fmt.Printf("Elapsed Time is %v.\n", elapsedTime)
-	fmt.Printf("Average Elapsed Time per Deck is %fms.\n", averageElapsedTimePerDeck)
+	fmt.Printf("Average Elapsed Time per Deck is %vus.\n", averageElapsedTimePerDeck)
 }

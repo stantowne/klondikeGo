@@ -210,6 +210,6 @@ newDeck:
 	if err != nil {
 		fmt.Println("Percentage of Possible Attempts Avoided cannot print")
 	}
-	fmt.Printf("Average Elapsed Time per Deck is %fms.\n", averageElapsedTimePerDeck)
+	fmt.Printf("Average Elapsed Time per Deck is %vms.\n", averageElapsedTimePerDeck)
 
 }
