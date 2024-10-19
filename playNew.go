@@ -41,12 +41,13 @@ func playNew(reader csv.Reader) {
 	var MovesTriedAllDecks int = 0
 
 	aMstartTimeAllDecks := time.Now()
+	aMstartTimeThisDeck := time.Now()
 
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
 		// Verbose Special Starts Here - No effect on operation
 		if strings.Contains(verboseSpecial, "D") {
-			aMstartTimeThisDeck := time.Now()
+			aMstartTimeThisDeck = time.Now()
 		}
 		// Verbose Special Ends Here - No effect on operation
 
@@ -84,10 +85,10 @@ func playNew(reader csv.Reader) {
 
 		// Verbose Special Starts Here - No effect on operation
 		if strings.Contains(verboseSpecial, "D") { // Deck Statistics
-			fmt.Printf("\nDeck #%d:\n", deckNum)
+			fmt.Printf("\nDeck #%d: GameLengthLimit: %v (not Implemented)\n", deckNum, gameLengthLimit)
 			lossCounter := 1 - aMwinCounterAllDecks
 			endTime := time.Now()
-			elapsedTime := endTime.Sub(aMstartTimeAllDecks)
+			elapsedTime := endTime.Sub(aMstartTimeThisDeck)
 			fmt.Printf("Total Decks Won is: %d of which: %d were Early Wins and %d were Standard Wins\n", aMwinCounterAllDecks, aMearlyWinCounterAllDecks, aMstandardWinCounterAllDecks)
 			fmt.Printf("Total Decks Lost is: %d which should equal Counted losses: %d\n", lossCounter, aMlossCounterThisDeck)
 			//fmt.Printf("Strategy Losses at Game Length Limit is: %d\n", aMStratlossesAtGLL)

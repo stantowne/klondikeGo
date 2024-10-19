@@ -109,7 +109,7 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) string {
 		//	if verbose > 2 {
 		//		fmt.Printf("Strategy Lost: Frequency of each moveType:\n%v\n", moveTypes)
 		//		}
-		aMStratlossesAtNoMoves++
+		aMStratlossesAtNoMovesThisDeck++
 		return "NM" // No Moves available
 	}
 
@@ -134,7 +134,7 @@ func playAllMoveS(bIn board, doThisMove move, moveNum int, deckNum int) string {
 				printBoard(bNew)
 			} //if test
 			fmt.Printf("All Possible Moves: ")
-			for j, _ := range aMoves {
+			for j := range aMoves {
 				if j != 0 {
 					fmt.Printf("                         ")
 				}
