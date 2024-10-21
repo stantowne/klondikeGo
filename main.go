@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -17,10 +18,18 @@ var firstDeckNum int
 var numberOfDecksToBePlayed int
 var length int
 var verbose int
-
 var verboseSpecial string
 var findAllSuccessfulStrategies bool
-var printTree string
+var printTree string // edit these to pMd
+type pMd struct {
+	pType       string
+	startType   string
+	startVal    int
+	continueFor int
+	outputTo    string
+}
+
+var printMoveDetail pMd
 
 var err error
 var singleGame = true
@@ -28,23 +37,47 @@ var singleGame = true
 func main() {
 	/*
 
-		Command line arguments
+			Command line arguments
 
-		args[0] = program name
-		args[1] = # of the first deck to be used from within the pre-stored decks used to standardize testing
-		args[2] = # of decks to be played
-		args[3] = length of IOS strategy - see comments below	(applicable to playOrig only)
-		args[4] = verbosity switch for messages
-		args[5] = findAllSuccessfulStrategies 					(applicable playNew only)
-		args[6] = printTree                   					(applicable playNew only)
+			args[0] = program name
+			args[1] = # of the first deck to be used from within the pre-stored decks used to standardize testing
+			args[2] = # of decks to be played
+			args[3] = length of IOS strategy - see comments below	(applicable to playOrig only)
+			args[4] = verbosity switch for messages
+			args[5] = findAllSuccessfulStrategies 					(applicable playNew only)
+			args[6] = printMoveDetail		                  		(applicable playNew only)
+		              	as a string to be parsed of the form:
+		           			pType,startType,startVal,continueFor,outputTo
+
+							where:
+								pType = empty or X - do not print NOTE: Default if args[6] is not on command line
+									  = BB         - Board by Board detail
+		                              = TW         - print Tree in Wide mode
+									  = TS         - print Tree in Skinny mode
+								startType = DECK  - then the startVal represents a deckNum (Default)
+		                                  = MvsT  - then the startVal represents a aMmvsTriedThisDeck
+		                        startVal    = Non-negative integer (Default 0)
+								continueFor = Non-negative integer (Default 0 which indicates forever)
+								outputTo = C = Console (default)
+					                     = file name and path (if applicable)
+		                                   Note: if file name is present then startType. startVal and ContinueFor
+		                                         must be present or delineated with ":"
+
+			           	and placed into a package level struct printMoveDetail of type pMd which can be seen above:
 	*/
 
 	// Always a good idea to print out the program source of the output.
 	//    Will be especially useful when we figure out how to include the versioning
 
-	args := os.Args
+	printMoveDetail.pType = "X"
+	printMoveDetail.startType = "DECK"
+	printMoveDetail.startVal = 0
+	printMoveDetail.continueFor = 0
+	printMoveDetail.outputTo = "C"
 
-	println("Calling Program:  ", args[0])
+	fmt.Printf("%v", printMoveDetail)
+
+	args := os.Args
 
 	firstDeckNum, err = strconv.Atoi(args[1])
 	if err != nil || firstDeckNum < 0 || firstDeckNum > 9999 {
@@ -90,7 +123,7 @@ func main() {
 	//  verbose special to indicate that optional printing should be done.
 	verboseSpecial = args[4]
 	verbose, err = strconv.Atoi(verboseSpecial[0:1])
-	if err != nil || verbose < 0 || verbose > 99 {
+	if err != nil || verbose >= 10 || verbose < 0 {
 		println("fourth argument invalid")
 		println("verbose must be a non-negative integer no greater than 10")
 		os.Exit(1)
@@ -116,21 +149,48 @@ func main() {
 		println("     'A' or 'a' - See how many paths to success you can find")
 		os.Exit(1)
 	}
+	pMdArgs := strings.Split(args[6], ",")
 
-	switch strings.TrimSpace(args[6])[0:1] {
-	case "X", "x":
-		printTree = "X" // Do Not Print Tree
-	case "C", "c":
-		printTree = "C" // Print Tree to Console
-	case "F", "f":
-		printTree = "F" // Print Tree to File -- Note not yet implemented
-	default:
-		println("Sixth argument invalid")
-		println("  printTree must be either:")
-		println("     'X' or 'x' - See how many paths to success you can find")
-		println("     'C' or 'c' - See how many paths to success you can find")
-		println("     'F' or 'f' - Normal case stop after finding a successful set of moves")
-		os.Exit(1)
+	switch {
+	case len(pMdArgs[0]) >= 0:
+		if pMdArgs[0] == "BB" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" {
+			printMoveDetail.pType = pMdArgs[0]
+		} else {
+			println("Sixth argument invalid")
+			println("  Must start with BB, TW or TS")
+			os.Exit(1)
+		}
+	case len(pMdArgs[0]) >= 1:
+		if pMdArgs[1] == "DECK" || pMdArgs[1] == "MvsT" {
+			printMoveDetail.startType = pMdArgs[1]
+		} else {
+			println("Sixth argument part 2 invalid")
+			println("  Must be Deck or MvsT")
+			os.Exit(1)
+		}
+	case len(pMdArgs[0]) >= 2:
+		printMoveDetail.startVal, err = strconv.Atoi(pMdArgs[2])
+		if err != nil || printMoveDetail.startVal < 0 {
+			println("Sixth argument part 3 invalid")
+			println("must be a non-negative integer")
+			os.Exit(1)
+		}
+	case len(pMdArgs[0]) >= 3:
+		printMoveDetail.startVal, err = strconv.Atoi(pMdArgs[3])
+		if err != nil || printMoveDetail.startVal < 0 {
+			println("Sixth argument part 4 invalid")
+			println("must be a non-negative integer")
+			os.Exit(1)
+		}
+	case len(pMdArgs[0]) >= 4:
+		if pMdArgs[4] == "C" {
+			printMoveDetail.pType = pMdArgs[4]
+		} else {
+			// add if clause here to test if valid filename and it can be overwritten
+			println("Sixth argument part 5 invalid")
+			println("must be a C for Console or a valid file name")
+			os.Exit(1)
+		}
 	}
 	// Argument above applies only to playNew			****************************************************
 
@@ -168,9 +228,11 @@ func main() {
 
 		gameLengthLimit = gameLengthLimitOrig
 		moveBasePriority = moveBasePriorityOrig
+		fmt.Printf("Calling Program: %v          GameLengthLimit: %v (not Implemented)/n/n/n", args[0], gameLengthLimit)
 		playOrig(*reader)
 	} else {
 		gameLengthLimit = gameLengthLimitNew
+		fmt.Printf("Calling Program: %v          GameLengthLimit: %v (not Implemented)/n/n/n", args[0], gameLengthLimit)
 		moveBasePriority = moveBasePriorityNew
 		playNew(*reader)
 	}
