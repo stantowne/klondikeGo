@@ -33,7 +33,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	}
 
 	// Try all moves
-	for i, _ := range aMoves {
+	for i := range aMoves {
 
 		/* Actually before we actually try all moves let's first: print (optionally based on printMoveDetail.pType) the incoming board
 		      and check the incoming board for various end-of-strategy conditions
@@ -41,7 +41,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		*/
 
 		// Print the incoming board
-		if printMoveDetail.pType == "BB" {
+		if printMoveDetail.pType == "BB" && pMdTestRange(deckNum) {
 			if moveNum != 0 {
 				fmt.Printf("\n\n****************************************\n")
 			}
@@ -51,8 +51,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 		// Check if No possible Moves
 		if aMoves[0].name == "No Possible Moves" {
-			if printMoveDetail.pType == "BB" {
-				fmt.Printf("No Possible Moves: Strategy Failed\n")
+			if printMoveDetail.pType == "BB" && pMdTestRange(deckNum) {
+				fmt.Printf("  SF-NPM: No Possible Moves: Strategy Failed\n")
 			}
 			return "SF", "NPM"
 		}
@@ -60,22 +60,22 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		bNewBcode := bIn.boardCode() //  consider modifying the boardCode and boardDeCode methods to produce strings
 
 		bNewBcodeS := string(bNewBcode[:]) //  consider modifying the boardCode and boardDeCode methods to produce strings
-		if priorBoards[bNewBcodeS] {
+		if priorBoards[bNewBcodeS] != 0 {
 			aMStratlossesAtRepMveThisDeck++
-			if printMoveDetail.pType == "BB" {
-				fmt.Printf("  Repetitive Move - Loop:end strategy")
+			if printMoveDetail.pType == "BB" && pMdTestRange(deckNum) {
+				fmt.Printf("  SF-RM: Repetitive Board - Loop:end strategy - see board at aMmvsTriedThisDeck: %v", priorBoards[bNewBcodeS])
 			}
 			return "SF", "RM" // Repetitive Move
 		} else {
-			priorBoards[bNewBcodeS] = true
+			priorBoards[bNewBcodeS] = aMmvsTriedThisDeck
 		}
 
 		//Detect Early Win
 		if detectWinEarly(bIn) {
 			aMearlyWinCounterThisDeck++
 			aMwinCounterThisDeck++
-			if printMoveDetail.pType == "BB" {
-				fmt.Printf("  Strategy Win: Early Win")
+			if printMoveDetail.pType == "BB" && pMdTestRange(deckNum) {
+				fmt.Printf("  SW-EW: Strategy Win: Early Win")
 				if findAllSuccessfulStrategies {
 					fmt.Printf("  Will Continue to look for additional winning strategies for this deck")
 				} else {
@@ -89,8 +89,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		if len(bIn.piles[0])+len(bIn.piles[1])+len(bIn.piles[2])+len(bIn.piles[3]) == 52 {
 			aMstandardWinCounterThisDeck++
 			aMwinCounterThisDeck++
-			if printMoveDetail.pType == "BB" {
-				fmt.Printf("  Strategy Win: Early Win")
+			if printMoveDetail.pType == "BB" && pMdTestRange(deckNum) {
+				fmt.Printf("  SW-SW: Strategy Win: Standard Win")
 				if findAllSuccessfulStrategies {
 					fmt.Printf("  Will Continue to look for additional winning strategies for this deck")
 				} else {
@@ -102,8 +102,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 		// OK, done with the various end-of-strategy conditions
 		// let's print out the list of available moves and make the next available move
-		if printMoveDetail.pType == "BB" {
-			fmt.Printf("All Possible Moves: ")
+		if printMoveDetail.pType == "BB" && pMdTestRange(deckNum) {
+			fmt.Printf("     All Possible Moves: ")
 			for j := range aMoves {
 				if j != 0 {
 					fmt.Printf("                         ")
@@ -137,4 +137,21 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	*/
 	aMStratlossesExhaustedThisDeck++
 	return "SF", "SE" //  Strategy Exhausted
+}
+
+func pMdTestRange(deckNum int) bool {
+	if printMoveDetail.startVal == 0 && printMoveDetail.continueFor == 0 {
+		return true
+	}
+	if printMoveDetail.startType == "DECK" && deckNum >= printMoveDetail.startVal {
+		if printMoveDetail.continueFor == 0 || deckNum < printMoveDetail.startVal+printMoveDetail.continueFor {
+			return true
+		}
+	}
+	if printMoveDetail.startType == "MvsT" && aMmvsTriedThisDeck >= printMoveDetail.startVal {
+		if printMoveDetail.continueFor == 0 || aMmvsTriedThisDeck < printMoveDetail.startVal+printMoveDetail.continueFor {
+			return true
+		}
+	}
+	return false
 }

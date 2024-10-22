@@ -22,7 +22,7 @@ var aMStratlossesExhaustedThisDeck = 0
 var aMStratNumThisDeck = 1
 var aMmvsTriedThisDeck = 0
 
-var priorBoards = make(map[string]bool)
+var priorBoards = make(map[string]int)
 
 func playNew(reader csv.Reader) {
 	if verbose > 1 {

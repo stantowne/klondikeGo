@@ -150,9 +150,10 @@ func main() {
 		os.Exit(1)
 	}
 	pMdArgs := strings.Split(args[6], ",")
-
+	l := len(pMdArgs)
+	/*                                  NOT SURE WHY THIS DID NOT WORK BUT USED IFS INSTEAD
 	switch {
-	case len(pMdArgs[0]) >= 0:
+	case l >= 1:
 		if pMdArgs[0] == "BB" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" {
 			printMoveDetail.pType = pMdArgs[0]
 		} else {
@@ -160,7 +161,8 @@ func main() {
 			println("  Must start with BB, TW or TS")
 			os.Exit(1)
 		}
-	case len(pMdArgs[0]) >= 1:
+		fallthrough
+	case l >= 2:
 		if pMdArgs[1] == "DECK" || pMdArgs[1] == "MvsT" {
 			printMoveDetail.startType = pMdArgs[1]
 		} else {
@@ -168,23 +170,72 @@ func main() {
 			println("  Must be Deck or MvsT")
 			os.Exit(1)
 		}
-	case len(pMdArgs[0]) >= 2:
+		fallthrough
+	case l >= 3:
 		printMoveDetail.startVal, err = strconv.Atoi(pMdArgs[2])
 		if err != nil || printMoveDetail.startVal < 0 {
 			println("Sixth argument part 3 invalid")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
-	case len(pMdArgs[0]) >= 3:
+		fallthrough
+	case l >= 4:
 		printMoveDetail.startVal, err = strconv.Atoi(pMdArgs[3])
 		if err != nil || printMoveDetail.startVal < 0 {
 			println("Sixth argument part 4 invalid")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
-	case len(pMdArgs[0]) >= 4:
+		fallthrough
+	case l >= 5:
 		if pMdArgs[4] == "C" {
-			printMoveDetail.pType = pMdArgs[4]
+			printMoveDetail.outputTo = pMdArgs[4]
+		} else {
+			// add if clause here to test if valid filename and it can be overwritten
+			println("Sixth argument part 5 invalid")
+			println("must be a C for Console or a valid file name")
+			os.Exit(1)
+		}
+
+	}
+	*/
+	if l >= 1 {
+		if pMdArgs[0] == "BB" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" {
+			printMoveDetail.pType = pMdArgs[0]
+		} else {
+			println("Sixth argument invalid")
+			println("  Must start with BB, TW or TS")
+			os.Exit(1)
+		}
+	}
+	if l >= 2 {
+		if pMdArgs[1] == "DECK" || pMdArgs[1] == "MvsT" {
+			printMoveDetail.startType = pMdArgs[1]
+		} else {
+			println("Sixth argument part 2 invalid")
+			println("  Must be Deck or MvsT")
+			os.Exit(1)
+		}
+	}
+	if l >= 3 {
+		printMoveDetail.startVal, err = strconv.Atoi(pMdArgs[2])
+		if err != nil || printMoveDetail.startVal < 0 {
+			println("Sixth argument part 3 invalid")
+			println("must be a non-negative integer")
+			os.Exit(1)
+		}
+	}
+	if l >= 4 {
+		printMoveDetail.continueFor, err = strconv.Atoi(pMdArgs[3])
+		if err != nil || printMoveDetail.continueFor < 0 {
+			println("Sixth argument part 4 invalid")
+			println("must be a non-negative integer")
+			os.Exit(1)
+		}
+	}
+	if l >= 5 {
+		if pMdArgs[4] == "C" {
+			printMoveDetail.outputTo = pMdArgs[4]
 		} else {
 			// add if clause here to test if valid filename and it can be overwritten
 			println("Sixth argument part 5 invalid")
@@ -192,6 +243,7 @@ func main() {
 			os.Exit(1)
 		}
 	}
+
 	// Argument above applies only to playNew			****************************************************
 
 	// Open the deck file here in main - will be read in both playOrig and PlayNew
