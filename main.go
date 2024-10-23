@@ -37,33 +37,34 @@ var singleGame = true
 func main() {
 	/*
 
-			Command line arguments
+				Command line arguments
 
-			args[0] = program name
-			args[1] = # of the first deck to be used from within the pre-stored decks used to standardize testing
-			args[2] = # of decks to be played
-			args[3] = length of IOS strategy - see comments below	(applicable to playOrig only)
-			args[4] = verbosity switch for messages
-			args[5] = findAllSuccessfulStrategies 					(applicable playNew only)
-			args[6] = printMoveDetail		                  		(applicable playNew only)
-		              	as a string to be parsed of the form:
-		           			pType,startType,startVal,continueFor,outputTo
+				args[0] = program name
+				args[1] = # of the first deck to be used from within the pre-stored decks used to standardize testing
+				args[2] = # of decks to be played
+				args[3] = length of IOS strategy - see comments below	(applicable to playOrig only)
+				args[4] = verbosity switch for messages
+				args[5] = findAllSuccessfulStrategies 					(applicable playNew only)
+				args[6] = printMoveDetail		                  		(applicable playNew only)
+			              	as a string to be parsed of the form:
+			           			pType,startType,startVal,continueFor,outputTo
 
-							where:
-								pType = empty or X - do not print NOTE: Default if args[6] is not on command line
-									  = BB         - Board by Board detail
-		                              = TW         - print Tree in Wide mode
-									  = TS         - print Tree in Skinny mode
-								startType = DECK  - then the startVal represents a deckNum (Default)
-		                                  = MvsT  - then the startVal represents a aMmvsTriedThisDeck
-		                        startVal    = Non-negative integer (Default 0)
-								continueFor = Non-negative integer (Default 0 which indicates forever)
-								outputTo = C = Console (default)
-					                     = file name and path (if applicable)
-		                                   Note: if file name is present then startType. startVal and ContinueFor
-		                                         must be present or delineated with ":"
+								where:
+									pType = empty or X - do not print NOTE: Default if args[6] is not on command line
+										  = BB         - Board by Board detail
+		                                  = BBS        - Board by Board Short detail
+			                              = TW         - print Tree in Wide mode
+										  = TS         - print Tree in Skinny mode
+									startType = DECK  - then the startVal represents a deckNum (Default)
+			                                  = MvsT  - then the startVal represents a aMmvsTriedThisDeck
+			                        startVal    = Non-negative integer (Default 0)
+									continueFor = Non-negative integer (Default 0 which indicates forever)
+									outputTo = C = Console (default)
+						                     = file name and path (if applicable)
+			                                   Note: if file name is present then startType. startVal and ContinueFor
+			                                         must be present or delineated with ":"
 
-			           	and placed into a package level struct printMoveDetail of type pMd which can be seen above:
+				           	and placed into a package level struct printMoveDetail of type pMd which can be seen above:
 	*/
 
 	// Always a good idea to print out the program source of the output.
@@ -74,8 +75,6 @@ func main() {
 	printMoveDetail.startVal = 0
 	printMoveDetail.continueFor = 0
 	printMoveDetail.outputTo = "C"
-
-	fmt.Printf("%v", printMoveDetail)
 
 	args := os.Args
 
@@ -200,11 +199,11 @@ func main() {
 	}
 	*/
 	if l >= 1 {
-		if pMdArgs[0] == "BB" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" {
+		if pMdArgs[0] == "BB" || pMdArgs[0] == "BBS" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" {
 			printMoveDetail.pType = pMdArgs[0]
 		} else {
 			println("Sixth argument invalid")
-			println("  Must start with BB, TW or TS")
+			println("  Must start with BB, BBS ,TW or TS")
 			os.Exit(1)
 		}
 	}
