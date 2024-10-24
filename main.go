@@ -199,11 +199,11 @@ func main() {
 	}
 	*/
 	if l >= 1 {
-		if pMdArgs[0] == "BB" || pMdArgs[0] == "BBS" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" {
+		if pMdArgs[0] == "BB" || pMdArgs[0] == "BBS" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" || pMdArgs[0] == "X" {
 			printMoveDetail.pType = pMdArgs[0]
 		} else {
 			println("Sixth argument invalid")
-			println("  Must start with BB, BBS ,TW or TS")
+			println("  Must start with BB, BBS ,TW, TS or X")
 			os.Exit(1)
 		}
 	}

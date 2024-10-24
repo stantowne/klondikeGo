@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sort"
+	"strconv"
 )
 
 func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
@@ -35,7 +36,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		return false
 	}
 
-	pMd := func(pTypeIn string, variant int, comment string) {
+	pMd := func(pTypeIn string, variant int, comment string, s1 string, s2 string) {
 		// Do some repetitive printing to track
 		// This function will use the struct printMoveDetail
 		//      variant will be used for different outputs under the same pType
@@ -48,12 +49,25 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 				fmt.Printf("\n \nDeck: %v   moveNum: %v   aMStratNumThisDeck: %v  aMmvsTriedThisDeck: %v \n", deckNum, moveNum, aMStratNumThisDeck, aMmvsTriedThisDeck)
 				printBoard(bIn)
 			case printMoveDetail.pType == "BB" && variant == 2:
-				fmt.Printf(comment)
+				// comment must have 2 %v in it
+				fmt.Printf(comment, s1, s2)
+				/*case printMoveDetail.pType == "BB" && variant == 3:
+					fmt.Printf("\n     All Possible Moves: ")
+					for j := range aMoves {
+						if j != 0 {
+							fmt.Printf("                         ")
+						}
+						fmt.Printf("%v", printMove(aMoves[j]))
+						if i == j {
+							fmt.Printf("                <- Next Move")
+						}
+						fmt.Printf("\n")
+					}
+				}*/
 			}
+
 		}
-
 	}
-
 	// Closures END:
 
 	// Find Next Moves
@@ -81,17 +95,14 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		*/
 
 		// Print the incoming board
-		pMd("BB", 1, "")
+		pMd("BB", 1, "", "", "")
 
 		// We only have to do these checks if it is the first time we have been at this board
 		// We know it is not the first time at this board if we are executing the move aMoves[i] where i > 0
 		if i == 0 {
 			// Check if No possible Moves
 			if aMoves[0].name == "No Possible Moves" {
-				pMd("BB", 2, "  SF-NPM: No Possible Moves: Strategy Failed\n")
-				/*if printMoveDetail.pType == "BB" && pMdTestRange() {
-					fmt.Printf("  SF-NPM: No Possible Moves: Strategy Failed\n")
-				}*/
+				pMd("BB", 2, "  SF-NPM: No Possible Moves: Strategy Failed%v%v\n", "", "")
 				return "SF", "NPM"
 			}
 			// Check for repetitive move
@@ -100,9 +111,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			bNewBcodeS := string(bNewBcode[:]) //  consider modifying the boardCode and boardDeCode methods to produce strings
 			if priorBoards[bNewBcodeS] != 0 {
 				aMStratlossesAtRepMveThisDeck++
-				if printMoveDetail.pType == "BB" && pMdTestRange() {
-					fmt.Printf("  SF-RM: Repetitive Board - Loop:end strategy - see board at aMmvsTriedThisDeck: %v", priorBoards[bNewBcodeS])
-				}
+				pMd("BB", 2, "  SF-RM: Repetitive Board - Loop:end strategy - see board at aMmvsTriedThisDeck: %v%v", strconv.Itoa(priorBoards[bNewBcodeS]), "")
 				return "SF", "RM" // Repetitive Move
 			} else {
 				priorBoards[bNewBcodeS] = aMmvsTriedThisDeck
@@ -112,14 +121,13 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			if detectWinEarly(bIn) {
 				aMearlyWinCounterThisDeck++
 				aMwinCounterThisDeck++
-				if printMoveDetail.pType == "BB" && pMdTestRange() {
-					fmt.Printf("  SW-EW: Strategy Win: Early Win")
-					if findAllSuccessfulStrategies {
-						fmt.Printf("  Will Continue to look for additional winning strategies for this deck")
-					} else {
-						fmt.Printf("  Go to Next Deck (if any)")
-					}
+				c := "  SW-EW: Strategy Win: Early Win%v%v"
+				if findAllSuccessfulStrategies {
+					c += "  Will Continue to look for additional winning strategies for this deck"
+				} else {
+					c += "  Go to Next Deck (if any)"
 				}
+				pMd("BB", 2, c, "", "")
 				return "SW", "EW" //  Early Win
 			}
 
@@ -127,14 +135,13 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			if len(bIn.piles[0])+len(bIn.piles[1])+len(bIn.piles[2])+len(bIn.piles[3]) == 52 {
 				aMstandardWinCounterThisDeck++
 				aMwinCounterThisDeck++
-				if printMoveDetail.pType == "BB" && pMdTestRange() {
-					fmt.Printf("  SW-SW: Strategy Win: Standard Win")
-					if findAllSuccessfulStrategies {
-						fmt.Printf("  Will Continue to look for additional winning strategies for this deck")
-					} else {
-						fmt.Printf("  Go to Next Deck (if any)")
-					}
+				c := "  SW-SW: Strategy Win: Standard Win%v%v"
+				if findAllSuccessfulStrategies {
+					c = c + "  Will Continue to look for additional winning strategies for this deck"
+				} else {
+					c = c + "  Go to Next Deck (if any)"
 				}
+				pMd("BB", 2, c, "", "")
 				return "SW", "SW" //  Standard Win
 			}
 		}
@@ -153,10 +160,24 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 				fmt.Printf("\n")
 			}
 		}
-		bInOrig := bIn
+		//pMd("BB",3,"","","")
+		var bInOrig board
+		bInOrig = bIn
 		bNew := moveMaker(bIn, aMoves[i])
 		aMmvsTriedThisDeck++
-		playAllMoveS(bNew, moveNum+1, deckNum)
+		/*if pMdTestRange() {
+			fmt.Printf("\n\nBefore Call at deckNum: %v  moveNum: %v   aMmvsTriedThisDeck: %v\n      bIn: %v\n  bInOrig: %v\n     bNew: %v\n", deckNum, moveNum, aMmvsTriedThisDeck, bIn, bInOrig, bNew)
+		}*/
+		r1, r2 := playAllMoveS(bNew, moveNum+1, deckNum)
+
+		fmt.Printf("\n@@@@@@@@@@@After Call at deckNum: %v  moveNum: %v   aMmvsTriedThisDeck: %v\n      r1: %v\n  r2: %v\n ", deckNum, moveNum, aMmvsTriedThisDeck, r1, r2)
+		if deckNum == 0 {
+			x := 2
+			x += 3
+		}
+		if pMdTestRange() {
+			fmt.Printf("\nAfter Call at deckNum: %v  moveNum: %v   aMmvsTriedThisDeck: %v\n      bIn: %v\n  bInOrig: %v\n     bNew: %v\n", deckNum, moveNum, aMmvsTriedThisDeck, bIn, bInOrig, bNew)
+		}
 		bIn = bInOrig
 		x := 1
 		x++
