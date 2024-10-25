@@ -161,24 +161,22 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			}
 		}
 		//pMd("BB",3,"","","")
-		var bInOrig board
-		bInOrig = bIn
-		bNew := moveMaker(bIn, aMoves[i])
+		bNew := bIn.copyBoard()
+		bNew = moveMaker(bNew, aMoves[i])
 		aMmvsTriedThisDeck++
 		/*if pMdTestRange() {
 			fmt.Printf("\n\nBefore Call at deckNum: %v  moveNum: %v   aMmvsTriedThisDeck: %v\n      bIn: %v\n  bInOrig: %v\n     bNew: %v\n", deckNum, moveNum, aMmvsTriedThisDeck, bIn, bInOrig, bNew)
 		}*/
 		r1, r2 := playAllMoveS(bNew, moveNum+1, deckNum)
 
-		fmt.Printf("\n@@@@@@@@@@@After Call at deckNum: %v  moveNum: %v   aMmvsTriedThisDeck: %v\n      r1: %v\n  r2: %v\n ", deckNum, moveNum, aMmvsTriedThisDeck, r1, r2)
+		//fmt.Printf("\n@@@@@@@@@@@After Call at deckNum: %v  moveNum: %v   aMmvsTriedThisDeck: %v\n      r1: %v\n  r2: %v\n ", deckNum, moveNum, aMmvsTriedThisDeck, r1, r2)
 		if deckNum == 0 {
 			x := 2
 			x += 3
 		}
 		if pMdTestRange() {
-			fmt.Printf("\nAfter Call at deckNum: %v  moveNum: %v   aMmvsTriedThisDeck: %v\n      bIn: %v\n  bInOrig: %v\n     bNew: %v\n", deckNum, moveNum, aMmvsTriedThisDeck, bIn, bInOrig, bNew)
+			fmt.Printf("\nAfter Call at deckNum: %v  moveNum: %v   aMmvsTriedThisDeck: %v\n      bIn: %v\n    bNew: %v\n", deckNum, moveNum, aMmvsTriedThisDeck, bIn, bNew)
 		}
-		bIn = bInOrig
 		x := 1
 		x++
 	}

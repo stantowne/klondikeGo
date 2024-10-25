@@ -279,11 +279,11 @@ func main() {
 
 		gameLengthLimit = gameLengthLimitOrig
 		moveBasePriority = moveBasePriorityOrig
-		fmt.Printf("Calling Program: %v          GameLengthLimit: %v (not Implemented)/n/n/n", args[0], gameLengthLimit)
+		fmt.Printf("Calling Program: %v          GameLengthLimit: %v (not Implemented)\n\n\n", args[0], gameLengthLimit)
 		playOrig(*reader)
 	} else {
 		gameLengthLimit = gameLengthLimitNew
-		fmt.Printf("Calling Program: %v          GameLengthLimit: %v (not Implemented)/n/n/n", args[0], gameLengthLimit)
+		fmt.Printf("Calling Program: %v          GameLengthLimit: %v (not Implemented)\n\n\n", args[0], gameLengthLimit)
 		moveBasePriority = moveBasePriorityNew
 		playNew(*reader)
 	}

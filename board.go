@@ -21,6 +21,25 @@ type (
 	// note array index of course goes from 0 to 64
 )
 
+func (bIn board) copyBoard() board {
+
+	bOut := board{}
+	for i := range bIn.columns {
+		bOut.columns[i] = make([]Card, len(bIn.columns[i]))
+		copy(bOut.columns[i], bIn.columns[i])
+	}
+	for i := range bIn.piles {
+		bOut.piles[i] = make([]Card, len(bIn.piles[i]))
+		copy(bOut.piles[i], bIn.piles[i])
+	}
+	bOut.stock = make([]Card, len(bIn.stock))
+	copy(bOut.stock, bIn.stock)
+	bOut.waste = make([]Card, len(bIn.waste))
+	copy(bOut.waste, bIn.waste)
+
+	return bOut
+}
+
 func (b board) boardCode() bCode {
 	//
 	// This method takes a struct of type board which contains four fields:
