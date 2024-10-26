@@ -5,6 +5,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
@@ -65,7 +66,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 				// Do Nothing We are just back up at this board checking for the next available move
 			} else {
 				aMStratlossesAtRepMveThisDeck++
-				pMd(bIn, deckNum, moveNum, "BB", 2, "  SF-RB: Repetitive Board - Loop:end strategy - see board at aMmvsTriedThisDeck: %v%v\n", strconv.Itoa(priorBoards[bNewBcodeS].aMmvsTriedTD), "")
+				pMd(bIn, deckNum, moveNum, "BB", 2, "  SF-RB: Repetitive Board - Loop:end strategy - see board at MvsTriedTD: %v%v\n", strconv.Itoa(priorBoards[bNewBcodeS].aMmvsTriedTD), "")
 				return "SF", "RB" // Repetitive Move
 			}
 		} else {
@@ -122,16 +123,16 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 		bNew := bIn.copyBoard() // Critical Must use copyBoard
 		bNew = moveMaker(bNew, aMoves[i])
-		pMd(bIn, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at deckNum: %v  moveNum: %v   aMStratNumThisDeck: %v   aMmvsTriedThisDeck: %v\n", "", "")
+		pMd(bIn, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at deckNum: %v  moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", "", "")
 		pMd(bIn, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "")
 		pMd(bNew, deckNum, moveNum, "BBS", 2, "     bNew: %v\n", "", "")
 		aMmvsTriedThisDeck++
 
 		r1, r2 := playAllMoveS(bNew, moveNum+1, deckNum)
 
-		//pMd(bIn, deckNum, moveNum, "BBS", 1, " After Call at deckNum: %v  moveNum: %v   aMStratNumThisDeck: %v   aMmvsTriedThisDeck: %v\n", "", "")
+		//pMd(bIn, deckNum, moveNum, "BBS", 1, " After Call at deckNum: %v  moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", "", "")
 		//pMd(bIn, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "")
-		pMd(bIn, deckNum, moveNum, "NOTX", 1, "  Returned r1: %v, r2: %v After Call at deckNum: %v  moveNum: %v   aMStratNumThisDeck: %v   aMmvsTriedThisDeck: %v\n", r1, r2)
+		pMd(bIn, deckNum, moveNum, "NOTX", 1, "  Returned r1: %v, r2: %v After Call at deckNum: %v  moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", r1, r2)
 	}
 	/*
 
@@ -182,13 +183,16 @@ func pMd(b board, dN int, mN int, pTypeIn string, variant int, comment string, s
 	// Do some repetitive printing to track progress
 	// This function will use the struct printMoveDetail
 	//      variant will be used for different outputs under the same pType
+
+	/*if aMmvsTriedThisDeck < 300 || math.Mod(float64(aMmvsTriedThisDeck), 5000) == 0 {
+	 */
 	if printMoveDetail.pType != "X" && pMdTestRange(dN) {
 		switch {
 		case pTypeIn == "BB" && printMoveDetail.pType == pTypeIn && variant == 1: // for BB
 			if mN != 0 {
 				fmt.Printf("\n\n****************************************\n")
 			}
-			fmt.Printf("\n \nDeck: %v   mN: %v   aMStratNumThisDeck: %v  aMmvsTriedThisDeck: %v \n", dN, mN, aMStratNumThisDeck, aMmvsTriedThisDeck)
+			fmt.Printf("\n \nDeck: %v   mN: %v   aMStratNumTD: %v  MvsTriedTD: %vUnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", dN, mN, aMStratNumThisDeck, aMmvsTriedThisDeck, len(priorBoards), time.Now().Sub(aMstartTimeAllDecks), time.Now().Sub(aMstartTimeThisDeck))
 			printBoard(b)
 		case pTypeIn == "BB" && printMoveDetail.pType == pTypeIn && variant == 2: // for BB
 			// comment must have 2 %v in it
@@ -207,11 +211,18 @@ func pMd(b board, dN int, mN int, pTypeIn string, variant int, comment string, s
 				}
 			}*/
 		case strings.HasPrefix(pTypeIn, "BBS") && strings.HasPrefix(printMoveDetail.pType, "BBS") && variant == 1: // for BBS or BBSS
-			fmt.Printf(comment, dN, mN, aMStratNumThisDeck, aMmvsTriedThisDeck)
+			fmt.Printf(comment, dN, mN, aMStratNumThisDeck, aMmvsTriedThisDeck, len(priorBoards), time.Now().Sub(aMstartTimeAllDecks), time.Now().Sub(aMstartTimeThisDeck))
 		case pTypeIn == "BBS" && printMoveDetail.pType == pTypeIn && variant == 2: // for BBS or BBSS
 			fmt.Printf(comment, b)
 		case pTypeIn == "NOTX" && printMoveDetail.pType != "X" && variant == 1:
-			fmt.Printf(comment, s1, s2, dN, mN, aMStratNumThisDeck, aMmvsTriedThisDeck)
+			fmt.Printf(comment, s1, s2, dN, mN, aMStratNumThisDeck, aMmvsTriedThisDeck, len(priorBoards), time.Now().Sub(aMstartTimeAllDecks), time.Now().Sub(aMstartTimeThisDeck))
 		}
 	}
+	/*if aMmvsTriedThisDeck >= 300 && priorPause != aMmvsTriedThisDeck { //Remove pauser
+			time.Sleep(100 * time.Millisecond) //Remove pauser
+			priorPause = aMmvsTriedThisDeck    //Remove pauser
+			fmt.Printf("\n********** priorPause %v   aMmvsTriedThisDeck %v *****************************\n", priorPause, aMmvsTriedThisDeck)
+		}
+	}*/
+
 }

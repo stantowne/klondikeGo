@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var priorPause = 0 // Remove Pauser
+
 var aMwinCounterThisDeck = 0
 var aMearlyWinCounterThisDeck = 0
 var aMstandardWinCounterThisDeck = 0
@@ -21,6 +23,8 @@ var aMStratlossesAtRepMveThisDeck = 0
 var aMStratlossesExhaustedThisDeck = 0
 var aMStratNumThisDeck = 0
 var aMmvsTriedThisDeck = 0
+var aMstartTimeAllDecks = time.Now()
+var aMstartTimeThisDeck = time.Now()
 
 type boardInfo struct {
 	mN           int
@@ -46,16 +50,9 @@ func playNew(reader csv.Reader) {
 	var aMStratTriedAllDecks int = 0
 	var MovesTriedAllDecks int = 0
 
-	aMstartTimeAllDecks := time.Now()
-	aMstartTimeThisDeck := time.Now()
-
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
-		// Verbose Special Starts Here - No effect on operation
-		if strings.Contains(verboseSpecial, "D") {
-			aMstartTimeThisDeck = time.Now()
-		}
-		// Verbose Special Ends Here - No effect on operation
+		aMstartTimeThisDeck = time.Now()
 
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {
