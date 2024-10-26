@@ -127,7 +127,10 @@ func (b board) boardCode() bCode {
 	for col = 0; col < 7; col++ {
 		bC[i] = 0b_10000110 + col
 		i++
-		for _, c := range b.columns[col] {
+		for k, c := range b.columns[col] {
+			for i >= 65 {
+				k++
+			}
 			bC[i] = c.packCard()
 			i++
 		}

@@ -19,10 +19,16 @@ var aMlossCounterThisDeck = 0
 var aMStratlossesAtNoMovesThisDeck = 0
 var aMStratlossesAtRepMveThisDeck = 0
 var aMStratlossesExhaustedThisDeck = 0
-var aMStratNumThisDeck = 1
+var aMStratNumThisDeck = 0
 var aMmvsTriedThisDeck = 0
 
-var priorBoards = make(map[string]int)
+type boardInfo struct {
+	mN           int
+	aMmvsTriedTD int
+	// May add linked list and stats later
+}
+
+var priorBoards = make(map[string]boardInfo)
 
 func playNew(reader csv.Reader) {
 	if verbose > 1 {
@@ -37,7 +43,7 @@ func playNew(reader csv.Reader) {
 	var aMStratlossesAtNoMovesAllDecks = 0
 	var aMStratlossesAtRepMveAllDecks = 0
 	var aMStratlossesExhaustedAllDecks = 0
-	var aMStratNumAllDecks int = 0
+	var aMStratTriedAllDecks int = 0
 	var MovesTriedAllDecks int = 0
 
 	aMstartTimeAllDecks := time.Now()
@@ -99,7 +105,7 @@ func playNew(reader csv.Reader) {
 			endTime := time.Now()
 			elapsedTime := endTime.Sub(aMstartTimeThisDeck)
 			//fmt.Printf("Strategy Losses at Game Length Limit is: %d\n", aMStratlossesAtGLLThisDeck)
-			fmt.Printf("Strategies Played %d\n", aMStratNumThisDeck)
+			fmt.Printf("Strategies Played %d\n", aMStratNumThisDeck+1)
 			fmt.Printf("     Strategy Losses at No Moves Available is %d\n", aMStratlossesAtNoMovesThisDeck)
 			fmt.Printf("     Strategy Losses at Repetitive Move is %d\n", aMStratlossesAtRepMveThisDeck)
 			fmt.Printf("     Strategy Losses at Moves Exhausted is %d\n", aMStratlossesExhaustedThisDeck)
@@ -128,7 +134,7 @@ func playNew(reader csv.Reader) {
 		aMStratlossesAtRepMveThisDeck = 0
 		aMStratlossesExhaustedAllDecks += aMStratlossesExhaustedThisDeck
 		aMStratlossesExhaustedThisDeck = 0
-		aMStratNumAllDecks += aMStratNumThisDeck
+		aMStratTriedAllDecks += (aMStratNumThisDeck + 1) // Because we start at strategy 0 which is all best moves
 		aMStratNumThisDeck = 0
 		MovesTriedAllDecks += aMmvsTriedThisDeck
 		aMmvsTriedThisDeck = 0
@@ -141,7 +147,7 @@ func playNew(reader csv.Reader) {
 	fmt.Printf("Total Decks Won is: %d of which: %d were Early Wins and %d were Standard Wins\n", aMwinCounterAllDecks, aMearlyWinCounterAllDecks, aMstandardWinCounterAllDecks)
 	fmt.Printf("Total Decks Lost is: %d which should equal Counted losses: %d\n", lossCounter, aMlossCounterThisDeck)
 	//fmt.Printf("Strategy Losses at Game Length Limit is: %d\n", aMStratlossesAtGLL)
-	fmt.Printf("Strategies Played %d\n", aMStratNumAllDecks)
+	fmt.Printf("Strategies Played %d\n", aMStratTriedAllDecks)
 	fmt.Printf("     Strategy Losses at No Moves Available is %d\n", aMStratlossesAtNoMovesAllDecks)
 	fmt.Printf("     Strategy Losses at Repetitive Move is %d\n", aMStratlossesAtRepMveAllDecks)
 	fmt.Printf("     Strategy Losses at Moves Exhausted is %d\n", aMStratlossesExhaustedAllDecks)
@@ -149,7 +155,7 @@ func playNew(reader csv.Reader) {
 		aMStratlossesAtNoMovesAllDecks+aMStratlossesAtRepMveAllDecks+aMStratlossesExhaustedAllDecks,
 		aMwinCounterThisDeck,
 		aMStratlossesAtNoMovesAllDecks+aMStratlossesAtRepMveAllDecks+aMStratlossesExhaustedAllDecks+aMwinCounterThisDeck)
-	fmt.Printf("          Should equal Strategies Played %d\n", aMStratNumAllDecks)
+	fmt.Printf("          Should equal Strategies Played %d\n", aMStratTriedAllDecks)
 	averageElapsedTimePerDeck := float64(elapsedTime.Microseconds()) / float64(numberOfDecksToBePlayed)
 	fmt.Printf("Elapsed Time is %v.\n", elapsedTime)
 	fmt.Printf("Average Elapsed Time per Deck is %vus.\n", averageElapsedTimePerDeck)

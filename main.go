@@ -21,15 +21,16 @@ var verbose int
 var verboseSpecial string
 var findAllSuccessfulStrategies bool
 var printTree string // edit these to pMd
-type pMd struct {
-	pType       string
-	startType   string
-	startVal    int
-	continueFor int
-	outputTo    string
+type pMds struct {
+	pType                 string
+	deckStartVal          int
+	deckContinueFor       int
+	aMvsThisDkStartVal    int
+	aMvsThisDkContinueFor int
+	outputTo              string
 }
 
-var printMoveDetail pMd
+var printMoveDetail pMds
 
 var err error
 var singleGame = true
@@ -47,21 +48,22 @@ func main() {
 				args[5] = findAllSuccessfulStrategies 					(applicable playNew only)
 				args[6] = printMoveDetail		                  		(applicable playNew only)
 			              	as a string to be parsed of the form:
-			           			pType,startType,startVal,continueFor,outputTo
+			           			pType,startType,deckStartVal,deckContinueFor,outputTo
 
 								where:
 									pType = empty or X - do not print NOTE: Default if args[6] is not on command line
 										  = BB         - Board by Board detail
 		                                  = BBS        - Board by Board Short detail
+		                                  = BBSS       - Board by Board Super Short detail
 			                              = TW         - print Tree in Wide mode
 										  = TS         - print Tree in Skinny mode
-									startType = DECK  - then the startVal represents a deckNum (Default)
-			                                  = MvsT  - then the startVal represents a aMmvsTriedThisDeck
-			                        startVal    = Non-negative integer (Default 0)
-									continueFor = Non-negative integer (Default 0 which indicates forever)
+									deckStartVal    	  = Non-negative integer (Default 0)
+									deckContinueFor  	 = Non-negative integer (Default 0 which indicates forever)
+									aMvsThisDkStartVal    = Non-negative integer (Default 0)
+									aMvsThisDkContinueFor = Non-negative integer (Default 0 which indicates forever)
 									outputTo = C = Console (default)
 						                     = file name and path (if applicable)
-			                                   Note: if file name is present then startType. startVal and ContinueFor
+			                                   Note: if file name is present then startType. deckStartVal and ContinueFor
 			                                         must be present or delineated with ":"
 
 				           	and placed into a package level struct printMoveDetail of type pMd which can be seen above:
@@ -71,12 +73,19 @@ func main() {
 	//    Will be especially useful when we figure out how to include the versioning
 
 	printMoveDetail.pType = "X"
-	printMoveDetail.startType = "DECK"
-	printMoveDetail.startVal = 0
-	printMoveDetail.continueFor = 0
+	printMoveDetail.deckStartVal = 0
+	printMoveDetail.deckContinueFor = 0
+	printMoveDetail.aMvsThisDkStartVal = 0
+	printMoveDetail.aMvsThisDkContinueFor = 0
 	printMoveDetail.outputTo = "C"
 
 	args := os.Args
+
+	// Convert all the arguments to upper case
+
+	for i := range args {
+		args[i] = strings.ToUpper(args[i])
+	}
 
 	firstDeckNum, err = strconv.Atoi(args[1])
 	if err != nil || firstDeckNum < 0 || firstDeckNum > 9999 {
@@ -150,93 +159,53 @@ func main() {
 	}
 	pMdArgs := strings.Split(args[6], ",")
 	l := len(pMdArgs)
-	/*                                  NOT SURE WHY THIS DID NOT WORK BUT USED IFS INSTEAD
-	switch {
-	case l >= 1:
-		if pMdArgs[0] == "BB" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" {
-			printMoveDetail.pType = pMdArgs[0]
-		} else {
-			println("Sixth argument invalid")
-			println("  Must start with BB, TW or TS")
-			os.Exit(1)
-		}
-		fallthrough
-	case l >= 2:
-		if pMdArgs[1] == "DECK" || pMdArgs[1] == "MvsT" {
-			printMoveDetail.startType = pMdArgs[1]
-		} else {
-			println("Sixth argument part 2 invalid")
-			println("  Must be Deck or MvsT")
-			os.Exit(1)
-		}
-		fallthrough
-	case l >= 3:
-		printMoveDetail.startVal, err = strconv.Atoi(pMdArgs[2])
-		if err != nil || printMoveDetail.startVal < 0 {
-			println("Sixth argument part 3 invalid")
-			println("must be a non-negative integer")
-			os.Exit(1)
-		}
-		fallthrough
-	case l >= 4:
-		printMoveDetail.startVal, err = strconv.Atoi(pMdArgs[3])
-		if err != nil || printMoveDetail.startVal < 0 {
-			println("Sixth argument part 4 invalid")
-			println("must be a non-negative integer")
-			os.Exit(1)
-		}
-		fallthrough
-	case l >= 5:
-		if pMdArgs[4] == "C" {
-			printMoveDetail.outputTo = pMdArgs[4]
-		} else {
-			// add if clause here to test if valid filename and it can be overwritten
-			println("Sixth argument part 5 invalid")
-			println("must be a C for Console or a valid file name")
-			os.Exit(1)
-		}
 
-	}
-	*/
 	if l >= 1 {
-		if pMdArgs[0] == "BB" || pMdArgs[0] == "BBS" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" || pMdArgs[0] == "X" {
+		if pMdArgs[0] == "BB" || pMdArgs[0] == "BBS" || pMdArgs[0] == "BBSS" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" || pMdArgs[0] == "X" {
 			printMoveDetail.pType = pMdArgs[0]
 		} else {
 			println("Sixth argument invalid")
-			println("  Must start with BB, BBS ,TW, TS or X")
+			println("  Must start with BB, BBS, BBSS, TW, TS or X")
 			os.Exit(1)
 		}
 	}
 	if l >= 2 {
-		if pMdArgs[1] == "DECK" || pMdArgs[1] == "MvsT" {
-			printMoveDetail.startType = pMdArgs[1]
-		} else {
+		printMoveDetail.deckStartVal, err = strconv.Atoi(pMdArgs[1])
+		if err != nil || printMoveDetail.deckStartVal < 0 {
 			println("Sixth argument part 2 invalid")
-			println("  Must be Deck or MvsT")
+			println("must be a non-negative integer")
 			os.Exit(1)
 		}
 	}
 	if l >= 3 {
-		printMoveDetail.startVal, err = strconv.Atoi(pMdArgs[2])
-		if err != nil || printMoveDetail.startVal < 0 {
+		printMoveDetail.deckContinueFor, err = strconv.Atoi(pMdArgs[2])
+		if err != nil || printMoveDetail.deckContinueFor < 0 {
 			println("Sixth argument part 3 invalid")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
 	}
 	if l >= 4 {
-		printMoveDetail.continueFor, err = strconv.Atoi(pMdArgs[3])
-		if err != nil || printMoveDetail.continueFor < 0 {
+		printMoveDetail.aMvsThisDkStartVal, err = strconv.Atoi(pMdArgs[3])
+		if err != nil || printMoveDetail.aMvsThisDkStartVal < 0 {
 			println("Sixth argument part 4 invalid")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
 	}
 	if l >= 5 {
-		if pMdArgs[4] == "C" {
-			printMoveDetail.outputTo = pMdArgs[4]
+		printMoveDetail.aMvsThisDkContinueFor, err = strconv.Atoi(pMdArgs[4])
+		if err != nil || printMoveDetail.aMvsThisDkContinueFor < 0 {
+			println("Sixth argument part 5 invalid")
+			println("must be a non-negative integer")
+			os.Exit(1)
+		}
+	}
+	if l >= 6 {
+		if pMdArgs[5] == "C" {
+			printMoveDetail.outputTo = pMdArgs[5]
 		} else {
-			// add if clause here to test if valid filename and it can be overwritten
+			// add if-clause here to test if valid filename and it can be overwritten
 			println("Sixth argument part 5 invalid")
 			println("must be a C for Console or a valid file name")
 			os.Exit(1)
