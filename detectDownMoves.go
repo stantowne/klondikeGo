@@ -17,24 +17,10 @@ func detectDownMoves(b board, mc int, _ bool) []move {
 		os.Exit(1)
 	}
 	if lastWasteCard.Rank == 1 {
-		m = move{
-			name:       "moveAceAcross", //always better to move an ace across
-			priority:   moveBasePriority["moveAceAcross"],
-			toPile:     lastWasteCard.Suit,
-			cardToMove: lastWasteCard,
-		}
-		moves = append(moves, m)
-		return moves
+		return moves // there is never a reason to move an Ace down
 	}
 	if lastWasteCard.Rank == 2 && len(b.piles[lastWasteCard.Suit]) == 1 {
-		m = move{
-			name:       "moveDeuceAcross", //always better to move a deuce across, if possible
-			priority:   moveBasePriority["moveDeuceAcross"],
-			toPile:     lastWasteCard.Suit,
-			cardToMove: lastWasteCard,
-		}
-		moves = append(moves, m)
-		return moves
+		return moves // there is never a reason to move a Deuce down if it can be moved over
 	}
 	for i := 0; i < 7; i++ {
 		lastColumnCard, _, err := last(b.columns[i])
