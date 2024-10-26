@@ -23,7 +23,7 @@ func detectDownMoves(b board, mc int, _ bool) []move {
 			toPile:     lastWasteCard.Suit,
 			cardToMove: lastWasteCard,
 		}
-		moves = append(moves, m)
+		// moves = append(moves, m)
 		return moves
 	}
 	if lastWasteCard.Rank == 2 && len(b.piles[lastWasteCard.Suit]) == 1 {
@@ -33,7 +33,7 @@ func detectDownMoves(b board, mc int, _ bool) []move {
 			toPile:     lastWasteCard.Suit,
 			cardToMove: lastWasteCard,
 		}
-		moves = append(moves, m)
+		// moves = append(moves, m)
 		return moves
 	}
 	for i := 0; i < 7; i++ {
