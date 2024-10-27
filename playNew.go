@@ -23,11 +23,11 @@ const horiz8 = horiz3 + horiz5          // Looks Like: ->━━━━━━━�
 const vert3 = " " + vert1 + " "                                   // Looks Like: -> ┃ <-
 const horiz3 = horiz1 + horiz1 + horiz1                           // Looks Like: ->━━━<-
 const horiz1NewFirstStrat = string('\u2533')                      // Looks Like: ->┳<-
-const horiz3NewFirstStrat = " " + horiz1NewFirstStrat + horiz1    // Looks Like: -> ┳━<-
+const horiz3NewFirstStrat = horiz1 + horiz1NewFirstStrat + horiz1 // Looks Like: ->━┳━<-
 const horiz1NewStratLastStrat = string('\u2517')                  // Looks Like: ->┗<-
 const horiz3NewLastStrat = " " + horiz1NewStratLastStrat + horiz1 // Looks Like: -> ┗━<-
-const horiz1NewMidStrat = string('\u254B')                        // Looks Like: ->╋<-
-const horiz3NewMidStrat = horiz1 + horiz1NewMidStrat + horiz1     // Looks Like: ->━╋━<-
+const horiz1NewMidStrat = string('\u2523')                        // Looks Like: ->┣<-
+const horiz3NewMidStrat = horiz1 + horiz1NewMidStrat + horiz1     // Looks Like: -> ┣━<-
 
 var aMwinCounterThisDeck = 0
 var aMearlyWinCounterThisDeck = 0
@@ -86,7 +86,7 @@ func playNew(reader csv.Reader) {
 		// Following used only for "TSS" so no generic equivalent variable is needed
 		// const horiz3NewFirstStrat    // Looks Like: -> ┳━<-
 		// const horiz3NewLastStrat     // Looks Like: -> ┗━<-
-		// const horiz3NewMidStrat      // Looks Like: ->━╋━<-
+		// const horiz3NewMidStrat      // Looks Like: ->━┳━<-
 	}
 
 	// delete here just to eliminate variable not used for now
