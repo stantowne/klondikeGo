@@ -33,7 +33,7 @@ type pMds struct {
 var printMoveDetail pMds
 
 var err error
-var singleGame = true
+var singleGame bool // = true
 
 func main() {
 	/*
@@ -104,8 +104,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	if numberOfDecksToBePlayed > 1 {
-		singleGame = false
+	if numberOfDecksToBePlayed == 1 {
+		singleGame = true
+
 	}
 
 	//
