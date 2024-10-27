@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/csv"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -18,74 +17,35 @@ var firstDeckNum int
 var numberOfDecksToBePlayed int
 var length int
 var verbose int
+
 var verboseSpecial string
 var findAllSuccessfulStrategies bool
-var printTree string // edit these to pMd
-type pMds struct {
-	pType                 string
-	deckStartVal          int
-	deckContinueFor       int
-	aMvsThisDkStartVal    int
-	aMvsThisDkContinueFor int
-	outputTo              string
-}
-
-var printMoveDetail pMds
+var printTree string
 
 var err error
-var singleGame = true
+var singleGame bool // = true
+var AllMvStratNum int
 
 func main() {
 	/*
 
-				Command line arguments
+		Command line arguments
 
-				args[0] = program name
-				args[1] = # of the first deck to be used from within the pre-stored decks used to standardize testing
-				args[2] = # of decks to be played
-				args[3] = length of IOS strategy - see comments below	(applicable to playOrig only)
-				args[4] = verbosity switch for messages
-				args[5] = findAllSuccessfulStrategies 					(applicable playNew only)
-				args[6] = printMoveDetail		                  		(applicable playNew only)
-			              	as a string to be parsed of the form:
-			           			pType,startType,deckStartVal,deckContinueFor,outputTo
-
-								where:
-									pType = empty or X - do not print NOTE: Default if args[6] is not on command line
-										  = BB         - Board by Board detail
-		                                  = BBS        - Board by Board Short detail
-		                                  = BBSS       - Board by Board Super Short detail
-			                              = TW         - print Tree in Wide mode
-										  = TS         - print Tree in Skinny mode
-									deckStartVal    	  = Non-negative integer (Default 0)
-									deckContinueFor  	 = Non-negative integer (Default 0 which indicates forever)
-									aMvsThisDkStartVal    = Non-negative integer (Default 0)
-									aMvsThisDkContinueFor = Non-negative integer (Default 0 which indicates forever)
-									outputTo = C = Console (default)
-						                     = file name and path (if applicable)
-			                                   Note: if file name is present then startType. deckStartVal and ContinueFor
-			                                         must be present or delineated with ":"
-
-				           	and placed into a package level struct printMoveDetail of type pMd which can be seen above:
+		args[0] = program name
+		args[1] = # of the first deck to be used from within the pre-stored decks used to standardize testing
+		args[2] = # of decks to be played
+		args[3] = length of IOS strategy - see comments below	(applicable to playOrig only)
+		args[4] = verbosity switch for messages
+		args[5] = findAllSuccessfulStrategies 					(applicable playNew only)
+		args[6] = printTree                   					(applicable playNew only)
 	*/
 
 	// Always a good idea to print out the program source of the output.
 	//    Will be especially useful when we figure out how to include the versioning
 
-	printMoveDetail.pType = "X"
-	printMoveDetail.deckStartVal = 0
-	printMoveDetail.deckContinueFor = 0
-	printMoveDetail.aMvsThisDkStartVal = 0
-	printMoveDetail.aMvsThisDkContinueFor = 0
-	printMoveDetail.outputTo = "C"
-
 	args := os.Args
 
-	// Convert all the arguments to upper case
-
-	for i := range args {
-		args[i] = strings.ToUpper(args[i])
-	}
+	println("Calling Program:  ", args[0])
 
 	firstDeckNum, err = strconv.Atoi(args[1])
 	if err != nil || firstDeckNum < 0 || firstDeckNum > 9999 {
@@ -103,8 +63,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	if numberOfDecksToBePlayed > 1 {
-		singleGame = false
+	if numberOfDecksToBePlayed == 1 {
+		singleGame = true
+
 	}
 
 	//
@@ -131,17 +92,12 @@ func main() {
 	//  verbose special to indicate that optional printing should be done.
 	verboseSpecial = args[4]
 	verbose, err = strconv.Atoi(verboseSpecial[0:1])
-	if err != nil || verbose >= 10 || verbose < 0 {
+	if err != nil || verbose < 0 || verbose > 99 {
 		println("fourth argument invalid")
 		println("verbose must be a non-negative integer no greater than 10")
 		os.Exit(1)
 	}
 	verboseSpecial = verboseSpecial[1:]
-
-	/* Verbose Special codes implemented:  CASE IS IMPORTANT!!!!!!!!!!!
-	   M = print detail info after each Move 			playNew Only (in playAllMovesS)
-	   D = print deck level statistics 					playNew Only (in playNew)
-	*/
 
 	// Arguments 5 & 6 below applies only to playNew			****************************************************
 	// But they must be on command line anyway
@@ -157,61 +113,22 @@ func main() {
 		println("     'A' or 'a' - See how many paths to success you can find")
 		os.Exit(1)
 	}
-	pMdArgs := strings.Split(args[6], ",")
-	l := len(pMdArgs)
 
-	if l >= 1 {
-		if pMdArgs[0] == "BB" || pMdArgs[0] == "BBS" || pMdArgs[0] == "BBSS" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" || pMdArgs[0] == "X" {
-			printMoveDetail.pType = pMdArgs[0]
-		} else {
-			println("Sixth argument invalid")
-			println("  Must start with BB, BBS, BBSS, TW, TS or X")
-			os.Exit(1)
-		}
+	switch strings.TrimSpace(args[6])[0:1] {
+	case "X", "x":
+		printTree = "X" // Do Not Print Tree
+	case "C", "c":
+		printTree = "C" // Print Tree to Console
+	case "F", "f":
+		printTree = "F" // Print Tree to File -- Note not yet implemented
+	default:
+		println("Sixth argument invalid")
+		println("  printTree must be either:")
+		println("     'X' or 'x' - See how many paths to success you can find")
+		println("     'C' or 'c' - See how many paths to success you can find")
+		println("     'F' or 'f' - Normal case stop after finding a successful set of moves")
+		os.Exit(1)
 	}
-	if l >= 2 {
-		printMoveDetail.deckStartVal, err = strconv.Atoi(pMdArgs[1])
-		if err != nil || printMoveDetail.deckStartVal < 0 {
-			println("Sixth argument part 2 invalid")
-			println("must be a non-negative integer")
-			os.Exit(1)
-		}
-	}
-	if l >= 3 {
-		printMoveDetail.deckContinueFor, err = strconv.Atoi(pMdArgs[2])
-		if err != nil || printMoveDetail.deckContinueFor < 0 {
-			println("Sixth argument part 3 invalid")
-			println("must be a non-negative integer")
-			os.Exit(1)
-		}
-	}
-	if l >= 4 {
-		printMoveDetail.aMvsThisDkStartVal, err = strconv.Atoi(pMdArgs[3])
-		if err != nil || printMoveDetail.aMvsThisDkStartVal < 0 {
-			println("Sixth argument part 4 invalid")
-			println("must be a non-negative integer")
-			os.Exit(1)
-		}
-	}
-	if l >= 5 {
-		printMoveDetail.aMvsThisDkContinueFor, err = strconv.Atoi(pMdArgs[4])
-		if err != nil || printMoveDetail.aMvsThisDkContinueFor < 0 {
-			println("Sixth argument part 5 invalid")
-			println("must be a non-negative integer")
-			os.Exit(1)
-		}
-	}
-	if l >= 6 {
-		if pMdArgs[5] == "C" {
-			printMoveDetail.outputTo = pMdArgs[5]
-		} else {
-			// add if-clause here to test if valid filename and it can be overwritten
-			println("Sixth argument part 5 invalid")
-			println("must be a C for Console or a valid file name")
-			os.Exit(1)
-		}
-	}
-
 	// Argument above applies only to playNew			****************************************************
 
 	// Open the deck file here in main - will be read in both playOrig and PlayNew
@@ -248,11 +165,9 @@ func main() {
 
 		gameLengthLimit = gameLengthLimitOrig
 		moveBasePriority = moveBasePriorityOrig
-		fmt.Printf("Calling Program: %v          GameLengthLimit: %v (not Implemented)\n\n\n", args[0], gameLengthLimit)
 		playOrig(*reader)
 	} else {
 		gameLengthLimit = gameLengthLimitNew
-		fmt.Printf("Calling Program: %v          GameLengthLimit: %v (not Implemented)\n\n\n", args[0], gameLengthLimit)
 		moveBasePriority = moveBasePriorityNew
 		playNew(*reader)
 	}

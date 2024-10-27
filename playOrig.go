@@ -170,7 +170,8 @@ newDeck:
 	elapsedTime := endTime.Sub(startTime)
 	percentageAttemptsAvoided := 100.0 * float64(attemptsAvoidedCounter) / float64(possibleAttempts)
 	var p = message.NewPrinter(language.English)
-	_, err = p.Printf("\nNumber of Decks Played is %d.\n", numberOfDecksToBePlayed)
+	fmt.Printf("\nDate & Time Completed is %v\n", endTime)
+	_, err = p.Printf("Number of Decks Played is %d, starting with Deck %d.\n", numberOfDecksToBePlayed, firstDeckNum)
 	if err != nil {
 		fmt.Println("Number of Decks Played cannot print")
 	}
