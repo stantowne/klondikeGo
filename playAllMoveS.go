@@ -10,7 +10,7 @@ import (
 
 func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
-	/* Return Codes: SF  = Strategy Failed	NPM	= No Possible Moves
+	/* Return Codes: SF  = Strategy Failed	 NPM	= No Possible Moves
 	                 						 RB = Repetitive Board
 	                                         SE = Strategy Exhausted
 	                 SW  = Strategy Win      EW = Early Win
@@ -123,6 +123,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 		bNew := bIn.copyBoard() // Critical Must use copyBoard
 		bNew = moveMaker(bNew, aMoves[i])
+
 		pMd(bIn, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at deckNum: %v  moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", "", "")
 		pMd(bIn, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "")
 		pMd(bNew, deckNum, moveNum, "BBS", 2, "     bNew: %v\n", "", "")
@@ -192,7 +193,7 @@ func pMd(b board, dN int, mN int, pTypeIn string, variant int, comment string, s
 			if mN != 0 {
 				fmt.Printf("\n\n****************************************\n")
 			}
-			fmt.Printf("\n \nDeck: %v   mN: %v   aMStratNumTD: %v  MvsTriedTD: %vUnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", dN, mN, aMStratNumThisDeck, aMmvsTriedThisDeck, len(priorBoards), time.Now().Sub(aMstartTimeAllDecks), time.Now().Sub(aMstartTimeThisDeck))
+			fmt.Printf("\n \nDeck: %v   mN: %v   aMStratNumTD: %v  MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", dN, mN, aMStratNumThisDeck, aMmvsTriedThisDeck, len(priorBoards), time.Now().Sub(aMstartTimeAllDecks), time.Now().Sub(aMstartTimeThisDeck))
 			printBoard(b)
 		case pTypeIn == "BB" && printMoveDetail.pType == pTypeIn && variant == 2: // for BB
 			// comment must have 2 %v in it

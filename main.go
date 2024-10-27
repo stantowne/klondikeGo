@@ -11,7 +11,7 @@ import (
 )
 
 const gameLengthLimitOrig = 150 // max moveCounter; increasing to 200 does not increase win rate
-const gameLengthLimitNew = 150  // max moveNum
+const gameLengthLimitNew = 150  // max moveNum  NOT YET IMPLEMENTED
 var gameLengthLimit int
 
 var firstDeckNum int
@@ -38,36 +38,38 @@ var singleGame bool // = true
 func main() {
 	/*
 
-					Command line arguments
+						Command line arguments
 
-					args[0] = program name
-					args[1] = # of the first deck to be used from within the pre-stored decks used to standardize testing
-					args[2] = # of decks to be played
-					args[3] = length of IOS strategy - see comments below	(applicable to playOrig only)
-					args[4] = verbosity switch for messages
-					args[5] = findAllSuccessfulStrategies 					(applicable playNew only)
-					args[6] = printMoveDetail		                  		(applicable playNew only)
-				              	as a string to be parsed of the form:
-				           			pType,startType,deckStartVal,deckContinueFor,outputTo
+						args[0] = program name
+						args[1] = # of the first deck to be used from within the pre-stored decks used to standardize testing
+						args[2] = # of decks to be played
+						args[3] = length of IOS strategy - see comments below	(applicable to playOrig only)
+						args[4] = verbosity switch for messages
+						args[5] = findAllSuccessfulStrategies 					(applicable playNew only)
+						args[6] = printMoveDetail		                  		(applicable playNew only)
+					              	as a string to be parsed of the form:
+					           			pType,startType,deckStartVal,deckContinueFor,outputTo
 
-									where:
-										pType = empty or X - do not print NOTE: Default if args[6] is not on command line
-											  = BB         - Board by Board detail
-			                                  = BBS        - Board by Board Short detail
-			                                  = BBSS       - Board by Board Super Short detail
-				                              = TW         - print Tree in Wide mode     8 char per move
-											  = TS         - print Tree in Skinny mode   5 char per move
-		                                      = TSS        - print Tree in Skinny mode   3 char per move
-										deckStartVal    	  = Non-negative integer (Default 0)
-										deckContinueFor  	  = Non-negative integer (Default 0 which indicates forever)
-										aMvsThisDkStartVal    = Non-negative integer (Default 0)
-										aMvsThisDkContinueFor = Non-negative integer (Default 0 which indicates forever)
-										outputTo = C = Console (default)
-							                     = file name and path (if applicable)
-				                                   Note: if file name is present then startType. deckStartVal and ContinueFor
-				                                         must be present or delineated with ":"
+										where:
+											pType = empty or X - do not print NOTE: Default if args[6] is not on command line
+												  = BB         - Board by Board detail
+				                                  = BBS        - Board by Board Short detail
+				                                  = BBSS       - Board by Board Super Short detail
+					                              = TW         - print Tree in Wide mode     8 char per move
+												  = TS         - print Tree in Skinny mode   5 char per move
+			                                      = TSS        - print Tree in Super Skinny mode   3 char per move
+		                               These next four limit at what point and for how long move detail should actually be printed.
+											deckStartVal    	  = Non-negative integer (Default 0)
+											deckContinueFor  	  = Non-negative integer (Default 0 which indicates forever)
+											aMvsThisDkStartVal    = Non-negative integer (Default 0)
+											aMvsThisDkContinueFor = Non-negative integer (Default 0 which indicates forever)
 
-					           	and placed into a package level struct printMoveDetail of type pMd which can be seen above:
+		                                    outputTo = C = Console (default)
+								                     = file name and path (if applicable)
+					                                   Note: if file name is present then startType. deckStartVal and ContinueFor
+					                                         must be present or delineated with ":"
+
+						           	and placed into a package level struct printMoveDetail of type pMd which can be seen above:
 	*/
 
 	// Always a good idea to print out the program source of the output.
