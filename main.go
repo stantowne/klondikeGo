@@ -20,7 +20,7 @@ var length int
 var verbose int
 var verboseSpecial string
 var findAllSuccessfulStrategies bool
-var printTree string // edit these to pMd
+
 type pMds struct {
 	pType                 string
 	deckStartVal          int
@@ -218,6 +218,44 @@ func main() {
 
 	// Argument above applies only to playNew			****************************************************
 
+	fmt.Printf("\nCalling Program: %v\n\n", args[0])
+	fmt.Printf("Command Line Arguments:\n"+
+		"            Number Of Decks To Be Played: %v\n"+
+		"                      Starting with deck: %v\n\n", numberOfDecksToBePlayed, firstDeckNum)
+	if length != -1 {
+		nOfS := 1 << length //number of initial strategies
+		fmt.Printf(" Style: Original IOS (Initial Override Strategies)\n\n"+
+			"                     IOS strategy length: %v\n"+
+			"      Max IOS startegy attempts per deck: %v\n"+
+			"       Total strategy attempts all decks: %v\n\n", length, nOfS, nOfS*numberOfDecksToBePlayed)
+	} else {
+		fmt.Printf(" Style: New AllMvs (All Moves Possible)\n\n" +
+			"   Max AllMvs startegy attempts per deck: Variable\n\n")
+	}
+	fmt.Printf("                           Verbose level: %v\n"+
+		"                   Verbose special codes: %v\n",
+		verbose, verboseSpecial)
+	if length == -1 {
+		fmt.Printf("\n Print Move Detail Options:\n"+
+			"          Find All Successful Strategies: %v\n"+
+			"                              Print Type: %v\n"+
+			"                       Staring with Deck: %v\n"+
+			"                            Continue for: %v decks (0 = all the rest)\n"+
+			"             Starting with Moves Tried #: %v\n"+
+			"                            Continue for: %v moves tried (0 = all the rest)\n",
+			findAllSuccessfulStrategies,
+			printMoveDetail.pType,
+			printMoveDetail.deckStartVal,
+			printMoveDetail.deckContinueFor,
+			printMoveDetail.aMvsThisDkStartVal,
+			printMoveDetail.deckContinueFor)
+		if printMoveDetail.outputTo == "C" {
+			fmt.Printf("                         Print Output to: Console\n")
+		} else {
+			fmt.Printf("                    Print Output to file: %v  (not yet implemented)\n", printMoveDetail.outputTo)
+		}
+	}
+
 	// Open the deck file here in main - will be read in both playOrig and PlayNew
 	inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
 	file, err := os.Open(inputFileName)
@@ -252,11 +290,11 @@ func main() {
 
 		gameLengthLimit = gameLengthLimitOrig
 		moveBasePriority = moveBasePriorityOrig
-		fmt.Printf("Calling Program: %v          GameLengthLimit: %v (not Implemented)\n\n\n", args[0], gameLengthLimit)
+		fmt.Printf("\n                         GameLengthLimit: %v\n\n\n", gameLengthLimit)
 		playOrig(*reader)
 	} else {
 		gameLengthLimit = gameLengthLimitNew
-		fmt.Printf("Calling Program: %v          GameLengthLimit: %v (not Implemented)\n\n\n", args[0], gameLengthLimit)
+		fmt.Printf("\n                         GameLengthLimit: %v  (not yet implemented)\n\n\n", gameLengthLimit)
 		moveBasePriority = moveBasePriorityNew
 		playNew(*reader)
 	}
