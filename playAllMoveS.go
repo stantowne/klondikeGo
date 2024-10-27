@@ -216,6 +216,8 @@ func pMd(b board, dN int, mN int, pTypeIn string, variant int, comment string, s
 			fmt.Printf(comment, b)
 		case pTypeIn == "NOTX" && printMoveDetail.pType != "X" && variant == 1:
 			fmt.Printf(comment, s1, s2, dN, mN, aMStratNumThisDeck, aMmvsTriedThisDeck, len(priorBoards), time.Now().Sub(aMstartTimeAllDecks), time.Now().Sub(aMstartTimeThisDeck))
+		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 1:
+		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 2:
 		}
 	}
 	/*if aMmvsTriedThisDeck >= 300 && priorPause != aMmvsTriedThisDeck { //Remove pauser

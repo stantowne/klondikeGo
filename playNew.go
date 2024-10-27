@@ -10,7 +10,24 @@ import (
 	"time"
 )
 
-var priorPause = 0 // Remove Pauser
+//var priorPause = 0 // Remove Pauser
+
+// These are used in the Tree printing subroutine pmd(......) in playAllMoves
+const vert1 = string('\u2503')          // Looks Like: ->┃<-
+const horiz1 = string('\u2501')         // Looks Like: ->━<-
+const vert5 = "  " + vert1 + "  "       // Looks Like: ->  ┃  <-
+const vert8 = "  " + vert5 + " "        // Looks Like: ->    ┃   <-
+const horiz5 = horiz3 + horiz1 + horiz1 // Looks Like: ->━━━━━<-
+const horiz8 = horiz3 + horiz5          // Looks Like: ->━━━━━━━━<-
+
+const vert3 = " " + vert1 + " "                                   // Looks Like: -> ┃ <-
+const horiz3 = horiz1 + horiz1 + horiz1                           // Looks Like: ->━━━<-
+const horiz1NewFirstStrat = string('\u2533')                      // Looks Like: ->┳<-
+const horiz3NewFirstStrat = " " + horiz1NewFirstStrat + horiz1    // Looks Like: -> ┳━<-
+const horiz1NewStratLastStrat = string('\u2517')                  // Looks Like: ->┗<-
+const horiz3NewLastStrat = " " + horiz1NewStratLastStrat + horiz1 // Looks Like: -> ┗━<-
+const horiz1NewMidStrat = string('\u254B')                        // Looks Like: ->╋<-
+const horiz3NewMidStrat = horiz1 + horiz1NewMidStrat + horiz1     // Looks Like: ->━╋━<-
 
 var aMwinCounterThisDeck = 0
 var aMearlyWinCounterThisDeck = 0
@@ -49,6 +66,33 @@ func playNew(reader csv.Reader) {
 	var aMStratlossesExhaustedAllDecks = 0
 	var aMStratTriedAllDecks int = 0
 	var MovesTriedAllDecks int = 0
+
+	var treeMoveLen int
+	var treeVert string
+	var treeHoriz string
+	switch printMoveDetail.pType {
+	case "TW":
+		treeMoveLen = 8
+		treeVert = vert8   // Looks Like: ->    ┃   <-
+		treeHoriz = horiz8 // Looks Like: ->━━━━━━━━<-
+	case "TS":
+		treeMoveLen = 5
+		treeVert = vert5   // Looks Like: ->  ┃  <-
+		treeHoriz = horiz5 // Looks Like: ->━━━━━<-
+	case "TSS":
+		treeMoveLen = 3
+		treeVert = vert3   // Looks Like: -> ┃ <-
+		treeHoriz = horiz3 // Looks Like: ->━━━<-
+		// Following used only for "TSS" so no generic equivalent variable is needed
+		// const horiz3NewFirstStrat    // Looks Like: -> ┳━<-
+		// const horiz3NewLastStrat     // Looks Like: -> ┗━<-
+		// const horiz3NewMidStrat      // Looks Like: ->━╋━<-
+	}
+
+	// delete here just to eliminate variable not used for now
+	if treeVert == treeHoriz {
+		treeMoveLen++
+	}
 
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 

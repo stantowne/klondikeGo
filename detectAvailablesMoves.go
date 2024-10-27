@@ -58,6 +58,7 @@ var moveBasePriorityNew = map[string]int{
 	"flipSt->W Max-6":   9999, //flip MAX - 0 * 3 i.e. Up to  3 cards
 }
 
+// ANY CHANGES IN THES MUST BE MADE IN moveShortName8 BELOW!!!!!!!!!!!!!
 var moveShortName = map[string]string{
 	"moveAceAcross":     "AAccr ",
 	"moveDeuceAcross":   "2Accr ",
@@ -78,6 +79,31 @@ var moveShortName = map[string]string{
 	"flipSt->W Max-4":   "S>W M4", //flip MAX - 0 * 3 i.e. Up to  9 cards
 	"flipSt->W Max-5":   "S>W M5", //flip MAX - 0 * 3 i.e. Up to  6 cards
 	"flipSt->W Max-6":   "S>W M6", //flip MAX - 0 * 3 i.e. Up to  3 cards
+}
+
+// ANY CHANGES IN THESE MUST BE MADE IN moveShortName ABOVE!!!!!!!!!!!!
+//
+//	These are used in playAllMoves func pmd when printing Board-byBoard detail in "TW" format (see arg[6] in main)
+var moveShortName8 = map[string]string{
+	"moveAceAcross":     " AAccr  ",
+	"moveDeuceAcross":   " 2Accr  ",
+	"move3PlusAcross":   " 3+Accr ",
+	"moveDown":          "  Down  ",
+	"moveEntireColumn":  " EntCol ",
+	"flipWasteToStock":  " W->Stk ", //flip moves have the lowest priority
+	"flipStockToWaste":  " Stk->W ", //flip moves have the lowest priority
+	"movePartialColumn": " ParCol ",
+	"moveAceUp":         "  A Up  ",
+	"moveDeuceUp":       "  2 Up  ",
+	"move3PlusUp":       "  3+Up  ",
+	"badMove":           " badMve ", // a legal move which is worse than a mere flip
+	"flipSt->W Max-0":   " S>W M0 ", //flip MAX - 0 * 3 i.e. Up to 21 cards
+	"flipSt->W Max-1":   " S>W M1 ", //flip MAX - 0 * 3 i.e. Up to 18 cards
+	"flipSt->W Max-2":   " S>W M2 ", //flip MAX - 0 * 3 i.e. Up to 15 cards
+	"flipSt->W Max-3":   " S>W M3 ", //flip MAX - 0 * 3 i.e. Up to 12 cards
+	"flipSt->W Max-4":   " S>W M4 ", //flip MAX - 0 * 3 i.e. Up to  9 cards
+	"flipSt->W Max-5":   " S>W M5 ", //flip MAX - 0 * 3 i.e. Up to  6 cards
+	"flipSt->W Max-6":   " S>W M6 ", //flip MAX - 0 * 3 i.e. Up to  3 cards
 }
 
 // Used to record how many of each move type is executed during an attempt.
