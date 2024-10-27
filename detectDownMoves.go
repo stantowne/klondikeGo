@@ -39,5 +39,10 @@ func detectDownMoves(b board, mc int, _ bool) []move {
 			moves = append(moves, m)
 		}
 	}
+	// if lastWasteCard.Rank < 13, len(moves) can be 0, 1 or 2
+	// if lastWasteCard.Rank == 13, len(moves) can be as great as 7 (i.e., when all 7 columns are empty)
+	if len(moves) > 1 {
+		moves = moves[:1] // subslice containing just 0th element. this may not be optimal
+	}
 	return moves
 }
