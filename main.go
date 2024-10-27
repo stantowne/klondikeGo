@@ -20,7 +20,7 @@ var length int
 var verbose int
 var verboseSpecial string
 var findAllSuccessfulStrategies bool
-var printTree string // edit these to pMd
+
 type pMds struct {
 	pType                 string
 	deckStartVal          int
@@ -217,6 +217,40 @@ func main() {
 	}
 
 	// Argument above applies only to playNew			****************************************************
+	fmt.Printf("\nCalling Program: %v\n\n", args[0])
+	if length != -1 {
+		fmt.Printf("Command Line Arguments:\n"+
+			"   Play Original Strategy Style with IOS strategy length: %v\n", length)
+		// STAN I suggest you move your opening printout of 65000 strategies here
+	} else {
+		fmt.Printf("Command Line Arguments:\n" +
+			"   Play New Strategy Style with variable number of strategies.\n\n")
+	}
+	fmt.Printf("      First Deck Num To Be Played: %v\n"+
+		"     Number Of Decks To Be Played: %v\n"+
+		"                          Verbose: %v\n"+
+		"                  Verbose Special: %v\n",
+		firstDeckNum, numberOfDecksToBePlayed, verbose, verboseSpecial)
+	if length == -1 {
+		fmt.Printf("\n Print Move Detail Options:\n"+
+			"   Find All Successful Strategies: %v\n"+
+			"                       Print Type: %v\n"+
+			"                Staring with Deck: %v\n"+
+			"                     Continue for: %v decks (0 = all the rest)\n"+
+			"      Starting with Moves Tried #: %v\n"+
+			"                     Continue for: %v moves tried (0 = all the rest)\n",
+			findAllSuccessfulStrategies,
+			printMoveDetail.pType,
+			printMoveDetail.deckStartVal,
+			printMoveDetail.deckContinueFor,
+			printMoveDetail.aMvsThisDkStartVal,
+			printMoveDetail.deckContinueFor)
+		if printMoveDetail.outputTo == "C" {
+			fmt.Printf("                  Print Output to: Console\n\n")
+		} else {
+			fmt.Printf("             Print Output to file: %v  (not yet implemented)\n\n", printMoveDetail.outputTo)
+		}
+	}
 
 	// Open the deck file here in main - will be read in both playOrig and PlayNew
 	inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
@@ -252,11 +286,11 @@ func main() {
 
 		gameLengthLimit = gameLengthLimitOrig
 		moveBasePriority = moveBasePriorityOrig
-		fmt.Printf("Calling Program: %v          GameLengthLimit: %v (not Implemented)\n\n\n", args[0], gameLengthLimit)
+		fmt.Printf("                  GameLengthLimit: %v\n\n\n", gameLengthLimit)
 		playOrig(*reader)
 	} else {
 		gameLengthLimit = gameLengthLimitNew
-		fmt.Printf("Calling Program: %v          GameLengthLimit: %v (not Implemented)\n\n\n", args[0], gameLengthLimit)
+		fmt.Printf("                  GameLengthLimit: %v  (not yet implemented)\n\n\n", gameLengthLimit)
 		moveBasePriority = moveBasePriorityNew
 		playNew(*reader)
 	}
