@@ -34,7 +34,6 @@ var printMoveDetail pMds
 
 var err error
 var singleGame bool // = true
-var AllMvStratNum int
 
 func main() {
 	/*
