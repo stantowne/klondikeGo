@@ -16,7 +16,6 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	                 SW  = Strategy Win      EW = Early Win
 											 SW = Standard Win
 	*/
-
 	// add code for findAllSuccessfulStrategies
 
 	// Find Next Moves
@@ -36,24 +35,16 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 	// Try all moves
 	for i := range aMoves {
+		/*		if (moveNum == 0 && aMmvsTriedThisDeck != 0) || moveNum >= gameLengthLimit {
+					fmt.Printf("@@@@@@Deck: %v   mN: %v   i: %v   aMStratNumTD: %v  MvsTriedTD: %v   UnqBds: %v   gameLengthLimit: %v   ElTimTD: %v   ElTimADs: %v\n", deckNum, moveNum, i, aMStratNumThisDeck, aMmvsTriedThisDeck, len(priorBoards), gameLengthLimit, time.Now().Sub(aMstartTimeAllDecks), time.Now().Sub(aMstartTimeThisDeck))
+					os.Exit(1) //time.Sleep(100 * time.Second)
+				}
+		*/
 		if i != 0 {
 			// Started at 0 in playNew for each deck.  Increment each time a second through nth move is made
 			//     That way strategy 0 is the "All Best Moves" strategy.  It is also why in playNew aMStratTriedAllDecks
 			//     is incremented by aMStratNumThisDeck + 1 after each deck.
 			aMStratNumThisDeck++
-		}
-
-		/* Actually before we actually try all moves let's first: print (optionally based on printMoveDetail.pType) the incoming board
-		      and check the incoming board for various end-of-strategy conditions
-		   Note: This was done this way, so as to ensure that when returns backed up the moveNum, the board would reprint.
-		*/
-		// Print the incoming board if in debugging range
-		pMd(bIn, deckNum, moveNum, "BB", 1, "", "", "")
-
-		// Check if No possible Moves
-		if i == 0 && aMoves[0].name == "No Possible Moves" {
-			pMd(bIn, deckNum, moveNum, "BB", 2, "  SF-NPM: No Possible Moves: Strategy Failed %v%v\n", "", "")
-			return "SF", "NPM"
 		}
 
 		// Check for repetitive board
@@ -75,6 +66,19 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 				aMmvsTriedTD: aMmvsTriedThisDeck,
 			}
 			priorBoards[bNewBcodeS] = bI
+		}
+
+		/* Actually before we actually try all moves let's first: print (optionally based on printMoveDetail.pType) the incoming board
+		      and check the incoming board for various end-of-strategy conditions
+		   Note: This was done this way, so as to ensure that when returns backed up the moveNum, the board would reprint.
+		*/
+		// Print the incoming board if in debugging range
+		pMd(bIn, deckNum, moveNum, "BB", 1, "", "", "")
+
+		// Check if No possible Moves
+		if i == 0 && aMoves[0].name == "No Possible Moves" {
+			pMd(bIn, deckNum, moveNum, "BB", 2, "  SF-NPM: No Possible Moves: Strategy Failed %v%v\n", "", "")
+			return "SF", "NPM"
 		}
 
 		//Detect Early Win
@@ -128,6 +132,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		pMd(bIn, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "")
 		pMd(bNew, deckNum, moveNum, "BBS", 2, "     bNew: %v\n", "", "")
 		aMmvsTriedThisDeck++
+
+		//	fmt.Printf("moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   Move: %v\n", moveNum, aMStratNumThisDeck, aMmvsTriedThisDeck, len(priorBoards), printMove(aMoves[i]))
 
 		r1, r2 := playAllMoveS(bNew, moveNum+1, deckNum)
 

@@ -248,7 +248,7 @@ func main() {
 			printMoveDetail.deckStartVal,
 			printMoveDetail.deckContinueFor,
 			printMoveDetail.aMvsThisDkStartVal,
-			printMoveDetail.deckContinueFor)
+			printMoveDetail.aMvsThisDkContinueFor)
 		if printMoveDetail.outputTo == "C" {
 			fmt.Printf("                         Print Output to: Console\n")
 		} else {
