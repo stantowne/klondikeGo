@@ -24,9 +24,11 @@ outer:
 		if len(FaceUpPortion) > 1 {
 			for stepdown := 0; stepdown < len(FaceUpPortion); stepdown++ {
 				candidateMoveUpCard := FaceUpPortion[stepdown]
-				if singleGame && mc == 1 {
-					fmt.Printf("within detectPartialColumnMoves: stepdown is %v, candidateMoveUpCard is %v\n", stepdown, candidateMoveUpCard)
-				}
+				/*				***************   STAN REMOVE ???????????
+								if singleGame && mc == 1 {
+									fmt.Printf("within detectPartialColumnMoves: stepdown is %v, candidateMoveUpCard is %v\n", stepdown, candidateMoveUpCard)
+								}
+				*/
 				if candidateMoveUpCard.Rank == len(b.piles[candidateMoveUpCard.Suit])+1 {
 					sisterCard := Card{Rank: candidateMoveUpCard.Rank, Suit: (candidateMoveUpCard.Suit + 2) % 4, FaceUp: true}
 					// now, see if the sisterCard is the last Card of another column

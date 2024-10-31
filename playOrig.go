@@ -7,9 +7,11 @@ import (
 	"golang.org/x/text/message"
 	"io"
 	"log"
+	"os"
 	"reflect"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -90,6 +92,21 @@ newDeck:
 						return aMoves[i].priority < aMoves[j].priority
 					})
 				}
+				// DanTest remove below
+				for z := range aMoves {
+					if aMoves[z].cardToMove.Rank == 0 && !strings.Contains("moveDown/flipWasteToStock/flipStockToWaste/moveEntireColumn/movePartialColumn/", aMoves[z].name) {
+						fmt.Printf("\n****************\nBad Move generated %v\nmoveCounter %v\n", aMoves[z], moveCounter)
+						fmt.Printf("  Within these generated moves: ")
+						for w := range aMoves {
+							fmt.Printf("\n%v", aMoves[w])
+						}
+						fmt.Printf("\n\n")
+						printBoard(b)
+						fmt.Printf("\n\n%d", b.boardCode(deckNum))
+						os.Exit(1)
+					}
+				}
+				// DanTest remove above
 
 				selectedMove := aMoves[0]
 
@@ -102,7 +119,8 @@ newDeck:
 				}
 
 				b = moveMaker(b, selectedMove) //***Main Program Statement
-				// quickTestBoardCodeDeCode(b, deckNum, length, iOS, moveCounter)
+
+				//quickTestBoardCodeDeCode(b, deckNum, length, iOS, moveCounter)
 
 				//Detect Early Win
 				if detectWinEarly(b) {
