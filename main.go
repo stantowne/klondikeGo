@@ -142,9 +142,12 @@ func main() {
 	}
 	verboseSpecial = verboseSpecial[1:]
 
-	/* Verbose Special codes implemented:  CASE IS IMPORTANT!!!!!!!!!!!
-	   M = print detail info after each Move 			playNew Only (in playAllMovesS)
-	   D = print deck level statistics 					playNew Only (in playNew)
+	/* Verbose Special codes implemented:  CASE IS IGNORED  Place some divider such as / when multiple specials are requested
+
+	   DBD = print Deck-by-deck detail info after each Move 											playNew Only (in playAllMovesS)
+	   WL  = print deck summary Win/Loss stats after all decks to see which decks won and which lost    playNew Only (in playNew)
+	   SUITSYMBOL = print S, D, C, H instead of runes - defaults to runes
+	   RANKSYMBOL = print Ac, Ki, Qu, Jk instead of 01, 11, 12, 13 - defaults to numeric
 	*/
 
 	// Arguments 5 & 6 below applies only to playNew			****************************************************

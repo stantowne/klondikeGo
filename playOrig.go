@@ -90,6 +90,20 @@ newDeck:
 						return aMoves[i].priority < aMoves[j].priority
 					})
 				}
+				// DanTest remove below
+				for z := range aMoves {
+					if aMoves[z].cardToMove.Rank == 0 && aMoves[z].name == "moveDown" {
+						fmt.Printf("\n****************\nBad Move generated %v\n\n", aMoves[z])
+						fmt.Printf("  Within these generated moves: ")
+						for w := range aMoves {
+							fmt.Printf("\n%v", aMoves[w])
+						}
+						fmt.Printf("\n\n")
+						printBoard(b)
+						fmt.Printf("\n\n%d", b.boardCode(deckNum))
+					}
+				}
+				// DanTest remove above
 
 				selectedMove := aMoves[0]
 
@@ -102,7 +116,8 @@ newDeck:
 				}
 
 				b = moveMaker(b, selectedMove) //***Main Program Statement
-				// quickTestBoardCodeDeCode(b, deckNum, length, iOS, moveCounter)
+
+				//quickTestBoardCodeDeCode(b, deckNum, length, iOS, moveCounter)
 
 				//Detect Early Win
 				if detectWinEarly(b) {

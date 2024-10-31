@@ -10,11 +10,11 @@ import (
 
 func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
-	/* Return Codes: SF  = Strategy Failed	 NPM	= No Possible Moves
-	                 						 RB = Repetitive Board
-	                                         SE = Strategy Exhausted
-	                 SW  = Strategy Win      EW = Early Win
-											 SW = Standard Win
+	/* Return Codes: SL  = Strategy Lost	 NMA = No Moves Available
+	                 						 RB  = Repetitive Board
+	                                         SE  = Strategy Exhausted
+	                 SW  = Strategy Win      EW  = Early Win
+											 SW  = Standard Win  Obsolete all wins are aearly
 	*/
 	// add code for findAllSuccessfulStrategies
 
@@ -22,7 +22,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	aMoves := detectAvailableMoves(bIn, moveNum, singleGame)
 
 	if len(aMoves) == 0 {
-		m := move{name: "No Possible Moves"}
+		m := move{name: "No Moves Available"}
 		aMoves = append(aMoves, m)
 	} else {
 		// if more than one move is available, sort them
@@ -35,38 +35,6 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 	// Try all moves
 	for i := range aMoves {
-		/*		if (moveNum == 0 && aMmvsTriedThisDeck != 0) || moveNum >= gameLengthLimit {
-					fmt.Printf("@@@@@@Deck: %v   mN: %v   i: %v   aMStratNumTD: %v  MvsTriedTD: %v   UnqBds: %v   gameLengthLimit: %v   ElTimTD: %v   ElTimADs: %v\n", deckNum, moveNum, i, aMStratNumThisDeck, aMmvsTriedThisDeck, len(priorBoards), gameLengthLimit, time.Now().Sub(aMstartTimeAllDecks), time.Now().Sub(aMstartTimeThisDeck))
-					os.Exit(1) //time.Sleep(100 * time.Second)
-				}
-		*/
-		if i != 0 {
-			// Started at 0 in playNew for each deck.  Increment each time a second through nth move is made
-			//     That way strategy 0 is the "All Best Moves" strategy.  It is also why in playNew aMStratTriedAllDecks
-			//     is incremented by aMStratNumThisDeck + 1 after each deck.
-			aMStratNumThisDeck++
-		}
-
-		// Check for repetitive board
-		bNewBcode := bIn.boardCode()       //  consider modifying the boardCode and boardDeCode methods to produce strings
-		bNewBcodeS := string(bNewBcode[:]) //  consider modifying the boardCode and boardDeCode methods to produce strings
-		// Have we seen this board before?
-		if _, ok := priorBoards[bNewBcodeS]; ok {
-			// OK we did see it before but lets check if we have just returned to try the next available move (if any)
-			if priorBoards[bNewBcodeS].mN == moveNum {
-				// Do Nothing We are just back up at this board checking for the next available move
-			} else {
-				aMStratlossesAtRepMveThisDeck++
-				pMd(bIn, deckNum, moveNum, "BB", 2, "  SF-RB: Repetitive Board - Loop:end strategy - see board at MvsTriedTD: %v%v\n", strconv.Itoa(priorBoards[bNewBcodeS].aMmvsTriedTD), "")
-				return "SF", "RB" // Repetitive Move
-			}
-		} else {
-			bI := boardInfo{
-				mN:           moveNum,
-				aMmvsTriedTD: aMmvsTriedThisDeck,
-			}
-			priorBoards[bNewBcodeS] = bI
-		}
 
 		/* Actually before we actually try all moves let's first: print (optionally based on printMoveDetail.pType) the incoming board
 		      and check the incoming board for various end-of-strategy conditions
@@ -75,39 +43,85 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		// Print the incoming board if in debugging range
 		pMd(bIn, deckNum, moveNum, "BB", 1, "", "", "")
 
-		// Check if No possible Moves
-		if i == 0 && aMoves[0].name == "No Possible Moves" {
-			pMd(bIn, deckNum, moveNum, "BB", 2, "  SF-NPM: No Possible Moves: Strategy Failed %v%v\n", "", "")
-			return "SF", "NPM"
+		if i != 0 {
+			// Started at 0 in playNew for each deck.  Increment each time a second through nth move is made
+			//     That way strategy 0 is the "All Best Moves" strategy.  It is also why in playNew aMStratTriedAllDecks
+			//     is incremented by stratNumTD + 1 after each deck.
+			stratNumTD++
+		} else {
+			// Check for repetitive board
+			bNewBcode := bIn.boardCode(deckNum) //  consider modifying the boardCode and boardDeCode methods to produce strings
+			bNewBcodeS := string(bNewBcode[:])  //  consider modifying the boardCode and boardDeCode methods to produce strings
+			// Have we seen this board before?
+			if _, ok := priorBoards[bNewBcodeS]; ok {
+				// OK we did see it before so return to try next available move (if any) in aMoves[] aka strategy
+				stratLossesRB_TD++
+				pMd(bIn, deckNum, moveNum, "BB", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of the board at at MvsTriedTD: %v%v\n", strconv.Itoa(priorBoards[bNewBcodeS].aMmvsTriedTD), "")
+				return "SL", "RB" // Repetitive Move
+			} else {
+				bInf := boardInfo{
+					mN:           moveNum,
+					aMmvsTriedTD: mvsTriedTD,
+				}
+				priorBoards[bNewBcodeS] = bInf
+			}
+		}
+
+		// Check if No Moves Available
+		if i == 0 && aMoves[0].name == "No Moves Available" {
+			pMd(bIn, deckNum, moveNum, "BB", 2, "  SF-NMA: No Moves Available: Strategy Failed %v%v\n", "", "")
+			return "SL", "NMA"
 		}
 
 		//Detect Early Win
 		if detectWinEarly(bIn) {
-			aMearlyWinCounterThisDeck++
-			aMwinCounterThisDeck++
-			c := "  SW-EW: Strategy Win: Early Win%v%v"
+			stratWinsTD++
+			cmt := "  SW-EW: Strategy Win: Early Win%v%v"
 			if findAllSuccessfulStrategies {
-				c += "  Will Continue to look for additional winning strategies for this deck"
+				cmt += "  Will Continue to look for additional winning strategies for this deck"
 			} else {
-				c += "  Go to Next Deck (if any)"
+				cmt += "  Go to Next Deck (if any)"
 			}
-			pMd(bIn, deckNum, moveNum, "BB", 2, c, "", "")
-			return "SW", "EW" //  Early Win
+			pMd(bIn, deckNum, moveNum, "NOTX", 1, cmt, "", "")
+
+			// Verbose Special "WL" Starts Here - No effect on operation
+			if strings.Contains(verboseSpecial, "WL") { // Deck Win Loss Summary Statistics
+				if len(deckWinLossDetail)-1 < deckNum {
+					dWLDStats.winLoss = "W"
+					dWLDStats.moveNumFirstWin = moveNum
+					dWLDStats.moveNumMinWin = moveNum
+					dWLDStats.moveNumMaxWin = moveNum
+					dWLDStats.stratNumFirstWin = stratNumTD
+					dWLDStats.mvsTriedFirstWin = mvsTriedTD
+					deckWinLossDetail = append(deckWinLossDetail, dWLDStats)
+				} else {
+					if deckWinLossDetail[deckNum].moveNumMinWin > moveNum {
+						deckWinLossDetail[deckNum].moveNumMinWin = moveNum
+					}
+					if deckWinLossDetail[deckNum].moveNumMaxWin < moveNum {
+						deckWinLossDetail[deckNum].moveNumMaxWin = moveNum
+					}
+				}
+
+			}
+			// Verbose Special "WL" Ends Here - No effect on operation
+			return "SW", "EW" //  Strategy Early Win
 		}
 
-		//Detects Standard Win
-		if len(bIn.piles[0])+len(bIn.piles[1])+len(bIn.piles[2])+len(bIn.piles[3]) == 52 {
-			aMstandardWinCounterThisDeck++
-			aMwinCounterThisDeck++
-			c := "  SW-SW: Strategy Win: Standard Win%v%v"
-			if findAllSuccessfulStrategies {
-				c = c + "  Will Continue to look for additional winning strategies for this deck"
-			} else {
-				c = c + "  Go to Next Deck (if any)"
-			}
-			pMd(bIn, deckNum, moveNum, "BB", 2, c, "", "")
-			return "SW", "SW" //  Standard Win
-		}
+		/*		//Detects Standard Win
+				if len(bIn.piles[0])+len(bIn.piles[1])+len(bIn.piles[2])+len(bIn.piles[3]) == 52 {
+					aMstandardWinCounterThisDeck++
+					stratWinsTD++
+					c := "  SW-SW: Strategy Win: Standard Win%v%v"
+					if findAllSuccessfulStrategies {
+						c = c + "  Will Continue to look for additional winning strategies for this deck"
+					} else {
+						c = c + "  Go to Next Deck (if any)"
+					}
+					pMd(bIn, deckNum, moveNum, "BB", 2, c, "", "")
+					return "SW", "SW" //  Strategy Standard Win
+				}
+		*/
 
 		// OK, done with the various end-of-strategy conditions
 		// let's print out the list of available moves and make the next available move
@@ -125,40 +139,55 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			}
 		}
 
+		//test
+		if mvsTriedTD == 1460 || mvsTriedTD == 280 || mvsTriedTD == 1461 || mvsTriedTD == 281 {
+			fmt.Printf("\n\n#########################\nBefore mvsTriedTD++ \nB4 COPY, B4 MOVEMAKER bIn BELOW mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
+			printBoard(bIn)
+			fmt.Printf("\nB4 COPY, B4 MOVEMAKER bIn ABOVE mvsTriedTD == %v  move = %v\nAllMoves: %v\n$$$$$$$$$$$$$$$$$\n", mvsTriedTD, aMoves[i], aMoves)
+		}
+		//end test
+
 		bNew := bIn.copyBoard() // Critical Must use copyBoard
+
+		//test
+		if mvsTriedTD == 1460 || mvsTriedTD == 280 || mvsTriedTD == 1461 || mvsTriedTD == 281 {
+			fmt.Printf("\n\n#########################\nBefore mvsTriedTD++ \nAFTER COPY, B4 MOVEMAKER bIn BELOW mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
+			printBoard(bIn)
+			fmt.Printf("\nAFTER COPY, B4 MOVEMAKER bIn ABOVE mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
+			fmt.Printf("\nAFTER COPY, B4 MOVEMAKER bNew BELOW mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
+			printBoard(bNew)
+			fmt.Printf("\nAFTER COPY, B4 MOVEMAKER bNew ABOVE mvsTriedTD == %v  move = %v\nAllMoves: %v\n$$$$$$$$$$$$$$$$$\n", mvsTriedTD, aMoves[i], aMoves)
+		}
+		//end test
+
 		bNew = moveMaker(bNew, aMoves[i])
 
-		pMd(bIn, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at deckNum: %v  moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", "", "")
+		//test
+		if mvsTriedTD == 1460 || mvsTriedTD == 280 || mvsTriedTD == 1461 || mvsTriedTD == 281 {
+			fmt.Printf("\n\n#########################\nBefore mvsTriedTD++ \nAFTER COPY, AFTER MOVEMAKER bIn BELOW mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
+			printBoard(bIn)
+			fmt.Printf("\nAFTER COPY, AFTER MOVEMAKER bIn ABOVE mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
+			fmt.Printf("\nAFTER COPY, AFTER MOVEMAKER bNew BELOW mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
+			printBoard(bNew)
+			fmt.Printf("\nAFTER COPY, AFTER MOVEMAKER bNew ABOVE mvsTriedTD == %v  move = %v\nAllMoves: %v\n$$$$$$$$$$$$$$$$$\n", mvsTriedTD, aMoves[i], aMoves)
+		}
+		//end test
+		pMd(bIn, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", "", "")
 		pMd(bIn, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "")
 		pMd(bNew, deckNum, moveNum, "BBS", 2, "     bNew: %v\n", "", "")
-		aMmvsTriedThisDeck++
+		mvsTriedTD++
 
-		//	fmt.Printf("moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   Move: %v\n", moveNum, aMStratNumThisDeck, aMmvsTriedThisDeck, len(priorBoards), printMove(aMoves[i]))
+		//	fmt.Printf("moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   Move: %v\n", moveNum, stratNumTD, mvsTriedTD, len(priorBoards), printMove(aMoves[i]))
 
-		r1, r2 := playAllMoveS(bNew, moveNum+1, deckNum)
-
-		//pMd(bIn, deckNum, moveNum, "BBS", 1, " After Call at deckNum: %v  moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", "", "")
-		//pMd(bIn, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "")
-		pMd(bIn, deckNum, moveNum, "NOTX", 1, "  Returned r1: %v, r2: %v After Call at deckNum: %v  moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", r1, r2)
-	}
-	/*
-
-			if printTree == "C" {
-			if result != "Win" {
-				fmt.Printf(" %v", result)
-			}
-			fmt.Printf("\n%8v", aMStratNumThisDeck)
-			for i := 1; i <= moveNum-1; i++ {
-				fmt.Printf("        ")
-			}
-
-		if result == "EW" || result == "SW" || result == "Win" && findAllSuccessfulStrategies != true {
-			return "Win"
+		recurReturnV1, recurReturnV2 := playAllMoveS(bNew, moveNum+1, deckNum)
+		pMd(bIn, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2)
+		if findAllSuccessfulStrategies != true && recurReturnV1 == "SW" {
+			return recurReturnV1, recurReturnV2
 		}
-	}*/
+	}
 
-	aMStratlossesExhaustedThisDeck++
-	return "SF", "SE" //  Strategy Exhausted
+	stratLossesSE_TD++
+	return "SL", "SE" //  Strategy Exhausted
 }
 
 func pMdTestRange(deckNum int) bool {
@@ -174,7 +203,7 @@ func pMdTestRange(deckNum int) bool {
 	if printMoveDetail.aMvsThisDkStartVal == 0 && printMoveDetail.aMvsThisDkContinueFor == 0 {
 		aMvsThisDkRangeOK = true
 	} else {
-		if aMmvsTriedThisDeck >= printMoveDetail.aMvsThisDkStartVal && (printMoveDetail.aMvsThisDkContinueFor == 0 || aMmvsTriedThisDeck < printMoveDetail.aMvsThisDkStartVal+printMoveDetail.aMvsThisDkContinueFor) {
+		if mvsTriedTD >= printMoveDetail.aMvsThisDkStartVal && (printMoveDetail.aMvsThisDkContinueFor == 0 || mvsTriedTD < printMoveDetail.aMvsThisDkStartVal+printMoveDetail.aMvsThisDkContinueFor) {
 			aMvsThisDkRangeOK = true
 		}
 	}
@@ -191,15 +220,13 @@ func pMd(b board, dN int, mN int, pTypeIn string, variant int, comment string, s
 	// This function will use the struct printMoveDetail
 	//      variant will be used for different outputs under the same pType
 
-	/*if aMmvsTriedThisDeck < 300 || math.Mod(float64(aMmvsTriedThisDeck), 5000) == 0 {
+	/*if mvsTriedTD < 300 || math.Mod(float64(mvsTriedTD), 5000) == 0 {
 	 */
 	if printMoveDetail.pType != "X" && pMdTestRange(dN) {
 		switch {
 		case pTypeIn == "BB" && printMoveDetail.pType == pTypeIn && variant == 1: // for BB
-			if mN != 0 {
-				fmt.Printf("\n\n****************************************\n")
-			}
-			fmt.Printf("\n \nDeck: %v   mN: %v   aMStratNumTD: %v  MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", dN, mN, aMStratNumThisDeck, aMmvsTriedThisDeck, len(priorBoards), time.Now().Sub(aMstartTimeAllDecks), time.Now().Sub(aMstartTimeThisDeck))
+			fmt.Printf("\n****************************************\n")
+			fmt.Printf("\nDeck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Now().Sub(startTimeAD), time.Now().Sub(startTimeTD))
 			printBoard(b)
 		case pTypeIn == "BB" && printMoveDetail.pType == pTypeIn && variant == 2: // for BB
 			// comment must have 2 %v in it
@@ -218,20 +245,13 @@ func pMd(b board, dN int, mN int, pTypeIn string, variant int, comment string, s
 				}
 			}*/
 		case strings.HasPrefix(pTypeIn, "BBS") && strings.HasPrefix(printMoveDetail.pType, "BBS") && variant == 1: // for BBS or BBSS
-			fmt.Printf(comment, dN, mN, aMStratNumThisDeck, aMmvsTriedThisDeck, len(priorBoards), time.Now().Sub(aMstartTimeAllDecks), time.Now().Sub(aMstartTimeThisDeck))
+			fmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Now().Sub(startTimeAD), time.Now().Sub(startTimeTD))
 		case pTypeIn == "BBS" && printMoveDetail.pType == pTypeIn && variant == 2: // for BBS or BBSS
 			fmt.Printf(comment, b)
 		case pTypeIn == "NOTX" && printMoveDetail.pType != "X" && variant == 1:
-			fmt.Printf(comment, s1, s2, dN, mN, aMStratNumThisDeck, aMmvsTriedThisDeck, len(priorBoards), time.Now().Sub(aMstartTimeAllDecks), time.Now().Sub(aMstartTimeThisDeck))
+			fmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Now().Sub(startTimeAD), time.Now().Sub(startTimeTD))
 		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 1:
 		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 2:
 		}
 	}
-	/*if aMmvsTriedThisDeck >= 300 && priorPause != aMmvsTriedThisDeck { //Remove pauser
-			time.Sleep(100 * time.Millisecond) //Remove pauser
-			priorPause = aMmvsTriedThisDeck    //Remove pauser
-			fmt.Printf("\n********** priorPause %v   aMmvsTriedThisDeck %v *****************************\n", priorPause, aMmvsTriedThisDeck)
-		}
-	}*/
-
 }
