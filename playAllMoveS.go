@@ -56,7 +56,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			if _, ok := priorBoards[bNewBcodeS]; ok {
 				// OK we did see it before so return to try next available move (if any) in aMoves[] aka strategy
 				stratLossesRB_TD++
-				pMd(bIn, deckNum, moveNum, "BB", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of the board at at MvsTriedTD: %v%v\n", strconv.Itoa(priorBoards[bNewBcodeS].aMmvsTriedTD), "")
+				pMd(bIn, deckNum, moveNum, "BB", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of the board at at MvsTriedTD: %v which was at move: %v\n", strconv.Itoa(priorBoards[bNewBcodeS].aMmvsTriedTD), strconv.Itoa(priorBoards[bNewBcodeS].mN))
+				pMd(bIn, deckNum, moveNum, "BBSS", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of the board at at MvsTriedTD: %v which was at move: %v\n", strconv.Itoa(priorBoards[bNewBcodeS].aMmvsTriedTD), strconv.Itoa(priorBoards[bNewBcodeS].mN))
 				return "SL", "RB" // Repetitive Move
 			} else {
 				bInf := boardInfo{
@@ -85,21 +86,21 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			pMd(bIn, deckNum, moveNum, "NOTX", 1, cmt, "", "")
 
 			// Verbose Special "WL" Starts Here - No effect on operation
-			if strings.Contains(verboseSpecial, "WL") { // Deck Win Loss Summary Statistics
+			if strings.Contains(verboseSpecial, "/WL/") { // Deck Win Loss Summary Statistics
 				if len(deckWinLossDetail)-1 < deckNum {
 					dWLDStats.winLoss = "W"
-					dWLDStats.moveNumFirstWin = moveNum
-					dWLDStats.moveNumMinWin = moveNum
-					dWLDStats.moveNumMaxWin = moveNum
-					dWLDStats.stratNumFirstWin = stratNumTD
-					dWLDStats.mvsTriedFirstWin = mvsTriedTD
+					dWLDStats.moveNumAt1stWinOrAtLoss = moveNum
+					dWLDStats.moveNumMinWinIfFindAll = moveNum
+					dWLDStats.moveNumMaxWinIfFindAll = moveNum
+					dWLDStats.stratNumAt1stWinOrAtLoss = stratNumTD
+					dWLDStats.mvsTriedAt1stWinOrAtLoss = mvsTriedTD
 					deckWinLossDetail = append(deckWinLossDetail, dWLDStats)
 				} else {
-					if deckWinLossDetail[deckNum].moveNumMinWin > moveNum {
-						deckWinLossDetail[deckNum].moveNumMinWin = moveNum
+					if deckWinLossDetail[deckNum].moveNumMinWinIfFindAll > moveNum {
+						deckWinLossDetail[deckNum].moveNumMinWinIfFindAll = moveNum
 					}
-					if deckWinLossDetail[deckNum].moveNumMaxWin < moveNum {
-						deckWinLossDetail[deckNum].moveNumMaxWin = moveNum
+					if deckWinLossDetail[deckNum].moveNumMaxWinIfFindAll < moveNum {
+						deckWinLossDetail[deckNum].moveNumMaxWinIfFindAll = moveNum
 					}
 				}
 
@@ -139,17 +140,17 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			}
 		}
 
-		//test
+		/*//test
 		if mvsTriedTD == 1460 || mvsTriedTD == 280 || mvsTriedTD == 1461 || mvsTriedTD == 281 {
 			fmt.Printf("\n\n#########################\nBefore mvsTriedTD++ \nB4 COPY, B4 MOVEMAKER bIn BELOW mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
 			printBoard(bIn)
 			fmt.Printf("\nB4 COPY, B4 MOVEMAKER bIn ABOVE mvsTriedTD == %v  move = %v\nAllMoves: %v\n$$$$$$$$$$$$$$$$$\n", mvsTriedTD, aMoves[i], aMoves)
 		}
-		//end test
+		//end test*/
 
 		bNew := bIn.copyBoard() // Critical Must use copyBoard
 
-		//test
+		/*//test
 		if mvsTriedTD == 1460 || mvsTriedTD == 280 || mvsTriedTD == 1461 || mvsTriedTD == 281 {
 			fmt.Printf("\n\n#########################\nBefore mvsTriedTD++ \nAFTER COPY, B4 MOVEMAKER bIn BELOW mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
 			printBoard(bIn)
@@ -158,12 +159,12 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			printBoard(bNew)
 			fmt.Printf("\nAFTER COPY, B4 MOVEMAKER bNew ABOVE mvsTriedTD == %v  move = %v\nAllMoves: %v\n$$$$$$$$$$$$$$$$$\n", mvsTriedTD, aMoves[i], aMoves)
 		}
-		//end test
+		//end test*/
 
 		bNew = moveMaker(bNew, aMoves[i])
 
-		//test
-		if mvsTriedTD == 1460 || mvsTriedTD == 280 || mvsTriedTD == 1461 || mvsTriedTD == 281 {
+		/*//test
+		if mvsTriedTD == 122574 {
 			fmt.Printf("\n\n#########################\nBefore mvsTriedTD++ \nAFTER COPY, AFTER MOVEMAKER bIn BELOW mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
 			printBoard(bIn)
 			fmt.Printf("\nAFTER COPY, AFTER MOVEMAKER bIn ABOVE mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
@@ -171,7 +172,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			printBoard(bNew)
 			fmt.Printf("\nAFTER COPY, AFTER MOVEMAKER bNew ABOVE mvsTriedTD == %v  move = %v\nAllMoves: %v\n$$$$$$$$$$$$$$$$$\n", mvsTriedTD, aMoves[i], aMoves)
 		}
-		//end test
+		//end test*/
 		pMd(bIn, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", "", "")
 		pMd(bIn, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "")
 		pMd(bNew, deckNum, moveNum, "BBS", 2, "     bNew: %v\n", "", "")

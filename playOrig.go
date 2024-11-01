@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -92,7 +93,7 @@ newDeck:
 				}
 				// DanTest remove below
 				for z := range aMoves {
-					if aMoves[z].cardToMove.Rank == 0 && aMoves[z].name == "moveDown" {
+					if aMoves[z].cardToMove.Rank == 0 && strings.Contains("moveDown/", aMoves[z].name+"/") || aMoves[z].name == "" {
 						fmt.Printf("\n****************\nBad Move generated %v\n\n", aMoves[z])
 						fmt.Printf("  Within these generated moves: ")
 						for w := range aMoves {

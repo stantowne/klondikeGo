@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"reflect"
-	"strconv"
 )
 
 type column []Card
@@ -209,7 +207,7 @@ func (bC bCode) boardDeCode() board {
 	return b
 }
 
-func testBoardCodeDeCode(args []string) {
+/*func testBoardCodeDeCode(args []string) {
 
 	firstDeckNum, _ := strconv.Atoi(args[1])
 	numberOfDecksToBePlayed, _ := strconv.Atoi(args[2])
@@ -233,9 +231,9 @@ func testBoardCodeDeCode(args []string) {
 		fmt.Println("RoundTrip Board")
 		printBoard(bRoundTrip) //TempTest end
 	}
-}
+}*/
 
-func quickTestBoardCodeDeCode(b board, deckNum int, length int, iOS int, mC int) {
+/*func quickTestBoardCodeDeCode(b board, deckNum int, length int, iOS int, mC int) {
 	bCode := b.boardCode(deckNum)
 	roundTripResult := bCode.boardDeCode()
 	rTrbCode := roundTripResult.boardCode(deckNum)
@@ -260,4 +258,4 @@ func quickTestBoardCodeDeCode(b board, deckNum int, length int, iOS int, mC int)
 		fmt.Printf("\nroundTripResult = %08b \n\n", roundTripResult)
 		os.Exit(1)
 	}
-}
+}*/

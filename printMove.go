@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
 )
 
@@ -18,8 +17,7 @@ func printMove(m move) string {
 	case "moveEntireColumn":
 		outS += "Move the cards starting with: " + m.MovePortion[0].pStr() + " From column: " + strconv.Itoa(m.fromCol) + " To column: " + strconv.Itoa(m.toCol) + "  Priority: " + strconv.Itoa(m.priority)
 	case "movePartialColumn":
-		//outS += "Move the cards starting with: " + m.MovePortion[0].pStr() + " From column: " + strconv.Itoa(m.fromCol) + " To column: " + strconv.Itoa(m.toCol) + "THEN move card " + m.cardToMove.pStr() + " to the: " + string(m.cardToMove.suitSymbol()) + "Pile  Priority: " + strconv.Itoa(m.priority)
-		fmt.Printf("\n")
+		outS += "Move the cards starting with: " + m.MovePortion[0].pStr() + " From column: " + strconv.Itoa(m.fromCol) + " To column: " + strconv.Itoa(m.toCol) + "\n                           then  move the card above " + m.MovePortion[0].pStr() + "in column: " + strconv.Itoa(m.fromCol) + " to the appropriate pile based on its suit.  Priority: " + strconv.Itoa(m.priority)
 	case "flipStockToWaste":
 		outS += "Move: Flip   just the 3 top cards from stock to waste"
 	case "flipWasteToStock":

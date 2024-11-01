@@ -49,12 +49,13 @@ type boardInfo struct {
 }
 
 type deckWinLossDetailStats struct {
-	winLoss          string
-	moveNumFirstWin  int // not implemented yet - if findAllSuccessfulStrategies = true will be last Win (DO NOT TRY)
-	moveNumMinWin    int // not implemented yet - if findAllSuccessfulStrategies = true will be last Win (DO NOT TRY)
-	moveNumMaxWin    int // not implemented yet - if findAllSuccessfulStrategies = true will be last Win (DO NOT TRY)
-	stratNumFirstWin int // not implemented yet - if findAllSuccessfulStrategies = true will be last Win (DO NOT TRY)
-	mvsTriedFirstWin int // not implemented yet - if findAllSuccessfulStrategies = true will be last Win (DO NOT TRY)
+	winLoss                     string
+	moveNumAt1stWinOrAtLoss     int
+	moveNumMinWinIfFindAll      int
+	moveNumMaxWinIfFindAll      int
+	stratNumAt1stWinOrAtLoss    int
+	mvsTriedAt1stWinOrAtLoss    int
+	ElapsedTimeAt1stWinOrAtLoss time.Duration
 }
 
 var dWLDStats deckWinLossDetailStats
@@ -144,25 +145,33 @@ func playNew(reader csv.Reader) {
 		result1, result2 := playAllMoveS(b, 0, deckNum)
 
 		// Verbose Special "WL" Starts Here - No effect on operation
-		if strings.Contains(verboseSpecial, "WL") { // Deck Win Loss Summary Statistics
+		if strings.Contains(verboseSpecial, "/WL/") { // Deck Win Loss Summary Statistics
 			if stratWinsTD == 0 {
 				dWLDStats.winLoss = "L"
-				dWLDStats.moveNumFirstWin = 0
-				dWLDStats.moveNumMinWin = 0
-				dWLDStats.moveNumMaxWin = 0
-				dWLDStats.stratNumFirstWin = 0
-				dWLDStats.mvsTriedFirstWin = 0
-				deckWinLossDetail = append(deckWinLossDetail, dWLDStats)
+				dWLDStats.moveNumAt1stWinOrAtLoss = 0
+				dWLDStats.moveNumMinWinIfFindAll = 0
+				dWLDStats.moveNumMaxWinIfFindAll = 0
+				dWLDStats.stratNumAt1stWinOrAtLoss = stratWinsTD
+				dWLDStats.mvsTriedAt1stWinOrAtLoss = mvsTriedTD
+				// Add maxUnique Boards
+				//add max movenum
+				// add ElapsedTimeAt1stWin
+				dWLDStats.ElapsedTimeAt1stWinOrAtLoss = time.Now().Sub(startTimeTD)
+			} else {
+				dWLDStats.winLoss = "W"
+				dWLDStats.ElapsedTimeAt1stWinOrAtLoss = time.Now().Sub(startTimeTD)
 			}
+			deckWinLossDetail = append(deckWinLossDetail, dWLDStats)
+
 		}
 		// Verbose Special "WL" Ends Here - No effect on operation
 
 		//Verbose Special "DBD" Starts Here - No effect on operation
-		if strings.Contains(verboseSpecial, "DBD") { // Deck-by-deck Statistics
+		if strings.Contains(verboseSpecial, "/DBD/") { // Deck-by-deck Statistics
 			if stratWinsTD > 0 {
 				fmt.Printf("\n\n*************************\n\nDeck: %d  WON    Result Codes: %v %v", deckNum, result1, result2)
 			} else {
-				fmt.Printf("\n\n*************************\n\nDeck: %d  LOST    Result Codes: %v %v", deckNum, result1, result2)
+				fmt.Printf("\n\n*************************\n\nDeck: %d  LOST   Result Codes: %v %v", deckNum, result1, result2)
 			}
 			endTime := time.Now()
 			elapsedTime := endTime.Sub(startTimeTD)
@@ -183,11 +192,21 @@ func playNew(reader csv.Reader) {
 				fmt.Printf("\n     *********** Strategies Tried != Strategies Lost + Strategies Won")
 			}
 			if findAllSuccessfulStrategies {
-				fmt.Printf("\n\n Multiple Successful Startegies were found in some winng decks.")
+				fmt.Printf("\n\n Multiple Successful Startegies were found in some wining decks.")
 				fmt.Printf("   Total winning strategies found: %d\n", stratWinsTD)
 			}
 		}
 		// Verbose Special "DBD" Ends Here - No effect on operation
+
+		//Verbose Special "DBDS" Starts Here - No effect on operation
+		if strings.Contains(verboseSpecial, "/DBDS/") { // Deck-by-deck SHORT Statistics
+			if stratWinsTD > 0 {
+				fmt.Printf("\nDeck: %5d  WON    Result Codes: %v %v   Elapsed Time: %v", deckNum, result1, result2, time.Now().Sub(startTimeTD))
+			} else {
+				fmt.Printf("\nDeck: %5d  LOST   Result Codes: %v %v   Elapsed Time: %v", deckNum, result1, result2, time.Now().Sub(startTimeTD))
+			}
+		}
+		// Verbose Special "DBDS" Ends Here - No effect on operation
 
 		if stratWinsTD > 0 {
 			deckWinsAD += 1
@@ -244,11 +263,11 @@ func playNew(reader csv.Reader) {
 		fmt.Printf("   Average winning strategies found: %d\n", stratWinsAD/deckWinsAD)
 	}
 	// Verbose Special "WL" Starts Here - No effect on operation
-	if strings.Contains(verboseSpecial, "WL") { // Deck Win Loss Summary Statistics
+	if strings.Contains(verboseSpecial, "/WL/") { // Deck Win Loss Summary Statistics
 		fmt.Printf("\n\n\n Deck-by Deck Win/Loss Detail   (Copy to Excel to get headings to line up with the columns)")
-		fmt.Printf("\n\n Deck\tW/L\tMoveNum 1st Win\tStrategy Num 1st Win\tMoves Tried First Win\tMoveNum Min\tMoveNum Max\t\t(Last two Columns only apply if findAllSuccessfulStrategies = true)")
+		fmt.Printf("\n\n Deck\tW/L\tMoveNum 1ST-Win\tStratNum At 1st-Win Or At-Loss\tMvsTried At 1st-Win Or At-Loss\tMoveNum Min-Win If-Find-All\tMoveNum Max-Win If-Find-All\tElapsed Time At 1st-Win Or At Loss\n")
 		for dN, detail := range deckWinLossDetail {
-			fmt.Printf("\n  %5v\t  %v\t%4v\t%8v\t%8v\t%4v\t%4v", dN, detail.winLoss, detail.moveNumFirstWin, detail.stratNumFirstWin, detail.mvsTriedFirstWin, detail.moveNumMinWin, detail.moveNumMaxWin)
+			fmt.Printf("\n  %5v\t  %v\t%4v\t%8v\t%8v\t%4v\t%4v", dN, detail.winLoss, detail.moveNumAt1stWinOrAtLoss, detail.stratNumAt1stWinOrAtLoss, detail.mvsTriedAt1stWinOrAtLoss, detail.moveNumMinWinIfFindAll, detail.moveNumMaxWinIfFindAll, detail.ElapsedTimeAt1stWinOrAtLoss)
 		}
 	}
 	// Verbose Special "WL" Ends Here - No effect on operation
