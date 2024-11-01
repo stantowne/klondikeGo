@@ -13,6 +13,9 @@ func detectPartialColumnMoves(b board, mc int, singleGame bool) []move {
 	}
 outer:
 	for frmColNum := 0; frmColNum < 7; frmColNum++ { //the function must always complete this for loop
+		if len(b.columns[frmColNum]) == 0 {
+			continue outer
+		}
 		firstFaceUpIndex, FaceUpPortion, err := faceUpPortion(b.columns[frmColNum])
 		if singleGame && mc == specialMove {
 			fmt.Printf("detectPartialColumnMoves: frmColNum is %v, firstFaceUpIndex is %v, FaceUpPortion is %v\n", frmColNum, firstFaceUpIndex, FaceUpPortion)
