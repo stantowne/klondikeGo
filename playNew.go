@@ -33,7 +33,7 @@ const horiz3NewMidStrat = horiz1 + horiz1NewMidStrat + horiz1     // Looks Like:
 var stratWinsTD = 0
 var stratLossesTD = 0
 
-// var stratLossesGLLTD = 0
+var stratLossesGML_TD = 0
 var stratLossesNMA_TD = 0
 var stratLossesRB_TD = 0
 var stratLossesSE_TD = 0
@@ -69,7 +69,7 @@ func playNew(reader csv.Reader) {
 	var deckLossesAD = 0
 	var stratWinsAD = 0
 	var stratLossesAD = 0
-	// var stratLossesGLLAD = 0
+	var stratLossesGML_AD = 0
 	var stratLossesNMA_AD = 0
 	var stratLossesRB_AD = 0
 	var stratLossesSE_AD = 0
@@ -184,8 +184,8 @@ func playNew(reader csv.Reader) {
 			fmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_TD)
 			fmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_TD)
 			fmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_TD)
-			//fmt.Printf("Strategy Losses at Game Length Limit is: %d\n", stratLossesGLLTD)
-			if stratLossesNMA_TD+stratLossesRB_TD+stratLossesSE_TD != stratLossesTD {
+			fmt.Printf("Strategy Losses at Game Length Limit is: %d\n", stratLossesGML_TD)
+			if stratLossesNMA_TD+stratLossesRB_TD+stratLossesSE_TD+stratLossesGML_TD != stratLossesTD {
 				fmt.Printf("\n     *********** Total Strategy Losses != Sum of strategy detail")
 			}
 			if stratLossesTD+stratWinsTD != stratNumTD {
@@ -201,9 +201,9 @@ func playNew(reader csv.Reader) {
 		//Verbose Special "DBDS" Starts Here - No effect on operation
 		if strings.Contains(verboseSpecial, "/DBDS/") { // Deck-by-deck SHORT Statistics
 			if stratWinsTD > 0 {
-				fmt.Printf("\nDeck: %5d  WON    Result Codes: %v %v   Elapsed Time: %v", deckNum, result1, result2, time.Now().Sub(startTimeTD))
+				fmt.Printf("\nDeck: %5d  WON    Result Codes: %v %v   Moves Tried: %9v   Elapsed Time: %v", deckNum, result1, result2, mvsTriedTD, time.Now().Sub(startTimeTD))
 			} else {
-				fmt.Printf("\nDeck: %5d  LOST   Result Codes: %v %v   Elapsed Time: %v", deckNum, result1, result2, time.Now().Sub(startTimeTD))
+				fmt.Printf("\nDeck: %5d  LOST   Result Codes: %v %v   Moves Tried: %9v   Elapsed Time: %v", deckNum, result1, result2, mvsTriedTD, time.Now().Sub(startTimeTD))
 			}
 		}
 		// Verbose Special "DBDS" Ends Here - No effect on operation
@@ -217,8 +217,8 @@ func playNew(reader csv.Reader) {
 		stratWinsTD = 0
 		stratLossesAD += stratLossesTD
 		stratLossesTD = 0
-		// stratLossesGLLAD += stratLossesGLLTD
-		//stratLossesGLLTD = 0
+		stratLossesGML_AD += stratLossesGML_TD
+		stratLossesGML_TD = 0
 		stratLossesNMA_AD += stratLossesNMA_TD
 		stratLossesNMA_TD = 0
 		stratLossesRB_AD += stratLossesRB_TD
@@ -249,8 +249,8 @@ func playNew(reader csv.Reader) {
 	fmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_AD)
 	fmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_AD)
 	fmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_AD)
-	//fmt.Printf("\nStrategy Losses at Game Length Limit is: %d", stratLossesGLLAD)
-	if stratLossesNMA_AD+stratLossesRB_AD+stratLossesSE_AD != stratLossesAD {
+	fmt.Printf("\nStrategy Losses at Game Length Limit is: %d", stratLossesGML_AD)
+	if stratLossesNMA_AD+stratLossesRB_AD+stratLossesSE_AD+stratLossesGML_AD != stratLossesAD {
 		fmt.Printf("\n     *********** Total Strategy Losses != Sum of strategy detail")
 	}
 	if stratLossesAD+stratWinsAD != stratNumAD {

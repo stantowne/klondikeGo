@@ -10,8 +10,8 @@ import (
 	"strings"
 )
 
-const gameLengthLimitOrig = 150 // max moveCounter; increasing to 200 does not increase win rate
-const gameLengthLimitNew = 150  // max moveNum  NOT YET IMPLEMENTED
+const gameLengthLimitOrig = 150    // max moveCounter; increasing to 200 does not increase win rate
+const gameLengthLimitNew = 2500000 // max mvsTriedTD
 var gameLengthLimit int
 
 var firstDeckNum int
@@ -92,7 +92,7 @@ func main() {
 
 	firstDeckNum, err = strconv.Atoi(args[1])
 	if err != nil || firstDeckNum < 0 || firstDeckNum > 9999 {
-		println("first argument invalid")
+		println("first argument invalid - args[1]")
 		println("firstDeckNum must be non-negative integer less than 10,000")
 		os.Exit(1)
 	}
@@ -101,7 +101,7 @@ func main() {
 
 	//the line below should be changed if the input file contains more than 10,000 decks
 	if err != nil || numberOfDecksToBePlayed < 1 || numberOfDecksToBePlayed > (10000-firstDeckNum) {
-		println("second argument invalid")
+		println("second argument invalid - args[2]")
 		println("numberOfDecksToBePlayed must be 1 or more, but not more than 10,000 minus firstDeckNum")
 		os.Exit(1)
 	}
@@ -125,7 +125,7 @@ func main() {
 	// 		I have never run the program with length greater than 16
 	// 		Depending upon the size of an int, length could be 32 or greater, but the program may never finish
 	if err != nil || length < -1 || length > 24 {
-		println("Third argument invalid")
+		println("Third argument invalid - args[3]")
 		println("Length must be an integer >= -1 and <= 24")
 		os.Exit(1)
 	}
@@ -136,16 +136,15 @@ func main() {
 	verboseSpecial = args[4]
 	verbose, err = strconv.Atoi(verboseSpecial[0:1])
 	if err != nil || verbose >= 10 || verbose < 0 {
-		println("fourth argument invalid")
+		println("fourth argument invalid - args[4]")
 		println("verbose must be a non-negative integer no greater than 10")
 		os.Exit(1)
 	}
 	verboseSpecial = verboseSpecial[1:]
-
 	/* Verbose Special codes implemented:  CASE IS IGNORED  Place some divider such as / when multiple specials are requested
 
 	   DBD = print Deck-by-deck detail info after each Move 											playNew Only (in playAllMovesS)
-	   WL  = print deck summary Win/Loss stats after all decks to see which decks won and which lost    playNew Only (in playNew)
+	   DBDS = print Deck-by-deck SHORT detail info after each Move 											playNew Only (in playAllMovesS)WL  = print deck summary Win/Loss stats after all decks to see which decks won and which lost    playNew Only (in playNew)
 	   SUITSYMBOL = print S, D, C, H instead of runes - defaults to runes
 	   RANKSYMBOL = print Ac, Ki, Qu, Jk instead of 01, 11, 12, 13 - defaults to numeric
 	*/
@@ -158,7 +157,7 @@ func main() {
 	case "F", "f":
 		findAllSuccessfulStrategies = false
 	default:
-		println("Fifth argument invalid")
+		println("Fifth argument invalid - args[5]")
 		println("  findAllSuccessfulStrategies must be either:")
 		println("     'F' or 'f' - Normal case stop after finding a successful set of moves")
 		println("     'A' or 'a' - See how many paths to success you can find")
@@ -171,7 +170,7 @@ func main() {
 		if pMdArgs[0] == "BB" || pMdArgs[0] == "BBS" || pMdArgs[0] == "BBSS" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" || pMdArgs[0] == "X" {
 			printMoveDetail.pType = pMdArgs[0]
 		} else {
-			println("Sixth argument invalid")
+			println("Sixth argument part 1 invalid - args[6] arg[6] parts are  separated by commas: *1*,2,3,4,5,6")
 			println("  Must start with BB, BBS, BBSS, TW, TS, TSS or X")
 			os.Exit(1)
 		}
@@ -179,7 +178,7 @@ func main() {
 	if l >= 2 {
 		printMoveDetail.deckStartVal, err = strconv.Atoi(pMdArgs[1])
 		if err != nil || printMoveDetail.deckStartVal < 0 {
-			println("Sixth argument part 2 invalid")
+			println("Sixth argument part 2 invalid - args[6] arg[6] parts are  separated by commas: 1,*2*,3,4,5,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
@@ -187,7 +186,7 @@ func main() {
 	if l >= 3 {
 		printMoveDetail.deckContinueFor, err = strconv.Atoi(pMdArgs[2])
 		if err != nil || printMoveDetail.deckContinueFor < 0 {
-			println("Sixth argument part 3 invalid")
+			println("Sixth argument part 3 invalid - args[6] arg[6] parts are  separated by commas: 1,2,*3*,4,5,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
@@ -195,7 +194,7 @@ func main() {
 	if l >= 4 {
 		printMoveDetail.aMvsThisDkStartVal, err = strconv.Atoi(pMdArgs[3])
 		if err != nil || printMoveDetail.aMvsThisDkStartVal < 0 {
-			println("Sixth argument part 4 invalid")
+			println("Sixth argument part 4 invalid - args[6] arg[6] parts are  separated by commas: 1,2,3,*4*,5,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
@@ -203,7 +202,7 @@ func main() {
 	if l >= 5 {
 		printMoveDetail.aMvsThisDkContinueFor, err = strconv.Atoi(pMdArgs[4])
 		if err != nil || printMoveDetail.aMvsThisDkContinueFor < 0 {
-			println("Sixth argument part 5 invalid")
+			println("Sixth argument part 5 invalid - args[6] arg[6] parts are  separated by commas: 1,2,3,4,*5*,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
@@ -213,7 +212,7 @@ func main() {
 			printMoveDetail.outputTo = pMdArgs[5]
 		} else {
 			// add if-clause here to test if valid filename and it can be overwritten
-			println("Sixth argument part 5 invalid")
+			println("Sixth argument part 6 invalid - args[6] arg[6] parts are  separated by commas: 1,2,3,4,5,*6*")
 			println("must be a C for Console or a valid file name")
 			os.Exit(1)
 		}

@@ -13,10 +13,15 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	/* Return Codes: SL  = Strategy Lost	 NMA = No Moves Available
 	                 						 RB  = Repetitive Board
 	                                         SE  = Strategy Exhausted
+	                                         GML = GameLength Limit exceeded
 	                 SW  = Strategy Win      EW  = Early Win
 											 SW  = Standard Win  Obsolete all wins are aearly
 	*/
 	// add code for findAllSuccessfulStrategies
+
+	if mvsTriedTD > gameLengthLimit {
+		return "SL", "GML"
+	}
 
 	// Find Next Moves
 	aMoves := detectAvailableMoves(bIn, moveNum, singleGame)
@@ -183,7 +188,10 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		recurReturnV1, recurReturnV2 := playAllMoveS(bNew, moveNum+1, deckNum)
 		pMd(bIn, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2)
 		if findAllSuccessfulStrategies != true && recurReturnV1 == "SW" {
-			return recurReturnV1, recurReturnV2
+			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllSuccessfulStrategies false and we had a win
+		}
+		if recurReturnV1 == "SF" && recurReturnV2 == "GML" {
+			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllSuccessfulStrategies false and we had a win
 		}
 	}
 
