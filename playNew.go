@@ -200,10 +200,13 @@ func playNew(reader csv.Reader) {
 
 		//Verbose Special "DBDS" Starts Here - No effect on operation
 		if strings.Contains(verboseSpecial, "/DBDS/") { // Deck-by-deck SHORT Statistics
+			var est time.Duration
+			est = time.Duration(int64(time.Now().Sub(startTimeAD))/(int64(deckNum)+int64(1))*(int64(printMoveDetail.deckContinueFor)-(int64(deckNum)+int64(1)))) * time.Nanosecond
+
 			if stratWinsTD > 0 {
-				fmt.Printf("\nDeck: %5d  WON    Result Codes: %v %v   Moves Tried: %9v   Elapsed Time: %v", deckNum, result1, result2, mvsTriedTD, time.Now().Sub(startTimeTD))
+				fmt.Printf("\nDeck: %5d  WON    Result Codes: %v %v   Moves Tried: %9v   Elapsed Time This Deck: %v   Elapsed Time All Decks: %v  Est. Remaining Time: %v", deckNum, result1, result2, mvsTriedTD, time.Now().Sub(startTimeTD), time.Now().Sub(startTimeAD), est)
 			} else {
-				fmt.Printf("\nDeck: %5d  LOST   Result Codes: %v %v   Moves Tried: %9v   Elapsed Time: %v", deckNum, result1, result2, mvsTriedTD, time.Now().Sub(startTimeTD))
+				fmt.Printf("\nDeck: %5d  LOST   Result Codes: %v %v   Moves Tried: %9v   Elapsed Time This Deck: %v   Elapsed Time All Decks: %v  Est. Remaining Time: %v", deckNum, result1, result2, mvsTriedTD, time.Now().Sub(startTimeTD), time.Now().Sub(startTimeAD), est)
 			}
 		}
 		// Verbose Special "DBDS" Ends Here - No effect on operation

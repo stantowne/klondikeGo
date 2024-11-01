@@ -20,6 +20,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	// add code for findAllSuccessfulStrategies
 
 	if mvsTriedTD > gameLengthLimit {
+		pMd(bIn, deckNum, moveNum, "BB", 2, "\n  SL-RB: Game Length of: %v exceeds limit: %v\n", strconv.Itoa(mvsTriedTD), strconv.Itoa(gameLengthLimit))
 		return "SL", "GML"
 	}
 
@@ -75,7 +76,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 		// Check if No Moves Available
 		if i == 0 && aMoves[0].name == "No Moves Available" {
-			pMd(bIn, deckNum, moveNum, "BB", 2, "  SF-NMA: No Moves Available: Strategy Failed %v%v\n", "", "")
+			pMd(bIn, deckNum, moveNum, "BB", 2, "  SL-NMA: No Moves Available: Strategy Lost %v%v\n", "", "")
 			return "SL", "NMA"
 		}
 
@@ -190,7 +191,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		if findAllSuccessfulStrategies != true && recurReturnV1 == "SW" {
 			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllSuccessfulStrategies false and we had a win
 		}
-		if recurReturnV1 == "SF" && recurReturnV2 == "GML" {
+		if recurReturnV1 == "SL" && recurReturnV2 == "GML" {
 			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllSuccessfulStrategies false and we had a win
 		}
 	}
@@ -259,6 +260,8 @@ func pMd(b board, dN int, mN int, pTypeIn string, variant int, comment string, s
 			fmt.Printf(comment, b)
 		case pTypeIn == "NOTX" && printMoveDetail.pType != "X" && variant == 1:
 			fmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Now().Sub(startTimeAD), time.Now().Sub(startTimeTD))
+		case pTypeIn == "NOTX" && printMoveDetail.pType != "X" && variant == 2:
+			fmt.Printf(comment, s1, s2)
 		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 1:
 		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 2:
 		}
