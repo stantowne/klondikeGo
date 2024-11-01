@@ -7,11 +7,9 @@ import (
 	"golang.org/x/text/message"
 	"io"
 	"log"
-	"os"
 	"reflect"
 	"sort"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -94,144 +92,140 @@ newDeck:
 				}
 				// DanTest remove below
 				for z := range aMoves {
-					if aMoves[z].cardToMove.Rank == 0 && !strings.Contains("moveDown/flipWasteToStock/flipStockToWaste/moveEntireColumn/movePartialColumn/", aMoves[z].name) {
-						fmt.Printf("\n****************\nBad Move generated %v\nmoveCounter %v\n", aMoves[z], moveCounter)
-						if aMoves[z].cardToMove.Rank == 0 && aMoves[z].name == "moveDown" {
-							fmt.Printf("\n****************\nBad Move generated %v\n\n", aMoves[z])
-							fmt.Printf("  Within these generated moves: ")
-							for w := range aMoves {
-								fmt.Printf("\n%v", aMoves[w])
-							}
-							fmt.Printf("\n\n")
-							printBoard(b)
-							fmt.Printf("\n\n%d", b.boardCode(deckNum))
-							os.Exit(1)
+					if aMoves[z].cardToMove.Rank == 0 && aMoves[z].name == "moveDown" {
+						fmt.Printf("\n****************\nBad Move generated %v\n\n", aMoves[z])
+						fmt.Printf("  Within these generated moves: ")
+						for w := range aMoves {
+							fmt.Printf("\n%v", aMoves[w])
 						}
-					}
-					// DanTest remove above
-
-					selectedMove := aMoves[0]
-
-					//Initial Override Strategy logic
-					mC := moveCounter - 1 // for this part of the program a zero-based move counter is needed
-					if mC > -1 && mC < length {
-						if iOS&(1<<mC) != 0 {
-							selectedMove = aMoves[len(aMoves)-1]
-						}
-					}
-
-					b = moveMaker(b, selectedMove) //***Main Program Statement
-
-					//quickTestBoardCodeDeCode(b, deckNum, length, iOS, moveCounter)
-
-					//Detect Early Win
-					if detectWinEarly(b) {
-						earlyWinCounter++
-						winCounter++
-						attemptsAvoidedCounter = attemptsAvoidedCounter + numberOfStrategies - iOS
-
-						if verbose > 0 {
-							fmt.Printf("Deck %v, played using initialOverrideStrategy %v: Game won early after %v moves. \n", deckNum, iOS, mC)
-						}
-						if verbose > 1 {
-							fmt.Printf("GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
-						}
-						if verbose > 1 {
-							fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
-						}
-						continue newDeck
-					}
-
-					//Detects Win
-					if len(b.piles[0])+len(b.piles[1])+len(b.piles[2])+len(b.piles[3]) == 52 {
-						winCounter++
-						attemptsAvoidedCounter = attemptsAvoidedCounter + numberOfStrategies - iOS
-
-						if verbose > 0 {
-							fmt.Printf("Deck %v, played using initialOverrideStrategy %v: Game won after %v moves. \n", deckNum, iOS, mC)
-						}
-						if verbose > 1 {
-							fmt.Printf("GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
-						}
-						if verbose > 1 {
-							fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
-						}
-						continue newDeck
-					}
-					//Detects Loss
-					if aMoves[0].name == "flipWasteToStock" {
-						if moveCounter < 20 { // changed from < 20
-							priorBoardNullWaste = b
-						} else if reflect.DeepEqual(b, priorBoardNullWaste) {
-							if verbose > 1 {
-								fmt.Printf("*****Loss detected after %v moves\n", moveCounter)
-							}
-							regularLosses++
-							continue newInitialOverrideStrategy
-						} else {
-							priorBoardNullWaste = b
-						}
+						fmt.Printf("\n\n")
+						printBoard(b)
+						fmt.Printf("\n\n%d", b.boardCode(deckNum))
 					}
 				}
-				lossesAtGLL++
-				if verbose > 0 {
-					fmt.Printf("Deck %v, played using Initial Override Strategy %v: Game not won\n", deckNum, iOS)
+				// DanTest remove above
+
+				selectedMove := aMoves[0]
+
+				//Initial Override Strategy logic
+				mC := moveCounter - 1 // for this part of the program a zero-based move counter is needed
+				if mC > -1 && mC < length {
+					if iOS&(1<<mC) != 0 {
+						selectedMove = aMoves[len(aMoves)-1]
+					}
 				}
-				if verbose > 1 {
-					fmt.Printf("Game Not Won:  Frequency of each moveType:\n%v\n", moveTypes)
-					fmt.Printf("Game Not Won: aMovesNumberOf:\n%v\n", aMovesNumberOf)
+
+				b = moveMaker(b, selectedMove) //***Main Program Statement
+
+				//quickTestBoardCodeDeCode(b, deckNum, length, iOS, moveCounter)
+
+				//Detect Early Win
+				if detectWinEarly(b) {
+					earlyWinCounter++
+					winCounter++
+					attemptsAvoidedCounter = attemptsAvoidedCounter + numberOfStrategies - iOS
+
+					if verbose > 0 {
+						fmt.Printf("Deck %v, played using initialOverrideStrategy %v: Game won early after %v moves. \n", deckNum, iOS, mC)
+					}
+					if verbose > 1 {
+						fmt.Printf("GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
+					}
+					if verbose > 1 {
+						fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
+					}
+					continue newDeck
+				}
+
+				//Detects Win
+				if len(b.piles[0])+len(b.piles[1])+len(b.piles[2])+len(b.piles[3]) == 52 {
+					winCounter++
+					attemptsAvoidedCounter = attemptsAvoidedCounter + numberOfStrategies - iOS
+
+					if verbose > 0 {
+						fmt.Printf("Deck %v, played using initialOverrideStrategy %v: Game won after %v moves. \n", deckNum, iOS, mC)
+					}
+					if verbose > 1 {
+						fmt.Printf("GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
+					}
+					if verbose > 1 {
+						fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
+					}
+					continue newDeck
+				}
+				//Detects Loss
+				if aMoves[0].name == "flipWasteToStock" {
+					if moveCounter < 20 { // changed from < 20
+						priorBoardNullWaste = b
+					} else if reflect.DeepEqual(b, priorBoardNullWaste) {
+						if verbose > 1 {
+							fmt.Printf("*****Loss detected after %v moves\n", moveCounter)
+						}
+						regularLosses++
+						continue newInitialOverrideStrategy
+					} else {
+						priorBoardNullWaste = b
+					}
 				}
 			}
-
+			lossesAtGLL++
+			if verbose > 0 {
+				fmt.Printf("Deck %v, played using Initial Override Strategy %v: Game not won\n", deckNum, iOS)
+			}
+			if verbose > 1 {
+				fmt.Printf("Game Not Won:  Frequency of each moveType:\n%v\n", moveTypes)
+				fmt.Printf("Game Not Won: aMovesNumberOf:\n%v\n", aMovesNumberOf)
+			}
 		}
-		possibleAttempts := numberOfStrategies * numberOfDecksToBePlayed
-		lossCounter := numberOfDecksToBePlayed - winCounter
-		endTime := time.Now()
-		elapsedTime := endTime.Sub(startTime)
-		percentageAttemptsAvoided := 100.0 * float64(attemptsAvoidedCounter) / float64(possibleAttempts)
-		var p = message.NewPrinter(language.English)
-		fmt.Printf("\nDate & Time Completed is %v\n", endTime)
-		_, err = p.Printf("Number of Decks Played is %d, starting with Deck %d.\n", numberOfDecksToBePlayed, firstDeckNum)
-		if err != nil {
-			fmt.Println("Number of Decks Played cannot print")
-		}
-		fmt.Printf("Length of Initial Override Strategies is %d.\n", length)
-		fmt.Printf("Number of Initial Override Strategies Per Deck is %d.\n", numberOfStrategies)
-		_, err = p.Printf("Number of Possible Attempts is %d.\n", possibleAttempts)
-		if err != nil {
-			fmt.Println("Number of Possible Attempts cannot print")
-		}
-		averageElapsedTimePerDeck := float64(elapsedTime.Milliseconds()) / float64(numberOfDecksToBePlayed)
-		fmt.Printf("Elapsed Time is %v.\n", elapsedTime)
-		_, err = p.Printf("Total Decks Won is %d of which %d were Early Wins\n", winCounter, earlyWinCounter)
-		if err != nil {
-			fmt.Println("Total Decks Won cannot print")
-		}
-		_, err = p.Printf("Total Decks Lost is %d\n", lossCounter)
-		if err != nil {
-			fmt.Println("Total Decks Lost cannot print")
-		}
-		_, err = p.Printf("Losses at Game Length Limit is %d\n", lossesAtGLL)
-		if err != nil {
-			fmt.Println("Losses at Game Length Limit cannot print")
-		}
-		_, err = p.Printf("Losses at No Moves Available is %d\n", lossesAtNoMoves)
-		if err != nil {
-			fmt.Println("Losses at No Moves Available cannot print")
-		}
-		_, err = p.Printf("Regular Losses is %d\n", regularLosses)
-		if err != nil {
-			fmt.Println("Regular Losses cannot print")
-		}
-		_, err = p.Printf("Number of Attempts Avoided ia %d\n", attemptsAvoidedCounter)
-		if err != nil {
-			fmt.Println("Number of Attempts Avoided cannot print")
-		}
-		_, err = p.Printf("Percentage of Possible Attempts Avoided is %v\n", percentageAttemptsAvoided)
-		if err != nil {
-			fmt.Println("Percentage of Possible Attempts Avoided cannot print")
-		}
-		fmt.Printf("Average Elapsed Time per Deck is %vms.\n", averageElapsedTimePerDeck)
 
 	}
+	possibleAttempts := numberOfStrategies * numberOfDecksToBePlayed
+	lossCounter := numberOfDecksToBePlayed - winCounter
+	endTime := time.Now()
+	elapsedTime := endTime.Sub(startTime)
+	percentageAttemptsAvoided := 100.0 * float64(attemptsAvoidedCounter) / float64(possibleAttempts)
+	var p = message.NewPrinter(language.English)
+	fmt.Printf("\nDate & Time Completed is %v\n", endTime)
+	_, err = p.Printf("Number of Decks Played is %d, starting with Deck %d.\n", numberOfDecksToBePlayed, firstDeckNum)
+	if err != nil {
+		fmt.Println("Number of Decks Played cannot print")
+	}
+	fmt.Printf("Length of Initial Override Strategies is %d.\n", length)
+	fmt.Printf("Number of Initial Override Strategies Per Deck is %d.\n", numberOfStrategies)
+	_, err = p.Printf("Number of Possible Attempts is %d.\n", possibleAttempts)
+	if err != nil {
+		fmt.Println("Number of Possible Attempts cannot print")
+	}
+	averageElapsedTimePerDeck := float64(elapsedTime.Milliseconds()) / float64(numberOfDecksToBePlayed)
+	fmt.Printf("Elapsed Time is %v.\n", elapsedTime)
+	_, err = p.Printf("Total Decks Won is %d of which %d were Early Wins\n", winCounter, earlyWinCounter)
+	if err != nil {
+		fmt.Println("Total Decks Won cannot print")
+	}
+	_, err = p.Printf("Total Decks Lost is %d\n", lossCounter)
+	if err != nil {
+		fmt.Println("Total Decks Lost cannot print")
+	}
+	_, err = p.Printf("Losses at Game Length Limit is %d\n", lossesAtGLL)
+	if err != nil {
+		fmt.Println("Losses at Game Length Limit cannot print")
+	}
+	_, err = p.Printf("Losses at No Moves Available is %d\n", lossesAtNoMoves)
+	if err != nil {
+		fmt.Println("Losses at No Moves Available cannot print")
+	}
+	_, err = p.Printf("Regular Losses is %d\n", regularLosses)
+	if err != nil {
+		fmt.Println("Regular Losses cannot print")
+	}
+	_, err = p.Printf("Number of Attempts Avoided ia %d\n", attemptsAvoidedCounter)
+	if err != nil {
+		fmt.Println("Number of Attempts Avoided cannot print")
+	}
+	_, err = p.Printf("Percentage of Possible Attempts Avoided is %v\n", percentageAttemptsAvoided)
+	if err != nil {
+		fmt.Println("Percentage of Possible Attempts Avoided cannot print")
+	}
+	fmt.Printf("Average Elapsed Time per Deck is %vms.\n", averageElapsedTimePerDeck)
+
 }
