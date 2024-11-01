@@ -11,6 +11,9 @@ func detectAcrossMoves(b board, mc int, _ bool) []move {
 		return moves
 	}
 	var m move
+	if len(b.waste) == 0 { //waste is empty
+		return moves
+	}
 	lastWasteCard, _, err := last(b.waste)
 	if err != nil {
 		fmt.Printf("detectAcrossMoves: error calling last on b.waste %v\n", err)
