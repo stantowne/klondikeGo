@@ -8,6 +8,9 @@ import (
 func detectMecInner(b board, _ int, _ bool) []move {
 	var moves []move
 	for frmColNum := 0; frmColNum < 7; frmColNum++ {
+		if len(b.columns[frmColNum]) == 0 {
+			continue
+		}
 		firstFaceUpIndex, FaceUpPortion, err := faceUpPortion(b.columns[frmColNum])
 		if err != nil {
 			fmt.Printf("detectEntireColumnMovesAcross: error calling faceUpPortion on b.columns[%v] %v\n", frmColNum, err)
