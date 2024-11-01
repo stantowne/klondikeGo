@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -166,11 +165,11 @@ func (c *Card) pStr() string {
 	return c.rankSymbol() + sSuit + sFace + " "
 }
 
-func quickTestCardPackUnPack(c Card) bool {
+/*func quickTestCardPackUnPack(c Card) bool {  //commented out to elim warning
 	return unPackByte2Card(c.packCard()) == c
-}
+}*/
 
-func testCardPackUnPack(args []string) {
+/*func testCardPackUnPack(args []string) {    //commented out to elim warning
 	var testCard, rebuiltCard Card
 	r, err := strconv.Atoi(args[1])
 	if err != nil {
@@ -189,4 +188,4 @@ func testCardPackUnPack(args []string) {
 	rebuiltCard = unPackByte2Card(packed)
 	fmt.Printf("RebuiltCard: %+v\n", rebuiltCard)
 	fmt.Printf("Does the round trip work: %v\n", testCard == rebuiltCard)
-}
+}*/

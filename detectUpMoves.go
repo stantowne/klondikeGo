@@ -11,6 +11,9 @@ func detectUpMoves(b board, mc int, _ bool) []move {
 		return moves
 	}
 	for i := 0; i < 7; i++ {
+		if len(b.columns[i]) == 0 { // this column is empty
+			continue
+		}
 		lastCard, _, err := last(b.columns[i])
 		if err != nil {
 			fmt.Printf("detectUpMoves: error calling last on b.columns[%v] %v\n", i, err)
