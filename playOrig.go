@@ -7,6 +7,7 @@ import (
 	"golang.org/x/text/message"
 	"io"
 	"log"
+	"os"
 	"reflect"
 	"sort"
 	"strconv"
@@ -29,6 +30,7 @@ func playOrig(reader csv.Reader) {
 	lossesAtGLL := 0
 	lossesAtNoMoves := 0
 	regularLosses := 0
+	var losses [][]string
 newDeck:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
@@ -82,6 +84,10 @@ newDeck:
 						fmt.Printf("GameLost: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
 					lossesAtNoMoves++
+					if iOS == numberOfStrategies-1 {
+						loss := []string{strconv.Itoa(deckNum), "lossAtNoMoves"}
+						losses = append(losses, loss)
+					}
 					continue newInitialOverrideStrategy
 				}
 
@@ -163,6 +169,10 @@ newDeck:
 							fmt.Printf("*****Loss detected after %v moves\n", moveCounter)
 						}
 						regularLosses++
+						if iOS == numberOfStrategies-1 {
+							loss := []string{strconv.Itoa(deckNum), "regularLoss"}
+							losses = append(losses, loss)
+						}
 						continue newInitialOverrideStrategy
 					} else {
 						priorBoardNullWaste = b
@@ -170,6 +180,9 @@ newDeck:
 				}
 			}
 			lossesAtGLL++
+			loss := []string{strconv.Itoa(deckNum), "lossAtGameLengthLimit"}
+			losses = append(losses, loss)
+
 			if verbose > 0 {
 				fmt.Printf("Deck %v, played using Initial Override Strategy %v: Game not won\n", deckNum, iOS)
 			}
@@ -179,6 +192,23 @@ newDeck:
 			}
 		}
 
+	}
+	fileName := "playOrigLosses-firstDeck-" +
+		strconv.Itoa(firstDeckNum) +
+		"-strategyLength-" +
+		strconv.Itoa(length) +
+		"-numberOfDecks-" +
+		strconv.Itoa(numberOfDecksToBePlayed) +
+		".csv"
+	file, err := os.Create(fileName)
+	if err != nil {
+		log.Println("Cannot create csv file:", err)
+	}
+	defer file.Close()
+	writer := csv.NewWriter(file)
+	err = writer.WriteAll(losses)
+	if err != nil {
+		log.Println("Cannot write csv file:", err)
 	}
 	possibleAttempts := numberOfStrategies * numberOfDecksToBePlayed
 	lossCounter := numberOfDecksToBePlayed - winCounter
