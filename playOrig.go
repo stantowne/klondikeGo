@@ -33,6 +33,9 @@ func playOrig(reader csv.Reader) {
 	var losses [][]string
 newDeck:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
+		if deckNum%1000 == 0 {
+			fmt.Printf("\nStarting Deck Number %v at %v", deckNum, time.Now())
+		}
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {
 			break
