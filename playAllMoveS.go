@@ -93,7 +93,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 			// Verbose Special "WL" Starts Here - No effect on operation
 			if strings.Contains(verboseSpecial, "/WL/") { // Deck Win Loss Summary Statistics
-				if len(deckWinLossDetail)-1 < deckNum {
+				/*if len(deckWinLossDetail)-1 < deckNum {
 					dWLDStats.winLoss = "W"
 					dWLDStats.moveNumAt1stWinOrAtLoss = moveNum
 					dWLDStats.moveNumMinWinIfFindAll = moveNum
@@ -108,27 +108,12 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 					if deckWinLossDetail[deckNum].moveNumMaxWinIfFindAll < moveNum {
 						deckWinLossDetail[deckNum].moveNumMaxWinIfFindAll = moveNum
 					}
-				}
+				}*/
 
 			}
 			// Verbose Special "WL" Ends Here - No effect on operation
 			return "SW", "EW" //  Strategy Early Win
 		}
-
-		/*		//Detects Standard Win
-				if len(bIn.piles[0])+len(bIn.piles[1])+len(bIn.piles[2])+len(bIn.piles[3]) == 52 {
-					aMstandardWinCounterThisDeck++
-					stratWinsTD++
-					c := "  SW-SW: Strategy Win: Standard Win%v%v"
-					if findAllSuccessfulStrategies {
-						c = c + "  Will Continue to look for additional winning strategies for this deck"
-					} else {
-						c = c + "  Go to Next Deck (if any)"
-					}
-					pMd(bIn, deckNum, moveNum, "BB", 2, c, "", "")
-					return "SW", "SW" //  Strategy Standard Win
-				}
-		*/
 
 		// OK, done with the various end-of-strategy conditions
 		// let's print out the list of available moves and make the next available move
@@ -146,48 +131,19 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			}
 		}
 
-		/*//test
-		if mvsTriedTD == 1460 || mvsTriedTD == 280 || mvsTriedTD == 1461 || mvsTriedTD == 281 {
-			fmt.Printf("\n\n#########################\nBefore mvsTriedTD++ \nB4 COPY, B4 MOVEMAKER bIn BELOW mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
-			printBoard(bIn)
-			fmt.Printf("\nB4 COPY, B4 MOVEMAKER bIn ABOVE mvsTriedTD == %v  move = %v\nAllMoves: %v\n$$$$$$$$$$$$$$$$$\n", mvsTriedTD, aMoves[i], aMoves)
-		}
-		//end test*/
-
 		bNew := bIn.copyBoard() // Critical Must use copyBoard
-
-		/*//test
-		if mvsTriedTD == 1460 || mvsTriedTD == 280 || mvsTriedTD == 1461 || mvsTriedTD == 281 {
-			fmt.Printf("\n\n#########################\nBefore mvsTriedTD++ \nAFTER COPY, B4 MOVEMAKER bIn BELOW mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
-			printBoard(bIn)
-			fmt.Printf("\nAFTER COPY, B4 MOVEMAKER bIn ABOVE mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
-			fmt.Printf("\nAFTER COPY, B4 MOVEMAKER bNew BELOW mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
-			printBoard(bNew)
-			fmt.Printf("\nAFTER COPY, B4 MOVEMAKER bNew ABOVE mvsTriedTD == %v  move = %v\nAllMoves: %v\n$$$$$$$$$$$$$$$$$\n", mvsTriedTD, aMoves[i], aMoves)
-		}
-		//end test*/
 
 		bNew = moveMaker(bNew, aMoves[i])
 
-		/*//test
-		if mvsTriedTD == 122574 {
-			fmt.Printf("\n\n#########################\nBefore mvsTriedTD++ \nAFTER COPY, AFTER MOVEMAKER bIn BELOW mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
-			printBoard(bIn)
-			fmt.Printf("\nAFTER COPY, AFTER MOVEMAKER bIn ABOVE mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
-			fmt.Printf("\nAFTER COPY, AFTER MOVEMAKER bNew BELOW mvsTriedTD == %v  move = %v", mvsTriedTD, aMoves[i])
-			printBoard(bNew)
-			fmt.Printf("\nAFTER COPY, AFTER MOVEMAKER bNew ABOVE mvsTriedTD == %v  move = %v\nAllMoves: %v\n$$$$$$$$$$$$$$$$$\n", mvsTriedTD, aMoves[i], aMoves)
-		}
-		//end test*/
 		pMd(bIn, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", "", "")
 		pMd(bIn, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "")
 		pMd(bNew, deckNum, moveNum, "BBS", 2, "     bNew: %v\n", "", "")
 		mvsTriedTD++
 
-		//	fmt.Printf("moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   Move: %v\n", moveNum, stratNumTD, mvsTriedTD, len(priorBoards), printMove(aMoves[i]))
-
 		recurReturnV1, recurReturnV2 := playAllMoveS(bNew, moveNum+1, deckNum)
+
 		pMd(bIn, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2)
+
 		if findAllSuccessfulStrategies != true && recurReturnV1 == "SW" {
 			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllSuccessfulStrategies false and we had a win
 		}
