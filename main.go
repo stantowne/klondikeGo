@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const gameLengthLimitOrig = 150     // max moveCounter; increasing to 200 does not increase win rate
@@ -221,6 +222,7 @@ func main() {
 	// Argument above applies only to playNew			****************************************************
 
 	fmt.Printf("\nCalling Program: %v\n\n", args[0])
+	fmt.Printf("Start Time: %v\n", time.Now())
 	fmt.Printf("Command Line Arguments:\n"+
 		"            Number Of Decks To Be Played: %v\n"+
 		"                      Starting with deck: %v\n\n", numberOfDecksToBePlayed, firstDeckNum)
