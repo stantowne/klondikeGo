@@ -10,8 +10,8 @@ import (
 	"strings"
 )
 
-const gameLengthLimitOrig = 150     // max moveCounter; increasing to 200 does not increase win rate
-const gameLengthLimitNew = 30000000 // max mvsTriedTD
+const gameLengthLimitOrig = 150      // max moveCounter; increasing to 200 does not increase win rate
+const gameLengthLimitNew = 400000000 // max mvsTriedTD
 var gameLengthLimit int
 
 var firstDeckNum int
@@ -147,6 +147,7 @@ func main() {
 	   DBDS = print Deck-by-deck SHORT detail info after each Move 											playNew Only (in playAllMovesS)WL  = print deck summary Win/Loss stats after all decks to see which decks won and which lost    playNew Only (in playNew)
 	   SUITSYMBOL = print S, D, C, H instead of runes - defaults to runes
 	   RANKSYMBOL = print Ac, Ki, Qu, Jk instead of 01, 11, 12, 13 - defaults to numeric
+	   WL = Win/Loss record for each deck
 	*/
 
 	// Arguments 5 & 6 below applies only to playNew			****************************************************
@@ -292,11 +293,11 @@ func main() {
 
 		gameLengthLimit = gameLengthLimitOrig
 		moveBasePriority = moveBasePriorityOrig
-		fmt.Printf("\n                         GameLengthLimit: %v\n\n\n", gameLengthLimit)
+		fmt.Printf("\n                         GameLengthLimit: %v Move Counter\n\n\n", gameLengthLimit)
 		playOrig(*reader)
 	} else {
 		gameLengthLimit = gameLengthLimitNew
-		fmt.Printf("\n                         GameLengthLimit: %v  (not yet implemented)\n\n\n", gameLengthLimit)
+		fmt.Printf("\n                         GameLengthLimit: %v Moves Tried\n\n\n", gameLengthLimit)
 		moveBasePriority = moveBasePriorityNew
 		playNew(*reader)
 	}
