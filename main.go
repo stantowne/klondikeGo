@@ -227,13 +227,13 @@ func main() {
 		"                      Starting with deck: %v\n\n", numberOfDecksToBePlayed, firstDeckNum)
 	if length != -1 {
 		nOfS := 1 << length //number of initial strategies
-		fmt.Printf(" Style: Original IOS (Initial Override Strategies)\n\n"+
-			"                     IOS strategy length: %v\n"+
-			"      Max IOS startegy attempts per deck: %v\n"+
-			"       Total strategy attempts all decks: %v\n\n", length, nOfS, nOfS*numberOfDecksToBePlayed)
+		fmt.Printf(" Style: Original iOS (Initial Override Strategies)\n\n"+
+			"                     iOS strategy length: %v\n"+
+			"          Max possible attempts per deck: %v\n"+
+			"       Total possible attempts all decks: %v\n\n", length, nOfS, nOfS*numberOfDecksToBePlayed)
 	} else {
 		fmt.Printf(" Style: New AllMvs (All Moves Possible)\n\n" +
-			"   Max AllMvs startegy attempts per deck: Variable\n\n")
+			"   Max AllMvs strategy attempts per deck: Variable\n\n")
 	}
 	fmt.Printf("                           Verbose level: %v\n"+
 		"                   Verbose special codes: %v\n",
