@@ -19,8 +19,9 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	*/
 	// add code for findAllSuccessfulStrategies
 
-	if mvsTriedTD > gameLengthLimit {
+	if mvsTriedTD >= gameLengthLimit {
 		pMd(bIn, deckNum, moveNum, "BB", 2, "\n  SL-RB: Game Length of: %v exceeds limit: %v\n", strconv.Itoa(mvsTriedTD), strconv.Itoa(gameLengthLimit))
+		stratLossesGML_TD++
 		return "SL", "GML"
 	}
 
@@ -76,6 +77,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 		// Check if No Moves Available
 		if i == 0 && aMoves[0].name == "No Moves Available" {
+			stratLossesNMA_TD++
 			pMd(bIn, deckNum, moveNum, "BB", 2, "  SL-NMA: No Moves Available: Strategy Lost %v%v\n", "", "")
 			return "SL", "NMA"
 		}
