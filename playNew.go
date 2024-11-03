@@ -232,7 +232,10 @@ func playNew(reader csv.Reader) {
 			} else {
 				wL = "LOST"
 			}
-			fmt.Printf("\nDk: %5d   "+wL+"   MvsTried: %9v   StratsTried: %9v   Won: %5v   Lost: %5v   GML: %5v   Won: %5v%%   Lost: %5v%%   GML: %5v%%   ElTime TD: %11s   ElTime ADs: %11s  Rem Time: %11s, ResCodes: %2s %3s   UniQBoards: %v   Time Now: %v", deckNum, mvsTriedTD, stratNumTD, deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD, deckNum+1-firstDeckNum, 3)*100., roundFloatIntDiv(deckLossesAD, deckNum+1-firstDeckNum, 3)*100., roundFloatIntDiv(stratLossesGML_AD, deckNum+1-firstDeckNum, 3)*100., elapsedTimeTD.Truncate(100*time.Millisecond).String(), elapsedTimeAD.Truncate(100*time.Millisecond).String(), est.Truncate(100*time.Millisecond).String(), result1, result2, len(priorBoards), time.Now())
+			fmt.Printf("\nDk: %5d   "+wL+"   MvsTried: %9v   StratsTried: %9v   Won: %5v   Lost: %5v   GML: %5v   Won: %5v%%   Lost: %5v%%   GML: %5v%%   ElTime TD: %11s   ElTime ADs: %11s  Rem Time: %11s, ResCodes: %2s %3s   UniQBoards: %9v   Time Now: %v", deckNum, mvsTriedTD, stratNumTD, deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD, deckNum+1-firstDeckNum, 3)*100., roundFloatIntDiv(deckLossesAD, deckNum+1-firstDeckNum, 3)*100., roundFloatIntDiv(stratLossesGML_AD, deckNum+1-firstDeckNum, 3)*100., elapsedTimeTD.Truncate(100*time.Millisecond).String(), elapsedTimeAD.Truncate(100*time.Millisecond).String(), est.Truncate(100*time.Millisecond).String(), result1, result2, len(priorBoards), time.Now())
+			if elapsedTimeTD > 5*time.minute {
+				fmt.Printf("\a") // Ring Bell
+			}
 		}
 		// Verbose Special "DBDS" Ends Here - No effect on operation
 
