@@ -223,6 +223,7 @@ func main() {
 	// Argument above applies only to playNew			****************************************************
 	fmt.Printf("\nRun Start Time: %15s\n\n", time.Now().Format("2006.01.02  3:04:05 pm"))
 	fmt.Printf("\nCalling Program: %v\n\n", args[0])
+	fmt.Printf("Start Time: %v\n", time.Now())
 	fmt.Printf("Command Line Arguments:\n"+
 		"            Number Of Decks To Be Played: %v\n"+
 		"                      Starting with deck: %v\n\n", numberOfDecksToBePlayed, firstDeckNum)
