@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
+	"golang.org/x/text/language" // Stan, can you explain why these could not be moved to main.g insteat of repeating them in various files?
+	"golang.org/x/text/message"  // tried moving to main.go Moved these to main
 	"io"
 	"log"
 	"os"
