@@ -144,7 +144,11 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 		recurReturnV1, recurReturnV2 := playAllMoveS(bNew, moveNum+1, deckNum)
 
-		pMd(bIn, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   aMStratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2)
+		if strings.Contains(verboseSpecial, "/TEMPRESOURCEMONITOR/") { //Temporary Verbose Special to demonstrate ResourceMonitor behavior  Remove???
+			fmt.Printf("\n  Returned: %v - %v After Call at moveNum: %v", recurReturnV1, recurReturnV2, moveNum) //Temporary Verbose Special to demonstrate ResourceMonitor behavior  Remove???
+		} //Temporary Verbose Special to demonstrate ResourceMonitor behavior  Remove???
+
+		pMd(bIn, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2)
 
 		if findAllSuccessfulStrategies != true && recurReturnV1 == "SW" {
 			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllSuccessfulStrategies false and we had a win
