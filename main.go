@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -20,6 +21,7 @@ var numberOfDecksToBePlayed int
 var length int
 var verbose int
 var verboseSpecial string
+var verboseSpecialProgressCounter float64 = 0.
 var findAllSuccessfulStrategies bool
 
 type pMds struct {
@@ -145,11 +147,32 @@ func main() {
 	/* Verbose Special codes implemented:  CASE IS IGNORED  Place some divider such as / when multiple specials are requested
 
 	   DBD = print Deck-by-deck detail info after each Move 											playNew Only (in playAllMovesS)
-	   DBDS = print Deck-by-deck SHORT detail info after each Move 											playNew Only (in playAllMovesS)WL  = print deck summary Win/Loss stats after all decks to see which decks won and which lost    playNew Only (in playNew)
+	   DBDS = print Deck-by-deck SHORT detail info after each Move 										playNew Only (in playAllMovesS)WL  = print deck summary Win/Loss stats after all decks to see which decks won and which lost    playNew Only (in playNew)
 	   SUITSYMBOL = print S, D, C, H instead of runes - defaults to runes
 	   RANKSYMBOL = print Ac, Ki, Qu, Jk instead of 01, 11, 12, 13 - defaults to numeric
-	   WL = Win/Loss record for each deck
+	   WL = Win/Loss record for each deck printed at end
+	   PROGRESSdddd = Print the deckNum, mvsTriedTD, moveNum, stratNumTD, unqBoards every dddd movesTriedTD tried overwriting the previous printing
+	                        dddd = 0 will be treated as if the /PROGRESS0000/ was NOT in the verbose special string !!!!!!!
+	                        if dddd is left out then a default of every 10,000 movesTriedTD will be used
+	                  PROGRESSdddd is preprocessed below
+	                        the package variable "verboseSpecialProgressCounter" will be used to control operation
+	   BELL = Ring bell after any deck taking more than 000 minutes (Not yet Implemented)
+	   TEMPRESOURCEMONITOR = Temporary Verbose Special to demonstrate ResourceMonitor behavior  Remove???
 	*/
+
+	// PreProcess verboseSpecial Code here so it does not have to be done later over and over again
+	//
+	regexpPROGRESSdddd, _ := regexp.Compile("/PROGRESS([1-9]*[0-9]*)/")
+	z := regexpPROGRESSdddd.FindStringSubmatch(verboseSpecial)
+	if z == nil {
+		verboseSpecialProgressCounter = 0
+	} else {
+		if len(z[1]) == 0 {
+			verboseSpecialProgressCounter = 10000
+		} else {
+			verboseSpecialProgressCounter, _ = strconv.ParseFloat(z[1], 64)
+		}
+	}
 
 	// Arguments 5 & 6 below applies only to playNew			****************************************************
 	// But they must be on command line anyway

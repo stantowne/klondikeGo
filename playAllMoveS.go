@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"sort"
 	"strconv"
 	"strings"
@@ -141,6 +142,10 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		pMd(bIn, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "")
 		pMd(bNew, deckNum, moveNum, "BBS", 2, "     bNew: %v\n", "", "")
 		mvsTriedTD++
+
+		if verboseSpecialProgressCounter > .01 && math.Mod(float64(mvsTriedTD), verboseSpecialProgressCounter) < .1 {
+			fmt.Printf("\rDk: %5d   MvsTried: %9v   moveNum: %3v   StratsTried: %9v   UniQBoards: %9v\r", deckNum, mvsTriedTD, moveNum, stratNumTD, len(priorBoards))
+		}
 
 		recurReturnV1, recurReturnV2 := playAllMoveS(bNew, moveNum+1, deckNum)
 
