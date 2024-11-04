@@ -232,7 +232,7 @@ func playNew(reader csv.Reader) {
 			} else {
 				wL = "LOST"
 			}
-			fmt.Printf("\nDk: %5d   "+wL+"   MvsTried: %9v   StratsTried: %9v   Won: %5v   Lost: %5v   GML: %5v   Won: %5v%%   Lost: %5v%%   GML: %5v%%   ElTime TD: %11s   ElTime ADs: %11s  Rem Time: %11s, ResCodes: %2s %3s   UniQBoards: %9v   Time Now: %15s", deckNum, mvsTriedTD, stratNumTD, deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD, deckNum+1-firstDeckNum, 3)*100., roundFloatIntDiv(deckLossesAD, deckNum+1-firstDeckNum, 3)*100., roundFloatIntDiv(stratLossesGML_AD, deckNum+1-firstDeckNum, 3)*100., elapsedTimeTD.Truncate(100*time.Millisecond).String(), elapsedTimeAD.Truncate(100*time.Millisecond).String(), est.Truncate(100*time.Millisecond).String(), result1, result2, len(priorBoards), time.Now().Format("2006.01.02  3:04:05 pm"))
+			fmt.Printf("\nDk: %5d   "+wL+"   MvsTried: %9v   StratsTried: %9v   Won: %5v   Lost: %5v   GML: %5v   Won: %5v%%   Lost: %5v%%   GML: %5v%%   ElTime TD: %11s   ElTime ADs: %11s  Rem Time: %11s, ResCodes: %2s %3s   UniQBoards: %9v   Time Now: %15s", deckNum, mvsTriedTD, stratNumTD, deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGML_AD*100, deckNum+1-firstDeckNum, 1), elapsedTimeTD.Truncate(100*time.Millisecond).String(), elapsedTimeAD.Truncate(100*time.Millisecond).String(), est.Truncate(100*time.Millisecond).String(), result1, result2, len(priorBoards), time.Now().Format("2006.01.02  3:04:05 pm"))
 			if elapsedTimeTD > 1*time.Second { // changed 5*time.Minute to 1*time.Second for test change it back
 				fmt.Printf("\a") // Ring Bell
 			}
