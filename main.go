@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 	"io"
 	"log"
 	"os"
@@ -75,15 +77,15 @@ func main() {
 						           	and placed into a package level struct printMoveDetail of type pMd which can be seen above:
 	*/
 
-	// Always a good idea to print out the program source of the output.
-	//    Will be especially useful when we figure out how to include the versioning
-
 	printMoveDetail.pType = "X"
 	printMoveDetail.deckStartVal = 0
 	printMoveDetail.deckContinueFor = 0
 	printMoveDetail.aMvsThisDkStartVal = 0
 	printMoveDetail.aMvsThisDkContinueFor = 0
 	printMoveDetail.outputTo = "C"
+
+	// Setup pfmt to print thousands with commas
+	var pfmt = message.NewPrinter(language.English)
 
 	args := os.Args
 
@@ -244,6 +246,14 @@ func main() {
 	}
 
 	// Argument above applies only to playNew			****************************************************
+
+	// ******************************************
+	//
+	// Print out the command line arguments:
+	//
+	// Always a good idea to print out the program source of the output.
+	//    Will be especially useful when we figure out how to include the versioning
+
 	fmt.Printf("\nRun Start Time: %15s\n\n", time.Now().Format("2006.01.02  3:04:05 pm"))
 	fmt.Printf("\nCalling Program: %v\n\n", args[0])
 	fmt.Printf("Start Time: %v\n", time.Now())
@@ -284,7 +294,14 @@ func main() {
 		}
 	}
 
-	// Open the deck file here in main - will be read in both playOrig and PlayNew
+	// ******************************************
+	//
+	// Done printing out the command line arguments:
+	//
+	// Setup the code for reading the decks skipping to the firstDeckNum if not 0
+	//
+	// ******************************************
+
 	inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
 	file, err := os.Open(inputFileName)
 	if err != nil {
@@ -322,7 +339,7 @@ func main() {
 		playOrig(*reader)
 	} else {
 		gameLengthLimit = gameLengthLimitNew
-		fmt.Printf("\n                         GameLengthLimit: %v Moves Tried\n\n\n", gameLengthLimit)
+		_, err = pfmt.Printf("\n                         GameLengthLimit: %v Moves Tried\n\n\n", gameLengthLimit)
 		moveBasePriority = moveBasePriorityNew
 		playNew(*reader)
 	}
