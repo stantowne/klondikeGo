@@ -151,6 +151,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		pMd(bIn, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2)
 
 		if findAllSuccessfulStrategies != true && recurReturnV1 == "SW" {
+
+			// save winning moves into a slice in reverse
 			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllSuccessfulStrategies false and we had a win
 		}
 		if recurReturnV1 == "SL" && recurReturnV2 == "GML" {
