@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 	"math"
 	"sort"
 	"strconv"
@@ -19,13 +21,15 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 											 SW  = Standard Win  Obsolete all wins are aearly
 	*/
 	// add code for findAllWinStrats
+	// Setup pfmt to print thousands with commas
+	var pfmt = message.NewPrinter(language.English)
 
 	if moveNum > moveNumMax {
 		moveNumMax = moveNum
 	}
 
 	if mvsTriedTD >= gameLengthLimit {
-		pMd(bIn, deckNum, moveNum, "BB", 2, "\n  SL-RB: Game Length of: %v exceeds limit: %v\n", strconv.Itoa(mvsTriedTD), strconv.Itoa(gameLengthLimit))
+		prntMDet(bIn, deckNum, moveNum, "BB", 2, "\n  SL-RB: Game Length of: %v exceeds limit: %v\n", strconv.Itoa(mvsTriedTD), strconv.Itoa(gameLengthLimit))
 		stratLossesGML_TD++
 		return "SL", "GML"
 	}
@@ -53,7 +57,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		   Note: This was done this way, so as to ensure that when returns backed up the moveNum, the board would reprint.
 		*/
 		// Print the incoming board if in debugging range
-		pMd(bIn, deckNum, moveNum, "BB", 1, "", "", "") //stan do this???
+		prntMDet(bIn, deckNum, moveNum, "BB", 1, "", "", "") //stan do this???
 
 		if i != 0 {
 			// Started at 0 in playNew for each deck.  Increment each time a second through nth move is made
@@ -68,8 +72,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			if _, ok := priorBoards[bNewBcodeS]; ok {
 				// OK we did see it before so return to try next available move (if any) in aMoves[] aka strategy
 				stratLossesRB_TD++
-				pMd(bIn, deckNum, moveNum, "BB", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of the board at at MvsTriedTD: %v which was at move: %v\n", strconv.Itoa(priorBoards[bNewBcodeS].aMmvsTriedTD), strconv.Itoa(priorBoards[bNewBcodeS].mN))
-				pMd(bIn, deckNum, moveNum, "BBSS", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of the board at at MvsTriedTD: %v which was at move: %v\n", strconv.Itoa(priorBoards[bNewBcodeS].aMmvsTriedTD), strconv.Itoa(priorBoards[bNewBcodeS].mN))
+				prntMDet(bIn, deckNum, moveNum, "BB", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of the board at at MvsTriedTD: %v which was at move: %v\n", strconv.Itoa(priorBoards[bNewBcodeS].aMmvsTriedTD), strconv.Itoa(priorBoards[bNewBcodeS].mN))
+				prntMDet(bIn, deckNum, moveNum, "BBSS", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of the board at at MvsTriedTD: %v which was at move: %v\n", strconv.Itoa(priorBoards[bNewBcodeS].aMmvsTriedTD), strconv.Itoa(priorBoards[bNewBcodeS].mN))
 				return "SL", "RB" // Repetitive Move
 			} else {
 				bInf := boardInfo{
@@ -83,7 +87,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		// Check if No Moves Available
 		if i == 0 && aMoves[0].name == "No Moves Available" {
 			stratLossesNMA_TD++
-			pMd(bIn, deckNum, moveNum, "BB", 2, "  SL-NMA: No Moves Available: Strategy Lost %v%v\n", "", "")
+			prntMDet(bIn, deckNum, moveNum, "BB", 2, "  SL-NMA: No Moves Available: Strategy Lost %v%v\n", "", "")
 			return "SL", "NMA"
 		}
 
@@ -96,7 +100,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			} else {
 				cmt += "  Go to Next Deck (if any)"
 			}
-			pMd(bIn, deckNum, moveNum, "NOTX", 1, cmt, "", "")
+			prntMDet(bIn, deckNum, moveNum, "NOTX", 1, cmt, "", "")
 
 			// Verbose Special "WL" Starts Here - No effect on operation
 			if strings.Contains(verboseSpecial, "/WL/") { // Deck Win Loss Summary Statistics
@@ -124,7 +128,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 		// OK, done with the various end-of-strategy conditions
 		// let's print out the list of available moves and make the next available move
-		if pMD.pType == "BB" && pMdTestRange(deckNum) {
+		if pMD.pType == "BB" && prntMDetTestRange(deckNum) {
 			fmt.Printf("\n     All Possible Moves: ")
 			for j := range aMoves {
 				if j != 0 {
@@ -142,15 +146,15 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 		bNew = moveMaker(bNew, aMoves[i])
 
-		pMd(bIn, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", "", "")
-		pMd(bIn, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "")
-		pMd(bNew, deckNum, moveNum, "BBS", 2, "     bNew: %v\n", "", "")
+		prntMDet(bIn, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", "", "")
+		prntMDet(bIn, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "")
+		prntMDet(bNew, deckNum, moveNum, "BBS", 2, "     bNew: %v\n", "", "")
 		mvsTriedTD++
 
 		if verboseSpecialProgressCounter > 0 && math.Mod(float64(mvsTriedTD), float64(verboseSpecialProgressCounter)) <= 0.1 {
 
 			avgRepTime := time.Since(startTimeTD) / time.Duration(mvsTriedTD/verboseSpecialProgressCounter)
-			fmt.Printf("\rDk: %5d   ____   MvsTried: %9v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %9v   UniqBoards: %9v   Since Last Rep: %7s   Avg Btwn Reps: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(priorBoards), time.Since(verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String())
+			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %9v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %9v   UniqBoards: %9v   Since Last Rep: %7s   Avg Btwn Reps: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(priorBoards), time.Since(verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String())
 			verboseSpecialProgressCounterLastPrintTime = time.Now()
 		}
 
@@ -160,7 +164,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			fmt.Printf("\n  Returned: %v - %v After Call at moveNum: %v", recurReturnV1, recurReturnV2, moveNum) //Temporary Verbose Special to demonstrate ResourceMonitor behavior  Remove???
 		} //Temporary Verbose Special to demonstrate ResourceMonitor behavior  Remove???*/
 
-		pMd(bIn, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2)
+		prntMDet(bIn, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2)
 
 		if findAllWinStrats != true && recurReturnV1 == "SW" {
 
@@ -176,7 +180,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	return "SL", "SE" //  Strategy Exhausted
 }
 
-func pMdTestRange(deckNum int) bool {
+func prntMDetTestRange(deckNum int) bool {
 	deckRangeOK := false
 	if pMD.deckStartVal == 0 && pMD.deckContinueFor == 0 {
 		deckRangeOK = true
@@ -200,23 +204,24 @@ func pMdTestRange(deckNum int) bool {
 	}
 }
 
-func pMd(b board, dN int, mN int, pTypeIn string, variant int, comment string, s1 string, s2 string) {
+func prntMDet(b board, dN int, mN int, pTypeIn string, variant int, comment string, s1 string, s2 string) {
 	// Done here just to clean up mainline logic of playAllMoves
 	// Do some repetitive printing to track progress
 	// This function will use the struct pMD
 	//      variant will be used for different outputs under the same pType
 
-	/*if mvsTriedTD < 300 || math.Mod(float64(mvsTriedTD), 5000) == 0 {
-	 */
-	if pMD.pType != "X" && pMdTestRange(dN) {
+	// Setup pfmt to print thousands with commas
+	var pfmt = message.NewPrinter(language.English)
+
+	if pMD.pType != "X" && prntMDetTestRange(dN) {
 		switch {
 		case pTypeIn == "BB" && pMD.pType == pTypeIn && variant == 1: // for BB
 			fmt.Printf("\n****************************************\n")
-			fmt.Printf("\nDeck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Now().Sub(startTimeAD), time.Now().Sub(startTimeTD))
+			_, err = pfmt.Printf("\nDeck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Now().Sub(startTimeAD), time.Now().Sub(startTimeTD))
 			printBoard(b)
 		case pTypeIn == "BB" && pMD.pType == pTypeIn && variant == 2: // for BB
 			// comment must have 2 %v in it
-			fmt.Printf(comment, s1, s2)
+			_, err = pfmt.Printf(comment, s1, s2)
 			/*case pMD.pType == "BB" && variant == 3:     // for BB FIX THIS AT SOME POINT
 				fmt.Printf("\n     All Possible Moves: ")
 				for j := range aMoves {
@@ -231,13 +236,13 @@ func pMd(b board, dN int, mN int, pTypeIn string, variant int, comment string, s
 				}
 			}*/
 		case strings.HasPrefix(pTypeIn, "BBS") && strings.HasPrefix(pMD.pType, "BBS") && variant == 1: // for BBS or BBSS
-			fmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Now().Sub(startTimeAD), time.Now().Sub(startTimeTD))
+			_, err = pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Now().Sub(startTimeAD), time.Now().Sub(startTimeTD))
 		case pTypeIn == "BBS" && pMD.pType == pTypeIn && variant == 2: // for BBS or BBSS
-			fmt.Printf(comment, b)
+			_, err = pfmt.Printf(comment, b)
 		case pTypeIn == "NOTX" && pMD.pType != "X" && variant == 1:
-			fmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Now().Sub(startTimeAD), time.Now().Sub(startTimeTD))
+			_, err = pfmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Now().Sub(startTimeAD), time.Now().Sub(startTimeTD))
 		case pTypeIn == "NOTX" && pMD.pType != "X" && variant == 2:
-			fmt.Printf(comment, s1, s2)
+			_, err = pfmt.Printf(comment, s1, s2)
 		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 1:
 		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 2:
 		}

@@ -261,12 +261,12 @@ func main() {
 	fmt.Printf("\nRun Start Time: %15s\n\n", time.Now().Format("2006.01.02  3:04:05 pm"))
 	fmt.Printf("\nCalling Program: %v\n\n", args[0])
 	fmt.Printf("Start Time: %v\n", time.Now())
-	fmt.Printf("Command Line Arguments:\n"+
+	pfmt.Printf("Command Line Arguments:\n"+
 		"            Number Of Decks To Be Played: %v\n"+
 		"                      Starting with deck: %v\n\n", numberOfDecksToBePlayed, firstDeckNum)
 	if length != -1 {
 		nOfS := 1 << length //number of initial strategies
-		fmt.Printf(" Style: Original iOS (Initial Override Strategies)\n\n"+
+		pfmt.Printf(" Style: Original iOS (Initial Override Strategies)\n\n"+
 			"                     iOS strategy length: %v\n"+
 			"          Max possible attempts per deck: %v\n"+
 			"       Total possible attempts all decks: %v\n\n", length, nOfS, nOfS*numberOfDecksToBePlayed)
@@ -278,7 +278,7 @@ func main() {
 		"                   Verbose special codes: %v\n",
 		verbose, verboseSpecial)
 	if length == -1 {
-		fmt.Printf("\n Print Move Detail Options:\n"+
+		pfmt.Printf("\n Print Move Detail Options:\n"+
 			"          Find All Successful Strategies: %v\n"+
 			"                              Print Type: %v\n"+
 			"                       Staring with Deck: %v\n"+
@@ -339,7 +339,7 @@ func main() {
 
 		gameLengthLimit = gameLengthLimitOrig
 		moveBasePriority = moveBasePriorityOrig
-		fmt.Printf("\n                         GameLengthLimit: %v Move Counter\n\n\n", gameLengthLimit)
+		pfmt.Printf("\n                         GameLengthLimit: %v Move Counter\n\n\n", gameLengthLimit)
 		playOrig(*reader)
 	} else {
 		gameLengthLimit = gameLengthLimitNew

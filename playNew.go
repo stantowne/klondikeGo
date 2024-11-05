@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 	"io"
 	"log"
 	"math"
@@ -114,6 +116,8 @@ func playNew(reader csv.Reader) {
 		}
 	*/
 
+	// Setup pfmt to print thousands with commas
+	var pfmt = message.NewPrinter(language.English)
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
 		startTimeTD = time.Now()
@@ -127,7 +131,7 @@ func playNew(reader csv.Reader) {
 		}
 
 		if verbose > 1 {
-			fmt.Printf("\nDeck #%d:\n", deckNum)
+			pfmt.Printf("\nDeck #%d:\n", deckNum)
 		}
 		var d Deck
 
@@ -147,7 +151,7 @@ func playNew(reader csv.Reader) {
 		var b = dealDeck(d)
 
 		if pMD.pType == "TW" || pMD.pType == "TS" {
-			fmt.Printf("\n\nDeck %v\n", deckNum)
+			pfmt.Printf("\n\nDeck %v\n", deckNum)
 			fmt.Printf("\n\n Strat #")
 			if pMD.pType == "TW" {
 				for i := 1; i <= 200; i++ {
@@ -200,14 +204,14 @@ func playNew(reader csv.Reader) {
 			}
 			fmt.Printf("\nElapsed Time is %v.", elapsedTimeTD)
 			fmt.Printf("\n\nStrategies:")
-			fmt.Printf("\n   Tried: %d", stratNumTD)
-			fmt.Printf("\n     Won: %d", stratWinsTD)
-			fmt.Printf("\n    Lost: %d", stratLossesTD)
+			pfmt.Printf("\n   Tried: %d", stratNumTD)
+			pfmt.Printf("\n     Won: %d", stratWinsTD)
+			pfmt.Printf("\n    Lost: %d", stratLossesTD)
 			fmt.Printf("\n\nStrategies Lost Detail:")
-			fmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_TD)
-			fmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_TD)
-			fmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_TD)
-			fmt.Printf("\n   GML: %d   (Game Length Limit)", stratLossesGML_TD)
+			pfmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_TD)
+			pfmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_TD)
+			pfmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_TD)
+			pfmt.Printf("\n   GML: %d   (Game Length Limit)", stratLossesGML_TD)
 			if stratLossesNMA_TD+stratLossesRB_TD+stratLossesSE_TD+stratLossesGML_TD != stratLossesTD {
 				fmt.Printf("\n     *********** Total Strategy Losses != Sum of strategy detail")
 			}
@@ -216,7 +220,7 @@ func playNew(reader csv.Reader) {
 			}
 			if findAllWinStrats {
 				fmt.Printf("\n\n Multiple Successful Strategies were found in some wining decks.")
-				fmt.Printf("   Total winning strategies found: %d\n", stratWinsTD)
+				pfmt.Printf("   Total winning strategies found: %d\n", stratWinsTD)
 			}
 		}
 		// Verbose Special "DBD" Ends Here - No effect on operation
@@ -232,7 +236,7 @@ func playNew(reader csv.Reader) {
 			} else {
 				wL = "LOST"
 			}
-			fmt.Printf("Dk: %5d   "+wL+"   MvsTried: %9v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %9v   UniqBoards: %9v   Won: %5v   Lost: %5v   GML: %5v   Won: %5.1f%%   Lost: %5.1f%%   GML: %5.1f%%   ElTime TD: %11s   ElTime ADs: %11s  Rem Time: %11s, ResCodes: %2s %3s   UniQBoards: %9v   Time Now: %15s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(priorBoards), deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGML_AD*100, deckNum+1-firstDeckNum, 1), elapsedTimeTD.Truncate(100*time.Millisecond).String(), elapsedTimeAD.Truncate(100*time.Millisecond).String(), est.Truncate(100*time.Millisecond).String(), result1, result2, len(priorBoards), time.Now().Format("2006.01.02  3:04:05 pm"))
+			pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %9v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %9v   UniqBoards: %9v   Won: %5v   Lost: %5v   GML: %5v   Won: %5.1f%%   Lost: %5.1f%%   GML: %5.1f%%   ElTime TD: %11s   ElTime ADs: %11s  Rem Time: %11s, ResCodes: %2s %3s   UniQBoards: %9v   Time Now: %15s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(priorBoards), deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGML_AD*100, deckNum+1-firstDeckNum, 1), elapsedTimeTD.Truncate(100*time.Millisecond).String(), elapsedTimeAD.Truncate(100*time.Millisecond).String(), est.Truncate(100*time.Millisecond).String(), result1, result2, len(priorBoards), time.Now().Format("2006.01.02  3:04:05 pm"))
 			/*if elapsedTimeTD > 1*time.Second { // changed 5*time.Minute to 1*time.Second for test change it back
 				fmt.Printf("\a") // Ring Bell
 			}*/
@@ -259,21 +263,21 @@ func playNew(reader csv.Reader) {
 	}
 
 	fmt.Printf("\n******************\n\n" + "Decks:")
-	fmt.Printf("\n   Played: %d", numberOfDecksToBePlayed)
-	fmt.Printf("\n      Won: %d", deckWinsAD)
-	fmt.Printf("\n     Lost: %d", deckLossesAD)
+	pfmt.Printf("\n   Played: %d", numberOfDecksToBePlayed)
+	pfmt.Printf("\n      Won: %d", deckWinsAD)
+	pfmt.Printf("\n     Lost: %d", deckLossesAD)
 	averageElapsedTimePerDeck := time.Duration(float64(elapsedTimeAD) / float64(numberOfDecksToBePlayed))
 	fmt.Printf("\nElapsed Time is %v.", elapsedTimeAD)
 	fmt.Printf("\nAverage Elapsed Time per Deck is %s", averageElapsedTimePerDeck.Truncate(100*time.Millisecond).String())
 	fmt.Printf("\n\nStrategies:")
-	fmt.Printf("\n   Tried: %d", stratNumAD)
-	fmt.Printf("\n     Won: %d", stratLossesAD)
-	fmt.Printf("\n    Lost: %d", stratWinsAD)
+	pfmt.Printf("\n   Tried: %d", stratNumAD)
+	pfmt.Printf("\n     Won: %d", stratLossesAD)
+	pfmt.Printf("\n    Lost: %d", stratWinsAD)
 	fmt.Printf("\n\nStrategies Lost Detail:")
-	fmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_AD)
-	fmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_AD)
-	fmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_AD)
-	fmt.Printf("\nStrategy Losses at Game Length Limit is: %d", stratLossesGML_AD)
+	pfmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_AD)
+	pfmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_AD)
+	pfmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_AD)
+	pfmt.Printf("\nStrategy Losses at Game Length Limit is: %d", stratLossesGML_AD)
 	if stratLossesNMA_AD+stratLossesRB_AD+stratLossesSE_AD+stratLossesGML_AD != stratLossesAD {
 		fmt.Printf("\n     *********** Total Strategy Losses != Sum of strategy detail")
 	}
@@ -282,16 +286,16 @@ func playNew(reader csv.Reader) {
 	}
 	if findAllWinStrats {
 		fmt.Printf("\n\n Multiple Successful Strategies were found in some winng decks.")
-		fmt.Printf("   Decks Won: %d\n", deckWinsAD)
-		fmt.Printf("   Total winning strategies found: %d\n", stratWinsAD)
-		fmt.Printf("   Average winning strategies found: %d\n", stratWinsAD/deckWinsAD)
+		pfmt.Printf("   Decks Won: %d\n", deckWinsAD)
+		pfmt.Printf("   Total winning strategies found: %d\n", stratWinsAD)
+		pfmt.Printf("   Average winning strategies found: %d\n", stratWinsAD/deckWinsAD)
 	}
 	// Verbose Special "WL" Starts Here - No effect on operation
 	if strings.Contains(verboseSpecial, "/WL/") { // Deck Win Loss Summary Statistics
 		fmt.Printf("\n\n\n Deck-by Deck Win/Loss Detail   (Copy to Excel to get headings to line up with the columns)")
 		fmt.Printf("\n\n Deck\tW/L\tMoveNum 1ST-Win\tStratNum At 1st-Win Or At-Loss\tMvsTried At 1st-Win Or At-Loss\tMoveNum Min-Win If-Find-All\tMoveNum Max-Win If-Find-All\tElapsed Time At 1st-Win Or At Loss\n")
 		/*for dN, detail := range deckWinLossDetail {
-			fmt.Printf("\n  %5v\t  %v\t%4v\t%8v\t%8v\t%4v\t%4v", dN, detail.winLoss, detail.moveNumAt1stWinOrAtLoss, detail.stratNumAt1stWinOrAtLoss, detail.mvsTriedAt1stWinOrAtLoss, detail.moveNumMinWinIfFindAll, detail.moveNumMaxWinIfFindAll, detail.ElapsedTimeAt1stWinOrAtLoss)
+			pfmt.Printf("\n  %5v\t  %v\t%4v\t%8v\t%8v\t%4v\t%4v", dN, detail.winLoss, detail.moveNumAt1stWinOrAtLoss, detail.stratNumAt1stWinOrAtLoss, detail.mvsTriedAt1stWinOrAtLoss, detail.moveNumMinWinIfFindAll, detail.moveNumMaxWinIfFindAll, detail.ElapsedTimeAt1stWinOrAtLoss)
 		}*/
 	}
 	// Verbose Special "WL" Ends Here - No effect on operation
