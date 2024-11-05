@@ -138,7 +138,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	// The first character of verbose must be a value from 0 - 9.  Higher numbers indicate more detailed msgs should be printed
+	// The first character of verbose must be a value from 0 to 9.  Higher numbers indicate more detailed msgs should be printed
 	//  The remaining characters are used to form verboseSpecial.  Code in the program will look for specific values within
 	//  verbose special to indicate that optional printing should be done.
 	verboseSpecial = args[4]
@@ -302,7 +302,7 @@ func main() {
 	//
 	// Done printing out the command line arguments:
 	//
-	// Setup the code for reading the decks skipping to the firstDeckNum if not 0
+	// Set up the code for reading the decks skipping to the firstDeckNum if not 0
 	//
 	// ******************************************
 
@@ -333,7 +333,7 @@ func main() {
 
 	if length != -1 {
 		// playOrig will execute the original code designed to play either the "Best" move or the best move modified by the IOS strategy
-		// of substituting FlipToWaste as described in more detail below.  This was formally known as the "playBestOrIOS" strategy
+		// of substituting FlipToWaste as described in more detail below.  This was known earlier under the name of "playBestOrIOS" strategy
 		// and developed under a function of that name in project branch "tree".
 		// To avoid issues with old "tree" branch code the function playOrig has been created by refactoring and adding passed arguments.
 

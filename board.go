@@ -245,7 +245,7 @@ func (bC bCode) boardDeCode() board {
 		fmt.Println("moveCounter: ", mC)
 		fmt.Println("\n\nb original\n")
 		printBoard(b)
-		fmt.Println("\n\nroundTripResult\n")
+		fmt.Println("\n\n roundTripResult\n")
 		printBoard(roundTripResult)
 		fmt.Printf("\n\n              b = %v", b)
 		fmt.Printf("\nroundTripResult = %v\n", roundTripResult)

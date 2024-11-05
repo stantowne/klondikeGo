@@ -18,7 +18,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	                                         SE  = Strategy Exhausted
 	                                         GML = GameLength Limit exceeded
 	                 SW  = Strategy Win      EW  = Early Win
-											 SW  = Standard Win  Obsolete all wins are aearly
+											 SW  = Standard Win  Obsolete all wins are early
 	*/
 	// add code for findAllWinStrats
 	// Setup pfmt to print thousands with commas
@@ -169,10 +169,10 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		if findAllWinStrats != true && recurReturnV1 == "SW" {
 
 			// save winning moves into a slice in reverse
-			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllWinStrats false and we had a win
+			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
 		}
 		if recurReturnV1 == "SL" && recurReturnV2 == "GML" {
-			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllWinStrats false and we had a win
+			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
 		}
 	}
 

@@ -16,7 +16,7 @@ import (
 //var priorPause = 0 // Remove Pauser
 
 /*
-// These are used in the Tree printing subroutine pmd(......) in playAllMoves    //commented out to elim warning
+// These are used in the Tree printing subroutine pmd(......) in playAllMoves    //commented out to eliminate warning
 const vert1 = string('\u2503')          // Looks Like: ->┃<-
 const horiz1 = string('\u2501')         // Looks Like: ->━<-
 const vert5 = "  " + vert1 + "  "       // Looks Like: ->  ┃  <-
