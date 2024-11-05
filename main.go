@@ -23,11 +23,11 @@ var numberOfDecksToBePlayed int
 var length int
 var verbose int
 var verboseSpecial string
-var verboseSpecialProgressCounter float64 = 0.
+var verboseSpecialProgressCounter int
 var verboseSpecialProgressCounterLastPrintTime = time.Now()
 var findAllSuccessfulStrategies bool
 
-type pMds struct {
+type printMoveDetail struct {
 	pType                 string
 	deckStartVal          int
 	deckContinueFor       int
@@ -36,7 +36,7 @@ type pMds struct {
 	outputTo              string
 }
 
-var printMoveDetail pMds
+var pMD printMoveDetail
 
 var err error
 var singleGame bool // = true
@@ -47,12 +47,12 @@ func main() {
 						Command line arguments
 
 						args[0] = program name
-						args[1] = # of the first deck to be used from within the pre-stored decks used to standardize testing
-						args[2] = # of decks to be played
-						args[3] = length of IOS strategy - see comments below	(applicable to playOrig only)
+						args[1] = firstDeckNum            - # of the first deck to be used from within the pre-stored decks used to standardize testing
+						args[2] = numberOfDecksToBePlayed - # of decks to be played
+						args[3] = length of iOS (initial Override Strategy) - see comments below	(applicable to playOrig only)
 						args[4] = verbosity switch for messages
 						args[5] = findAllSuccessfulStrategies 					(applicable playNew only)
-						args[6] = printMoveDetail		                  		(applicable playNew only)
+						args[6] = pMD		                  		(applicable playNew only)
 					              	as a string to be parsed of the form:
 					           			pType,startType,deckStartVal,deckContinueFor,outputTo
 
@@ -75,15 +75,15 @@ func main() {
 					                                   Note: if file name is present then startType. deckStartVal and ContinueFor
 					                                         must be present or delineated with ":"
 
-						           	and placed into a package level struct printMoveDetail of type pMd which can be seen above:
+						           	and placed into a package level struct pMD of type pMd which can be seen above:
 	*/
 
-	printMoveDetail.pType = "X"
-	printMoveDetail.deckStartVal = 0
-	printMoveDetail.deckContinueFor = 0
-	printMoveDetail.aMvsThisDkStartVal = 0
-	printMoveDetail.aMvsThisDkContinueFor = 0
-	printMoveDetail.outputTo = "C"
+	pMD.pType = "X"
+	pMD.deckStartVal = 0
+	pMD.deckContinueFor = 0
+	pMD.aMvsThisDkStartVal = 0
+	pMD.aMvsThisDkContinueFor = 0
+	pMD.outputTo = "C"
 
 	// Setup pfmt to print thousands with commas
 	var pfmt = message.NewPrinter(language.English)
@@ -120,9 +120,9 @@ func main() {
 	//
 	// If length = -1 then execute playNew
 	//
-	// If length >= 0 then execute playOrig
-	//    length  = 1 playBestOrIOS will just play the best move
-	//    length >  1 playBestOrIOS will just play the best move or force a flip
+	// If length >= 0 then execute playOrig during which:
+	//    length  = 0 will just play the best move
+	//    length >= 1 play either the best move OR force a flip from stock to waste dIOS will just play the best move or force a flip
 	//
 
 	length, err = strconv.Atoi(args[3]) //length of each strategy (which also determines the # of strategies - 2^n)
@@ -165,8 +165,8 @@ func main() {
 
 	// PreProcess verboseSpecial Code here so it does not have to be done later over and over again
 	//
-	verboseSpecialProgressCounterLastPrintTime =
-	regexpPROGRESSdddd, _ := regexp.Compile("/PROGRESS([1-9]*[0-9]*)/")
+	verboseSpecialProgressCounterLastPrintTime = time.Now()
+	regexpPROGRESSdddd, _ := regexp.Compile("/PROGRESS([1-9]+[0-9]*)/")
 	z := regexpPROGRESSdddd.FindStringSubmatch(verboseSpecial)
 	if z == nil {
 		verboseSpecialProgressCounter = 0
@@ -174,7 +174,7 @@ func main() {
 		if len(z[1]) == 0 {
 			verboseSpecialProgressCounter = 10000
 		} else {
-			verboseSpecialProgressCounter, _ = strconv.ParseFloat(z[1], 64)
+			verboseSpecialProgressCounter, _ = strconv.Atoi(z[1])
 		}
 	}
 
@@ -197,7 +197,7 @@ func main() {
 
 	if l >= 1 {
 		if pMdArgs[0] == "BB" || pMdArgs[0] == "BBS" || pMdArgs[0] == "BBSS" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" || pMdArgs[0] == "X" {
-			printMoveDetail.pType = pMdArgs[0]
+			pMD.pType = pMdArgs[0]
 		} else {
 			println("Sixth argument part 1 invalid - args[6] arg[6] parts are  separated by commas: *1*,2,3,4,5,6")
 			println("  Must start with BB, BBS, BBSS, TW, TS, TSS or X")
@@ -205,32 +205,32 @@ func main() {
 		}
 	}
 	if l >= 2 {
-		printMoveDetail.deckStartVal, err = strconv.Atoi(pMdArgs[1])
-		if err != nil || printMoveDetail.deckStartVal < 0 {
+		pMD.deckStartVal, err = strconv.Atoi(pMdArgs[1])
+		if err != nil || pMD.deckStartVal < 0 {
 			println("Sixth argument part 2 invalid - args[6] arg[6] parts are  separated by commas: 1,*2*,3,4,5,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
 	}
 	if l >= 3 {
-		printMoveDetail.deckContinueFor, err = strconv.Atoi(pMdArgs[2])
-		if err != nil || printMoveDetail.deckContinueFor < 0 {
+		pMD.deckContinueFor, err = strconv.Atoi(pMdArgs[2])
+		if err != nil || pMD.deckContinueFor < 0 {
 			println("Sixth argument part 3 invalid - args[6] arg[6] parts are  separated by commas: 1,2,*3*,4,5,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
 	}
 	if l >= 4 {
-		printMoveDetail.aMvsThisDkStartVal, err = strconv.Atoi(pMdArgs[3])
-		if err != nil || printMoveDetail.aMvsThisDkStartVal < 0 {
+		pMD.aMvsThisDkStartVal, err = strconv.Atoi(pMdArgs[3])
+		if err != nil || pMD.aMvsThisDkStartVal < 0 {
 			println("Sixth argument part 4 invalid - args[6] arg[6] parts are  separated by commas: 1,2,3,*4*,5,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
 	}
 	if l >= 5 {
-		printMoveDetail.aMvsThisDkContinueFor, err = strconv.Atoi(pMdArgs[4])
-		if err != nil || printMoveDetail.aMvsThisDkContinueFor < 0 {
+		pMD.aMvsThisDkContinueFor, err = strconv.Atoi(pMdArgs[4])
+		if err != nil || pMD.aMvsThisDkContinueFor < 0 {
 			println("Sixth argument part 5 invalid - args[6] arg[6] parts are  separated by commas: 1,2,3,4,*5*,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
@@ -238,7 +238,7 @@ func main() {
 	}
 	if l >= 6 {
 		if pMdArgs[5] == "C" {
-			printMoveDetail.outputTo = pMdArgs[5]
+			pMD.outputTo = pMdArgs[5]
 		} else {
 			// add if-clause here to test if valid filename and it can be overwritten
 			println("Sixth argument part 6 invalid - args[6] arg[6] parts are  separated by commas: 1,2,3,4,5,*6*")
@@ -284,15 +284,15 @@ func main() {
 			"             Starting with Moves Tried #: %v\n"+
 			"                            Continue for: %v moves tried (0 = all the rest)\n",
 			findAllSuccessfulStrategies,
-			printMoveDetail.pType,
-			printMoveDetail.deckStartVal,
-			printMoveDetail.deckContinueFor,
-			printMoveDetail.aMvsThisDkStartVal,
-			printMoveDetail.aMvsThisDkContinueFor)
-		if printMoveDetail.outputTo == "C" {
+			pMD.pType,
+			pMD.deckStartVal,
+			pMD.deckContinueFor,
+			pMD.aMvsThisDkStartVal,
+			pMD.aMvsThisDkContinueFor)
+		if pMD.outputTo == "C" {
 			fmt.Printf("                         Print Output to: Console\n")
 		} else {
-			fmt.Printf("                    Print Output to file: %v  (not yet implemented)\n", printMoveDetail.outputTo)
+			fmt.Printf("                    Print Output to file: %v  (not yet implemented)\n", pMD.outputTo)
 		}
 	}
 

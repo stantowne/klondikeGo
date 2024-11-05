@@ -73,7 +73,7 @@ func (c *Card) color() string {
 
 func (c *Card) suitSymbol() rune {
 	var symbol rune
-	if strings.Contains(verboseSpecial, "SUITSYMBOL") {
+	if strings.Contains(verboseSpecial, "/SUITSYMBOL/") {
 		switch c.Suit {
 		case 0: //clubs
 
@@ -105,7 +105,7 @@ func (c *Card) suitSymbol() rune {
 
 func (c *Card) rankSymbol() string {
 	var symbol string
-	if strings.Contains(verboseSpecial, "RANKSYMBOL") {
+	if strings.Contains(verboseSpecial, "/RANKSYMBOL/") {
 		switch c.Rank {
 		case 1:
 			symbol = "Ac"
@@ -164,28 +164,3 @@ func (c *Card) pStr() string {
 
 	return c.rankSymbol() + sSuit + sFace + " "
 }
-
-/*func quickTestCardPackUnPack(c Card) bool {  //commented out to elim warning
-	return unPackByte2Card(c.packCard()) == c
-}*/
-
-/*func testCardPackUnPack(args []string) {    //commented out to elim warning
-	var testCard, rebuiltCard Card
-	r, err := strconv.Atoi(args[1])
-	if err != nil {
-		fmt.Println("bad input -- first argument")
-	}
-	s, err := strconv.Atoi(args[2])
-	if err != nil {
-		fmt.Println("bad input -- second argument")
-	}
-	testCard.Rank = r
-	testCard.Suit = s
-	testCard.FaceUp = true
-	fmt.Printf("TestCard: %+v\n", testCard)
-	packed := testCard.packCard()
-	fmt.Printf("PackCard: %08b\n", packed)
-	rebuiltCard = unPackByte2Card(packed)
-	fmt.Printf("RebuiltCard: %+v\n", rebuiltCard)
-	fmt.Printf("Does the round trip work: %v\n", testCard == rebuiltCard)
-}*/

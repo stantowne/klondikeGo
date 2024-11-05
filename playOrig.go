@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"golang.org/x/text/language" // Stan, can you explain why these could not be moved to main.g insteat of repeating them in various files?
-	"golang.org/x/text/message"  // tried moving to main.go Moved these to main
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 	"io"
 	"log"
 	"os"
@@ -15,10 +15,6 @@ import (
 )
 
 func playOrig(reader csv.Reader) {
-
-	// Need to define variable err type error here.  Originally it was implicitly created by the following statement and then reused many times
-	//   inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
-	// That statement has been moved up into main so we need to explicitly create it here.
 
 	numberOfStrategies := 1 << length //number of initial strategies
 
