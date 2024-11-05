@@ -162,7 +162,10 @@ func main() {
 	                  PROGRESSdddd is preprocessed below
 	                        the package variable "verboseSpecialProgressCounter" will be used to control operation
 	   BELL = Ring bell after any deck taking more than 000 minutes (Not yet Implemented)
-	   TEMPRESOURCEMONITOR = Temporary Verbose Special to demonstrate ResourceMonitor behavior  Remove???
+
+	ADD CHECK TO SAY DBD AND DBDS can not be both included in verbosespecial
+	                 and that neither CAN be selected if the sixth argument pMD.pType is anything other than "X"
+
 	*/
 
 	// PreProcess verboseSpecial Code here so it does not have to be done later over and over again
