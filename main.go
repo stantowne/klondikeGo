@@ -25,7 +25,8 @@ var verbose int
 var verboseSpecial string
 var verboseSpecialProgressCounter int
 var verboseSpecialProgressCounterLastPrintTime = time.Now()
-var findAllSuccessfulStrategies bool
+var findAllWinStrats bool
+var moveNumMax int
 
 type printMoveDetail struct {
 	pType                 string
@@ -44,38 +45,39 @@ var singleGame bool // = true
 func main() {
 	/*
 
-						Command line arguments
+							Command line arguments
 
-						args[0] = program name
-						args[1] = firstDeckNum            - # of the first deck to be used from within the pre-stored decks used to standardize testing
-						args[2] = numberOfDecksToBePlayed - # of decks to be played
-						args[3] = length of iOS (initial Override Strategy) - see comments below	(applicable to playOrig only)
-						args[4] = verbosity switch for messages
-						args[5] = findAllSuccessfulStrategies 					(applicable playNew only)
-						args[6] = pMD		                  		(applicable playNew only)
-					              	as a string to be parsed of the form:
-					           			pType,startType,deckStartVal,deckContinueFor,outputTo
+							args[0] = program name
+							args[1] = firstDeckNum            - # of the first deck to be used from within the pre-stored decks used to standardize testing
+							args[2] = numberOfDecksToBePlayed - # of decks to be played
+							args[3] = length                  - of iOS (initial Override Strategy) - see comments below	(applicable to playOrig only)
+							args[4] = verbose                 - first character ONLY: verbosity switch for messages
+		                              verboseSpecial          - 2nd - nth characters ONLY - special print options - (applicable to playNew only)
+							args[5] = findAllWinStrats 	      - (applicable playNew only)
+							args[6] = pMD		              - struct type: printMoveDetail - (applicable playNew only)
+						              	as a string to be parsed of the form:
+						           			pType,startType,deckStartVal,deckContinueFor,outputTo
 
-										where:
-											pType = empty or X - do not print NOTE: Default if args[6] is not on command line
-												  = BB         - Board by Board detail
-				                                  = BBS        - Board by Board Short detail
-				                                  = BBSS       - Board by Board Super Short detail
-					                              = TW         - print Tree in Wide mode     8 char per move
-												  = TS         - print Tree in Skinny mode   5 char per move
-			                                      = TSS        - print Tree in Super Skinny mode   3 char per move
-		                               These next four limit at what point and for how long move detail should actually be printed.
-											deckStartVal    	  = Non-negative integer (Default 0)
-											deckContinueFor  	  = Non-negative integer (Default 0 which indicates forever)
-											aMvsThisDkStartVal    = Non-negative integer (Default 0)
-											aMvsThisDkContinueFor = Non-negative integer (Default 0 which indicates forever)
+											where:
+												pType = empty or X - do not print NOTE: Default if args[6] is not on command line
+													  = BB         - Board by Board detail
+					                                  = BBS        - Board by Board Short detail
+					                                  = BBSS       - Board by Board Super Short detail
+						                              = TW         - print Tree in Wide mode     8 char per move
+													  = TS         - print Tree in Skinny mode   5 char per move
+				                                      = TSS        - print Tree in Super Skinny mode   3 char per move
+			                               These next four limit at what point and for how long move detail should actually be printed.
+												deckStartVal    	  = Non-negative integer (Default 0)
+												deckContinueFor  	  = Non-negative integer (Default 0 which indicates forever)
+												aMvsThisDkStartVal    = Non-negative integer (Default 0)
+												aMvsThisDkContinueFor = Non-negative integer (Default 0 which indicates forever)
 
-		                                    outputTo = C = Console (default)
-								                     = file name and path (if applicable)
-					                                   Note: if file name is present then startType. deckStartVal and ContinueFor
-					                                         must be present or delineated with ":"
+			                                    outputTo = C = Console (default)
+									                     = file name and path (if applicable)
+						                                   Note: if file name is present then startType. deckStartVal and ContinueFor
+						                                         must be present or delineated with ":"
 
-						           	and placed into a package level struct pMD of type pMd which can be seen above:
+							           	and placed into a package level struct pMD of type pMd which can be seen above:
 	*/
 
 	pMD.pType = "X"
@@ -182,12 +184,12 @@ func main() {
 	// But they must be on command line anyway
 	switch strings.TrimSpace(args[5])[0:1] {
 	case "A", "a":
-		findAllSuccessfulStrategies = true
+		findAllWinStrats = true
 	case "F", "f":
-		findAllSuccessfulStrategies = false
+		findAllWinStrats = false
 	default:
 		println("Fifth argument invalid - args[5]")
-		println("  findAllSuccessfulStrategies must be either:")
+		println("  findAllWinStrats must be either:")
 		println("     'F' or 'f' - Normal case stop after finding a successful set of moves")
 		println("     'A' or 'a' - See how many paths to success you can find")
 		os.Exit(1)
@@ -283,7 +285,7 @@ func main() {
 			"                            Continue for: %v decks (0 = all the rest)\n"+
 			"             Starting with Moves Tried #: %v\n"+
 			"                            Continue for: %v moves tried (0 = all the rest)\n",
-			findAllSuccessfulStrategies,
+			findAllWinStrats,
 			pMD.pType,
 			pMD.deckStartVal,
 			pMD.deckContinueFor,

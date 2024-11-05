@@ -117,7 +117,7 @@ func playNew(reader csv.Reader) {
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
 		startTimeTD = time.Now()
-
+		moveNumMax = 0
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {
 			break
@@ -214,7 +214,7 @@ func playNew(reader csv.Reader) {
 			if stratLossesTD+stratWinsTD != stratNumTD {
 				fmt.Printf("\n     *********** Strategies Tried != Strategies Lost + Strategies Won")
 			}
-			if findAllSuccessfulStrategies {
+			if findAllWinStrats {
 				fmt.Printf("\n\n Multiple Successful Strategies were found in some wining decks.")
 				fmt.Printf("   Total winning strategies found: %d\n", stratWinsTD)
 			}
@@ -280,7 +280,7 @@ func playNew(reader csv.Reader) {
 	if stratLossesAD+stratWinsAD != stratNumAD {
 		fmt.Printf("\n     *********** Strategies Tried != Strategies Lost + Strategies Won")
 	}
-	if findAllSuccessfulStrategies {
+	if findAllWinStrats {
 		fmt.Printf("\n\n Multiple Successful Strategies were found in some winng decks.")
 		fmt.Printf("   Decks Won: %d\n", deckWinsAD)
 		fmt.Printf("   Total winning strategies found: %d\n", stratWinsAD)

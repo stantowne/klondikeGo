@@ -18,7 +18,11 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	                 SW  = Strategy Win      EW  = Early Win
 											 SW  = Standard Win  Obsolete all wins are aearly
 	*/
-	// add code for findAllSuccessfulStrategies
+	// add code for findAllWinStrats
+
+	if moveNum > moveNumMax {
+		moveNumMax = moveNum
+	}
 
 	if mvsTriedTD >= gameLengthLimit {
 		pMd(bIn, deckNum, moveNum, "BB", 2, "\n  SL-RB: Game Length of: %v exceeds limit: %v\n", strconv.Itoa(mvsTriedTD), strconv.Itoa(gameLengthLimit))
@@ -87,7 +91,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		if detectWinEarly(bIn) {
 			stratWinsTD++
 			cmt := "  SW-EW: Strategy Win: Early Win%v%v"
-			if findAllSuccessfulStrategies {
+			if findAllWinStrats {
 				cmt += "  Will Continue to look for additional winning strategies for this deck"
 			} else {
 				cmt += "  Go to Next Deck (if any)"
@@ -144,8 +148,9 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		mvsTriedTD++
 
 		if verboseSpecialProgressCounter > 0 && math.Mod(float64(mvsTriedTD), float64(verboseSpecialProgressCounter)) <= 0.1 {
+
 			avgRepTime := time.Since(startTimeTD) / time.Duration(mvsTriedTD/verboseSpecialProgressCounter)
-			fmt.Printf("\rDk: %5d   ____   MvsTried: %9v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %9v   UniqBoards: %9v   Since Last Rep: %9s   Avg Btwn Reps: %9s\r", deckNum, mvsTriedTD, moveNum, moveNum /*Max*/, stratNumTD, len(priorBoards), time.Since(verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String())
+			fmt.Printf("\rDk: %5d   ____   MvsTried: %9v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %9v   UniqBoards: %9v   Since Last Rep: %7s   Avg Btwn Reps: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(priorBoards), time.Since(verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String())
 			verboseSpecialProgressCounterLastPrintTime = time.Now()
 		}
 
@@ -157,13 +162,13 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 		pMd(bIn, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2)
 
-		if findAllSuccessfulStrategies != true && recurReturnV1 == "SW" {
+		if findAllWinStrats != true && recurReturnV1 == "SW" {
 
 			// save winning moves into a slice in reverse
-			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllSuccessfulStrategies false and we had a win
+			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllWinStrats false and we had a win
 		}
 		if recurReturnV1 == "SL" && recurReturnV2 == "GML" {
-			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllSuccessfulStrategies false and we had a win
+			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllWinStrats false and we had a win
 		}
 	}
 
