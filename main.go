@@ -29,12 +29,12 @@ var findAllWinStrats bool
 var moveNumMax int
 
 type printMoveDetail struct {
-	pType                 string
-	deckStartVal          int
-	deckContinueFor       int
-	aMvsThisDkStartVal    int
-	aMvsThisDkContinueFor int
-	outputTo              string
+	pType                   string
+	deckStartVal            int
+	deckContinueFor         int
+	movesTriedTDStartVal    int
+	movesTriedTDContinueFor int
+	outputTo                string
 }
 
 var pMD printMoveDetail
@@ -69,8 +69,8 @@ func main() {
 			                               These next four limit at what point and for how long move detail should actually be printed.
 												deckStartVal    	  = Non-negative integer (Default 0)
 												deckContinueFor  	  = Non-negative integer (Default 0 which indicates forever)
-												aMvsThisDkStartVal    = Non-negative integer (Default 0)
-												aMvsThisDkContinueFor = Non-negative integer (Default 0 which indicates forever)
+												movesTriedTDStartVal    = Non-negative integer (Default 0)
+												movesTriedTDContinueFor = Non-negative integer (Default 0 which indicates forever)
 
 			                                    outputTo = C = Console (default)
 									                     = file name and path (if applicable)
@@ -83,8 +83,8 @@ func main() {
 	pMD.pType = "X"
 	pMD.deckStartVal = 0
 	pMD.deckContinueFor = 0
-	pMD.aMvsThisDkStartVal = 0
-	pMD.aMvsThisDkContinueFor = 0
+	pMD.movesTriedTDStartVal = 0
+	pMD.movesTriedTDContinueFor = 0
 	pMD.outputTo = "C"
 
 	// Setup pfmt to print thousands with commas
@@ -223,16 +223,16 @@ func main() {
 		}
 	}
 	if l >= 4 {
-		pMD.aMvsThisDkStartVal, err = strconv.Atoi(pMdArgs[3])
-		if err != nil || pMD.aMvsThisDkStartVal < 0 {
+		pMD.movesTriedTDStartVal, err = strconv.Atoi(pMdArgs[3])
+		if err != nil || pMD.movesTriedTDStartVal < 0 {
 			println("Sixth argument part 4 invalid - args[6] arg[6] parts are  separated by commas: 1,2,3,*4*,5,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
 	}
 	if l >= 5 {
-		pMD.aMvsThisDkContinueFor, err = strconv.Atoi(pMdArgs[4])
-		if err != nil || pMD.aMvsThisDkContinueFor < 0 {
+		pMD.movesTriedTDContinueFor, err = strconv.Atoi(pMdArgs[4])
+		if err != nil || pMD.movesTriedTDContinueFor < 0 {
 			println("Sixth argument part 5 invalid - args[6] arg[6] parts are  separated by commas: 1,2,3,4,*5*,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
@@ -289,8 +289,8 @@ func main() {
 			pMD.pType,
 			pMD.deckStartVal,
 			pMD.deckContinueFor,
-			pMD.aMvsThisDkStartVal,
-			pMD.aMvsThisDkContinueFor)
+			pMD.movesTriedTDStartVal,
+			pMD.movesTriedTDContinueFor)
 		if pMD.outputTo == "C" {
 			fmt.Printf("                         Print Output to: Console\n")
 		} else {

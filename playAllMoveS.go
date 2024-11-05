@@ -186,10 +186,10 @@ func pMdTestRange(deckNum int) bool {
 		}
 	}
 	aMvsThisDkRangeOK := false
-	if pMD.aMvsThisDkStartVal == 0 && pMD.aMvsThisDkContinueFor == 0 {
+	if pMD.movesTriedTDStartVal == 0 && pMD.movesTriedTDContinueFor == 0 {
 		aMvsThisDkRangeOK = true
 	} else {
-		if mvsTriedTD >= pMD.aMvsThisDkStartVal && (pMD.aMvsThisDkContinueFor == 0 || mvsTriedTD < pMD.aMvsThisDkStartVal+pMD.aMvsThisDkContinueFor) {
+		if mvsTriedTD >= pMD.movesTriedTDStartVal && (pMD.movesTriedTDContinueFor == 0 || mvsTriedTD < pMD.movesTriedTDStartVal+pMD.movesTriedTDContinueFor) {
 			aMvsThisDkRangeOK = true
 		}
 	}
