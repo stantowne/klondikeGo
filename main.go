@@ -138,7 +138,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	// The first character of verbose must be a value from 0 to 9.  Higher numbers indicate more detailed msgs should be printed
+	// The first character of verbose must be a value from 0 to 9.  Higher numbers indicate more detailed messages should be printed
 	//  The remaining characters are used to form verboseSpecial.  Code in the program will look for specific values within
 	//  verbose special to indicate that optional printing should be done.
 	verboseSpecial = args[4]

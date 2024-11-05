@@ -39,7 +39,7 @@ func printBoard(b board) {
 	}
 
 	fmt.Println("\nColumns:")
-	cardwidth := "      " //6 spaces
+	cardWidth := "      " //6 spaces
 	spacer := "    "      //4 space
 	//determine how many rows must be shown
 	numberOfRows := 0
@@ -53,7 +53,7 @@ func printBoard(b board) {
 		s := ""
 		for ccc := 0; ccc < 7; ccc++ {
 			if r > len(b.columns[ccc])-1 {
-				s = s + cardwidth + spacer
+				s = s + cardWidth + spacer
 			} else {
 				s = s + b.columns[ccc][r].pStr() + spacer
 			}

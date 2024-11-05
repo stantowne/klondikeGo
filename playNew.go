@@ -49,8 +49,8 @@ var startTimeAD = time.Now()
 var elapsedTimeAD time.Duration
 
 type boardInfo struct {
-	mN           int
-	aMmvsTriedTD int
+	moveNum    int
+	mvsTriedTD int
 	// May add linked list and stats later
 }
 
