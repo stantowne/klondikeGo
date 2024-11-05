@@ -144,7 +144,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		mvsTriedTD++
 
 		if verboseSpecialProgressCounter > .01 && math.Mod(float64(mvsTriedTD), verboseSpecialProgressCounter) < .1 {
-			fmt.Printf("\rDk: %5d   MvsTried: %9v   moveNum: %3v   StratsTried: %9v   UniQBoards: %9v\r", deckNum, mvsTriedTD, moveNum, stratNumTD, len(priorBoards))
+			fmt.Printf("\rDk: %5d   MvsTried: %9v   moveNum: %3v   StratsTried: %9v   UniqBoards: %9v\r   Time Since Last Rep: %11s   Avg Time Between Reps: %11s", deckNum, mvsTriedTD, moveNum, stratNumTD, len(priorBoards), time.Since(verboseSpecialProgressCounterLastPrintTime).Truncate(1*time.Second).String() /* add divide by number of prog reports */, time.Since(startTimeAD).Truncate(1*time.Second).String())
 		}
 
 		recurReturnV1, recurReturnV2 := playAllMoveS(bNew, moveNum+1, deckNum)

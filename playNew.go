@@ -215,7 +215,7 @@ func playNew(reader csv.Reader) {
 				fmt.Printf("\n     *********** Strategies Tried != Strategies Lost + Strategies Won")
 			}
 			if findAllSuccessfulStrategies {
-				fmt.Printf("\n\n Multiple Successful Startegies were found in some wining decks.")
+				fmt.Printf("\n\n Multiple Successful Strategies were found in some wining decks.")
 				fmt.Printf("   Total winning strategies found: %d\n", stratWinsTD)
 			}
 		}
@@ -281,7 +281,7 @@ func playNew(reader csv.Reader) {
 		fmt.Printf("\n     *********** Strategies Tried != Strategies Lost + Strategies Won")
 	}
 	if findAllSuccessfulStrategies {
-		fmt.Printf("\n\n Multiple Successful Startegies were found in some winng decks.")
+		fmt.Printf("\n\n Multiple Successful Strategies were found in some winng decks.")
 		fmt.Printf("   Decks Won: %d\n", deckWinsAD)
 		fmt.Printf("   Total winning strategies found: %d\n", stratWinsAD)
 		fmt.Printf("   Average winning strategies found: %d\n", stratWinsAD/deckWinsAD)

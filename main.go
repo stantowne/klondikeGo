@@ -24,6 +24,7 @@ var length int
 var verbose int
 var verboseSpecial string
 var verboseSpecialProgressCounter float64 = 0.
+var verboseSpecialProgressCounterLastPrintTime = time.Now()
 var findAllSuccessfulStrategies bool
 
 type pMds struct {
@@ -164,6 +165,7 @@ func main() {
 
 	// PreProcess verboseSpecial Code here so it does not have to be done later over and over again
 	//
+	verboseSpecialProgressCounterLastPrintTime =
 	regexpPROGRESSdddd, _ := regexp.Compile("/PROGRESS([1-9]*[0-9]*)/")
 	z := regexpPROGRESSdddd.FindStringSubmatch(verboseSpecial)
 	if z == nil {
