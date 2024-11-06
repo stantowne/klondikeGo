@@ -17,8 +17,9 @@ func printMove(m move) string {
 	case "moveEntireColumn":
 		outS += "Move: the cards starting with: " + m.MovePortion[0].pStr() + " From column: " + strconv.Itoa(m.fromCol) + " To column: " + strconv.Itoa(m.toCol) + "  Priority: " + strconv.Itoa(m.priority)
 	case "movePartialColumn":
-		outS += "Move: the cards starting with: " + m.MovePortion[0].pStr() + " From column: " + strconv.Itoa(m.fromCol) + " To column: " + strconv.Itoa(m.toCol) + "\n" +
-			"                         then:  move the card above " + m.MovePortion[0].pStr() + "in column: " + strconv.Itoa(m.fromCol) + " to the appropriate pile based on its suit.  Priority: " + strconv.Itoa(m.priority)
+		/*	outS += "Move: the cards starting with: " + m.MovePortion[0].pStr() + " From column: " + strconv.Itoa(m.fromCol) + " To column: " + strconv.Itoa(m.toCol) + "\n" +
+			"                         then:  move the card above " + m.MovePortion[0].pStr() + "in column: " + strconv.Itoa(m.fromCol) + " to the appropriate pile based on its suit.  Priority: " + strconv.Itoa(m.priority)*/
+		outS += "   movePartialColumn"
 	case "flipStockToWaste":
 		outS += "Move: Flip just the 3 (or fewer) top cards from stock to waste"
 	case "flipWasteToStock":
