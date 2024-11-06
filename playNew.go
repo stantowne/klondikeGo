@@ -131,7 +131,7 @@ func playNew(reader csv.Reader) {
 		}
 
 		if verbose > 1 {
-			pfmt.Printf("\nDeck #%d:\n", deckNum)
+			_, err = pfmt.Printf("\nDeck #%d:\n", deckNum)
 		}
 		var d Deck
 
@@ -151,7 +151,7 @@ func playNew(reader csv.Reader) {
 		var b = dealDeck(d)
 
 		if pMD.pType == "TW" || pMD.pType == "TS" {
-			pfmt.Printf("\n\nDeck %v\n", deckNum)
+			_, err = pfmt.Printf("\n\nDeck %v\n", deckNum)
 			fmt.Printf("\n\n Strat #")
 			if pMD.pType == "TW" {
 				for i := 1; i <= 200; i++ {
@@ -174,7 +174,7 @@ func playNew(reader csv.Reader) {
 		}
 
 		// Verbose Special "WL" Starts Here - No effect on operation
-		if strings.Contains(verboseSpecial, "/WL/") { // Deck Win Loss Summary Statistics
+		if strings.Contains(verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics
 			/*if stratWinsTD == 0 {
 				dWLDStats.winLoss = "L"
 				dWLDStats.moveNumAt1stWinOrAtLoss = 0
@@ -196,7 +196,7 @@ func playNew(reader csv.Reader) {
 		// Verbose Special "WL" Ends Here - No effect on operation
 
 		//Verbose Special "DBD" Starts Here - No effect on operation
-		if strings.Contains(verboseSpecial, "/DBD/") { // Deck-by-deck Statistics
+		if strings.Contains(verboseSpecial, ";DBD;") { // Deck-by-deck Statistics
 			if stratWinsTD > 0 {
 				fmt.Printf("\n\n*************************\n\nDeck: %d  WON    Result Codes: %v %v", deckNum, result1, result2)
 			} else {
@@ -204,14 +204,14 @@ func playNew(reader csv.Reader) {
 			}
 			fmt.Printf("\nElapsed Time is %v.", elapsedTimeTD)
 			fmt.Printf("\n\nStrategies:")
-			pfmt.Printf("\n   Tried: %d", stratNumTD)
-			pfmt.Printf("\n     Won: %d", stratWinsTD)
-			pfmt.Printf("\n    Lost: %d", stratLossesTD)
+			_, err = pfmt.Printf("\n   Tried: %d", stratNumTD)
+			_, err = pfmt.Printf("\n     Won: %d", stratWinsTD)
+			_, err = pfmt.Printf("\n    Lost: %d", stratLossesTD)
 			fmt.Printf("\n\nStrategies Lost Detail:")
-			pfmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_TD)
-			pfmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_TD)
-			pfmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_TD)
-			pfmt.Printf("\n   GML: %d   (Game Length Limit)", stratLossesGML_TD)
+			_, err = pfmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_TD)
+			_, err = pfmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_TD)
+			_, err = pfmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_TD)
+			_, err = pfmt.Printf("\n   GML: %d   (Game Length Limit)", stratLossesGML_TD)
 			if stratLossesNMA_TD+stratLossesRB_TD+stratLossesSE_TD+stratLossesGML_TD != stratLossesTD {
 				fmt.Printf("\n     *********** Total Strategy Losses != Sum of strategy detail")
 			}
@@ -220,13 +220,13 @@ func playNew(reader csv.Reader) {
 			}
 			if findAllWinStrats {
 				fmt.Printf("\n\n Multiple Successful Strategies were found in some wining decks.")
-				pfmt.Printf("   Total winning strategies found: %d\n", stratWinsTD)
+				_, err = pfmt.Printf("   Total winning strategies found: %d\n", stratWinsTD)
 			}
 		}
 		// Verbose Special "DBD" Ends Here - No effect on operation
 
 		//Verbose Special "DBDS" Starts Here - No effect on operation
-		if strings.Contains(verboseSpecial, "/DBDS/") { // Deck-by-deck SHORT Statistics
+		if strings.Contains(verboseSpecial, ";DBDS;") { // Deck-by-deck SHORT Statistics
 			var est time.Duration
 			//                      nanosecondsTD   / Decks Played So Far         * remaining decks [remaining decks = numbertobeplayed - decksplayed so far
 			est = time.Duration(float64(elapsedTimeAD)/float64(deckNum-firstDeckNum+1)*float64(numberOfDecksToBePlayed-(deckNum-firstDeckNum+1))) * time.Nanosecond
@@ -236,7 +236,7 @@ func playNew(reader csv.Reader) {
 			} else {
 				wL = "LOST"
 			}
-			pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %9v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %9v   UnqBoards: %9v   Won: %5v   Lost: %5v   GML: %5v   Won: %5.1f%%   Lost: %5.1f%%   GML: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(priorBoards), deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGML_AD*100, deckNum+1-firstDeckNum, 1), elapsedTimeTD.Truncate(100*time.Millisecond).String(), elapsedTimeAD.Truncate(100*time.Millisecond).String(), est.Truncate(100*time.Millisecond).String(), result1, result2, time.Now().Format(" 3:04 pm"))
+			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %9v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %9v   UnqBoards: %9v   Won: %5v   Lost: %5v   GML: %5v   Won: %5.1f%%   Lost: %5.1f%%   GML: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(priorBoards), deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGML_AD*100, deckNum+1-firstDeckNum, 1), elapsedTimeTD.Truncate(100*time.Millisecond).String(), elapsedTimeAD.Truncate(100*time.Millisecond).String(), est.Truncate(100*time.Millisecond).String(), result1, result2, time.Now().Format(" 3:04 pm"))
 			/*if elapsedTimeTD > 1*time.Second { // changed 5*time.Minute to 1*time.Second for test change it back
 				fmt.Printf("\a") // Ring Bell
 			}*/
@@ -263,21 +263,21 @@ func playNew(reader csv.Reader) {
 	}
 
 	fmt.Printf("\n******************\n\n" + "Decks:")
-	pfmt.Printf("\n   Played: %d", numberOfDecksToBePlayed)
-	pfmt.Printf("\n      Won: %d", deckWinsAD)
-	pfmt.Printf("\n     Lost: %d", deckLossesAD)
+	_, err = pfmt.Printf("\n   Played: %d", numberOfDecksToBePlayed)
+	_, err = pfmt.Printf("\n      Won: %d", deckWinsAD)
+	_, err = pfmt.Printf("\n     Lost: %d", deckLossesAD)
 	averageElapsedTimePerDeck := time.Duration(float64(elapsedTimeAD) / float64(numberOfDecksToBePlayed))
 	fmt.Printf("\nElapsed Time is %v.", elapsedTimeAD)
 	fmt.Printf("\nAverage Elapsed Time per Deck is %s", averageElapsedTimePerDeck.Truncate(100*time.Millisecond).String())
 	fmt.Printf("\n\nStrategies:")
-	pfmt.Printf("\n   Tried: %d", stratNumAD)
-	pfmt.Printf("\n     Won: %d", stratLossesAD)
-	pfmt.Printf("\n    Lost: %d", stratWinsAD)
+	_, err = pfmt.Printf("\n   Tried: %d", stratNumAD)
+	_, err = pfmt.Printf("\n     Won: %d", stratLossesAD)
+	_, err = pfmt.Printf("\n    Lost: %d", stratWinsAD)
 	fmt.Printf("\n\nStrategies Lost Detail:")
-	pfmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_AD)
-	pfmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_AD)
-	pfmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_AD)
-	pfmt.Printf("\nStrategy Losses at Game Length Limit is: %d", stratLossesGML_AD)
+	_, err = pfmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_AD)
+	_, err = pfmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_AD)
+	_, err = pfmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_AD)
+	_, err = pfmt.Printf("\nStrategy Losses at Game Length Limit is: %d", stratLossesGML_AD)
 	if stratLossesNMA_AD+stratLossesRB_AD+stratLossesSE_AD+stratLossesGML_AD != stratLossesAD {
 		fmt.Printf("\n     *********** Total Strategy Losses != Sum of strategy detail")
 	}
@@ -286,16 +286,16 @@ func playNew(reader csv.Reader) {
 	}
 	if findAllWinStrats {
 		fmt.Printf("\n\n Multiple Successful Strategies were found in some winng decks.")
-		pfmt.Printf("   Decks Won: %d\n", deckWinsAD)
-		pfmt.Printf("   Total winning strategies found: %d\n", stratWinsAD)
-		pfmt.Printf("   Average winning strategies found: %d\n", stratWinsAD/deckWinsAD)
+		_, err = pfmt.Printf("   Decks Won: %d\n", deckWinsAD)
+		_, err = pfmt.Printf("   Total winning strategies found: %d\n", stratWinsAD)
+		_, err = pfmt.Printf("   Average winning strategies found: %d\n", stratWinsAD/deckWinsAD)
 	}
 	// Verbose Special "WL" Starts Here - No effect on operation
-	if strings.Contains(verboseSpecial, "/WL/") { // Deck Win Loss Summary Statistics
+	if strings.Contains(verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics
 		fmt.Printf("\n\n\n Deck-by Deck Win/Loss Detail   (Copy to Excel to get headings to line up with the columns)")
 		fmt.Printf("\n\n Deck\tW/L\tMoveNum 1ST-Win\tStratNum At 1st-Win Or At-Loss\tMvsTried At 1st-Win Or At-Loss\tMoveNum Min-Win If-Find-All\tMoveNum Max-Win If-Find-All\tElapsed Time At 1st-Win Or At Loss\n")
 		/*for dN, detail := range deckWinLossDetail {
-			pfmt.Printf("\n  %5v\t  %v\t%4v\t%8v\t%8v\t%4v\t%4v", dN, detail.winLoss, detail.moveNumAt1stWinOrAtLoss, detail.stratNumAt1stWinOrAtLoss, detail.mvsTriedAt1stWinOrAtLoss, detail.moveNumMinWinIfFindAll, detail.moveNumMaxWinIfFindAll, detail.ElapsedTimeAt1stWinOrAtLoss)
+			_, err = pfmt.Printf("\n  %5v\t  %v\t%4v\t%8v\t%8v\t%4v\t%4v", dN, detail.winLoss, detail.moveNumAt1stWinOrAtLoss, detail.stratNumAt1stWinOrAtLoss, detail.mvsTriedAt1stWinOrAtLoss, detail.moveNumMinWinIfFindAll, detail.moveNumMaxWinIfFindAll, detail.ElapsedTimeAt1stWinOrAtLoss)
 		}*/
 	}
 	// Verbose Special "WL" Ends Here - No effect on operation

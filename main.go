@@ -45,39 +45,46 @@ var singleGame bool // = true
 func main() {
 	/*
 
-							Command line arguments
+								Command line arguments
 
-							args[0] = program name
-							args[1] = firstDeckNum            - # of the first deck to be used from within the pre-stored decks used to standardize testing
-							args[2] = numberOfDecksToBePlayed - # of decks to be played
-							args[3] = length                  - of iOS (initial Override Strategy) - see comments below	(applicable to playOrig only)
-							args[4] = verbose                 - first character ONLY: verbosity switch for messages
-		                              verboseSpecial          - 2nd - nth characters ONLY - special print options - (applicable to playNew only)
-							args[5] = findAllWinStrats 	      - (applicable playNew only)
-							args[6] = pMD		              - struct type: printMoveDetail - (applicable playNew only)
-						              	as a string to be parsed of the form:
-						           			pType,startType,deckStartVal,deckContinueFor,outputTo
+								args[0] = program name
+								args[1] = firstDeckNum            - # of the first deck to be used from within the pre-stored decks used to standardize testing
+								args[2] = numberOfDecksToBePlayed - # of decks to be played
+								args[3] = length                  - of iOS (initial Override Strategy) - see comments below	(applicable to playOrig only)
+								args[4] = verbose                 - first character ONLY: verbosity switch for messages
+			                              verboseSpecial          - 2nd - nth characters ONLY - special print options - (applicable to playNew only)
+								args[5] = findAllWinStrats 	      - (applicable playNew only)
+		       printMoveDetail  args[6] = pMD		              - struct type: printMoveDetail - (applicable playNew only)
+							              	as a string to be parsed of the form:
+							           			pType,startType,deckStartVal,deckContinueFor,outputTo
 
-											where:
-												pType = empty or X - do not print NOTE: Default if args[6] is not on command line
-													  = BB         - Board by Board detail
-					                                  = BBS        - Board by Board Short detail
-					                                  = BBSS       - Board by Board Super Short detail
-						                              = TW         - print Tree in Wide mode     8 char per move
-													  = TS         - print Tree in Skinny mode   5 char per move
-				                                      = TSS        - print Tree in Super Skinny mode   3 char per move
-			                               These next four limit at what point and for how long move detail should actually be printed.
-												deckStartVal    	  = Non-negative integer (Default 0)
-												deckContinueFor  	  = Non-negative integer (Default 0 which indicates forever)
-												movesTriedTDStartVal    = Non-negative integer (Default 0)
-												movesTriedTDContinueFor = Non-negative integer (Default 0 which indicates forever)
+												where:
+													pType = empty or X - do not print NOTE: Default if args[6] is not on command line
+														  = BB         - Board by Board detail
+						                                  = BBS        - Board by Board Short detail
+						                                  = BBSS       - Board by Board Super Short detail
+							                              = TW         - print Tree in Wide mode     8 char per move
+														  = TS         - print Tree in Skinny mode   5 char per move
+					                                      = TSS        - print Tree in Super Skinny mode   3 char per move
+				                               These next four limit at what point and for how long move detail should actually be printed.
+													deckStartVal    	  = Non-negative integer (Default 0)
+													deckContinueFor  	  = Non-negative integer (Default 0 which indicates forever)
+													movesTriedTDStartVal    = Non-negative integer (Default 0)
+													movesTriedTDContinueFor = Non-negative integer (Default 0 which indicates forever)
 
-			                                    outputTo = C = Console (default)
-									                     = file name and path (if applicable)
-						                                   Note: if file name is present then startType. deckStartVal and ContinueFor
-						                                         must be present or delineated with ":"
+				                                    outputTo = C = Console (default)
+										                     = file name and path (if applicable)
+							                                   Note: if file name is present then startType. deckStartVal and ContinueFor
+							                                         must be present or delineated with ":"
 
-							           	and placed into a package level struct pMD of type pMd which can be seen above:
+								           	and placed into a package level struct pMD of type pMd which can be seen above:
+
+		NOTE: Certain options of VerboseSpecial and/or pMD are incompatible:
+
+			!!!!!! ADD CHECK TO SAY DBD AND DBDS can not be BOTH included in verbosespecial
+			!!!!!!                 and that neither CAN be selected if the sixth argument pMD.pType is anything other than "X"
+			!!!!!!  PROGRESSdddd can not be selected with argument 5 = TW, TS, or TSS
+
 	*/
 
 	pMD.pType = "X"
@@ -148,10 +155,15 @@ func main() {
 		println("verbose must be a non-negative integer no greater than 10")
 		os.Exit(1)
 	}
-	verboseSpecial = verboseSpecial[1:]
-	/* Verbose Special codes implemented:  CASE IS IGNORED  Place some divider such as / when multiple specials are requested
+	if len(verboseSpecial) >= 1 {
+		verboseSpecial = verboseSpecial[1:]
+	} else {
+		verboseSpecial = ""
+	}
+	/* Verbose Special codes implemented:  CASE IS IGNORED
+	   Place ";" as a divider when multiple specials are requested as well as BEFORE and AFTER the last option
 
-	   DBD = print Deck-by-deck detail info after each Move 											playNew Only (in playAllMovesS)
+	   DBD  = print Deck-by-deck detail info after each Move 											playNew Only (in playAllMovesS)
 	   DBDS = print Deck-by-deck SHORT detail info after each Move 										playNew Only (in playAllMovesS)WL  = print deck summary Win/Loss stats after all decks to see which decks won and which lost    playNew Only (in playNew)
 	   SUITSYMBOL = print S, D, C, H instead of runes - defaults to runes
 	   RANKSYMBOL = print Ac, Ki, Qu, Jk instead of 01, 11, 12, 13 - defaults to numeric
@@ -159,19 +171,20 @@ func main() {
 	   PROGRESSdddd = Print the deckNum, mvsTriedTD, moveNum, stratNumTD, unqBoards every dddd movesTriedTD tried overwriting the previous printing
 	                        dddd = 0 will be treated as if the /PROGRESS0000/ was NOT in the verbose special string !!!!!!!
 	                        if dddd is left out then a default of every 10,000 movesTriedTD will be used
-	                  PROGRESSdddd is preprocessed below
-	                        the package variable "verboseSpecialProgressCounter" will be used to control operation
-	   BELL = Ring bell after any deck taking more than 000 minutes (Not yet Implemented)
 
-	ADD CHECK TO SAY DBD AND DBDS can not be both included in verbosespecial
-	                 and that neither CAN be selected if the sixth argument pMD.pType is anything other than "X"
+							PROGRESSdddd is preprocessed below (soon to move to playNew)
+	                        The variables "verboseSpecialProgressCounter" and verboseSpecialProgressCounterLastPrintTime
+	                              will be used to control operation
+	                              They are currently package level will soon move to a structure
+
+	   BELL = Ring bell after any deck taking more than 000 minutes (Not yet Implemented)
 
 	*/
 
 	// PreProcess verboseSpecial Code here so it does not have to be done later over and over again
-	//
+	verboseSpecialDivider := ";"
 	verboseSpecialProgressCounterLastPrintTime = time.Now()
-	regexpPROGRESSdddd, _ := regexp.Compile("/PROGRESS([1-9]+[0-9]*)/")
+	regexpPROGRESSdddd, _ := regexp.Compile(verboseSpecialDivider + "PROGRESS([1-9]+[0-9]*)" + verboseSpecialDivider)
 	z := regexpPROGRESSdddd.FindStringSubmatch(verboseSpecial)
 	if z == nil {
 		verboseSpecialProgressCounter = 0
@@ -197,14 +210,16 @@ func main() {
 		println("     'A' or 'a' - See how many paths to success you can find")
 		os.Exit(1)
 	}
+
+	// Sixth
 	pMdArgs := strings.Split(args[6], ",")
 	l := len(pMdArgs)
 
 	if l >= 1 {
-		if pMdArgs[0] == "BB" || pMdArgs[0] == "BBS" || pMdArgs[0] == "BBSS" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" || pMdArgs[0] == "X" {
+		if pMdArgs[0] == "BB" || pMdArgs[0] == "BBS" || pMdArgs[0] == "BBSS" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" || pMdArgs[0] == "TSS" || pMdArgs[0] == "X" {
 			pMD.pType = pMdArgs[0]
 		} else {
-			println("Sixth argument part 1 invalid - args[6] arg[6] parts are  separated by commas: *1*,2,3,4,5,6")
+			println("Sixth argument part 1 invalid - args[6];  arg[6] parts are separated by commas: *1*,2,3,4,5,6")
 			println("  Must start with BB, BBS, BBSS, TW, TS, TSS or X")
 			os.Exit(1)
 		}
@@ -252,7 +267,28 @@ func main() {
 		}
 	}
 
-	// Argument above applies only to playNew			****************************************************
+	// Arguments 5 & 6 above apply only to playNew			****************************************************
+
+	/* Check for incompatible options among argument 5 or 6:
+	          DBD AND DBDS can not be BOTH included in verbosespecial
+			      and that neither CAN be selected if the sixth argument pMD.pType is anything other than "X"
+			  PROGRESSdddd can not be selected with argument 5 = TW, TS, or TS
+	*/
+	if strings.Contains(verboseSpecial, ";DBD;") || strings.Contains(verboseSpecial, ";DBDS;") {
+		if strings.Contains(verboseSpecial, ";DBD;") && strings.Contains(verboseSpecial, ";DBDS;") {
+			println("Fifth argument cannot specify BOTH DBD and DBDS")
+			os.Exit(1)
+		} else {
+			if pMD.pType != "X" {
+				println("Fifth argument of \"DBD\" and \"DBDS\" incompatible with sixth argument equal to anything other than \"X\"")
+				os.Exit(1)
+			}
+		}
+		if pMD.pType == "TW" || pMD.pType == "TS" || pMD.pType == "TSS" {
+			println("Sixth argument of \"TW\", \"TS\", or \"TSS\" incompatible with fifth argument (verboseSpecial of type \"PROGRESSdddd\"")
+			os.Exit(1)
+		}
+	}
 
 	// ******************************************
 	//
@@ -264,12 +300,12 @@ func main() {
 	fmt.Printf("\nRun Start Time: %15s\n\n", time.Now().Format("2006.01.02  3:04:05 pm"))
 	fmt.Printf("\nCalling Program: %v\n\n", args[0])
 	fmt.Printf("Start Time: %v\n", time.Now())
-	pfmt.Printf("Command Line Arguments:\n"+
+	_, err = pfmt.Printf("Command Line Arguments:\n"+
 		"            Number Of Decks To Be Played: %v\n"+
 		"                      Starting with deck: %v\n\n", numberOfDecksToBePlayed, firstDeckNum)
 	if length != -1 {
 		nOfS := 1 << length //number of initial strategies
-		pfmt.Printf(" Style: Original iOS (Initial Override Strategies)\n\n"+
+		_, err = pfmt.Printf(" Style: Original iOS (Initial Override Strategies)\n\n"+
 			"                     iOS strategy length: %v\n"+
 			"          Max possible attempts per deck: %v\n"+
 			"       Total possible attempts all decks: %v\n\n", length, nOfS, nOfS*numberOfDecksToBePlayed)
@@ -281,7 +317,7 @@ func main() {
 		"                   Verbose special codes: %v\n",
 		verbose, verboseSpecial)
 	if length == -1 {
-		pfmt.Printf("\n Print Move Detail Options:\n"+
+		_, err = pfmt.Printf("\n Print Move Detail Options:\n"+
 			"          Find All Successful Strategies: %v\n"+
 			"                              Print Type: %v\n"+
 			"                       Staring with Deck: %v\n"+
@@ -342,7 +378,7 @@ func main() {
 
 		gameLengthLimit = gameLengthLimitOrig
 		moveBasePriority = moveBasePriorityOrig
-		pfmt.Printf("\n                         GameLengthLimit: %v Move Counter\n\n\n", gameLengthLimit)
+		_, err = pfmt.Printf("\n                         GameLengthLimit: %v Move Counter\n\n\n", gameLengthLimit)
 		playOrig(*reader)
 	} else {
 		gameLengthLimit = gameLengthLimitNew

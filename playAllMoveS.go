@@ -104,7 +104,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, cmt, "", "")
 
 			// Verbose Special "WL" Starts Here - No effect on operation
-			if strings.Contains(verboseSpecial, "/WL/") { // Deck Win Loss Summary Statistics
+			if strings.Contains(verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics
 				/*if len(deckWinLossDetail)-1 < deckNum {
 					dWLDStats.winLoss = "W"
 					dWLDStats.moveNumAt1stWinOrAtLoss = moveNum
@@ -129,13 +129,9 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 		// OK, done with the various end-of-strategy conditions
 		// let's print out the list of available moves and make the next available move
-		/*qqq := 0                                                                                    //test
-		if mvsTriedTD == 1435 || mvsTriedTD == 1436 || (mvsTriedTD >= 3284 && mvsTriedTD <= 3289) { //test
-			fmt.Printf("%v", qqq) //test
-			qqq++                 //test
-		} //test*/
 		if pMD.pType == "BB" && prntMDetTestRange(deckNum) {
-			fmt.Printf("\n     All Possible Moves: ")
+			prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 3, "", "", "")
+			/*fmt.Printf("\n     All Possible Moves: ")
 			for j := range aMoves {
 				if j != 0 {
 					fmt.Printf("                         ")
@@ -145,7 +141,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 					fmt.Printf("                <- Next Move")
 				}
 				fmt.Printf("\n")
-			}
+			}*/
 		}
 
 		bNew := bIn.copyBoard() // Critical Must use copyBoard
@@ -225,17 +221,17 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 			// comment must have 2 %v in it
 			_, err = pfmt.Printf(comment, s1, s2)
 		case pMD.pType == "BB" && variant == 3: // for BB FIX THIS AT SOME POINT
-		/*fmt.Printf("\n     All Possible Moves: ")
-		for j := range aMoves {
-			if j != 0 {
-				fmt.Printf("                         ")
+			fmt.Printf("\n     All Possible Moves: ")
+			for j := range aMoves {
+				if j != 0 {
+					fmt.Printf("                         ")
+				}
+				fmt.Printf("%v", printMove(aMoves[j]))
+				if nextMove == j {
+					fmt.Printf("                <- Next Move")
+				}
+				fmt.Printf("\n")
 			}
-			fmt.Printf("%v", printMove(aMoves[j]))
-			if nextMove == j {
-				fmt.Printf("                <- Next Move")
-			}
-			fmt.Printf("\n")
-		}*/
 		case strings.HasPrefix(pTypeIn, "BBS") && strings.HasPrefix(pMD.pType, "BBS") && variant == 1: // for BBS or BBSS
 			_, err = pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Now().Sub(startTimeAD), time.Now().Sub(startTimeTD))
 		case pTypeIn == "BBS" && pMD.pType == pTypeIn && variant == 2: // for BBS or BBSS
