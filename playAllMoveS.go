@@ -73,14 +73,16 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			if _, ok := priorBoards[bNewBcodeS]; ok {
 				// OK we did see it before so return to try next available move (if any) in aMoves[] aka strategy
 				stratLossesRB_TD++
-				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of the board at at MvsTriedTD: %v which was at move: %v\n", strconv.Itoa(priorBoards[bNewBcodeS].mvsTriedTD), strconv.Itoa(priorBoards[bNewBcodeS].moveNum))
-				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBSS", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of the board at at MvsTriedTD: %v which was at move: %v\n", strconv.Itoa(priorBoards[bNewBcodeS].mvsTriedTD), strconv.Itoa(priorBoards[bNewBcodeS].moveNum))
+				//  	prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn string, variant int, comment string, s1 string, s2 string) {
+				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "")
+				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBSS", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "")
 				return "SL", "RB" // Repetitive Move
 			} else {
 				// Remember the board state by putting it into the map "priorBoards"
 				bInf := boardInfo{
-					moveNum:    moveNum,
-					mvsTriedTD: mvsTriedTD,
+					//moveNum: moveNum,
+					//mvsTriedTD: mvsTriedTD,
+					exists: true,
 				}
 				priorBoards[bNewBcodeS] = bInf
 			}

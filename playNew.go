@@ -47,8 +47,9 @@ var startTimeTD time.Time
 var startTimeAD time.Time
 
 type boardInfo struct {
-	moveNum    int
-	mvsTriedTD int
+	//moveNum int
+	//mvsTriedTD int
+	exists bool //better way to do this but good enough for now
 	// May add linked list and stats later
 }
 
