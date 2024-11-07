@@ -173,26 +173,28 @@ func playNew(reader csv.Reader) {
 			deckLossesAD += 1
 		}
 
-		// Verbose Special "WL" Starts Here - No effect on operation
-		if strings.Contains(verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics
-			/*if stratWinsTD == 0 {
-				dWLDStats.winLoss = "L"
-				dWLDStats.moveNumAt1stWinOrAtLoss = 0
-				dWLDStats.moveNumMinWinIfFindAll = 0
-				dWLDStats.moveNumMaxWinIfFindAll = 0
-				dWLDStats.stratNumAt1stWinOrAtLoss = stratWinsTD
-				dWLDStats.mvsTriedAt1stWinOrAtLoss = mvsTriedTD
-				// Add maxUnique Boards
-				//add max movenum
-				// add ElapsedTimeAt1stWin
-				dWLDStats.ElapsedTimeAt1stWinOrAtLoss = time.Now().Sub(startTimeTD)
-			} else {
-				dWLDStats.winLoss = "W"
-				dWLDStats.ElapsedTimeAt1stWinOrAtLoss = time.Now().Sub(startTimeTD)
+		/*
+			// Verbose Special "WL" Starts Here - No effect on operation
+			if strings.Contains(verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics
+				if stratWinsTD == 0 {
+					dWLDStats.winLoss = "L"
+					dWLDStats.moveNumAt1stWinOrAtLoss = 0
+					dWLDStats.moveNumMinWinIfFindAll = 0
+					dWLDStats.moveNumMaxWinIfFindAll = 0
+					dWLDStats.stratNumAt1stWinOrAtLoss = stratWinsTD
+					dWLDStats.mvsTriedAt1stWinOrAtLoss = mvsTriedTD
+					// Add maxUnique Boards
+					//add max movenum
+					// add ElapsedTimeAt1stWin
+					dWLDStats.ElapsedTimeAt1stWinOrAtLoss = time.Now().Sub(startTimeTD)
+				} else {
+					dWLDStats.winLoss = "W"
+					dWLDStats.ElapsedTimeAt1stWinOrAtLoss = time.Now().Sub(startTimeTD)
+				}
+				deckWinLossDetail = append(deckWinLossDetail, dWLDStats)
+
 			}
-			deckWinLossDetail = append(deckWinLossDetail, dWLDStats)
-			*/
-		}
+		*/
 		// Verbose Special "WL" Ends Here - No effect on operation
 
 		//Verbose Special "DBD" Starts Here - No effect on operation

@@ -15,7 +15,7 @@ import (
 )
 
 const gameLengthLimitOrig = 150      // max moveCounter; increasing to 200 does not increase win rate
-const gameLengthLimitNew = 400000000 // max mvsTriedTD
+const gameLengthLimitNew = 800000000 // max mvsTriedTD
 var gameLengthLimit int
 
 var firstDeckNum int
