@@ -149,7 +149,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		if verboseSpecialProgressCounter > 0 && math.Mod(float64(mvsTriedTD), float64(verboseSpecialProgressCounter)) <= 0.1 {
 			avgRepTime := time.Since(startTimeTD) / time.Duration(mvsTriedTD/verboseSpecialProgressCounter)
 			estMaxRemTimeTD := time.Since(startTimeTD) * time.Duration((gameLengthLimit-mvsTriedTD)/mvsTriedTD)
-			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v   El Time: %7s   Since Last Rep: %6s   Avg Btwn Reps: %6s   estMaxRemTD: %7s", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(priorBoards), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), time.Since(verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
+			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(priorBoards), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), time.Since(verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
 			verboseSpecialProgressCounterLastPrintTime = time.Now()
 		}
 		// verboseSpecial option PROGRESSdddd ends here
