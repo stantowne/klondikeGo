@@ -77,6 +77,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBSS", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of the board at at MvsTriedTD: %v which was at move: %v\n", strconv.Itoa(priorBoards[bNewBcodeS].mvsTriedTD), strconv.Itoa(priorBoards[bNewBcodeS].moveNum))
 				return "SL", "RB" // Repetitive Move
 			} else {
+				// Remember the board state by putting it into the map "priorBoards"
 				bInf := boardInfo{
 					moveNum:    moveNum,
 					mvsTriedTD: mvsTriedTD,
@@ -129,23 +130,14 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 
 		// OK, done with the various end-of-strategy conditions
 		// let's print out the list of available moves and make the next available move
+		// The board state was already printed above
 		if pMD.pType == "BB" && prntMDetTestRange(deckNum) {
 			prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 3, "", "", "")
-			/*fmt.Printf("\n     All Possible Moves: ")
-			for j := range aMoves {
-				if j != 0 {
-					fmt.Printf("                         ")
-				}
-				fmt.Printf("%v", printMove(aMoves[j]))
-				if i == j {
-					fmt.Printf("                <- Next Move")
-				}
-				fmt.Printf("\n")
-			}*/
 		}
 
 		bNew := bIn.copyBoard() // Critical Must use copyBoard
 
+		// ********** 1st of the 2 MOST IMPORTANT statements in this function:  ******************************
 		bNew = moveMaker(bNew, aMoves[i])
 
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", "", "")
@@ -153,19 +145,19 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		prntMDet(bNew, aMoves, i, deckNum, moveNum, "BBS", 2, "     bNew: %v\n", "", "")
 		mvsTriedTD++
 
+		// Consider Moving clause to be a clause in prntMDet
 		if verboseSpecialProgressCounter > 0 && math.Mod(float64(mvsTriedTD), float64(verboseSpecialProgressCounter)) <= 0.1 {
-
 			avgRepTime := time.Since(startTimeTD) / time.Duration(mvsTriedTD/verboseSpecialProgressCounter)
 			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %9v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %9v   UniqBoards: %9v   Since Last Rep: %7s   Avg Btwn Reps: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(priorBoards), time.Since(verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String())
 			verboseSpecialProgressCounterLastPrintTime = time.Now()
 		}
 
+		// ********** 2nd of the 2 MOST IMPORTANT statements in this function:  ******************************
 		recurReturnV1, recurReturnV2 := playAllMoveS(bNew, moveNum+1, deckNum)
 
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2)
 
 		if findAllWinStrats != true && recurReturnV1 == "SW" {
-
 			// save winning moves into a slice in reverse
 			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
 		}
@@ -220,7 +212,7 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 		case pTypeIn == "BB" && pMD.pType == pTypeIn && variant == 2: // for BB
 			// comment must have 2 %v in it
 			_, err = pfmt.Printf(comment, s1, s2)
-		case pMD.pType == "BB" && variant == 3: // for BB FIX THIS AT SOME POINT
+		case pMD.pType == "BB" && variant == 3:
 			fmt.Printf("\n     All Possible Moves: ")
 			for j := range aMoves {
 				if j != 0 {
@@ -234,7 +226,7 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 			}
 		case strings.HasPrefix(pTypeIn, "BBS") && strings.HasPrefix(pMD.pType, "BBS") && variant == 1: // for BBS or BBSS
 			_, err = pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Now().Sub(startTimeAD), time.Now().Sub(startTimeTD))
-		case pTypeIn == "BBS" && pMD.pType == pTypeIn && variant == 2: // for BBS or BBSS
+		case pTypeIn == "BBS" && pMD.pType == pTypeIn && variant == 2:
 			_, err = pfmt.Printf(comment, b)
 		case pTypeIn == "NOTX" && pMD.pType != "X" && variant == 1:
 			_, err = pfmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Now().Sub(startTimeAD), time.Now().Sub(startTimeTD))

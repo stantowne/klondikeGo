@@ -45,45 +45,58 @@ var singleGame bool // = true
 func main() {
 	/*
 
-								Command line arguments
+										Command line arguments
 
-								args[0] = program name
-								args[1] = firstDeckNum            - # of the first deck to be used from within the pre-stored decks used to standardize testing
-								args[2] = numberOfDecksToBePlayed - # of decks to be played
-								args[3] = length                  - of iOS (initial Override Strategy) - see comments below	(applicable to playOrig only)
-								args[4] = verbose                 - first character ONLY: verbosity switch for messages
-			                              verboseSpecial          - 2nd - nth characters ONLY - special print options - (applicable to playNew only)
-								args[5] = findAllWinStrats 	      - (applicable playNew only)
-		       printMoveDetail  args[6] = pMD		              - struct type: printMoveDetail - (applicable playNew only)
-							              	as a string to be parsed of the form:
-							           			pType,startType,deckStartVal,deckContinueFor,outputTo
+										args[0] = program name
+										args[1] = firstDeckNum            - # of the first deck to be used from within the pre-stored decks used to standardize testing
+										args[2] = numberOfDecksToBePlayed - # of decks to be played
+										args[3] = length                  - of iOS (initial Override Strategy) - see comments below	(applicable to playOrig only)
 
-												where:
-													pType = empty or X - do not print NOTE: Default if args[6] is not on command line
-														  = BB         - Board by Board detail
-						                                  = BBS        - Board by Board Short detail
-						                                  = BBSS       - Board by Board Super Short detail
-							                              = TW         - print Tree in Wide mode     8 char per move
-														  = TS         - print Tree in Skinny mode   5 char per move
-					                                      = TSS        - print Tree in Super Skinny mode   3 char per move
-				                               These next four limit at what point and for how long move detail should actually be printed.
-													deckStartVal    	  = Non-negative integer (Default 0)
-													deckContinueFor  	  = Non-negative integer (Default 0 which indicates forever)
-													movesTriedTDStartVal    = Non-negative integer (Default 0)
-													movesTriedTDContinueFor = Non-negative integer (Default 0 which indicates forever)
+		                                                                  if length = -1 then execute playNew
 
-				                                    outputTo = C = Console (default)
-										                     = file name and path (if applicable)
-							                                   Note: if file name is present then startType. deckStartVal and ContinueFor
-							                                         must be present or delineated with ":"
+		                                                                            =  0 then execute playOrig and play the Best Move
+		                                                                            >  1 then execute playOrig and play either:
+		                                                                                 the best move
+		                                                                                 OR
+		                                                                                 force a flip from stock to waste
+		                                                                            >  1 is known as an iOS strategy whereby the "OR" above will be determined by
+		                                                                                    the binary representation of 2^length
+		                                                                                    STAN - describe it here please I never get it right!
 
-								           	and placed into a package level struct pMD of type pMd which can be seen above:
+											args[4] = verbose                 - first character ONLY: verbosity switch for messages
+					                              verboseSpecial          - 2nd - nth characters ONLY - special print options - (applicable to playNew only)
 
-		NOTE: Certain options of VerboseSpecial and/or pMD are incompatible:
+										args[5] = findAllWinStrats 	      - (applicable playNew only)
+				       printMoveDetail  args[6] = pMD		              - struct type: printMoveDetail - (applicable playNew only)
+									              	as a string to be parsed of the form:
+									           			pType,startType,deckStartVal,deckContinueFor,outputTo
 
-			!!!!!! ADD CHECK TO SAY DBD AND DBDS can not be BOTH included in verbosespecial
-			!!!!!!                 and that neither CAN be selected if the sixth argument pMD.pType is anything other than "X"
-			!!!!!!  PROGRESSdddd can not be selected with argument 5 = TW, TS, or TSS
+														where:
+															pType = empty or X - do not print NOTE: Default if args[6] is not on command line
+																  = BB         - Board by Board detail
+								                                  = BBS        - Board by Board Short detail
+								                                  = BBSS       - Board by Board Super Short detail
+									                              = TW         - print Tree in Wide mode     8 char per move
+																  = TS         - print Tree in Skinny mode   5 char per move
+							                                      = TSS        - print Tree in Super Skinny mode   3 char per move
+						                               These next four limit at what point and for how long move detail should actually be printed.
+															deckStartVal    	  = Non-negative integer (Default 0)
+															deckContinueFor  	  = Non-negative integer (Default 0 which indicates forever)
+															movesTriedTDStartVal    = Non-negative integer (Default 0)
+															movesTriedTDContinueFor = Non-negative integer (Default 0 which indicates forever)
+
+						                                    outputTo = C = Console (default)
+												                     = file name and path (if applicable)
+									                                   Note: if file name is present then startType. deckStartVal and ContinueFor
+									                                         must be present or delineated with ":"
+
+										           	and placed into a package level struct pMD of type pMd which can be seen above:
+
+				NOTE: Certain options of VerboseSpecial and/or pMD are incompatible:
+
+					!!!!!! ADD CHECK TO SAY DBD AND DBDS can not be BOTH included in verbosespecial
+					!!!!!!                 and that neither CAN be selected if the sixth argument pMD.pType is anything other than "X"
+					!!!!!!  PROGRESSdddd can not be selected with argument 5 = TW, TS, or TSS
 
 	*/
 

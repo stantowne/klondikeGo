@@ -237,11 +237,14 @@ func playNew(reader csv.Reader) {
 				wL = "LOST"
 			}
 			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %9v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %9v   UnqBoards: %9v   Won: %5v   Lost: %5v   GML: %5v   Won: %5.1f%%   Lost: %5.1f%%   GML: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(priorBoards), deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGML_AD*100, deckNum+1-firstDeckNum, 1), elapsedTimeTD.Truncate(100*time.Millisecond).String(), elapsedTimeAD.Truncate(100*time.Millisecond).String(), est.Truncate(100*time.Millisecond).String(), result1, result2, time.Now().Format(" 3:04 pm"))
-			/*if elapsedTimeTD > 1*time.Second { // changed 5*time.Minute to 1*time.Second for test change it back
-				fmt.Printf("\a") // Ring Bell
-			}*/
 		}
 		// Verbose Special "DBDS" Ends Here - No effect on operation
+
+		// Verbose Special "BELL" Starts Here - No effect on operation
+		/*if strings.Contains(verboseSpecial, ";BELL;") && elapsedTimeTD > 1*time.Second { // changed 5*time.Minute to 1*time.Second for test change it back
+			fmt.Printf("\a") // Ring Bell
+		}*/
+		// Verbose Special "BELL" Ends Here - No effect on operation
 
 		stratWinsAD += stratWinsTD
 		stratWinsTD = 0
