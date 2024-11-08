@@ -39,8 +39,9 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	aMoves = detectAvailableMoves(bIn, moveNum, singleGame)
 
 	if len(aMoves) == 0 {
-		m := move{name: "No Moves Available"}
-		aMoves = append(aMoves, m)
+		m := move{name: "No Moves Available"} // This is a pseudo move not created by detectAvailable Moves it exists to remember
+		aMoves = append(aMoves, m)            //      this state and for the various printing routines that come below.  If a return
+		//      was made from this point no history of it would exist.  See code at "// Check if No Moves Available"
 	} else {
 		// if more than one move is available, sort them
 		if len(aMoves) > 1 { //sort them by priority if necessary
@@ -107,7 +108,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, cmt, "", "")
 
 			// Verbose Special "WL" Starts Here - No effect on operation
-			if strings.Contains(verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics
+			if strings.Contains(verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics   MOVE THIS!!!!!!!!!
 				/*if len(deckWinLossDetail)-1 < deckNum {
 					dWLDStats.winLoss = "W"
 					dWLDStats.moveNumAt1stWinOrAtLoss = moveNum
