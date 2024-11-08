@@ -14,18 +14,9 @@ import (
 	"time"
 )
 
-const gameLengthLimitOrig = 150       // max moveCounter; increasing to 200 does not increase win rate
-const gameLengthLimitNew = 2000000000 // max mvsTriedTD
+const gameLengthLimitOrig = 150      // max moveCounter; increasing to 200 does not increase win rate
+const gameLengthLimitNew = 600000000 // max mvsTriedTD
 var gameLengthLimit int
-
-var firstDeckNum int
-var numberOfDecksToBePlayed int
-var length int
-var verbose int
-var verboseSpecial string
-var verboseSpecialProgressCounter int
-var verboseSpecialProgressCounterLastPrintTime = time.Now()
-var findAllWinStrats bool
 var moveNumMax int
 
 type printMoveDetail struct {
@@ -36,6 +27,15 @@ type printMoveDetail struct {
 	movesTriedTDContinueFor int
 	outputTo                string
 }
+
+var firstDeckNum int
+var numberOfDecksToBePlayed int
+var length int
+var verbose int
+var verboseSpecial string
+var verboseSpecialProgressCounter int
+var verboseSpecialProgressCounterLastPrintTime = time.Now()
+var findAllWinStrats bool
 
 var pMD printMoveDetail
 
@@ -118,6 +118,21 @@ func main() {
 									!!!!!!  PROGRESSdddd can not be selected with argument 5 = TW, TS, or TSS
 
 	*/
+
+	type commandLineArgs struct {
+		firstDeckNum                               int
+		numberOfDecksToBePlayed                    int
+		length                                     int
+		verbose                                    int
+		verboseSpecial                             string
+		verboseSpecialProgressCounter              int
+		verboseSpecialProgressCounterLastPrintTime time.Time
+		findAllWinStrats                           bool
+		pMD                                        printMoveDetail
+	}
+
+	cLArgs := commandLineArgs{}
+	cLArgs.verboseSpecialProgressCounterLastPrintTime = time.Now()
 
 	pMD.pType = "X"
 	pMD.deckStartVal = 0
