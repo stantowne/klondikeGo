@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
+func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, varSp2PN variablesSpecificToPlayNew) (string, string) {
 
 	/* Return Codes: SL  = Strategy Lost	 NMA = No Moves Available
 	                 						 RB  = Repetitive Board
@@ -30,7 +30,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	}
 
 	if mvsTriedTD >= gameLengthLimit {
-		prntMDet(bIn, aMoves, 0, deckNum, moveNum, "BB", 2, "\n  SL-RB: Game Length of: %v exceeds limit: %v\n", strconv.Itoa(mvsTriedTD), strconv.Itoa(gameLengthLimit))
+		prntMDet(bIn, aMoves, 0, deckNum, moveNum, "BB", 2, "\n  SL-RB: Game Length of: %v exceeds limit: %v\n", strconv.Itoa(mvsTriedTD), strconv.Itoa(gameLengthLimit), cLArgs, varSp2PN)
 		stratLossesGML_TD++
 		return "SL", "GML"
 	}
@@ -60,7 +60,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		*/
 
 		// Print the incoming board EVEN IF we are returning to it to try the next available move
-		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 1, "", "", "")
+		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 1, "", "", "", cLArgs, varSp2PN)
 
 		// Possible increment to stratNumTD
 		if i != 0 {
@@ -73,37 +73,31 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		// Print the incoming board EVEN IF we are returning to it to try the next available move
 		//       This had to be done after possible increment to stratNumTD so that each time a board is reprinted it shows the NEW strategy number
 		//       Before when it was above the possible increment the board was printing out with the stratNum of the last failed strategy
-		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 1, "", "", "")
+		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 1, "", "", "", cLArgs, varSp2PN)
 
 		if i == 0 {
 			// Check for repetitive board
 			// We only have to check if i == 0 because if i >= 0 then we are just returning to this board at which point
 			//   the board will already have been checked (when i == 0 {past tense})
 			bNewBcode := bIn.boardCode(deckNum) //  Just use the array itself
-			bNewBcodeS := string(bNewBcode[:])  //  Just use the array itself
 			// Have we seen this board before?
-			if _, ok := priorBoards[bNewBcodeS]; ok {
+			if varSp2PN.priorBoards[bNewBcode] {
 				// OK we did see it before so return to try next available move (if any) in aMoves[] aka strategy
 				stratLossesRB_TD++
 				//  	prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn string, variant int, comment string, s1 string, s2 string) {
-				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "")
-				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBSS", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "")
+				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cLArgs, varSp2PN)
+				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBSS", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cLArgs, varSp2PN)
 				return "SL", "RB" // Repetitive Move
 			} else {
-				// Remember the board state by putting it into the map "priorBoards"
-				bInf := boardInfo{
-					//moveNum: moveNum,
-					//mvsTriedTD: mvsTriedTD,
-					exists: true,
-				}
-				priorBoards[bNewBcodeS] = bInf
+				// Remember the board state by putting it into the map "varSp2PN.priorBoards"
+				varSp2PN.priorBoards[bNewBcode] = true
 			}
 		}
 
 		// Check if No Moves Available
 		if i == 0 && aMoves[0].name == "No Moves Available" {
 			stratLossesNMA_TD++
-			prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 2, "  SL-NMA: No Moves Available: Strategy Lost %v%v\n", "", "")
+			prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 2, "  SL-NMA: No Moves Available: Strategy Lost %v%v\n", "", "", cLArgs, varSp2PN)
 			return "SL", "NMA"
 		}
 
@@ -116,7 +110,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			} else {
 				cmt += "  Go to Next Deck (if any)"
 			}
-			prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, cmt, "", "")
+			prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, cmt, "", "", cLArgs, varSp2PN)
 
 			// Verbose Special "WL" Starts Here - No effect on operation
 			if strings.Contains(verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics   MOVE THIS!!!!!!!!!
@@ -145,8 +139,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		// OK, done with the various end-of-strategy conditions
 		// let's print out the list of available moves and make the next available move
 		// The board state was already printed above
-		if pMD.pType == "BB" && prntMDetTestRange(deckNum) {
-			prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 3, "", "", "")
+		if pMD.pType == "BB" && prntMDetTestRange(deckNum, cLArgs) {
+			prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 3, "", "", "", cLArgs, varSp2PN)
 		}
 
 		bNew := bIn.copyBoard() // Critical Must use copyBoard
@@ -154,24 +148,24 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		// ********** 1st of the 2 MOST IMPORTANT statements in this function:  ******************************
 		bNew = moveMaker(bNew, aMoves[i])
 
-		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", "", "")
-		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "")
-		prntMDet(bNew, aMoves, i, deckNum, moveNum, "BBS", 2, "     bNew: %v\n", "", "")
+		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", "", "", cLArgs, varSp2PN)
+		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "", cLArgs, varSp2PN)
+		prntMDet(bNew, aMoves, i, deckNum, moveNum, "BBS", 2, "     bNew: %v\n", "", "", cLArgs, varSp2PN)
 		mvsTriedTD++
 
 		// verboseSpecial option PROGRESSdddd starts here      Consider Moving clause to be a clause in prntMDet
 		if verboseSpecialProgressCounter > 0 && math.Mod(float64(mvsTriedTD), float64(verboseSpecialProgressCounter)) <= 0.1 {
 			avgRepTime := time.Since(startTimeTD) / time.Duration(mvsTriedTD/verboseSpecialProgressCounter)
 			estMaxRemTimeTD := time.Since(startTimeTD) * time.Duration((gameLengthLimit-mvsTriedTD)/mvsTriedTD)
-			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(priorBoards), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), time.Since(verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
+			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(varSp2PN.priorBoards), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), time.Since(verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
 			verboseSpecialProgressCounterLastPrintTime = time.Now()
 		}
 		// verboseSpecial option PROGRESSdddd ends here
 
 		// ********** 2nd of the 2 MOST IMPORTANT statements in this function:  ******************************
-		recurReturnV1, recurReturnV2 = playAllMoveS(bNew, moveNum+1, deckNum)
+		recurReturnV1, recurReturnV2 = playAllMoveS(bNew, moveNum+1, deckNum, cLArgs, varSp2PN)
 
-		prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2)
+		prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2, cLArgs, varSp2PN)
 
 		if findAllWinStrats != true && recurReturnV1 == "SW" {
 			// save winning moves into a slice in reverse
@@ -186,7 +180,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	return "SL", "SE" //  Strategy Exhausted
 }
 
-func prntMDetTestRange(deckNum int) bool {
+func prntMDetTestRange(deckNum int, cLArgs commandLineArgs) bool {
 	deckRangeOK := false
 	if pMD.deckStartVal == 0 && pMD.deckContinueFor == 0 {
 		deckRangeOK = true
@@ -210,7 +204,7 @@ func prntMDetTestRange(deckNum int) bool {
 	}
 }
 
-func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn string, variant int, comment string, s1 string, s2 string) {
+func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn string, variant int, comment string, s1 string, s2 string, cLArgs commandLineArgs, varSp2PN variablesSpecificToPlayNew) {
 	// Done here just to clean up mainline logic of playAllMoves
 	// Do some repetitive printing to track progress
 	// This function will use the struct pMD
@@ -219,11 +213,11 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 	// Setup pfmt to print thousands with commas
 	var pfmt = message.NewPrinter(language.English)
 
-	if pMD.pType != "X" && prntMDetTestRange(dN) {
+	if pMD.pType != "X" && prntMDetTestRange(dN, cLArgs) {
 		switch {
 		case pTypeIn == "BB" && pMD.pType == pTypeIn && variant == 1: // for BB
 			fmt.Printf("\n****************************************\n")
-			_, err = pfmt.Printf("\nDeck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
+			_, err = pfmt.Printf("\nDeck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
 			printBoard(b)
 		case pTypeIn == "BB" && pMD.pType == pTypeIn && variant == 2: // for BB
 			// comment must have 2 %v in it
@@ -241,11 +235,11 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 				fmt.Printf("\n")
 			}
 		case strings.HasPrefix(pTypeIn, "BBS") && strings.HasPrefix(pMD.pType, "BBS") && variant == 1: // for BBS or BBSS
-			_, err = pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
+			_, err = pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
 		case pTypeIn == "BBS" && pMD.pType == pTypeIn && variant == 2:
 			_, err = pfmt.Printf(comment, b)
 		case pTypeIn == "NOTX" && pMD.pType != "X" && variant == 1:
-			_, err = pfmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
+			_, err = pfmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
 		case pTypeIn == "NOTX" && pMD.pType != "X" && variant == 2:
 			_, err = pfmt.Printf(comment, s1, s2)
 		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 1:

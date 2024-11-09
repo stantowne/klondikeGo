@@ -38,9 +38,8 @@ func playAllMoveS2(bIn board, moveNum int, deckNum int) (string, string) {
 		} else {
 			// Check for repetitive board
 			bNewBcode := bIn.boardCode(deckNum) //  consider modifying the boardCode and boardDeCode methods to produce strings
-			bNewBcodeS := string(bNewBcode[:])  //  consider modifying the boardCode and boardDeCode methods to produce strings
 			// Have we seen this board before?
-			if _, ok := priorBoards[bNewBcodeS]; ok {
+			if _, ok := priorBoards[bNewBcode]; ok {
 				// OK we did see it before so return to try next available move (if any) in aMoves[] aka strategy
 				stratLossesRB_TD++
 				return "SL", "RB" // Repetitive Board
@@ -49,7 +48,7 @@ func playAllMoveS2(bIn board, moveNum int, deckNum int) (string, string) {
 				bInf := boardInfo{
 					exists: true,
 				}
-				priorBoards[bNewBcodeS] = bInf
+				priorBoards[bNewBcode] = bInf
 			}
 		}
 		// Check if No Moves Available

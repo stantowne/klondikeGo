@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func playOrig(reader csv.Reader) {
+func playOrig(reader csv.Reader, cLArgs commandLineArgs) {
 
 	numberOfStrategies := 1 << length //number of initial strategies
 
