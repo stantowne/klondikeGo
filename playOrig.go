@@ -15,6 +15,23 @@ import (
 	"time"
 )
 
+// because aMoves sometimes includes moves with priority badMove, which would sort to the very end
+// this function is needed to that, when iOS needs NOT to call the best move
+// it instead calls a flip, rather than a bad move.
+// oddly, although this function would seem to be necessary, introducing it had no effect on the win rate
+func findFlip(moves []move) move {
+	for i := 0; i < len(moves); i++ {
+		if moves[i].name == "flipStockToWaste" {
+			return moves[i]
+		}
+		if moves[i].name == "flipWasteToStock" {
+			return moves[i]
+		}
+	}
+	fmt.Println("This line from findFlip should never execute")
+	return moves[len(moves)-1]
+}
+
 func playOrig(reader csv.Reader) {
 
 	// Need to define variable err type error here.  Originally it was implicitly created by the following statement and then reused many times
@@ -126,7 +143,8 @@ newDeck:
 					// below: second operand is all zeros except the mC bit from the right.
 					// below: so result is 0 unless mC(th) bit of the strategy, from right, is 1
 					if iOS&(1<<mC) != 0 {
-						selectedMove = aMoves[len(aMoves)-1]
+						selectedMove = findFlip(aMoves)
+						//selectedMove = aMoves[len(aMoves)-1]  //see explanation of findFlip for why this line has been replaced
 					}
 				}
 
