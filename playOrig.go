@@ -119,7 +119,12 @@ newDeck:
 
 				//Initial Override Strategy logic
 				mC := moveCounter - 1 // for this part of the program a zero-based move counter is needed
+				//below:  example -> if length is 8, then this IF is satisfied for mc = 0, 1, 2, 3, 4, 5, 6 & 7
 				if mC > -1 && mC < length {
+					// below: & is bitwise AND which means look, bit by bit, at each operand result is 0 unless both bits are 1
+					// below: first operand is the strategy number which also expresses the strategy
+					// below: second operand is all zeros except the mC bit from the right.
+					// below: so result is 0 unless mC(th) bit of the strategy, from right, is 1
 					if iOS&(1<<mC) != 0 {
 						selectedMove = aMoves[len(aMoves)-1]
 					}
