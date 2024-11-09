@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 	"io"
 	"log"
 	"math"
@@ -11,10 +13,12 @@ import (
 	"time"
 )
 
-//var priorPause = 0 // Remove Pauser
+type variablesSpecificToPlayNew struct {
+	priorBoards map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
+}
 
 /*
-// These are used in the Tree printing subroutine pmd(......) in playAllMoves    //commented out to elim warning
+// These are used in the Tree printing subroutine pmd(......) in playAllMoves    //commented out to eliminate warning
 const vert1 = string('\u2503')          // Looks Like: ->┃<-
 const horiz1 = string('\u2501')         // Looks Like: ->━<-
 const vert5 = "  " + vert1 + "  "       // Looks Like: ->  ┃  <-
@@ -31,6 +35,7 @@ const horiz3NewLastStrat = " " + horiz1NewStratLastStrat + horiz1 // Looks Like:
 const horiz1NewMidStrat = string('\u2523') // Looks Like: ->┣<-
 const horiz3NewMidStrat = horiz1 + horiz1NewMidStrat + horiz1     // Looks Like: -> ┣━<-
 */
+
 var stratWinsTD = 0
 var stratLossesTD = 0
 
@@ -41,16 +46,8 @@ var stratLossesSE_TD = 0
 var stratNumTD = 0
 var mvsTriedTD = 0
 
-var startTimeTD = time.Now()
-var elapsedTimeTD time.Duration
-var startTimeAD = time.Now()
-var elapsedTimeAD time.Duration
-
-type boardInfo struct {
-	mN           int
-	aMmvsTriedTD int
-	// May add linked list and stats later
-}
+var startTimeTD time.Time
+var startTimeAD time.Time
 
 type deckWinLossDetailStats struct {
 	wonLost                                        string //
@@ -58,7 +55,7 @@ type deckWinLossDetailStats struct {
 	mvsTried                                       int    // mvsTriedTD
 	stratNum                                       int    // stratNumTD
 	unqBoards                                      int
-	elapsedTime                                    time.Duration // elapsedTimeTD
+	elapsedTime                                    time.Duration // time.Since(startTimeTD)
 	ifWonAndFindAllSuccessfulStrategiesAndGML_flag bool          // true to indicate that Elapsed time This Deck may not be relevant
 	resultCode1                                    string        // result1
 	resultCode2                                    string        // result2
@@ -76,9 +73,10 @@ type deckWinLossDetailStats struct {
 var dWLDStats deckWinLossDetailStats
 var deckWinLossDetail []deckWinLossDetailStats
 
-var priorBoards = make(map[string]boardInfo)
+func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 
-func playNew(reader csv.Reader) {
+	var varSp2PN variablesSpecificToPlayNew
+	varSp2PN.priorBoards = map[bCode]bool{}
 
 	var deckWinsAD = 0
 	var deckLossesAD = 0
@@ -90,11 +88,12 @@ func playNew(reader csv.Reader) {
 	var stratLossesSE_AD = 0
 	var stratNumAD = 0
 	var mvsTriedAD = 0
+	startTimeAD = time.Now()
 
 	/*	var treeMoveLen int       //commented out to elim warning
 		var treeVert string
 		var treeHoriz string
-		switch printMoveDetail.pType {
+		switch pMD.pType {
 		case "TW":
 			treeMoveLen = 8
 			treeVert = vert8   // Looks Like: ->    ┃   <-
@@ -114,10 +113,12 @@ func playNew(reader csv.Reader) {
 		}
 	*/
 
+	// Setup pfmt to print thousands with commas
+	var pfmt = message.NewPrinter(language.English)
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
 		startTimeTD = time.Now()
-
+		moveNumMax = 0
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {
 			break
@@ -127,7 +128,7 @@ func playNew(reader csv.Reader) {
 		}
 
 		if verbose > 1 {
-			fmt.Printf("\nDeck #%d:\n", deckNum)
+			_, err = pfmt.Printf("\nDeck #%d:\n", deckNum)
 		}
 		var d Deck
 
@@ -146,10 +147,10 @@ func playNew(reader csv.Reader) {
 		//temp		AllMvStratNum := 0
 		var b = dealDeck(d)
 
-		if printMoveDetail.pType == "TW" || printMoveDetail.pType == "TS" {
-			fmt.Printf("\n\nDeck %v\n", deckNum)
+		if pMD.pType == "TW" || pMD.pType == "TS" {
+			_, err = pfmt.Printf("\n\nDeck %v\n", deckNum)
 			fmt.Printf("\n\n Strat #")
-			if printMoveDetail.pType == "TW" {
+			if pMD.pType == "TW" {
 				for i := 1; i <= 200; i++ {
 					fmt.Printf("    %3v ", i)
 				}
@@ -157,11 +158,7 @@ func playNew(reader csv.Reader) {
 			}
 		}
 
-		result1, result2 := playAllMoveS(b, 0, deckNum)
-
-		endTime := time.Now()
-		elapsedTimeTD = endTime.Sub(startTimeTD)
-		elapsedTimeAD = endTime.Sub(startTimeAD)
+		result1, result2 := playAllMoveS(b, 0, deckNum, cLArgs, varSp2PN)
 
 		if stratWinsTD > 0 {
 			deckWinsAD += 1
@@ -169,72 +166,98 @@ func playNew(reader csv.Reader) {
 			deckLossesAD += 1
 		}
 
-		// Verbose Special "WL" Starts Here - No effect on operation
-		if strings.Contains(verboseSpecial, "/WL/") { // Deck Win Loss Summary Statistics
-			/*if stratWinsTD == 0 {
-				dWLDStats.winLoss = "L"
-				dWLDStats.moveNumAt1stWinOrAtLoss = 0
-				dWLDStats.moveNumMinWinIfFindAll = 0
-				dWLDStats.moveNumMaxWinIfFindAll = 0
-				dWLDStats.stratNumAt1stWinOrAtLoss = stratWinsTD
-				dWLDStats.mvsTriedAt1stWinOrAtLoss = mvsTriedTD
-				// Add maxUnique Boards
-				//add max movenum
-				// add ElapsedTimeAt1stWin
-				dWLDStats.ElapsedTimeAt1stWinOrAtLoss = time.Now().Sub(startTimeTD)
-			} else {
-				dWLDStats.winLoss = "W"
-				dWLDStats.ElapsedTimeAt1stWinOrAtLoss = time.Now().Sub(startTimeTD)
+		/*
+			// Verbose Special "WL" Starts Here - No effect on operation
+			if strings.Contains(verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics
+				if stratWinsTD == 0 {
+					dWLDStats.winLoss = "L"
+					dWLDStats.moveNumAt1stWinOrAtLoss = 0
+					dWLDStats.moveNumMinWinIfFindAll = 0
+					dWLDStats.moveNumMaxWinIfFindAll = 0
+					dWLDStats.stratNumAt1stWinOrAtLoss = stratWinsTD
+					dWLDStats.mvsTriedAt1stWinOrAtLoss = mvsTriedTD
+					// Add maxUnique Boards
+					//add max movenum
+					// add ElapsedTimeAt1stWin
+					dWLDStats.ElapsedTimeAt1stWinOrAtLoss = time.Now().Sub(startTimeTD)
+				} else {
+					dWLDStats.winLoss = "W"
+					dWLDStats.ElapsedTimeAt1stWinOrAtLoss = time.Now().Sub(startTimeTD)
+				}
+				deckWinLossDetail = append(deckWinLossDetail, dWLDStats)
+
 			}
-			deckWinLossDetail = append(deckWinLossDetail, dWLDStats)
-			*/
-		}
+		*/
 		// Verbose Special "WL" Ends Here - No effect on operation
 
 		//Verbose Special "DBD" Starts Here - No effect on operation
-		if strings.Contains(verboseSpecial, "/DBD/") { // Deck-by-deck Statistics
+		if strings.Contains(verboseSpecial, ";DBD;") { // Deck-by-deck Statistics
 			if stratWinsTD > 0 {
 				fmt.Printf("\n\n*************************\n\nDeck: %d  WON    Result Codes: %v %v", deckNum, result1, result2)
 			} else {
 				fmt.Printf("\n\n*************************\n\nDeck: %d  LOST   Result Codes: %v %v", deckNum, result1, result2)
 			}
-			fmt.Printf("\nElapsed Time is %v.", elapsedTimeTD)
+			fmt.Printf("\nElapsed Time is %v.", time.Since(startTimeTD))
 			fmt.Printf("\n\nStrategies:")
-			fmt.Printf("\n   Tried: %d", stratNumTD)
-			fmt.Printf("\n     Won: %d", stratWinsTD)
-			fmt.Printf("\n    Lost: %d", stratLossesTD)
+			_, err = pfmt.Printf("\n   Tried: %d", stratNumTD)
+			_, err = pfmt.Printf("\n     Won: %d", stratWinsTD)
+			_, err = pfmt.Printf("\n    Lost: %d", stratLossesTD)
 			fmt.Printf("\n\nStrategies Lost Detail:")
-			fmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_TD)
-			fmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_TD)
-			fmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_TD)
-			fmt.Printf("\n   GML: %d   (Game Length Limit)", stratLossesGML_TD)
+			_, err = pfmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_TD)
+			_, err = pfmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_TD)
+			_, err = pfmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_TD)
+			_, err = pfmt.Printf("\n   GML: %d   (Game Length Limit)", stratLossesGML_TD)
 			if stratLossesNMA_TD+stratLossesRB_TD+stratLossesSE_TD+stratLossesGML_TD != stratLossesTD {
 				fmt.Printf("\n     *********** Total Strategy Losses != Sum of strategy detail")
 			}
 			if stratLossesTD+stratWinsTD != stratNumTD {
 				fmt.Printf("\n     *********** Strategies Tried != Strategies Lost + Strategies Won")
 			}
-			if findAllSuccessfulStrategies {
-				fmt.Printf("\n\n Multiple Successful Startegies were found in some wining decks.")
-				fmt.Printf("   Total winning strategies found: %d\n", stratWinsTD)
+			if findAllWinStrats {
+				fmt.Printf("\n\n Multiple Successful Strategies were found in some wining decks.")
+				_, err = pfmt.Printf("   Total winning strategies found: %d\n", stratWinsTD)
 			}
 		}
 		// Verbose Special "DBD" Ends Here - No effect on operation
 
 		//Verbose Special "DBDS" Starts Here - No effect on operation
-		if strings.Contains(verboseSpecial, "/DBDS/") { // Deck-by-deck SHORT Statistics
+		if strings.Contains(verboseSpecial, ";DBDS;") { // Deck-by-deck SHORT Statistics
 			var est time.Duration
 			//                      nanosecondsTD   / Decks Played So Far         * remaining decks [remaining decks = numbertobeplayed - decksplayed so far
-			est = time.Duration(float64(elapsedTimeAD)/float64(deckNum-firstDeckNum+1)*float64(numberOfDecksToBePlayed-(deckNum-firstDeckNum+1))) * time.Nanosecond
+			est = time.Duration(float64(time.Since(startTimeAD))/float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum))) * time.Nanosecond
+			/*			est = time.Duration(float64(elapsedTimeAD)           / float64(deckNum-firstDeckNum+1)*float64(numberOfDecksToBePlayed-(deckNum-firstDeckNum+1))) * time.Nanosecond
+						fmt.Printf("       (deckNum+1-firstDeckNum)                                                           = %v\n", (deckNum + 1 - firstDeckNum))
+						fmt.Printf("float64(deckNum+1-firstDeckNum)                                                           = %v\n", float64(deckNum+1-firstDeckNum))
+						fmt.Printf("                                                                (deckNum+1-firstDeckNum)  = %v\n", (deckNum + 1 - firstDeckNum))
+						fmt.Printf("                                        numberOfDecksToBePlayed                           = %v\n", numberOfDecksToBePlayed)
+						fmt.Printf("                                       (numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)) = %v\n", (numberOfDecksToBePlayed - (deckNum + 1 - firstDeckNum)))
+						fmt.Printf("                                float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)) = %v\n", float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)))
+						fmt.Printf("float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)) = %v\n", float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)))
+						fmt.Printf("float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)) = %v\n", float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)))
+						fmt.Printf("time.Since(startTimeAD)                                                                                                            = %v\n", time.Since(startTimeAD))
+						fmt.Printf("time.Since(startTimeAD)                                                                                                            = %v\n", time.Since(startTimeAD))
+						fmt.Printf("                          time.Duration(float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum))) = %v\n", time.Duration(float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum))))
+						fmt.Printf("time.Since(startTimeAD) / time.Duration(float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum))) = %v\n", time.Since(startTimeAD)/time.Duration(float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum))))
+			*/
 			wL := ""
 			if stratWinsTD > 0 {
 				wL = "WON "
 			} else {
 				wL = "LOST"
 			}
-			fmt.Printf("\nDk: %5d   "+wL+"   MvsTried: %9v   StratsTried: %9v   Won: %5v   Lost: %5v   GML: %5v   Won: %5v%%   Lost: %5v%%   GML: %5v%%   ElTime TD: %11s   ElTime ADs: %11s  Rem Time: %11s, ResCodes: %2s %3s", deckNum, mvsTriedTD, stratNumTD, deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD, deckNum+1-firstDeckNum, 1)*100., roundFloatIntDiv(deckLossesAD, deckNum+1-firstDeckNum, 1)*100., roundFloatIntDiv(stratLossesGML_AD, deckNum+1-firstDeckNum, 1)*100., elapsedTimeTD.Truncate(100*time.Millisecond).String(), elapsedTimeAD.Truncate(100*time.Millisecond).String(), est.Truncate(100*time.Millisecond).String(), result1, result2)
+			elTimeSinceStartTimeADFormatted := time.Since(startTimeAD).Truncate(100 * time.Millisecond).String()
+			if time.Since(startTimeAD) > time.Duration(5*time.Minute) {
+				elTimeSinceStartTimeADFormatted = time.Since(startTimeAD).Truncate(time.Second).String()
+			}
+			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GML: %5v   Won: %5.1f%%   Lost: %5.1f%%   GML: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(varSp2PN.priorBoards), deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGML_AD*100, deckNum+1-firstDeckNum, 1), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
 		}
 		// Verbose Special "DBDS" Ends Here - No effect on operation
+
+		// Verbose Special "BELL" Starts Here - No effect on operation
+		/*if strings.Contains(verboseSpecial, ";BELL;") && time.Since(startTimeTD) > 1*time.Second { // changed 5*time.Minute to 1*time.Second for test change it back
+			fmt.Printf("\a") // Ring Bell
+		}*/
+		// Verbose Special "BELL" Ends Here - No effect on operation
 
 		stratWinsAD += stratWinsTD
 		stratWinsTD = 0
@@ -252,43 +275,43 @@ func playNew(reader csv.Reader) {
 		stratNumTD = 0
 		mvsTriedAD += mvsTriedTD + 1
 		mvsTriedTD = 0
-		clear(priorBoards)
+		clear(varSp2PN.priorBoards)
 	}
 
 	fmt.Printf("\n******************\n\n" + "Decks:")
-	fmt.Printf("\n   Played: %d", numberOfDecksToBePlayed)
-	fmt.Printf("\n      Won: %d", deckWinsAD)
-	fmt.Printf("\n     Lost: %d", deckLossesAD)
-	averageElapsedTimePerDeck := time.Duration(float64(elapsedTimeAD) / float64(numberOfDecksToBePlayed))
-	fmt.Printf("\nElapsed Time is %v.", elapsedTimeAD)
+	_, err = pfmt.Printf("\n   Played: %d", numberOfDecksToBePlayed)
+	_, err = pfmt.Printf("\n      Won: %d", deckWinsAD)
+	_, err = pfmt.Printf("\n     Lost: %d", deckLossesAD)
+	averageElapsedTimePerDeck := time.Duration(float64(time.Since(startTimeAD)) / float64(numberOfDecksToBePlayed))
+	fmt.Printf("\nElapsed Time is %v.", time.Since(startTimeAD))
 	fmt.Printf("\nAverage Elapsed Time per Deck is %s", averageElapsedTimePerDeck.Truncate(100*time.Millisecond).String())
 	fmt.Printf("\n\nStrategies:")
-	fmt.Printf("\n   Tried: %d", stratNumAD)
-	fmt.Printf("\n     Won: %d", stratLossesAD)
-	fmt.Printf("\n    Lost: %d", stratWinsAD)
+	_, err = pfmt.Printf("\n   Tried: %d", stratNumAD)
+	_, err = pfmt.Printf("\n     Won: %d", stratLossesAD)
+	_, err = pfmt.Printf("\n    Lost: %d", stratWinsAD)
 	fmt.Printf("\n\nStrategies Lost Detail:")
-	fmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_AD)
-	fmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_AD)
-	fmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_AD)
-	fmt.Printf("\nStrategy Losses at Game Length Limit is: %d", stratLossesGML_AD)
+	_, err = pfmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_AD)
+	_, err = pfmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_AD)
+	_, err = pfmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_AD)
+	_, err = pfmt.Printf("\nStrategy Losses at Game Length Limit is: %d", stratLossesGML_AD)
 	if stratLossesNMA_AD+stratLossesRB_AD+stratLossesSE_AD+stratLossesGML_AD != stratLossesAD {
 		fmt.Printf("\n     *********** Total Strategy Losses != Sum of strategy detail")
 	}
 	if stratLossesAD+stratWinsAD != stratNumAD {
 		fmt.Printf("\n     *********** Strategies Tried != Strategies Lost + Strategies Won")
 	}
-	if findAllSuccessfulStrategies {
-		fmt.Printf("\n\n Multiple Successful Startegies were found in some winng decks.")
-		fmt.Printf("   Decks Won: %d\n", deckWinsAD)
-		fmt.Printf("   Total winning strategies found: %d\n", stratWinsAD)
-		fmt.Printf("   Average winning strategies found: %d\n", stratWinsAD/deckWinsAD)
+	if findAllWinStrats {
+		fmt.Printf("\n\n Multiple Successful Strategies were found in some winng decks.")
+		_, err = pfmt.Printf("   Decks Won: %d\n", deckWinsAD)
+		_, err = pfmt.Printf("   Total winning strategies found: %d\n", stratWinsAD)
+		_, err = pfmt.Printf("   Average winning strategies found: %d\n", stratWinsAD/deckWinsAD)
 	}
 	// Verbose Special "WL" Starts Here - No effect on operation
-	if strings.Contains(verboseSpecial, "/WL/") { // Deck Win Loss Summary Statistics
+	if strings.Contains(verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics
 		fmt.Printf("\n\n\n Deck-by Deck Win/Loss Detail   (Copy to Excel to get headings to line up with the columns)")
 		fmt.Printf("\n\n Deck\tW/L\tMoveNum 1ST-Win\tStratNum At 1st-Win Or At-Loss\tMvsTried At 1st-Win Or At-Loss\tMoveNum Min-Win If-Find-All\tMoveNum Max-Win If-Find-All\tElapsed Time At 1st-Win Or At Loss\n")
 		/*for dN, detail := range deckWinLossDetail {
-			fmt.Printf("\n  %5v\t  %v\t%4v\t%8v\t%8v\t%4v\t%4v", dN, detail.winLoss, detail.moveNumAt1stWinOrAtLoss, detail.stratNumAt1stWinOrAtLoss, detail.mvsTriedAt1stWinOrAtLoss, detail.moveNumMinWinIfFindAll, detail.moveNumMaxWinIfFindAll, detail.ElapsedTimeAt1stWinOrAtLoss)
+			_, err = pfmt.Printf("\n  %5v\t  %v\t%4v\t%8v\t%8v\t%4v\t%4v", dN, detail.winLoss, detail.moveNumAt1stWinOrAtLoss, detail.stratNumAt1stWinOrAtLoss, detail.mvsTriedAt1stWinOrAtLoss, detail.moveNumMinWinIfFindAll, detail.moveNumMaxWinIfFindAll, detail.ElapsedTimeAt1stWinOrAtLoss)
 		}*/
 	}
 	// Verbose Special "WL" Ends Here - No effect on operation
