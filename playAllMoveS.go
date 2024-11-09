@@ -24,7 +24,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 	// Setup pfmt to print thousands with commas
 	var pfmt = message.NewPrinter(language.English)
 	var aMoves []move //available Moves
-
+	var recurReturnV1, recurReturnV2 string
 	if moveNum > moveNumMax {
 		moveNumMax = moveNum
 	}
@@ -58,18 +58,29 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		      and check the incoming board for various end-of-strategy conditions
 		   Note: This was done this way, so as to ensure that when returns backed up the moveNum, the board would reprint.
 		*/
-		// Print the incoming board if in debugging range
-		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 1, "", "", "") //stan do this???
 
+		// Print the incoming board EVEN IF we are returning to it to try the next available move
+		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 1, "", "", "")
+
+		// Possible increment to stratNumTD
 		if i != 0 {
 			// Started at 0 in playNew for each deck.  Increment each time a second through nth move is made
 			//     That way strategy 0 is the "All Best Moves" strategy.  It is also why in playNew aMStratTriedAllDecks
 			//     is incremented by stratNumTD + 1 after each deck.
 			stratNumTD++
-		} else {
+		}
+
+		// Print the incoming board EVEN IF we are returning to it to try the next available move
+		//       This had to be done after possible increment to stratNumTD so that each time a board is reprinted it shows the NEW strategy number
+		//       Before when it was above the possible increment the board was printing out with the stratNum of the last failed strategy
+		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 1, "", "", "")
+
+		if i == 0 {
 			// Check for repetitive board
-			bNewBcode := bIn.boardCode(deckNum) //  consider modifying the boardCode and boardDeCode methods to produce strings
-			bNewBcodeS := string(bNewBcode[:])  //  consider modifying the boardCode and boardDeCode methods to produce strings
+			// We only have to check if i == 0 because if i >= 0 then we are just returning to this board at which point
+			//   the board will already have been checked (when i == 0 {past tense})
+			bNewBcode := bIn.boardCode(deckNum) //  Just use the array itself
+			bNewBcodeS := string(bNewBcode[:])  //  Just use the array itself
 			// Have we seen this board before?
 			if _, ok := priorBoards[bNewBcodeS]; ok {
 				// OK we did see it before so return to try next available move (if any) in aMoves[] aka strategy
@@ -158,7 +169,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 		// verboseSpecial option PROGRESSdddd ends here
 
 		// ********** 2nd of the 2 MOST IMPORTANT statements in this function:  ******************************
-		recurReturnV1, recurReturnV2 := playAllMoveS(bNew, moveNum+1, deckNum)
+		recurReturnV1, recurReturnV2 = playAllMoveS(bNew, moveNum+1, deckNum)
 
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2)
 
@@ -167,7 +178,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int) (string, string) {
 			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
 		}
 		if recurReturnV1 == "SL" && recurReturnV2 == "GML" {
-			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
+			return recurReturnV1, recurReturnV2 //
 		}
 	}
 
