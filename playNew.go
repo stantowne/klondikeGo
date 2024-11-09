@@ -13,7 +13,9 @@ import (
 	"time"
 )
 
-//var priorPause = 0 // Remove Pauser
+type variablesSpecificToPlayNew struct {
+	priorBoards map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
+}
 
 /*
 // These are used in the Tree printing subroutine pmd(......) in playAllMoves    //commented out to eliminate warning
@@ -33,6 +35,7 @@ const horiz3NewLastStrat = " " + horiz1NewStratLastStrat + horiz1 // Looks Like:
 const horiz1NewMidStrat = string('\u2523') // Looks Like: ->┣<-
 const horiz3NewMidStrat = horiz1 + horiz1NewMidStrat + horiz1     // Looks Like: -> ┣━<-
 */
+
 var stratWinsTD = 0
 var stratLossesTD = 0
 
@@ -45,13 +48,6 @@ var mvsTriedTD = 0
 
 var startTimeTD time.Time
 var startTimeAD time.Time
-
-type boardInfo struct {
-	//moveNum int
-	//mvsTriedTD int
-	exists bool //better way to do this but good enough for now
-	// May add linked list and stats later
-}
 
 type deckWinLossDetailStats struct {
 	wonLost                                        string //
@@ -77,9 +73,10 @@ type deckWinLossDetailStats struct {
 var dWLDStats deckWinLossDetailStats
 var deckWinLossDetail []deckWinLossDetailStats
 
-var priorBoards = make(map[string]boardInfo)
+func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 
-func playNew(reader csv.Reader) {
+	var varSp2PN variablesSpecificToPlayNew
+	varSp2PN.priorBoards = map[bCode]bool{}
 
 	var deckWinsAD = 0
 	var deckLossesAD = 0
@@ -161,7 +158,7 @@ func playNew(reader csv.Reader) {
 			}
 		}
 
-		result1, result2 := playAllMoveS(b, 0, deckNum)
+		result1, result2 := playAllMoveS(b, 0, deckNum, cLArgs, varSp2PN)
 
 		if stratWinsTD > 0 {
 			deckWinsAD += 1
@@ -252,7 +249,7 @@ func playNew(reader csv.Reader) {
 			if time.Since(startTimeAD) > time.Duration(5*time.Minute) {
 				elTimeSinceStartTimeADFormatted = time.Since(startTimeAD).Truncate(time.Second).String()
 			}
-			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GML: %5v   Won: %5.1f%%   Lost: %5.1f%%   GML: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(priorBoards), deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGML_AD*100, deckNum+1-firstDeckNum, 1), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
+			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GML: %5v   Won: %5.1f%%   Lost: %5.1f%%   GML: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(varSp2PN.priorBoards), deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGML_AD*100, deckNum+1-firstDeckNum, 1), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
 		}
 		// Verbose Special "DBDS" Ends Here - No effect on operation
 
@@ -278,7 +275,7 @@ func playNew(reader csv.Reader) {
 		stratNumTD = 0
 		mvsTriedAD += mvsTriedTD + 1
 		mvsTriedTD = 0
-		clear(priorBoards)
+		clear(varSp2PN.priorBoards)
 	}
 
 	fmt.Printf("\n******************\n\n" + "Decks:")

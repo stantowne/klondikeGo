@@ -14,8 +14,8 @@ import (
 	"time"
 )
 
-const gameLengthLimitOrig = 150      // max moveCounter; increasing to 200 does not increase win rate
-const gameLengthLimitNew = 600000000 // max mvsTriedTD
+const gameLengthLimitOrig = 150     // max moveCounter; increasing to 200 does not increase win rate
+const gameLengthLimitNew = 50000000 // max mvsTriedTD
 var gameLengthLimit int
 var moveNumMax int
 
@@ -26,6 +26,17 @@ type printMoveDetail struct {
 	movesTriedTDStartVal    int
 	movesTriedTDContinueFor int
 	outputTo                string
+}
+type commandLineArgs struct {
+	firstDeckNum                               int
+	numberOfDecksToBePlayed                    int
+	length                                     int
+	verbose                                    int
+	verboseSpecial                             string
+	verboseSpecialProgressCounter              int
+	verboseSpecialProgressCounterLastPrintTime time.Time
+	findAllWinStrats                           bool
+	pMD                                        printMoveDetail
 }
 
 var firstDeckNum int
@@ -119,19 +130,7 @@ func main() {
 
 	*/
 
-	type commandLineArgs struct {
-		firstDeckNum                               int
-		numberOfDecksToBePlayed                    int
-		length                                     int
-		verbose                                    int
-		verboseSpecial                             string
-		verboseSpecialProgressCounter              int
-		verboseSpecialProgressCounterLastPrintTime time.Time
-		findAllWinStrats                           bool
-		pMD                                        printMoveDetail
-	}
-
-	cLArgs := commandLineArgs{}
+	var cLArgs commandLineArgs
 	cLArgs.verboseSpecialProgressCounterLastPrintTime = time.Now()
 
 	pMD.pType = "X"
@@ -405,12 +404,12 @@ func main() {
 		gameLengthLimit = gameLengthLimitOrig
 		moveBasePriority = moveBasePriorityOrig
 		_, err = pfmt.Printf("\n                         GameLengthLimit: %v Move Counter\n\n\n", gameLengthLimit)
-		playOrig(*reader)
+		playOrig(*reader, cLArgs)
 	} else {
 		gameLengthLimit = gameLengthLimitNew
 		_, err = pfmt.Printf("\n                         GameLengthLimit: %v Moves Tried\n\n\n", gameLengthLimit)
 		moveBasePriority = moveBasePriorityNew
-		playNew(*reader)
+		playNew(*reader, cLArgs)
 	}
 
 }
