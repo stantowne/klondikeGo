@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+// type cumulativeByDeckVariables map[string] int v,
 type variablesSpecificToPlayNew struct {
 	priorBoards map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
 }
@@ -45,6 +46,8 @@ var stratLossesRB_TD = 0
 var stratLossesSE_TD = 0
 var stratNumTD = 0
 var mvsTriedTD = 0
+
+//var mvsTriedAD = 0
 
 var startTimeTD time.Time
 var startTimeAD time.Time

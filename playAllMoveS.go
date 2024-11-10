@@ -156,7 +156,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 		// verboseSpecial option PROGRESSdddd starts here      Consider Moving clause to be a clause in prntMDet
 		if verboseSpecialProgressCounter > 0 && math.Mod(float64(mvsTriedTD), float64(verboseSpecialProgressCounter)) <= 0.1 {
 			avgRepTime := time.Since(startTimeTD) / time.Duration(mvsTriedTD/verboseSpecialProgressCounter)
-			estMaxRemTimeTD := time.Since(startTimeTD) * time.Duration((gameLengthLimit-mvsTriedTD)/mvsTriedTD)
+			estMaxRemTimeTD := avgRepTime * time.Duration((gameLengthLimit-mvsTriedTD)/mvsTriedTD)
+			//  wrong??			estMaxRemTimeTD := time.Since(startTimeAD) * time.Duration((gameLengthLimit-mvsTriedTD)/mvsTriedAD)
 			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(varSp2PN.priorBoards), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), time.Since(verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
 			verboseSpecialProgressCounterLastPrintTime = time.Now()
 		}
