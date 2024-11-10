@@ -18,6 +18,7 @@ const gameLengthLimitOrig = 150     // max moveCounter; increasing to 200 does n
 const gameLengthLimitNew = 50000000 // max mvsTriedTD
 var gameLengthLimit int
 var moveNumMax int
+var treePrevMvs string
 
 type printMoveDetail struct {
 	pType                   string
@@ -116,9 +117,9 @@ func main() {
 	                   = BB         - Board by Board detail
 	                   = BBS        - Board by Board Short detail
 	                   = BBSS       - Board by Board Super Short detail
-	                   = TW         - print Tree in Wide mode     8 char per move
-	                   = TS         - print Tree in Skinny mode   5 char per move
-	                   = TSS        - print Tree in Super Skinny mode   3 char per move
+	                   = TW         - print Tree in Wide mode         = 8 char per move
+	                   = TS         - print Tree in Skinny mode       = 3 char per move
+	                   = TSS        - print Tree in Super Skinny mode = 1 char per move
 	           These next four limit at what point and for how long move detail should actually be printed.
 	                deckStartVal = Non-negative integer (Default 0)
 	             deckContinueFor = Non-negative integer (Default 0 which indicates forever)
