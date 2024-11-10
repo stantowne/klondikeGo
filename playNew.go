@@ -77,7 +77,11 @@ var dWLDStats deckWinLossDetailStats
 var deckWinLossDetail []deckWinLossDetailStats
 
 func playNew(reader csv.Reader, cLArgs commandLineArgs) {
-
+	firstDeckNum := cLArgs.firstDeckNum
+	numberOfDecksToBePlayed := cLArgs.numberOfDecksToBePlayed
+	verbose := cLArgs.verbose
+	verboseSpecial := cLArgs.verboseSpecial
+	findAllWinStrats := cLArgs.findAllWinStrats
 	var varSp2PN variablesSpecificToPlayNew
 	varSp2PN.priorBoards = map[bCode]bool{}
 

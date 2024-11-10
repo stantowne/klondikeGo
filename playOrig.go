@@ -38,7 +38,7 @@ func playOrig(reader csv.Reader, cLArgs commandLineArgs) {
 	//   inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
 	// That statement has been moved up into main so we need to explicitly create it here.
 
-	numberOfStrategies := 1 << length //number of initial strategies
+	numberOfStrategies := 1 << cLArgs.length //number of initial strategies
 
 	startTime := time.Now()
 	winCounter := 0
@@ -48,6 +48,10 @@ func playOrig(reader csv.Reader, cLArgs commandLineArgs) {
 	lossesAtNoMoves := 0
 	regularLosses := 0
 	var losses [][]string
+	firstDeckNum := cLArgs.firstDeckNum
+	numberOfDecksToBePlayed := cLArgs.numberOfDecksToBePlayed
+	length := cLArgs.length
+	verbose := cLArgs.verbose
 newDeck:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 		if deckNum%1000 == 0 {
@@ -61,7 +65,7 @@ newDeck:
 			log.Println("Cannot read from inputFileName:", err)
 		}
 
-		if verbose > 1 {
+		if cLArgs.verbose > 1 {
 			fmt.Printf("\nDeck #%d:\n", deckNum)
 		}
 		var d Deck
@@ -83,7 +87,7 @@ newDeck:
 			//deal Deck onto board
 			var b = dealDeck(d)
 			var priorBoardNullWaste board //used in Loss Detector
-			if verbose > 1 {
+			if cLArgs.verbose > 1 {
 				fmt.Printf("Start play of Deck %v using initial override strategy %v.\n", deckNum, iOS)
 			}
 
@@ -95,7 +99,7 @@ newDeck:
 
 				//detects Loss
 				if len(aMoves) == 0 { //No available moves; game lost.
-					if verbose > 1 {
+					if cLArgs.verbose > 1 {
 						fmt.Printf("Initial Override Strategy: %v\n", iOS)
 						fmt.Printf("****Deck %v: XXXXGame lost after %v moves\n", deckNum, moveCounter)
 					}

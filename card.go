@@ -73,6 +73,7 @@ func (c *Card) color() string {
 
 func (c *Card) suitSymbol() rune {
 	var symbol rune
+	verboseSpecial := ""
 	if strings.Contains(verboseSpecial, ";SUITSYMBOL;") {
 		switch c.Suit {
 		case 0: //clubs
@@ -105,6 +106,7 @@ func (c *Card) suitSymbol() rune {
 
 func (c *Card) rankSymbol() string {
 	var symbol string
+	verboseSpecial := ""
 	if strings.Contains(verboseSpecial, ";RANKSYMBOL;") {
 		switch c.Rank {
 		case 1:

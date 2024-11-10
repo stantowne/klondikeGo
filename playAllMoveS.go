@@ -105,7 +105,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 		if detectWinEarly(bIn) {
 			stratWinsTD++
 			cmt := "  SW-EW: Strategy Win: Early Win%v%v"
-			if findAllWinStrats {
+			if cLArgs.findAllWinStrats {
 				cmt += "  Will Continue to look for additional winning strategies for this deck"
 			} else {
 				cmt += "  Go to Next Deck (if any)"
@@ -113,7 +113,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 			prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, cmt, "", "", cLArgs, varSp2PN)
 
 			// Verbose Special "WL" Starts Here - No effect on operation
-			if strings.Contains(verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics   MOVE THIS!!!!!!!!!
+			if strings.Contains(cLArgs.verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics   MOVE THIS!!!!!!!!!
 				/*if len(deckWinLossDetail)-1 < deckNum {
 					dWLDStats.winLoss = "W"
 					dWLDStats.moveNumAt1stWinOrAtLoss = moveNum
@@ -154,12 +154,11 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 		mvsTriedTD++
 
 		// verboseSpecial option PROGRESSdddd starts here      Consider Moving clause to be a clause in prntMDet
-		if verboseSpecialProgressCounter > 0 && math.Mod(float64(mvsTriedTD), float64(verboseSpecialProgressCounter)) <= 0.1 {
-			avgRepTime := time.Since(startTimeTD) / time.Duration(mvsTriedTD/verboseSpecialProgressCounter)
-			estMaxRemTimeTD := avgRepTime * time.Duration((gameLengthLimit-mvsTriedTD)/mvsTriedTD)
-			//  wrong??			estMaxRemTimeTD := time.Since(startTimeAD) * time.Duration((gameLengthLimit-mvsTriedTD)/mvsTriedAD)
-			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(varSp2PN.priorBoards), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), time.Since(verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
-			verboseSpecialProgressCounterLastPrintTime = time.Now()
+		if cLArgs.verboseSpecialProgressCounter > 0 && math.Mod(float64(mvsTriedTD), float64(cLArgs.verboseSpecialProgressCounter)) <= 0.1 {
+			avgRepTime := time.Since(startTimeTD) / time.Duration(mvsTriedTD/cLArgs.verboseSpecialProgressCounter)
+			estMaxRemTimeTD := time.Since(startTimeTD) * time.Duration((gameLengthLimit-mvsTriedTD)/mvsTriedTD)
+			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(varSp2PN.priorBoards), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), time.Since(cLArgs.verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
+			cLArgs.verboseSpecialProgressCounterLastPrintTime = time.Now()
 		}
 		// verboseSpecial option PROGRESSdddd ends here
 
@@ -168,7 +167,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2, cLArgs, varSp2PN)
 
-		if findAllWinStrats != true && recurReturnV1 == "SW" {
+		if cLArgs.findAllWinStrats != true && recurReturnV1 == "SW" {
 			// save winning moves into a slice in reverse
 			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
 		}
@@ -183,6 +182,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 
 func prntMDetTestRange(deckNum int, cLArgs commandLineArgs) bool {
 	deckRangeOK := false
+	pMD := cLArgs.pMD
 	if pMD.deckStartVal == 0 && pMD.deckContinueFor == 0 {
 		deckRangeOK = true
 	} else {
