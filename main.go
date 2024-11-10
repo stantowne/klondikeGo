@@ -39,16 +39,23 @@ type commandLineArgs struct {
 	pMD                                        printMoveDetail
 }
 
-var firstDeckNum int
-var numberOfDecksToBePlayed int
-var length int
-var verbose int
-var verboseSpecial string
-var verboseSpecialProgressCounter int
-var verboseSpecialProgressCounterLastPrintTime = time.Now()
-var findAllWinStrats bool
+// var firstDeckNum int
+// var numberOfDecksToBePlayed int
+// var length int
+// var verbose int
+// var verboseSpecial string
+// var verboseSpecialProgressCounter int
+// var verboseSpecialProgressCounterLastPrintTime = time.Now()
+// var findAllWinStrats bool
 
-var pMD printMoveDetail
+var pMD = printMoveDetail{
+	pType:                   "X",
+	deckStartVal:            0,
+	deckContinueFor:         0,
+	movesTriedTDStartVal:    0,
+	movesTriedTDContinueFor: 0,
+	outputTo:                "C",
+}
 
 var err error
 var singleGame bool // = true
@@ -133,12 +140,12 @@ func main() {
 	var cLArgs commandLineArgs
 	cLArgs.verboseSpecialProgressCounterLastPrintTime = time.Now()
 
-	pMD.pType = "X"
-	pMD.deckStartVal = 0
-	pMD.deckContinueFor = 0
-	pMD.movesTriedTDStartVal = 0
-	pMD.movesTriedTDContinueFor = 0
-	pMD.outputTo = "C"
+	// pMD.pType = "X"
+	// pMD.deckStartVal = 0
+	// pMD.deckContinueFor = 0
+	// pMD.movesTriedTDStartVal = 0
+	// pMD.movesTriedTDContinueFor = 0
+	// pMD.outputTo = "C"
 
 	// Setup pfmt to print thousands with commas
 	var pfmt = message.NewPrinter(language.English)
@@ -151,23 +158,23 @@ func main() {
 		args[i] = strings.ToUpper(args[i])
 	}
 
-	firstDeckNum, err = strconv.Atoi(args[1])
-	if err != nil || firstDeckNum < 0 || firstDeckNum > 9999 {
+	cLArgs.firstDeckNum, err = strconv.Atoi(args[1])
+	if err != nil || cLArgs.firstDeckNum < 0 || cLArgs.firstDeckNum > 9999 {
 		println("first argument invalid - args[1]")
 		println("firstDeckNum must be non-negative integer less than 10,000")
 		os.Exit(1)
 	}
 
-	numberOfDecksToBePlayed, err = strconv.Atoi(args[2])
+	cLArgs.numberOfDecksToBePlayed, err = strconv.Atoi(args[2])
 
 	//the line below should be changed if the input file contains more than 10,000 decks
-	if err != nil || numberOfDecksToBePlayed < 1 || numberOfDecksToBePlayed > (10000-firstDeckNum) {
+	if err != nil || cLArgs.numberOfDecksToBePlayed < 1 || cLArgs.numberOfDecksToBePlayed > (10000-cLArgs.firstDeckNum) {
 		println("second argument invalid - args[2]")
 		println("numberOfDecksToBePlayed must be 1 or more, but not more than 10,000 minus firstDeckNum")
 		os.Exit(1)
 	}
 
-	if numberOfDecksToBePlayed == 1 {
+	if cLArgs.numberOfDecksToBePlayed == 1 {
 		singleGame = true
 
 	}
@@ -180,12 +187,12 @@ func main() {
 	//    length >= 1 play either the best move OR force a flip from stock to waste dIOS will just play the best move or force a flip
 	//
 
-	length, err = strconv.Atoi(args[3]) //length of each strategy (which also determines the # of strategies - 2^n)
+	cLArgs.length, err = strconv.Atoi(args[3]) //length of each strategy (which also determines the # of strategies - 2^n)
 
 	// 		In the line below, 24 is arbitrarily set; 24 would result in 16,777,216 attempts per deck
 	// 		I have never run the program with length greater than 16
 	// 		Depending upon the size of an int, length could be 32 or greater, but the program may never finish
-	if err != nil || length < -1 || length > 24 {
+	if err != nil || cLArgs.length < -1 || cLArgs.length > 24 {
 		println("Third argument invalid - args[3]")
 		println("Length must be an integer >= -1 and <= 24")
 		os.Exit(1)
@@ -194,31 +201,31 @@ func main() {
 	// The first character of verbose must be a value from 0 to 9.  Higher numbers indicate more detailed messages should be printed
 	//  The remaining characters are used to form verboseSpecial.  Code in the program will look for specific values within
 	//  verbose special to indicate that optional printing should be done.
-	verboseSpecial = args[4]
-	verbose, err = strconv.Atoi(verboseSpecial[0:1])
-	if err != nil || verbose >= 10 || verbose < 0 {
+	cLArgs.verboseSpecial = args[4]
+	cLArgs.verbose, err = strconv.Atoi(cLArgs.verboseSpecial[0:1])
+	if err != nil || cLArgs.verbose >= 10 || cLArgs.verbose < 0 {
 		println("fourth argument invalid - args[4]")
 		println("verbose must be a non-negative integer no greater than 10")
 		os.Exit(1)
 	}
-	if len(verboseSpecial) >= 1 {
-		verboseSpecial = verboseSpecial[1:]
+	if len(cLArgs.verboseSpecial) >= 1 {
+		cLArgs.verboseSpecial = cLArgs.verboseSpecial[1:]
 	} else {
-		verboseSpecial = ""
+		cLArgs.verboseSpecial = ""
 	}
 
 	// PreProcess verboseSpecial Code here so it does not have to be done later over and over again
 	verboseSpecialDivider := ";"
-	verboseSpecialProgressCounterLastPrintTime = time.Now()
+	cLArgs.verboseSpecialProgressCounterLastPrintTime = time.Now()
 	regexpPROGRESSdddd, _ := regexp.Compile(verboseSpecialDivider + "PROGRESS([1-9]+[0-9]*)" + verboseSpecialDivider)
-	z := regexpPROGRESSdddd.FindStringSubmatch(verboseSpecial)
+	z := regexpPROGRESSdddd.FindStringSubmatch(cLArgs.verboseSpecial)
 	if z == nil {
-		verboseSpecialProgressCounter = 0
+		cLArgs.verboseSpecialProgressCounter = 0
 	} else {
 		if len(z[1]) == 0 {
-			verboseSpecialProgressCounter = 10000
+			cLArgs.verboseSpecialProgressCounter = 10000
 		} else {
-			verboseSpecialProgressCounter, _ = strconv.Atoi(z[1])
+			cLArgs.verboseSpecialProgressCounter, _ = strconv.Atoi(z[1])
 		}
 	}
 
@@ -226,9 +233,9 @@ func main() {
 	// But they must be on command line anyway
 	switch strings.TrimSpace(args[5])[0:1] {
 	case "A", "a":
-		findAllWinStrats = true
+		cLArgs.findAllWinStrats = true
 	case "F", "f":
-		findAllWinStrats = false
+		cLArgs.findAllWinStrats = false
 	default:
 		println("Fifth argument invalid - args[5]")
 		println("  findAllWinStrats must be either:")
@@ -300,8 +307,8 @@ func main() {
 			      and that neither CAN be selected if the sixth argument pMD.pType is anything other than "X"
 			  PROGRESSdddd can not be selected with argument 5 = TW, TS, or TS
 	*/
-	if strings.Contains(verboseSpecial, ";DBD;") || strings.Contains(verboseSpecial, ";DBDS;") {
-		if strings.Contains(verboseSpecial, ";DBD;") && strings.Contains(verboseSpecial, ";DBDS;") {
+	if strings.Contains(cLArgs.verboseSpecial, ";DBD;") || strings.Contains(cLArgs.verboseSpecial, ";DBDS;") {
+		if strings.Contains(cLArgs.verboseSpecial, ";DBD;") && strings.Contains(cLArgs.verboseSpecial, ";DBDS;") {
 			println("Fifth argument cannot specify BOTH DBD and DBDS")
 			os.Exit(1)
 		} else {
@@ -327,21 +334,21 @@ func main() {
 	fmt.Printf("\nRun Start Time: %15s\n\n", time.Now().Format("2006.01.02  3:04:05 pm"))
 	_, err = pfmt.Printf("Command Line Arguments:\n"+
 		"            Number Of Decks To Be Played: %v\n"+
-		"                      Starting with deck: %v\n\n", numberOfDecksToBePlayed, firstDeckNum)
-	if length != -1 {
-		nOfS := 1 << length //number of initial strategies
+		"                      Starting with deck: %v\n\n", cLArgs.numberOfDecksToBePlayed, cLArgs.firstDeckNum)
+	if cLArgs.length != -1 {
+		nOfS := 1 << cLArgs.length //number of initial strategies
 		_, err = pfmt.Printf(" Style: Original iOS (Initial Override Strategies)\n\n"+
 			"                     iOS strategy length: %v\n"+
 			"          Max possible attempts per deck: %v\n"+
-			"       Total possible attempts all decks: %v\n\n", length, nOfS, nOfS*numberOfDecksToBePlayed)
+			"       Total possible attempts all decks: %v\n\n", cLArgs.length, nOfS, nOfS*cLArgs.numberOfDecksToBePlayed)
 	} else {
 		fmt.Printf(" Style: New AllMvs (All Moves Possible)\n\n" +
 			"   Max AllMvs strategy attempts per deck: Variable\n\n")
 	}
 	fmt.Printf("                           Verbose level: %v\n"+
 		"                   Verbose special codes: %v\n",
-		verbose, verboseSpecial)
-	if length == -1 {
+		cLArgs.verbose, cLArgs.verboseSpecial)
+	if cLArgs.length == -1 {
 		_, err = pfmt.Printf("\n Print Move Detail Options:\n"+
 			"          Find All Successful Strategies: %v\n"+
 			"                              Print Type: %v\n"+
@@ -349,7 +356,7 @@ func main() {
 			"                            Continue for: %v decks (0 = all the rest)\n"+
 			"             Starting with Moves Tried #: %v\n"+
 			"                            Continue for: %v moves tried (0 = all the rest)\n",
-			findAllWinStrats,
+			cLArgs.findAllWinStrats,
 			pMD.pType,
 			pMD.deckStartVal,
 			pMD.deckContinueFor,
@@ -383,8 +390,8 @@ func main() {
 	}(file)
 	reader := csv.NewReader(file)
 
-	if firstDeckNum > 0 {
-		for i := 0; i < firstDeckNum; i++ {
+	if cLArgs.firstDeckNum > 0 {
+		for i := 0; i < cLArgs.firstDeckNum; i++ {
 			_, err = reader.Read()
 			if err == io.EOF {
 				break
@@ -395,7 +402,7 @@ func main() {
 		}
 	}
 
-	if length != -1 {
+	if cLArgs.length != -1 {
 		// playOrig will execute the original code designed to play either the "Best" move or the best move modified by the IOS strategy
 		// of substituting FlipToWaste as described in more detail below.  This was known earlier under the name of "playBestOrIOS" strategy
 		// and developed under a function of that name in project branch "tree".
