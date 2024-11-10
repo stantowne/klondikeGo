@@ -56,78 +56,80 @@ var singleGame bool // = true
 func main() {
 	/*
 
-														Command line arguments
+	   Command line arguments
 
-														args[0] = program name
-														args[1] = firstDeckNum            - # of the first deck to be used from within the pre-stored decks used to standardize testing
-														args[2] = numberOfDecksToBePlayed - # of decks to be played
-														args[3] = length                  - of iOS (initial Override Strategy) - see comments below	(applicable to playOrig only)
+	   args[0] = program name
+	   args[1] = firstDeckNum            - # of the first deck to be used from within the pre-stored decks used to standardize testing
+	   args[2] = numberOfDecksToBePlayed - # of decks to be played
+	   args[3] = length                  - of iOS (initial Override Strategy) - see comments below	(applicable to playOrig only)
 
-						                                                                  if length = -1 then execute playNew
+	          if length = -1 then execute playNew
 
-						                                                                            =  0 then execute playOrig and play the Best Move
-						                                                                            >  1 then execute playOrig and play either:
-						                                                                                 the best move
-						                                                                                 OR
-						                                                                                 force a flip from stock to waste
-						                                                                            >  1 is known as an iOS strategy whereby the "OR" above will be determined by
-						                                                                                    the binary representation of 2^length
-						                                                                                    STAN - describe it here please I never get it right!
+	                    =  0 then execute playOrig and play the Best Move
+	                    >  1 then execute playOrig and play either:
+	                         the best move
+	                         OR
+	                         force a flip from stock to waste
+	                    >  1 is known as an iOS strategy whereby the "OR" above will be determined by
+	                            the binary representation of 2^length
+	                            STAN - describe it here please I never get it right!
 
-															args[4] = verbose                 - first character ONLY: verbosity switch for messages
-									                              verboseSpecial          - 2nd - nth characters ONLY - special print options - (applicable to playNew only)
+	   args[4] = verbose        - first character ONLY: verbosity switch for messages
+	             verboseSpecial - 2nd - nth characters ONLY - special print options - (applicable to playNew only)
 
-				                                                  	Verbose Special codes implemented:  CASE IS IGNORED
-				                                                  		   Place ";" as a divider when multiple specials are requested as well as BEFORE and AFTER the last option
+	             verbose Special codes implemented:  CASE IS IGNORED
+	                     Place ";" as a divider when multiple specials are requested as well as BEFORE and AFTER the last option
 
-				  NOTE: No appreciable time penalty                        DBD  = print Deck-by-deck detail info after each deck 									playNew Only (in playAllMovesS)
-					       for any option other than                       DBDS = print Deck-by-deck SHORT detail info after each deck								playNew Only (in playAllMovesS)WL  = print deck summary Win/Loss stats after all decks to see which decks won and which lost    playNew Only (in playNew)
-				           PROGRESSdddd                         		   SUITSYMBOL = print S, D, C, H instead of runes - defaults to runes
-				                                                  		   RANKSYMBOL = print Ac, Ki, Qu, Jk instead of 01, 11, 12, 13 - defaults to numeric
-				                                                  		   WL = Win/Loss record for each deck printed at end
-				  NOTE Time penalty at: GML = 800,000,000      		   PROGRESSdddd = Print the deckNum, mvsTriedTD, moveNum, stratNumTD, unqBoards every dddd movesTriedTD tried overwriting the previous printing
-				       PROGRESS500000 = X.X%                       		                        dddd = 0 will be treated as if the /PROGRESS0000/ was NOT in the verbose special string !!!!!!!
-				       PROGRESS500000 = X.X%                                           		    if dddd is left out then a default of every 10,000 movesTriedTD will be used
-		               PROGRESS50000  = X.X%
-				                                                  								PROGRESSdddd is preprocessed below (soon to move to playNew)
-				                                                  		                        The variables "verboseSpecialProgressCounter" and verboseSpecialProgressCounterLastPrintTime
-				                                                  		                              will be used to control operation
-				                                                  		                              They are currently package level will soon move to a structure
+	                        DBD = print Deck-by-deck detail info after each deck
+	                       DBDS = print Deck-by-deck SHORT detail info after each deck
+	                 SUITSYMBOL = print S, D, C, H instead of runes - defaults to runes
+	                 RANKSYMBOL = print Ac, Ki, Qu, Jk instead of 01, 11, 12, 13 - defaults to numeric
+	                         WL = Win/Loss record for each deck printed at end
+	                       BELL = Ring bell after any deck taking more than 000 minutes (Not yet Implemented)
+	               PROGRESSdddd = Print the deckNum, mvsTriedTD, moveNum, stratNumTD, unqBoards
+	                              every dddd movesTriedTD
+	                              NOTE: dddd can be as many consecutive digits as needed example: PROGRESS1000000
+	                                         would print a progress update every 1,000,000 moves tried (mvsTried)
+	                       dddd = 0 will be treated as if the /PROGRESS0000/ was NOT in the verbose special string !!!!!!!
+	                    if dddd is left out then a default of every 10,000 movesTriedTD will be used
+	                            i.e. PROGRESS is the same as PROGRESS10000
 
-				                                                  		   BELL = Ring bell after any deck taking more than 000 minutes (Not yet Implemented)
+	               PROGRESSdddd is preprocessed below to the variables:
+	                               "verboseSpecialProgressCounter"
+	                               "verboseSpecialProgressCounterLastPrintTime"
+	                                  and they will be used to control operation
+	                                  they are currently package level will soon move to a structure
 
-														args[5] = findAllWinStrats 	      - (applicable playNew only)
-								       printMoveDetail  args[6] = pMD		              - struct type: printMoveDetail - (applicable playNew only)
-													              	as a string to be parsed of the form:
-													           			pType,startType,deckStartVal,deckContinueFor,outputTo
 
-																		where:
-																			pType = empty or X - do not print NOTE: Default if args[6] is not on command line
-																				  = BB         - Board by Board detail
-												                                  = BBS        - Board by Board Short detail
-												                                  = BBSS       - Board by Board Super Short detail
-													                              = TW         - print Tree in Wide mode     8 char per move
-																				  = TS         - print Tree in Skinny mode   5 char per move
-											                                      = TSS        - print Tree in Super Skinny mode   3 char per move
-										                               These next four limit at what point and for how long move detail should actually be printed.
-																			deckStartVal    	  = Non-negative integer (Default 0)
-																			deckContinueFor  	  = Non-negative integer (Default 0 which indicates forever)
-																			movesTriedTDStartVal    = Non-negative integer (Default 0)
-																			movesTriedTDContinueFor = Non-negative integer (Default 0 which indicates forever)
+	   args[5] = findAllWinStrats
+	   args[6] = pMD - struct type: printMoveDetail
+	             args[6] is a string to be parsed of the form: pType,startType,deckStartVal,deckContinueFor,outputTo
+	             where:
+	             pType = empty or X - do not print NOTE: Default if args[6] is not on command line
+	                   = BB         - Board by Board detail
+	                   = BBS        - Board by Board Short detail
+	                   = BBSS       - Board by Board Super Short detail
+	                   = TW         - print Tree in Wide mode     8 char per move
+	                   = TS         - print Tree in Skinny mode   5 char per move
+	                   = TSS        - print Tree in Super Skinny mode   3 char per move
+	           These next four limit at what point and for how long move detail should actually be printed.
+	                deckStartVal = Non-negative integer (Default 0)
+	             deckContinueFor = Non-negative integer (Default 0 which indicates forever)
+	        movesTriedTDStartVal = Non-negative integer (Default 0)
+	     movesTriedTDContinueFor = Non-negative integer (Default 0 which indicates forever)
 
-										                                    outputTo = C = Console (default)
-																                     = file name and path (if applicable)
-													                                   Note: if file name is present then startType. deckStartVal and ContinueFor
-													                                         must be present or delineated with ":"
+	                    outputTo = C = Console (default)
+	                             = file name and path (if applicable)
+	                      Note: if file name is present then  deckStartVal, deckContinueFor, movesTriedTDStartVal and movesTriedTDContinueFor
+	                            cannot be defaulted (i.e. skipped), they must be present delineated with ","
+	                            example: BB,0,0,0,0,filename
 
-														           	and placed into a package level struct pMD of type pMd which can be seen above:
+	   The parsed values of Args[6] are placed into struct pMD of type printMoveDetail which can be seen above:
 
-								NOTE: Certain options of VerboseSpecial and/or pMD are incompatible:
-
-									!!!!!! ADD CHECK TO SAY DBD AND DBDS can not be BOTH included in verbosespecial
-									!!!!!!                 and that neither CAN be selected if the sixth argument pMD.pType is anything other than "X"
-									!!!!!!  PROGRESSdddd can not be selected with argument 5 = TW, TS, or TSS
-
+	   NOTE: Certain options of VerboseSpecial and/or pMD are incompatible:
+	         DBD AND DBDS can not be BOTH included in verbosespecial
+	           and that neither DBD or DBDS CAN be selected if the sixth argument pMD.pType is anything other than "X"
+	         PROGRESSdddd can not be selected with argument 5 = TW, TS, or TSS
 	*/
 
 	var cLArgs commandLineArgs
@@ -245,7 +247,7 @@ func main() {
 		if pMdArgs[0] == "BB" || pMdArgs[0] == "BBS" || pMdArgs[0] == "BBSS" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" || pMdArgs[0] == "TSS" || pMdArgs[0] == "X" {
 			pMD.pType = pMdArgs[0]
 		} else {
-			println("Sixth argument part 1 invalid - args[6];  arg[6] parts are separated by commas: *1*,2,3,4,5,6")
+			println("Sixth argument part 1 invalid - args[6];  arg[6] parts must be separated by commas: *1*,2,3,4,5,6")
 			println("  Must start with BB, BBS, BBSS, TW, TS, TSS or X")
 			os.Exit(1)
 		}
@@ -253,7 +255,7 @@ func main() {
 	if l >= 2 {
 		pMD.deckStartVal, err = strconv.Atoi(pMdArgs[1])
 		if err != nil || pMD.deckStartVal < 0 {
-			println("Sixth argument part 2 invalid - args[6] arg[6] parts are  separated by commas: 1,*2*,3,4,5,6")
+			println("Sixth argument part 2 invalid - args[6]; arg[6] parts must be separated by commas: 1,*2*,3,4,5,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
@@ -261,7 +263,7 @@ func main() {
 	if l >= 3 {
 		pMD.deckContinueFor, err = strconv.Atoi(pMdArgs[2])
 		if err != nil || pMD.deckContinueFor < 0 {
-			println("Sixth argument part 3 invalid - args[6] arg[6] parts are  separated by commas: 1,2,*3*,4,5,6")
+			println("Sixth argument part 3 invalid - args[6]; arg[6] parts must be separated by commas: 1,2,*3*,4,5,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
@@ -269,7 +271,7 @@ func main() {
 	if l >= 4 {
 		pMD.movesTriedTDStartVal, err = strconv.Atoi(pMdArgs[3])
 		if err != nil || pMD.movesTriedTDStartVal < 0 {
-			println("Sixth argument part 4 invalid - args[6] arg[6] parts are  separated by commas: 1,2,3,*4*,5,6")
+			println("Sixth argument part 4 invalid - args[6]; arg[6] parts are  separated by commas: 1,2,3,*4*,5,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
@@ -277,17 +279,17 @@ func main() {
 	if l >= 5 {
 		pMD.movesTriedTDContinueFor, err = strconv.Atoi(pMdArgs[4])
 		if err != nil || pMD.movesTriedTDContinueFor < 0 {
-			println("Sixth argument part 5 invalid - args[6] arg[6] parts are  separated by commas: 1,2,3,4,*5*,6")
+			println("Sixth argument part 5 invalid - args[6]; arg[6] parts are  separated by commas: 1,2,3,4,*5*,6")
 			println("must be a non-negative integer")
 			os.Exit(1)
 		}
 	}
 	if l >= 6 {
-		if pMdArgs[5] == "C" {
+		if pMdArgs[5] == "C" /* || a valid file name*/ {
 			pMD.outputTo = pMdArgs[5]
 		} else {
 			// add if-clause here to test if valid filename and it can be overwritten
-			println("Sixth argument part 6 invalid - args[6] arg[6] parts are  separated by commas: 1,2,3,4,5,*6*")
+			println("Sixth argument part 6 invalid - args[6]; arg[6] parts are  separated by commas: 1,2,3,4,5,*6*")
 			println("must be a C for Console or a valid file name")
 			os.Exit(1)
 		}
