@@ -87,8 +87,8 @@ func main() {
 				                                                  	Verbose Special codes implemented:  CASE IS IGNORED
 				                                                  		   Place ";" as a divider when multiple specials are requested as well as BEFORE and AFTER the last option
 
-				  NOTE: No appreciable time penalty                        DBD  = print Deck-by-deck detail info after each Move 											playNew Only (in playAllMovesS)
-					       for any option other than                       DBDS = print Deck-by-deck SHORT detail info after each Move 									playNew Only (in playAllMovesS)WL  = print deck summary Win/Loss stats after all decks to see which decks won and which lost    playNew Only (in playNew)
+				  NOTE: No appreciable time penalty                        DBD  = print Deck-by-deck detail info after each deck 									playNew Only (in playAllMovesS)
+					       for any option other than                       DBDS = print Deck-by-deck SHORT detail info after each deck								playNew Only (in playAllMovesS)WL  = print deck summary Win/Loss stats after all decks to see which decks won and which lost    playNew Only (in playNew)
 				           PROGRESSdddd                         		   SUITSYMBOL = print S, D, C, H instead of runes - defaults to runes
 				                                                  		   RANKSYMBOL = print Ac, Ki, Qu, Jk instead of 01, 11, 12, 13 - defaults to numeric
 				                                                  		   WL = Win/Loss record for each deck printed at end
