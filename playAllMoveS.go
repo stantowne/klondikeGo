@@ -12,7 +12,7 @@ import (
 )
 
 func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, varSp2PN variablesSpecificToPlayNew) (string, string) {
-
+	pMD := cLArgs.pMD
 	/* Return Codes: SL  = Strategy Lost	 NMA = No Moves Available
 	                 						 RB  = Repetitive Board
 	                                         SE  = Strategy Exhausted
@@ -206,6 +206,7 @@ func prntMDetTestRange(deckNum int, cLArgs commandLineArgs) bool {
 }
 
 func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn string, variant int, comment string, s1 string, s2 string, cLArgs commandLineArgs, varSp2PN variablesSpecificToPlayNew) {
+	pMD := cLArgs.pMD
 	// Done here just to clean up mainline logic of playAllMoves
 	// Do some repetitive printing to track progress
 	// This function will use the struct pMD

@@ -82,6 +82,7 @@ func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 	verbose := cLArgs.verbose
 	verboseSpecial := cLArgs.verboseSpecial
 	findAllWinStrats := cLArgs.findAllWinStrats
+	pMD := cLArgs.pMD
 	var varSp2PN variablesSpecificToPlayNew
 	varSp2PN.priorBoards = map[bCode]bool{}
 

@@ -28,33 +28,15 @@ type printMoveDetail struct {
 	outputTo                string
 }
 type commandLineArgs struct {
-	firstDeckNum                               int
-	numberOfDecksToBePlayed                    int
-	length                                     int
-	verbose                                    int
+	firstDeckNum                               int //`yaml:"firstDeckNum"`
+	numberOfDecksToBePlayed                    int //`yaml:"numberOfDecksToBePlayed"`
+	length                                     int //`yaml:"length"`
+	verbose                                    int //`yaml:"verbose"`
 	verboseSpecial                             string
 	verboseSpecialProgressCounter              int
 	verboseSpecialProgressCounterLastPrintTime time.Time
-	findAllWinStrats                           bool
-	pMD                                        printMoveDetail
-}
-
-// var firstDeckNum int
-// var numberOfDecksToBePlayed int
-// var length int
-// var verbose int
-// var verboseSpecial string
-// var verboseSpecialProgressCounter int
-// var verboseSpecialProgressCounterLastPrintTime = time.Now()
-// var findAllWinStrats bool
-
-var pMD = printMoveDetail{
-	pType:                   "X",
-	deckStartVal:            0,
-	deckContinueFor:         0,
-	movesTriedTDStartVal:    0,
-	movesTriedTDContinueFor: 0,
-	outputTo:                "C",
+	findAllWinStrats                           bool            // `yaml:"findAllWinStrats"`
+	pMD                                        printMoveDetail // `yaml:"pMD"`
 }
 
 var err error
@@ -63,89 +45,80 @@ var singleGame bool // = true
 func main() {
 	/*
 
-														Command line arguments
+			Command line arguments
 
-														args[0] = program name
-														args[1] = firstDeckNum            - # of the first deck to be used from within the pre-stored decks used to standardize testing
-														args[2] = numberOfDecksToBePlayed - # of decks to be played
-														args[3] = length                  - of iOS (initial Override Strategy) - see comments below	(applicable to playOrig only)
+			args[0] = program name
+			args[1] = firstDeckNum            - # of the first deck to be used from within the pre-stored decks used to standardize testing
+			args[2] = numberOfDecksToBePlayed - # of decks to be played
+			args[3] = length                  - of iOS (initial Override Strategy) - see comments below	(applicable to playOrig only)
 
-						                                                                  if length = -1 then execute playNew
+		                                            if length = -1 then execute playNew
+		                                                      =  0 then execute playOrig and play the Best Move
+		                                                      >  1 then execute playOrig and play either: the best move OR force a flip from stock to waste
+								                                   >  1 is known as an iOS strategy whereby the "OR" above will be determined by  the binary representation of 2^length
+								                                                                                    STAN - describe it here please I never get it right!
 
-						                                                                            =  0 then execute playOrig and play the Best Move
-						                                                                            >  1 then execute playOrig and play either:
-						                                                                                 the best move
-						                                                                                 OR
-						                                                                                 force a flip from stock to waste
-						                                                                            >  1 is known as an iOS strategy whereby the "OR" above will be determined by
-						                                                                                    the binary representation of 2^length
-						                                                                                    STAN - describe it here please I never get it right!
+			args[4] = verbose                 - first character ONLY: verbosity switch for messages
+			                                    verboseSpecial          - 2nd - nth characters ONLY - special print options - (applicable to playNew only)
 
-															args[4] = verbose                 - first character ONLY: verbosity switch for messages
-									                              verboseSpecial          - 2nd - nth characters ONLY - special print options - (applicable to playNew only)
+						                                                  	Verbose Special codes implemented:  CASE IS IGNORED
+						                                                  		   Place ";" as a divider when multiple specials are requested as well as BEFORE and AFTER the last option
 
-				                                                  	Verbose Special codes implemented:  CASE IS IGNORED
-				                                                  		   Place ";" as a divider when multiple specials are requested as well as BEFORE and AFTER the last option
+						  NOTE: No appreciable time penalty                        DBD  = print Deck-by-deck detail info after each deck 									playNew Only (in playAllMovesS)
+							       for any option other than                       DBDS = print Deck-by-deck SHORT detail info after each deck								playNew Only (in playAllMovesS)WL  = print deck summary Win/Loss stats after all decks to see which decks won and which lost    playNew Only (in playNew)
+						           PROGRESSdddd                         		   SUITSYMBOL = print S, D, C, H instead of runes - defaults to runes
+						                                                  		   RANKSYMBOL = print Ac, Ki, Qu, Jk instead of 01, 11, 12, 13 - defaults to numeric
+						                                                  		   WL = Win/Loss record for each deck printed at end
+						  NOTE Time penalty at: GML = 800,000,000      		   PROGRESSdddd = Print the deckNum, mvsTriedTD, moveNum, stratNumTD, unqBoards every dddd movesTriedTD tried overwriting the previous printing
+						       PROGRESS500000 = X.X%                       		                        dddd = 0 will be treated as if the /PROGRESS0000/ was NOT in the verbose special string !!!!!!!
+						       PROGRESS500000 = X.X%                                           		    if dddd is left out then a default of every 10,000 movesTriedTD will be used
+				               PROGRESS50000  = X.X%
+						                                                  								PROGRESSdddd is preprocessed below (soon to move to playNew)
+						                                                  		                        The variables "verboseSpecialProgressCounter" and verboseSpecialProgressCounterLastPrintTime
+						                                                  		                              will be used to control operation
+						                                                  		                              They are currently package level will soon move to a structure
 
-				  NOTE: No appreciable time penalty                        DBD  = print Deck-by-deck detail info after each deck 									playNew Only (in playAllMovesS)
-					       for any option other than                       DBDS = print Deck-by-deck SHORT detail info after each deck								playNew Only (in playAllMovesS)WL  = print deck summary Win/Loss stats after all decks to see which decks won and which lost    playNew Only (in playNew)
-				           PROGRESSdddd                         		   SUITSYMBOL = print S, D, C, H instead of runes - defaults to runes
-				                                                  		   RANKSYMBOL = print Ac, Ki, Qu, Jk instead of 01, 11, 12, 13 - defaults to numeric
-				                                                  		   WL = Win/Loss record for each deck printed at end
-				  NOTE Time penalty at: GML = 800,000,000      		   PROGRESSdddd = Print the deckNum, mvsTriedTD, moveNum, stratNumTD, unqBoards every dddd movesTriedTD tried overwriting the previous printing
-				       PROGRESS500000 = X.X%                       		                        dddd = 0 will be treated as if the /PROGRESS0000/ was NOT in the verbose special string !!!!!!!
-				       PROGRESS500000 = X.X%                                           		    if dddd is left out then a default of every 10,000 movesTriedTD will be used
-		               PROGRESS50000  = X.X%
-				                                                  								PROGRESSdddd is preprocessed below (soon to move to playNew)
-				                                                  		                        The variables "verboseSpecialProgressCounter" and verboseSpecialProgressCounterLastPrintTime
-				                                                  		                              will be used to control operation
-				                                                  		                              They are currently package level will soon move to a structure
+						                                                  		   BELL = Ring bell after any deck taking more than 000 minutes (Not yet Implemented)
 
-				                                                  		   BELL = Ring bell after any deck taking more than 000 minutes (Not yet Implemented)
+																args[5] = findAllWinStrats 	      - (applicable playNew only)
+										       printMoveDetail  args[6] = pMD		              - struct type: printMoveDetail - (applicable playNew only)
+															              	as a string to be parsed of the form:
+															           			pType,startType,deckStartVal,deckContinueFor,outputTo
 
-														args[5] = findAllWinStrats 	      - (applicable playNew only)
-								       printMoveDetail  args[6] = pMD		              - struct type: printMoveDetail - (applicable playNew only)
-													              	as a string to be parsed of the form:
-													           			pType,startType,deckStartVal,deckContinueFor,outputTo
+																				where:
+																					pType = empty or X - do not print NOTE: Default if args[6] is not on command line
+																						  = BB         - Board by Board detail
+														                                  = BBS        - Board by Board Short detail
+														                                  = BBSS       - Board by Board Super Short detail
+															                              = TW         - print Tree in Wide mode     8 char per move
+																						  = TS         - print Tree in Skinny mode   5 char per move
+													                                      = TSS        - print Tree in Super Skinny mode   3 char per move
+												                               These next four limit at what point and for how long move detail should actually be printed.
+																					deckStartVal    	  = Non-negative integer (Default 0)
+																					deckContinueFor  	  = Non-negative integer (Default 0 which indicates forever)
+																					movesTriedTDStartVal    = Non-negative integer (Default 0)
+																					movesTriedTDContinueFor = Non-negative integer (Default 0 which indicates forever)
 
-																		where:
-																			pType = empty or X - do not print NOTE: Default if args[6] is not on command line
-																				  = BB         - Board by Board detail
-												                                  = BBS        - Board by Board Short detail
-												                                  = BBSS       - Board by Board Super Short detail
-													                              = TW         - print Tree in Wide mode     8 char per move
-																				  = TS         - print Tree in Skinny mode   5 char per move
-											                                      = TSS        - print Tree in Super Skinny mode   3 char per move
-										                               These next four limit at what point and for how long move detail should actually be printed.
-																			deckStartVal    	  = Non-negative integer (Default 0)
-																			deckContinueFor  	  = Non-negative integer (Default 0 which indicates forever)
-																			movesTriedTDStartVal    = Non-negative integer (Default 0)
-																			movesTriedTDContinueFor = Non-negative integer (Default 0 which indicates forever)
+												                                    outputTo = C = Console (default)
+																		                     = file name and path (if applicable)
+															                                   Note: if file name is present then startType. deckStartVal and ContinueFor
+															                                         must be present or delineated with ":"
 
-										                                    outputTo = C = Console (default)
-																                     = file name and path (if applicable)
-													                                   Note: if file name is present then startType. deckStartVal and ContinueFor
-													                                         must be present or delineated with ":"
+																           	and placed into a package level struct pMD of type pMd which can be seen above:
 
-														           	and placed into a package level struct pMD of type pMd which can be seen above:
+										NOTE: Certain options of VerboseSpecial and/or pMD are incompatible:
 
-								NOTE: Certain options of VerboseSpecial and/or pMD are incompatible:
-
-									!!!!!! ADD CHECK TO SAY DBD AND DBDS can not be BOTH included in verbosespecial
-									!!!!!!                 and that neither CAN be selected if the sixth argument pMD.pType is anything other than "X"
-									!!!!!!  PROGRESSdddd can not be selected with argument 5 = TW, TS, or TSS
+											!!!!!! ADD CHECK TO SAY DBD AND DBDS can not be BOTH included in verbosespecial
+											!!!!!!                 and that neither CAN be selected if the sixth argument pMD.pType is anything other than "X"
+											!!!!!!  PROGRESSdddd can not be selected with argument 5 = TW, TS, or TSS
 
 	*/
 
 	var cLArgs commandLineArgs
 	cLArgs.verboseSpecialProgressCounterLastPrintTime = time.Now()
-
-	// pMD.pType = "X"
-	// pMD.deckStartVal = 0
-	// pMD.deckContinueFor = 0
-	// pMD.movesTriedTDStartVal = 0
-	// pMD.movesTriedTDContinueFor = 0
-	// pMD.outputTo = "C"
+	cLArgs.pMD.pType = "X"
+	cLArgs.pMD.outputTo = "C"
+	pMD := cLArgs.pMD
 
 	// Setup pfmt to print thousands with commas
 	var pfmt = message.NewPrinter(language.English)
@@ -322,6 +295,8 @@ func main() {
 			os.Exit(1)
 		}
 	}
+	// load YAML file
+	// data, err := os.ReadFile("config.yml")
 
 	// ******************************************
 	//
