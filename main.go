@@ -18,8 +18,8 @@ const gameLengthLimitOrig = 150     // max moveCounter; increasing to 200 does n
 const gameLengthLimitNew = 50000000 // max mvsTriedTD
 var gameLengthLimit int
 
-const treePauseBetwnMoves time.Duration = 500 * time.Millisecond // 500,000,000 nanoseconds
-const treePauseBetwnStrategies time.Duration = 3 * time.Second   // 3,000,000,000 nanoseconds
+const treeSleepBetwnMoves time.Duration = 500 * time.Millisecond // 500,000,000 nanoseconds
+const treeSleepBetwnStrategies time.Duration = 3 * time.Second   // 3,000,000,000 nanoseconds
 
 var moveNumMax int
 

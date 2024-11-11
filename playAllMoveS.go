@@ -240,9 +240,9 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 			pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
 		case pTypeIn == "BBS" && pMD.pType == pTypeIn && variant == 2:
 			pfmt.Printf(comment, b)
-		case pTypeIn == "NOTX" && pMD.pType != "X" && variant == 1:
+		case pTypeIn == "NOTX" && pMD.pType != "X" && variant == 1 && !strings.Contains(";TW;TS;TSS;", ";"+pMD.pType+";"):
 			pfmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
-		case pTypeIn == "NOTX" && pMD.pType != "X" && variant == 2:
+		case pTypeIn == "NOTX" && pMD.pType != "X" && variant == 2 && !strings.Contains(";TW;TS;TSS;", ";"+pMD.pType+";"):
 			pfmt.Printf(comment, s1, s2)
 		}
 	}
@@ -311,10 +311,10 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cLArgs c
 			treeAddToPrev += strings.Repeat(treeRepeatChar, 7)
 		}
 		if nextMove == 0 {
-			time.Sleep(treePauseBetwnMoves)
+			time.Sleep(treeSleepBetwnMoves)
 			fmt.Printf("%s", treeThisMove)
 		} else {
-			time.Sleep(treePauseBetwnStrategies)
+			time.Sleep(treeSleepBetwnStrategies)
 			treePrevMovesTD = treePrevMovesTD[:mN*treeMoveWidth]
 			pfmt.Printf("\n%13s %s%s", strconv.Itoa(stratNumTD), treePrevMovesTD, treeThisMove)
 		}
