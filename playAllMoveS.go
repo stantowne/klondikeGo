@@ -143,6 +143,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 		if pMD.pType == "BB" && prntMDetTestRange(deckNum, cLArgs) {
 			prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 3, "", "", "", cLArgs, varSp2PN)
 		}
+		prntMDetTree(bIn, aMoves, i, deckNum, moveNum, cLArgs, varSp2PN)
 
 		bNew := bIn.copyBoard() // Critical Must use copyBoard
 
@@ -183,7 +184,6 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 
 func prntMDetTestRange(deckNum int, cLArgs commandLineArgs) bool {
 	deckRangeOK := false
-	pMD := cLArgs.pMD
 	if pMD.deckStartVal == 0 && pMD.deckContinueFor == 0 {
 		deckRangeOK = true
 	} else {
@@ -248,11 +248,8 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 	}
 }
 
-func prntMDetTree(aMoves []move, nextMove int, dN int, mN int, cLArgs commandLineArgs, varSp2PN variablesSpecificToPlayNew) {
-	// Done here just to clean up mainline logic of playAllMoves
-	// Do some repetitive printing to track progress
-	// This function will use the struct pMD
-	//      variant will be used for different outputs under the same pType
+func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cLArgs commandLineArgs, varSp2PN variablesSpecificToPlayNew) {
+	//
 
 	// Setup pfmt to print thousands with commas
 	var pfmt = message.NewPrinter(language.English)
@@ -265,38 +262,63 @@ func prntMDetTree(aMoves []move, nextMove int, dN int, mN int, cLArgs commandLin
 		midStrat   = string('\u2523') // Looks Like: ->┣<-
 	)
 	var treeThisMove string
+	var treeAddToPrev string
+	var treeMoveWidth int
+	var treeRepeatChar string
 
-	if pMD.pType != "X" && prntMDetTestRange(dN, cLArgs) && strings.Contains(";TW;TS;TSS;", ";"+pMD.pType+";") {
+	if prntMDetTestRange(dN, cLArgs) && strings.Contains(";TW;TS;TSS;", ";"+pMD.pType+";") {
 		if mN == 0 && nextMove == 0 {
-			pfmt.Printf("\n\n Deck: %i\n Strategies  ", dN)
+			fmt.Printf("\n\n Deck: %i\n\n", dN)
+			printBoard(b)
+			fmt.Printf("\n\n Strategy #   ")
 			if pMD.pType == "WD" {
 				fmt.Printf("\n             ")
 				for i := 0; i <= 160; i++ {
 					fmt.Printf("%8s", strconv.Itoa(i)+"  ")
 				}
 			}
+			fmt.Printf("\n\n           0 ")
 		}
 		switch {
 		case len(aMoves) == 1:
 			treeThisMove = horiz1
+			treeAddToPrev = horiz1
+			treeRepeatChar = horiz1
 		case nextMove == 0:
 			treeThisMove = firstStrat
+			treeAddToPrev = vert1
+			treeRepeatChar = " "
 		case nextMove == len(aMoves):
 			treeThisMove = lastStrat
+			treeAddToPrev = vert1
+			treeRepeatChar = " "
 		default:
 			treeThisMove = midStrat
+			treeAddToPrev = vert1
+			treeRepeatChar = ""
 		}
 		switch pMD.pType {
 		case "TSS":
-
-			treePrevMovesTD += vert1
+			treePrevMovesTD += treeAddToPrev
+			treeMoveWidth = 1
 		case "TS":
 			treeThisMove += strings.Repeat(horiz1, 2)
-			treePrevMovesTD += vert1 + strings.Repeat(" ", 2)
+			treeMoveWidth = 3
+			treeAddToPrev += strings.Repeat(treeRepeatChar, 2)
 		case "TW":
 			treeThisMove += moveShortName[aMoves[nextMove].name] + horiz1
-			treePrevMovesTD += vert1 + strings.Repeat(" ", 7)
+			treeMoveWidth = 8
+			treeAddToPrev += strings.Repeat(treeRepeatChar, 7)
 		}
+		if nextMove == 0 {
+			time.Sleep(treePauseBetwnMoves)
+			fmt.Printf("%s", treeThisMove)
+		} else {
+			time.Sleep(treePauseBetwnStrategies)
+			treePrevMovesTD = treePrevMovesTD[:mN*treeMoveWidth]
+			pfmt.Printf("\n%13s %s%s", strconv.Itoa(stratNumTD), treePrevMovesTD, treeThisMove)
+		}
+		treePrevMovesTD += treeAddToPrev
 	}
 }
 
