@@ -23,6 +23,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 	// add code for findAllWinStrats
 	// Setup pfmt to print thousands with commas
 	var pfmt = message.NewPrinter(language.English)
+
 	var aMoves []move //available Moves
 	var recurReturnV1, recurReturnV2 string
 	if moveNum > moveNumMax {
@@ -157,7 +158,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 		if cLArgs.verboseSpecialProgressCounter > 0 && math.Mod(float64(mvsTriedTD), float64(cLArgs.verboseSpecialProgressCounter)) <= 0.1 {
 			avgRepTime := time.Since(startTimeTD) / time.Duration(mvsTriedTD/cLArgs.verboseSpecialProgressCounter)
 			estMaxRemTimeTD := time.Since(startTimeTD) * time.Duration((gameLengthLimit-mvsTriedTD)/mvsTriedTD)
-			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(varSp2PN.priorBoards), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), time.Since(cLArgs.verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
+			pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(varSp2PN.priorBoards), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), time.Since(cLArgs.verboseSpecialProgressCounterLastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
 			cLArgs.verboseSpecialProgressCounterLastPrintTime = time.Now()
 		}
 		// verboseSpecial option PROGRESSdddd ends here
@@ -218,11 +219,11 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 		switch {
 		case pTypeIn == "BB" && pMD.pType == pTypeIn && variant == 1: // for BB
 			fmt.Printf("\n****************************************\n")
-			_, err = pfmt.Printf("\nDeck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
+			pfmt.Printf("\nDeck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
 			printBoard(b)
 		case pTypeIn == "BB" && pMD.pType == pTypeIn && variant == 2: // for BB
 			// comment must have 2 %v in it
-			_, err = pfmt.Printf(comment, s1, s2)
+			pfmt.Printf(comment, s1, s2)
 		case pMD.pType == "BB" && variant == 3:
 			fmt.Printf("\n     All Possible Moves: ")
 			for j := range aMoves {
@@ -236,15 +237,80 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 				fmt.Printf("\n")
 			}
 		case strings.HasPrefix(pTypeIn, "BBS") && strings.HasPrefix(pMD.pType, "BBS") && variant == 1: // for BBS or BBSS
-			_, err = pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
+			pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
 		case pTypeIn == "BBS" && pMD.pType == pTypeIn && variant == 2:
-			_, err = pfmt.Printf(comment, b)
+			pfmt.Printf(comment, b)
 		case pTypeIn == "NOTX" && pMD.pType != "X" && variant == 1:
-			_, err = pfmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
+			pfmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
 		case pTypeIn == "NOTX" && pMD.pType != "X" && variant == 2:
-			_, err = pfmt.Printf(comment, s1, s2)
-		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 1:
-		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 2:
+			pfmt.Printf(comment, s1, s2)
 		}
 	}
 }
+
+func prntMDetTree(aMoves []move, nextMove int, dN int, mN int, cLArgs commandLineArgs, varSp2PN variablesSpecificToPlayNew) {
+	// Done here just to clean up mainline logic of playAllMoves
+	// Do some repetitive printing to track progress
+	// This function will use the struct pMD
+	//      variant will be used for different outputs under the same pType
+
+	// Setup pfmt to print thousands with commas
+	var pfmt = message.NewPrinter(language.English)
+
+	const (
+		vert1      = string('\u2503') // Looks Like: ->┃<-
+		horiz1     = string('\u2501') // Looks Like: ->━<-
+		firstStrat = string('\u2533') // Looks Like: ->┳<-
+		lastStrat  = string('\u2517') // Looks Like: ->┗<-
+		midStrat   = string('\u2523') // Looks Like: ->┣<-
+	)
+	var treeThisMove string
+
+	if pMD.pType != "X" && prntMDetTestRange(dN, cLArgs) && strings.Contains(";TW;TS;TSS;", ";"+pMD.pType+";") {
+		if mN == 0 && nextMove == 0 {
+			pfmt.Printf("\n\n Deck: %i\n Strategies  ", dN)
+			if pMD.pType == "WD" {
+				fmt.Printf("\n             ")
+				for i := 0; i <= 160; i++ {
+					fmt.Printf("%8s", strconv.Itoa(i)+"  ")
+				}
+			}
+		}
+		switch {
+		case len(aMoves) == 1:
+			treeThisMove = horiz1
+		case nextMove == 0:
+			treeThisMove = firstStrat
+		case nextMove == len(aMoves):
+			treeThisMove = lastStrat
+		default:
+			treeThisMove = midStrat
+		}
+		switch pMD.pType {
+		case "TSS":
+
+			treePrevMovesTD += vert1
+		case "TS":
+			treeThisMove += strings.Repeat(horiz1, 2)
+			treePrevMovesTD += vert1 + strings.Repeat(" ", 2)
+		case "TW":
+			treeThisMove += moveShortName[aMoves[nextMove].name] + horiz1
+			treePrevMovesTD += vert1 + strings.Repeat(" ", 7)
+		}
+	}
+}
+
+/*
+// These are used in the Tree printing subroutine pmd(......) in playAllMoves    //commented out to eliminate warning
+
+const vert5 = "  " + vert1 + "  "       // Looks Like: ->  ┃  <-
+const vert8 = "  " + vert5 + " "        // Looks Like: ->    ┃   <-
+const horiz5 = horiz3 + horiz1 + horiz1 // Looks Like: ->━━━━━<-
+const horiz8 = horiz3 + horiz5          // Looks Like: ->━━━━━━━━<-const vert3 = " " + vert1 + " "              // Looks Like: -> ┃ <-
+const horiz3 = horiz1 + horiz1 + horiz1      // Looks Like: ->━━━<-
+const horiz1NewFirstStrat = string('\u2533') // Looks Like: ->┳<-
+const horiz3NewFirstStrat = horiz1 + horiz1NewFirstStrat + horiz1 // Looks Like: ->━┳━<-
+const horiz1NewStratLastStrat = string('\u2517') // Looks Like: ->┗<-
+const horiz3NewLastStrat = " " + horiz1NewStratLastStrat + horiz1 // Looks Like: -> ┗━<-
+const horiz3NewMidStrat = horiz1 + horiz1NewMidStrat + horiz1     // Looks Like: -> ┣━<-
+*/

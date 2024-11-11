@@ -18,7 +18,6 @@ const gameLengthLimitOrig = 150     // max moveCounter; increasing to 200 does n
 const gameLengthLimitNew = 50000000 // max mvsTriedTD
 var gameLengthLimit int
 var moveNumMax int
-var treePrevMvs string
 
 type printMoveDetail struct {
 	pType                   string
@@ -58,7 +57,6 @@ var pMD = printMoveDetail{
 	outputTo:                "C",
 }
 
-var err error
 var singleGame bool // = true
 
 func main() {
@@ -160,7 +158,7 @@ func main() {
 	for i := range args {
 		args[i] = strings.ToUpper(args[i])
 	}
-
+	var err error
 	cLArgs.firstDeckNum, err = strconv.Atoi(args[1])
 	if err != nil || cLArgs.firstDeckNum < 0 || cLArgs.firstDeckNum > 9999 {
 		println("first argument invalid - args[1]")
