@@ -15,7 +15,7 @@ func printMove(m move) string {
 	case "moveDown":
 		outS += "Move: " + m.cardToMove.pStr() + " down from waste to column: " + strconv.Itoa(m.toCol) + "  Priority: " + strconv.Itoa(m.priority)
 	case "moveEntireColumn":
-		outS += "Move: the cards starting with: " + m.MovePortion[0].pStr() + " From column: " + strconv.Itoa(m.fromCol) + " To column: " + strconv.Itoa(m.toCol) + "  Priority: " + strconv.Itoa(m.priority)
+		outS += "Move: The cards starting with: " + m.MovePortion[0].pStr() + " From column: " + strconv.Itoa(m.fromCol) + " To column: " + strconv.Itoa(m.toCol) + "  Priority: " + strconv.Itoa(m.priority)
 	case "movePartialColumn":
 		/*	outS += "Move: the cards starting with: " + m.MovePortion[0].pStr() + " From column: " + strconv.Itoa(m.fromCol) + " To column: " + strconv.Itoa(m.toCol) + "\n" +
 			"                         then:  move the card above " + m.MovePortion[0].pStr() + "in column: " + strconv.Itoa(m.fromCol) + " to the appropriate pile based on its suit.  Priority: " + strconv.Itoa(m.priority)*/
