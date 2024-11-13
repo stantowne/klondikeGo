@@ -9,7 +9,6 @@ import (
 	"log"
 	"math"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -76,16 +75,13 @@ type deckWinLossDetailStats struct {
 var dWLDStats deckWinLossDetailStats
 var deckWinLossDetail []deckWinLossDetailStats
 
-func playNew(reader csv.Reader, cLArgs commandLineArgs) {
-	firstDeckNum := cLArgs.firstDeckNum
-	numberOfDecksToBePlayed := cLArgs.numberOfDecksToBePlayed
-	verbose := cLArgs.verbose
-	verboseSpecial := cLArgs.verboseSpecial
-	findAllWinStrats := cLArgs.findAllWinStrats
-	pMD := cLArgs.pMD
+func playNew(reader csv.Reader, cfg Configuration) {
+	firstDeckNum := cfg.General.FirstDeckNum
+	numberOfDecksToBePlayed := cfg.General.NumberOfDecksToBePlayed
+	verbose := cfg.General.Verbose
+	pMD := cfg.PlayNew.PrintMoveDetailOptions
 	var varSp2PN variablesSpecificToPlayNew
 	varSp2PN.priorBoards = map[bCode]bool{}
-
 	var deckWinsAD = 0
 	var deckLossesAD = 0
 	var stratWinsAD = 0
@@ -126,7 +122,7 @@ func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
 		startTimeTD = time.Now()
-		moveNumMax = 0
+		moveNumMax = 0                  //to keep track of length of the longest strategy o far
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {
 			break
@@ -155,10 +151,10 @@ func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 		//temp		AllMvStratNum := 0
 		var b = dealDeck(d)
 
-		if pMD.pType == "TW" || pMD.pType == "TS" {
+		if pMD.Type == "TW" || pMD.Type == "TS" {
 			_, err = pfmt.Printf("\n\nDeck %v\n", deckNum)
 			fmt.Printf("\n\n Strat #")
-			if pMD.pType == "TW" {
+			if pMD.Type == "TW" {
 				for i := 1; i <= 200; i++ {
 					fmt.Printf("    %3v ", i)
 				}
@@ -166,7 +162,7 @@ func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 			}
 		}
 
-		result1, result2 := playAllMoveS(b, 0, deckNum, cLArgs, varSp2PN)
+		result1, result2 := playAllMoveS(b, 0, deckNum, cfg, varSp2PN, startTimeTD)
 
 		if stratWinsTD > 0 {
 			deckWinsAD += 1
@@ -175,8 +171,7 @@ func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 		}
 
 		/*
-			// Verbose Special "WL" Starts Here - No effect on operation
-			if strings.Contains(verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics
+			if cfg.PlayNew.WinLossReport { // Deck Win Loss Summary Statistics
 				if stratWinsTD == 0 {
 					dWLDStats.winLoss = "L"
 					dWLDStats.moveNumAt1stWinOrAtLoss = 0
@@ -194,12 +189,9 @@ func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 				}
 				deckWinLossDetail = append(deckWinLossDetail, dWLDStats)
 
-			}
-		*/
-		// Verbose Special "WL" Ends Here - No effect on operation
+			}*/
 
-		//Verbose Special "DBD" Starts Here - No effect on operation
-		if strings.Contains(verboseSpecial, ";DBD;") { // Deck-by-deck Statistics
+		if cfg.PlayNew.DeckByDeckReport == "long" { // Deck-by-deck Statistics
 			if stratWinsTD > 0 {
 				fmt.Printf("\n\n*************************\n\nDeck: %d  WON    Result Codes: %v %v", deckNum, result1, result2)
 			} else {
@@ -221,15 +213,13 @@ func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 			if stratLossesTD+stratWinsTD != stratNumTD {
 				fmt.Printf("\n     *********** Strategies Tried != Strategies Lost + Strategies Won")
 			}
-			if findAllWinStrats {
+			if cfg.PlayNew.FindAllWinStrats {
 				fmt.Printf("\n\n Multiple Successful Strategies were found in some wining decks.")
 				_, err = pfmt.Printf("   Total winning strategies found: %d\n", stratWinsTD)
 			}
 		}
-		// Verbose Special "DBD" Ends Here - No effect on operation
 
-		//Verbose Special "DBDS" Starts Here - No effect on operation
-		if strings.Contains(verboseSpecial, ";DBDS;") { // Deck-by-deck SHORT Statistics
+		if cfg.PlayNew.DeckByDeckReport == "short" { // Deck-by-deck SHORT Statistics
 			var est time.Duration
 			//                      nanosecondsTD   / Decks Played So Far         * remaining decks [remaining decks = numbertobeplayed - decksplayed so far
 			est = time.Duration(float64(time.Since(startTimeAD))/float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum))) * time.Nanosecond
@@ -259,7 +249,6 @@ func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 			}
 			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GML: %5v   Won: %5.1f%%   Lost: %5.1f%%   GML: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(varSp2PN.priorBoards), deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGML_AD*100, deckNum+1-firstDeckNum, 1), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
 		}
-		// Verbose Special "DBDS" Ends Here - No effect on operation
 
 		// Verbose Special "BELL" Starts Here - No effect on operation
 		/*if strings.Contains(verboseSpecial, ";BELL;") && time.Since(startTimeTD) > 1*time.Second { // changed 5*time.Minute to 1*time.Second for test change it back
@@ -308,21 +297,21 @@ func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 	if stratLossesAD+stratWinsAD != stratNumAD {
 		fmt.Printf("\n     *********** Strategies Tried != Strategies Lost + Strategies Won")
 	}
-	if findAllWinStrats {
+	if cfg.PlayNew.FindAllWinStrats {
 		fmt.Printf("\n\n Multiple Successful Strategies were found in some winng decks.")
 		_, err = pfmt.Printf("   Decks Won: %d\n", deckWinsAD)
 		_, err = pfmt.Printf("   Total winning strategies found: %d\n", stratWinsAD)
 		_, err = pfmt.Printf("   Average winning strategies found: %d\n", stratWinsAD/deckWinsAD)
 	}
-	// Verbose Special "WL" Starts Here - No effect on operation
-	if strings.Contains(verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics
+
+	if cfg.PlayNew.WinLossReport { // Deck Win Loss Summary Statistics
 		fmt.Printf("\n\n\n Deck-by Deck Win/Loss Detail   (Copy to Excel to get headings to line up with the columns)")
 		fmt.Printf("\n\n Deck\tW/L\tMoveNum 1ST-Win\tStratNum At 1st-Win Or At-Loss\tMvsTried At 1st-Win Or At-Loss\tMoveNum Min-Win If-Find-All\tMoveNum Max-Win If-Find-All\tElapsed Time At 1st-Win Or At Loss\n")
 		/*for dN, detail := range deckWinLossDetail {
 			_, err = pfmt.Printf("\n  %5v\t  %v\t%4v\t%8v\t%8v\t%4v\t%4v", dN, detail.winLoss, detail.moveNumAt1stWinOrAtLoss, detail.stratNumAt1stWinOrAtLoss, detail.mvsTriedAt1stWinOrAtLoss, detail.moveNumMinWinIfFindAll, detail.moveNumMaxWinIfFindAll, detail.ElapsedTimeAt1stWinOrAtLoss)
 		}*/
 	}
-	// Verbose Special "WL" Ends Here - No effect on operation
+
 }
 
 // Divide 2 integers and round to precision digits
