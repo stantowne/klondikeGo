@@ -16,7 +16,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 	/* Return Codes: SL  = Strategy Lost	 NMA = No Moves Available
 	                 						 RB  = Repetitive Board
 	                                         SE  = Strategy Exhausted
-	                                         GML = GameLength Limit exceeded
+	                                         GLE = GameLength Limit exceeded
 	                 SW  = Strategy Win      EW  = Early Win
 											 SW  = Standard Win  Obsolete all wins are early
 	*/
@@ -31,9 +31,9 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 	}
 
 	if mvsTriedTD >= gameLengthLimit {
-		prntMDet(bIn, aMoves, 0, deckNum, moveNum, "BB", 2, "\n  SL-RB: Game Length of: %v exceeds limit: %v\n", strconv.Itoa(mvsTriedTD), strconv.Itoa(gameLengthLimit), cLArgs, varSp2PN)
-		stratLossesGML_TD++
-		return "SL", "GML"
+		prntMDet(bIn, aMoves, 0, deckNum, moveNum, "BB", 2, "\n  SL-GLE: Game Length of: %v exceeds limit: %v\n", strconv.Itoa(mvsTriedTD), strconv.Itoa(gameLengthLimit), cLArgs, varSp2PN)
+		stratLossesGLE_TD++
+		return "SL", "GLE"
 	}
 
 	// Find Next Moves
@@ -60,9 +60,6 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 		   Note: This was done this way, so as to ensure that when returns backed up the moveNum, the board would reprint.
 		*/
 
-		// Print the incoming board EVEN IF we are returning to it to try the next available move
-		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 1, "", "", "", cLArgs, varSp2PN)
-
 		// Possible increment to stratNumTD
 		if i != 0 {
 			// Started at 0 in playNew for each deck.  Increment each time a second through nth move is made
@@ -85,7 +82,6 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 			if varSp2PN.priorBoards[bNewBcode] {
 				// OK we did see it before so return to try next available move (if any) in aMoves[] aka strategy
 				stratLossesRB_TD++
-				//  	prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn string, variant int, comment string, s1 string, s2 string) {
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cLArgs, varSp2PN)
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBSS", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cLArgs, varSp2PN)
 				return "SL", "RB" // Repetitive Move
@@ -140,9 +136,9 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 		// OK, done with the various end-of-strategy conditions
 		// let's print out the list of available moves and make the next available move
 		// The board state was already printed above
-		if pMD.pType == "BB" && prntMDetTestRange(deckNum, cLArgs) {
-			prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 3, "", "", "", cLArgs, varSp2PN)
-		}
+		//if pMD.pType == "BB" && prntMDetTestRange(deckNum, cLArgs) {  // DELETE???
+		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 3, "", "", "", cLArgs, varSp2PN)
+		//}                                                             // DELETE???
 		prntMDetTree(bIn, aMoves, i, deckNum, moveNum, cLArgs, varSp2PN)
 
 		bNew := bIn.copyBoard() // Critical Must use copyBoard
@@ -152,8 +148,10 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", "", "", cLArgs, varSp2PN)
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "", cLArgs, varSp2PN)
+
+		mvsTriedTD++ // Two above printed before bumping mVStried because they print bIN  The next prnt prints bNew
+
 		prntMDet(bNew, aMoves, i, deckNum, moveNum, "BBS", 2, "     bNew: %v\n", "", "", cLArgs, varSp2PN)
-		mvsTriedTD++
 
 		// verboseSpecial option PROGRESSdddd starts here      Consider Moving clause to be a clause in prntMDet
 		if cLArgs.verboseSpecialProgressCounter > 0 && math.Mod(float64(mvsTriedTD), float64(cLArgs.verboseSpecialProgressCounter)) <= 0.1 {
@@ -173,7 +171,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 			// save winning moves into a slice in reverse
 			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
 		}
-		if recurReturnV1 == "SL" && recurReturnV2 == "GML" {
+		if recurReturnV1 == "SL" && recurReturnV2 == "GLE" {
 			return recurReturnV1, recurReturnV2 //
 		}
 	}
@@ -230,11 +228,12 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 				if j != 0 {
 					fmt.Printf("                         ")
 				}
-				fmt.Printf("%v", printMove(aMoves[j]))
 				if nextMove == j {
-					fmt.Printf("                <- Next Move")
+					fmt.Printf("Next Move -> ")
+				} else {
+					fmt.Printf("             ")
 				}
-				fmt.Printf("\n")
+				fmt.Printf("%s\n", printMove(aMoves[j]))
 			}
 		case strings.HasPrefix(pTypeIn, "BBS") && strings.HasPrefix(pMD.pType, "BBS") && variant == 1: // for BBS or BBSS
 			pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
@@ -271,19 +270,19 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cLArgs c
 			fmt.Printf("\n\n Deck: %i\n\n", dN)
 			printBoard(b)
 			fmt.Printf("\n\n Strategy #   ")
-			if pMD.pType == "WD" {
+			if pMD.pType == "TW" {
 				fmt.Printf("\n             ")
 				for i := 0; i <= 160; i++ {
 					fmt.Printf("%8s", strconv.Itoa(i)+"  ")
 				}
 			}
-			fmt.Printf("\n\n           0 ")
+			fmt.Printf("\n\n            0  ")
 		}
 		switch {
 		case len(aMoves) == 1:
 			treeThisMove = horiz1
-			treeAddToPrev = horiz1
-			treeRepeatChar = horiz1
+			treeAddToPrev = " "
+			treeRepeatChar = " "
 		case nextMove == 0:
 			treeThisMove = firstStrat
 			treeAddToPrev = vert1
@@ -315,8 +314,8 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cLArgs c
 			fmt.Printf("%s", treeThisMove)
 		} else {
 			time.Sleep(treeSleepBetwnStrategies)
-			treePrevMovesTD = treePrevMovesTD[:mN*treeMoveWidth]
-			pfmt.Printf("\n%13s %s%s", strconv.Itoa(stratNumTD), treePrevMovesTD, treeThisMove)
+			treePrevMovesTD = treePrevMovesTD[:mN*treeMoveWidth+2]
+			pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD), treePrevMovesTD, treeThisMove)
 		}
 		treePrevMovesTD += treeAddToPrev
 	}
