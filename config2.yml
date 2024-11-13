@@ -1,0 +1,36 @@
+#config.yml
+
+
+#consecutive decks or list of decks can be "consecutive" or "list"
+decks: consecutive
+
+firstDeckNum: 77
+
+numberOfDecksToBePlayed: 13
+
+
+
+length of iOS strategy: 5
+
+#
+verbose: 0
+
+#deck by deck reporting can be "short" or "long"
+deck by deck level: "short"
+
+#after how many moves should working result be printed, in millions
+progress counter: 5
+
+#suit symbol can be "text" or "icon"
+suit symbol: "icon"
+
+#rank symbol (for Ace, King, Queen, Jack) can be "text" or "number"
+rank symbol: "number"
+
+#win loss record for each deck printed at the end
+
+#should a win loss record be printed at the end -- can be true or false
+win loss record: true
+
+findAllWinStrats: F
+pMD: X
