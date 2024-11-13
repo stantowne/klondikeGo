@@ -223,17 +223,18 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 			// comment must have 2 %v in it
 			pfmt.Printf(comment, s1, s2)
 		case pMD.pType == "BB" && variant == 3:
-			fmt.Printf("\n     All Possible Moves: ")
+			fmt.Printf("\n                   ALL POSSIBLE MOVES:\n")
 			for j := range aMoves {
-				if j != 0 {
-					fmt.Printf("                         ")
-				}
 				if nextMove == j {
-					fmt.Printf("Next Move -> ")
+					fmt.Printf("     Next Move -> ")
 				} else {
-					fmt.Printf("             ")
+					fmt.Printf("                   ")
 				}
 				fmt.Printf("%s\n", printMove(aMoves[j]))
+				if nextMove == j {
+					pad := strings.Repeat( " ",93 - len( []rune(printMove(aMoves[j]))))
+					fmt.Printf(pad + "<- Next Move")
+				}
 			}
 		case strings.HasPrefix(pTypeIn, "BBS") && strings.HasPrefix(pMD.pType, "BBS") && variant == 1: // for BBS or BBSS
 			pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
@@ -267,7 +268,7 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cLArgs c
 
 	if prntMDetTestRange(dN, cLArgs) && strings.Contains(";TW;TS;TSS;", ";"+pMD.pType+";") {
 		if mN == 0 && nextMove == 0 {
-			fmt.Printf("\n\n Deck: %i\n\n", dN)
+			pfmt.Printf("\n\n Deck: %v\n\n", dN)
 			printBoard(b)
 			fmt.Printf("\n\n Strategy #   ")
 			if pMD.pType == "TW" {
