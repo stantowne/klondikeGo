@@ -5,7 +5,6 @@ import (
 )
 
 func printMove(m move) string {
-
 	outS := moveShortName[m.name] + "  "
 	switch m.name {
 	case "moveAceAcross", "moveDeuceAcross", "move3PlusAcross":

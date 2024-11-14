@@ -18,8 +18,8 @@ const gameLengthLimitOrig = 150     // max moveCounter; increasing to 200 does n
 const gameLengthLimitNew = 50000000 // max mvsTriedTD
 var gameLengthLimit int
 
-const treeSleepBetwnMoves time.Duration = 10 * time.Millisecond
-const treeSleepBetwnStrategies time.Duration = 10 * time.Millisecond
+const treeSleepBetwnMoves time.Duration = 1 * time.Millisecond
+const treeSleepBetwnStrategies time.Duration = 1 * time.Millisecond
 
 var moveNumMax int
 
@@ -42,15 +42,6 @@ type commandLineArgs struct {
 	findAllWinStrats                           bool
 	pMD                                        printMoveDetail
 }
-
-// var firstDeckNum int
-// var numberOfDecksToBePlayed int
-// var length int
-// var verbose int
-// var verboseSpecial string
-// var verboseSpecialProgressCounter int
-// var verboseSpecialProgressCounterLastPrintTime = time.Now()
-// var findAllWinStrats bool
 
 var pMD = printMoveDetail{
 	pType:                   "X",

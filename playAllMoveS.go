@@ -75,7 +75,6 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 		//       This had to be done after possible increment to stratNumTD so that each time a board is reprinted it shows the NEW strategy number
 		//       Before when it was above the possible increment the board was printing out with the stratNum of the last failed strategy
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 1, "", "", "", cLArgs, varSp2PN)
-		prntMDetTree(bIn, aMoves, i, deckNum, moveNum, cLArgs, varSp2PN)
 
 		if i == 0 {
 			// Check for repetitive board
@@ -136,7 +135,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 
 			}
 			// Verbose Special "WL" Ends Here - No effect on operation
-			prntMDetTreeReturnComment("Deck Won", deckNum, recurReturnNum, cLArgs)
+			prntMDetTreeReturnComment("DECK WON", deckNum, recurReturnNum, cLArgs)
 			return "SW", "EW", 1 //  Strategy Early Win
 		}
 
@@ -154,6 +153,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBS", 1, "\n\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", "", "", cLArgs, varSp2PN)
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBS", 2, "      bIn: %v\n", "", "", cLArgs, varSp2PN)
+		prntMDetTree(bIn, aMoves, i, deckNum, moveNum, cLArgs, varSp2PN)
 
 		mvsTriedTD++ // Two above printed before bumping mVStried because they print bIN  The next prnt prints bNew
 
@@ -231,16 +231,19 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 			pfmt.Printf(comment, s1, s2)
 		case pMD.pType == "BB" && variant == 3:
 			fmt.Printf("\n                   ALL POSSIBLE MOVES:\n")
+			if mN == 55 {
+				time.Sleep(1 * time.Second)
+			}
 			for j := range aMoves {
 				if nextMove == j {
-					fmt.Printf("   Next Move ->   ")
+					fmt.Printf("   Next Move ->    ")
 				} else {
 					fmt.Printf("                   ")
 				}
 				fmt.Printf("%s", printMove(aMoves[j]))
 				if nextMove == j {
 					pad := strings.Repeat(" ", 110-len([]rune(printMove(aMoves[j]))))
-					fmt.Printf(pad + "<- Next Move\n")
+					fmt.Printf(pad + "<- Next Move")
 				}
 				fmt.Printf("\n")
 			}
@@ -298,7 +301,7 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cLArgs c
 			treeRepeatChar = " "
 		case nextMove == len(aMoves)-1:
 			treeThisMove = lastStrat
-			treeAddToPrev = vert1
+			treeAddToPrev = " "
 			treeRepeatChar = " "
 		default:
 			treeThisMove = midStrat
@@ -341,18 +344,3 @@ func prntMDetTreeReturnComment(c string, dN int, recurReturnNum int, cLArgs comm
 		fmt.Printf(" ==> " + c)
 	}
 }
-
-/*
-// These are used in the Tree printing subroutine pmd(......) in playAllMoves    //commented out to eliminate warning
-
-const vert5 = "  " + vert1 + "  "       // Looks Like: ->  ┃  <-
-const vert8 = "  " + vert5 + " "        // Looks Like: ->    ┃   <-
-const horiz5 = horiz3 + horiz1 + horiz1 // Looks Like: ->━━━━━<-
-const horiz8 = horiz3 + horiz5          // Looks Like: ->━━━━━━━━<-const vert3 = " " + vert1 + " "              // Looks Like: -> ┃ <-
-const horiz3 = horiz1 + horiz1 + horiz1      // Looks Like: ->━━━<-
-const horiz1NewFirstStrat = string('\u2533') // Looks Like: ->┳<-
-const horiz3NewFirstStrat = horiz1 + horiz1NewFirstStrat + horiz1 // Looks Like: ->━┳━<-
-const horiz1NewStratLastStrat = string('\u2517') // Looks Like: ->┗<-
-const horiz3NewLastStrat = " " + horiz1NewStratLastStrat + horiz1 // Looks Like: -> ┗━<-
-const horiz3NewMidStrat = horiz1 + horiz1NewMidStrat + horiz1     // Looks Like: -> ┣━<-
-*/
