@@ -11,10 +11,13 @@ import (
 	"time"
 )
 
-func playAllMoveS(bIn board, moveNum int, deckNum int, cfg Configuration, varSp2PN variablesSpecificToPlayNew, startTimeTD time.Time) (string, string) {
-	if cfg.PlayNew.PrintMoveDetails {
-
-	}
+func playAllMoveS(bIn board,
+	moveNum int,
+	deckNum int,
+	cfg Configuration,
+	varSp2PN variablesSpecificToPlayNew,
+	startTimeTD time.Time) (string, string) {
+	// if cfg.PlayNew.PrintMoveDetails {}
 	/* Return Codes: SL  = Strategy Lost	 NMA = No Moves Available
 	                 						 RB  = Repetitive Board
 	                                         SE  = Strategy Exhausted
@@ -31,8 +34,21 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cfg Configuration, varSp2
 		moveNumMax = moveNum
 	}
 
+	// Check to see if the gameLenthLimit has been exceeded.
+	//If, treats this as a loss and returns with loss codes.
 	if mvsTriedTD >= gameLengthLimit {
-		prntMDet(bIn, aMoves, 0, deckNum, moveNum, "BB", 2, "\n  SL-RB: Game Length of: %v exceeds limit: %v\n", strconv.Itoa(mvsTriedTD), strconv.Itoa(gameLengthLimit), cfg, varSp2PN)
+		prntMDet(bIn,
+			aMoves,
+			0,
+			deckNum,
+			moveNum,
+			"BB",
+			2,
+			"\n  SL-RB: Game Length of: %v exceeds limit: %v\n",
+			strconv.Itoa(mvsTriedTD),
+			strconv.Itoa(gameLengthLimit),
+			cfg,
+			varSp2PN)
 		stratLossesGML_TD++
 		return "SL", "GML"
 	}
@@ -207,7 +223,18 @@ func prntMDetTestRange(deckNum int, cfg Configuration) bool {
 	}
 }
 
-func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn string, variant int, comment string, s1 string, s2 string, cfg Configuration, varSp2PN variablesSpecificToPlayNew) {
+func prntMDet(b board,
+	aMoves []move,
+	nextMove int,
+	dN int, //deck number
+	mN int, //move number
+	pTypeIn string,
+	variant int,
+	comment string,
+	s1 string,
+	s2 string,
+	cfg Configuration,
+	varSp2PN variablesSpecificToPlayNew) {
 	pMD := cfg.PlayNew.PrintMoveDetailOptions
 	// Done here just to clean up mainline logic of playAllMoves
 	// Do some repetitive printing to track progress
@@ -221,7 +248,14 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 		switch {
 		case pTypeIn == "BB" && pMD.Type == pTypeIn && variant == 1: // for BB
 			fmt.Printf("\n****************************************\n")
-			_, err = pfmt.Printf("\nDeck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
+			_, err = pfmt.Printf("\nDeck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n",
+				dN,
+				mN,
+				stratNumTD,
+				mvsTriedTD,
+				len(varSp2PN.priorBoards),
+				time.Since(startTimeAD),
+				time.Since(startTimeTD))
 			printBoard(b)
 		case pTypeIn == "BB" && pMD.Type == pTypeIn && variant == 2: // for BB
 			// comment must have 2 %v in it
