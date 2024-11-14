@@ -112,7 +112,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 			} else {
 				cmt += "  Go to Next Deck (if any)"
 			}
-			prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, cmt, "", "", cLArgs, varSp2PN)
+			prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 2, cmt, "", "", cLArgs, varSp2PN)
 
 			// Verbose Special "WL" Starts Here - No effect on operation
 			if strings.Contains(cLArgs.verboseSpecial, ";WL;") { // Deck Win Loss Summary Statistics   MOVE THIS!!!!!!!!!
