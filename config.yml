@@ -7,7 +7,7 @@ general:
   list:                                            # not implemented
   suit symbol: icon                                # must be "icon" or "alpha"
   rank symbol: number                              # must be "number" or "alpha"
-  type of play: playAll                           # must be playAll or playOrig
+  type of play: playAll                            # must be playAll or playOrig
   verbose: 0                                       # must be non-negative integer
   outputTo: C                                      # not implemented
 
@@ -24,8 +24,8 @@ play all moves:
   # should a win loss record be printed at the end
   win loss record: true                            # must be true or false
 
-  find all winning strategies?: false              # must be false or true
-  print move detail?: false
+  find all winning strategies?: false              # must be true or false
+  print move detail?: false                        # must be true or false
   print move detail options:
     type:                                          # must be TW, TS, super short, short, long
     starting deck number: 0
