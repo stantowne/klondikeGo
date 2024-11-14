@@ -15,8 +15,11 @@ import (
 
 // type cumulativeByDeckVariables map[string] int v,
 type variablesSpecificToPlayNew struct {
-	priorBoards map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
+	treePrevMovesTD string
+	priorBoards     map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
 }
+
+var treePrevMovesTD string
 
 var stratWinsTD = 0
 var stratLossesTD = 0
@@ -27,7 +30,6 @@ var stratLossesRB_TD = 0
 var stratLossesSE_TD = 0
 var stratNumTD = 0
 var mvsTriedTD = 0
-var treePrevMovesTD string
 
 //var mvsTriedAD = 0
 
@@ -66,6 +68,8 @@ func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 	findAllWinStrats := cLArgs.findAllWinStrats
 	var varSp2PN variablesSpecificToPlayNew
 	varSp2PN.priorBoards = map[bCode]bool{}
+	//varSp2PN.treePrevMovesTD = ""
+	treePrevMovesTD = ""
 
 	var deckWinsAD = 0
 	var deckLossesAD = 0
@@ -115,7 +119,7 @@ func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 		//temp		AllMvStratNum := 0
 		var b = dealDeck(d)
 
-		result1, result2 := playAllMoveS(b, 0, deckNum, cLArgs, varSp2PN)
+		result1, result2, _ := playAllMoveS(b, 0, deckNum, cLArgs, varSp2PN)
 
 		if stratWinsTD > 0 {
 			deckWinsAD += 1
@@ -232,6 +236,7 @@ func playNew(reader csv.Reader, cLArgs commandLineArgs) {
 		stratNumTD = 0
 		mvsTriedAD += mvsTriedTD + 1
 		mvsTriedTD = 0
+		//	varSp2PN.treePrevMovesTD = ""
 		treePrevMovesTD = ""
 		clear(varSp2PN.priorBoards)
 	}

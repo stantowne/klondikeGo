@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, varSp2PN variablesSpecificToPlayNew) (string, string) {
+func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, varSp2PN variablesSpecificToPlayNew) (string, string, int) {
 
 	/* Return Codes: SL  = Strategy Lost	 NMA = No Moves Available
 	                 						 RB  = Repetitive Board
@@ -24,6 +24,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 	// Setup pfmt to print thousands with commas
 	var pfmt = message.NewPrinter(language.English)
 
+	var recurReturnNum int
+
 	var aMoves []move //available Moves
 	var recurReturnV1, recurReturnV2 string
 	if moveNum > moveNumMax {
@@ -33,7 +35,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 	if mvsTriedTD >= gameLengthLimit {
 		prntMDet(bIn, aMoves, 0, deckNum, moveNum, "BB", 2, "\n  SL-GLE: Game Length of: %v exceeds limit: %v\n", strconv.Itoa(mvsTriedTD), strconv.Itoa(gameLengthLimit), cLArgs, varSp2PN)
 		stratLossesGLE_TD++
-		return "SL", "GLE"
+		prntMDetTreeReturnComment("Game Length Limit Exceeded", deckNum, recurReturnNum, cLArgs)
+		return "SL", "GLE", 1
 	}
 
 	// Find Next Moves
@@ -72,6 +75,7 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 		//       This had to be done after possible increment to stratNumTD so that each time a board is reprinted it shows the NEW strategy number
 		//       Before when it was above the possible increment the board was printing out with the stratNum of the last failed strategy
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 1, "", "", "", cLArgs, varSp2PN)
+		prntMDetTree(bIn, aMoves, i, deckNum, moveNum, cLArgs, varSp2PN)
 
 		if i == 0 {
 			// Check for repetitive board
@@ -84,7 +88,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 				stratLossesRB_TD++
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cLArgs, varSp2PN)
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBSS", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cLArgs, varSp2PN)
-				return "SL", "RB" // Repetitive Move
+				prntMDetTreeReturnComment("Repetitive Board", deckNum, recurReturnNum, cLArgs)
+				return "SL", "RB", 1 // Repetitive Board
 			} else {
 				// Remember the board state by putting it into the map "varSp2PN.priorBoards"
 				varSp2PN.priorBoards[bNewBcode] = true
@@ -95,7 +100,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 		if i == 0 && aMoves[0].name == "No Moves Available" {
 			stratLossesNMA_TD++
 			prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 2, "  SL-NMA: No Moves Available: Strategy Lost %v%v\n", "", "", cLArgs, varSp2PN)
-			return "SL", "NMA"
+			prntMDetTreeReturnComment("No Moves Available", deckNum, recurReturnNum, cLArgs)
+			return "SL", "NMA", 1
 		}
 
 		//Detect Early Win
@@ -130,7 +136,8 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 
 			}
 			// Verbose Special "WL" Ends Here - No effect on operation
-			return "SW", "EW" //  Strategy Early Win
+			prntMDetTreeReturnComment("Deck Won", deckNum, recurReturnNum, cLArgs)
+			return "SW", "EW", 1 //  Strategy Early Win
 		}
 
 		// OK, done with the various end-of-strategy conditions
@@ -139,7 +146,6 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 		//if pMD.pType == "BB" && prntMDetTestRange(deckNum, cLArgs) {  // DELETE???
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 3, "", "", "", cLArgs, varSp2PN)
 		//}                                                             // DELETE???
-		prntMDetTree(bIn, aMoves, i, deckNum, moveNum, cLArgs, varSp2PN)
 
 		bNew := bIn.copyBoard() // Critical Must use copyBoard
 
@@ -163,21 +169,22 @@ func playAllMoveS(bIn board, moveNum int, deckNum int, cLArgs commandLineArgs, v
 		// verboseSpecial option PROGRESSdddd ends here
 
 		// ********** 2nd of the 2 MOST IMPORTANT statements in this function:  ******************************
-		recurReturnV1, recurReturnV2 = playAllMoveS(bNew, moveNum+1, deckNum, cLArgs, varSp2PN)
+		recurReturnV1, recurReturnV2, recurReturnNum = playAllMoveS(bNew, moveNum+1, deckNum, cLArgs, varSp2PN)
 
-		prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2, cLArgs, varSp2PN)
+		// CONSIDER DELETING prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2, cLArgs, varSp2PN)
 
 		if cLArgs.findAllWinStrats != true && recurReturnV1 == "SW" {
 			// save winning moves into a slice in reverse
-			return recurReturnV1, recurReturnV2 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
+			return recurReturnV1, recurReturnV2, recurReturnNum + 1 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
 		}
 		if recurReturnV1 == "SL" && recurReturnV2 == "GLE" {
-			return recurReturnV1, recurReturnV2 //
+			return recurReturnV1, recurReturnV2, recurReturnNum + 1 //
 		}
 	}
 
 	stratLossesSE_TD++
-	return "SL", "SE" //  Strategy Exhausted
+	prntMDetTreeReturnComment("No More Moves", deckNum, recurReturnNum, cLArgs)
+	return "SL", "SE", recurReturnNum + 1 //  Strategy Exhausted
 }
 
 func prntMDetTestRange(deckNum int, cLArgs commandLineArgs) bool {
@@ -226,15 +233,16 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 			fmt.Printf("\n                   ALL POSSIBLE MOVES:\n")
 			for j := range aMoves {
 				if nextMove == j {
-					fmt.Printf("     Next Move -> ")
+					fmt.Printf("   Next Move ->   ")
 				} else {
 					fmt.Printf("                   ")
 				}
-				fmt.Printf("%s\n", printMove(aMoves[j]))
+				fmt.Printf("%s", printMove(aMoves[j]))
 				if nextMove == j {
-					pad := strings.Repeat( " ",93 - len( []rune(printMove(aMoves[j]))))
-					fmt.Printf(pad + "<- Next Move")
+					pad := strings.Repeat(" ", 110-len([]rune(printMove(aMoves[j]))))
+					fmt.Printf(pad + "<- Next Move\n")
 				}
+				fmt.Printf("\n")
 			}
 		case strings.HasPrefix(pTypeIn, "BBS") && strings.HasPrefix(pMD.pType, "BBS") && variant == 1: // for BBS or BBSS
 			pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
@@ -273,7 +281,7 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cLArgs c
 			fmt.Printf("\n\n Strategy #   ")
 			if pMD.pType == "TW" {
 				fmt.Printf("\n             ")
-				for i := 0; i <= 160; i++ {
+				for i := 1; i <= 150; i++ {
 					fmt.Printf("%8s", strconv.Itoa(i)+"  ")
 				}
 			}
@@ -288,18 +296,18 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cLArgs c
 			treeThisMove = firstStrat
 			treeAddToPrev = vert1
 			treeRepeatChar = " "
-		case nextMove == len(aMoves):
+		case nextMove == len(aMoves)-1:
 			treeThisMove = lastStrat
 			treeAddToPrev = vert1
 			treeRepeatChar = " "
 		default:
 			treeThisMove = midStrat
 			treeAddToPrev = vert1
-			treeRepeatChar = ""
+			treeRepeatChar = " "
 		}
 		switch pMD.pType {
 		case "TSS":
-			treePrevMovesTD += treeAddToPrev
+			//varSp2PN.treePrevMovesTD += treeAddToPrev
 			treeMoveWidth = 1
 		case "TS":
 			treeThisMove += strings.Repeat(horiz1, 2)
@@ -315,10 +323,22 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cLArgs c
 			fmt.Printf("%s", treeThisMove)
 		} else {
 			time.Sleep(treeSleepBetwnStrategies)
-			treePrevMovesTD = treePrevMovesTD[:mN*treeMoveWidth+2]
+			//x := []rune(varSp2PN.treePrevMovesTD)
+			x := []rune(treePrevMovesTD)
+			x = x[0 : mN*treeMoveWidth]
+			//varSp2PN.treePrevMovesTD = string(x)
+			treePrevMovesTD = string(x)
+			//pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD), varSp2PN.treePrevMovesTD, treeThisMove)
 			pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD), treePrevMovesTD, treeThisMove)
 		}
+		//varSp2PN.treePrevMovesTD += treeAddToPrev
 		treePrevMovesTD += treeAddToPrev
+	}
+}
+
+func prntMDetTreeReturnComment(c string, dN int, recurReturnNum int, cLArgs commandLineArgs) {
+	if prntMDetTestRange(dN, cLArgs) && strings.Contains(";TW;TS;TSS;", ";"+pMD.pType+";") && recurReturnNum == 0 {
+		fmt.Printf(" ==> " + c)
 	}
 }
 
