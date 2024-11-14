@@ -122,7 +122,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
 		startTimeTD = time.Now()
-		moveNumMax = 0                  //to keep track of length of the longest strategy o far
+		moveNumMax = 0                  //to keep track of length of the longest strategy so far
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {
 			break
@@ -162,6 +162,8 @@ func playNew(reader csv.Reader, cfg Configuration) {
 			}
 		}
 
+		// This statement is executed once per deck and transfers program execution.
+		// When this statement returns the deck has been played.
 		result1, result2 := playAllMoveS(b, 0, deckNum, cfg, varSp2PN, startTimeTD)
 
 		if stratWinsTD > 0 {
@@ -191,6 +193,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 
 			}*/
 
+		// This If Block is Print Only
 		if cfg.PlayNew.DeckByDeckReport == "long" { // Deck-by-deck Statistics
 			if stratWinsTD > 0 {
 				fmt.Printf("\n\n*************************\n\nDeck: %d  WON    Result Codes: %v %v", deckNum, result1, result2)
@@ -219,6 +222,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 			}
 		}
 
+		// This If Block is Print Only
 		if cfg.PlayNew.DeckByDeckReport == "short" { // Deck-by-deck SHORT Statistics
 			var est time.Duration
 			//                      nanosecondsTD   / Decks Played So Far         * remaining decks [remaining decks = numbertobeplayed - decksplayed so far
@@ -239,7 +243,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 			*/
 			wL := ""
 			if stratWinsTD > 0 {
-				wL = "WON "
+				wL = "WON " // Note additional space -- for alignment
 			} else {
 				wL = "LOST"
 			}
@@ -274,6 +278,9 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		mvsTriedTD = 0
 		clear(varSp2PN.priorBoards)
 	}
+
+	// At this point, all decks to be played have been played.  Time to report aggregate won loss.
+	// From this point on, the program only prints.
 
 	fmt.Printf("\n******************\n\n" + "Decks:")
 	_, err = pfmt.Printf("\n   Played: %d", numberOfDecksToBePlayed)
