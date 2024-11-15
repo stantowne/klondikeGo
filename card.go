@@ -166,3 +166,14 @@ func (c *Card) pStr() string {
 
 	return c.rankSymbol() + sSuit + sFace + " "
 }
+
+func (c *Card) uncles() [2]Card {
+	uncles := [2]Card{}
+	uncles[0] = Card{c.Rank + 1, (c.Suit + 1) % 4, c.FaceUp}
+	uncles[1] = Card{c.Rank + 1, (c.Suit + 3) % 4, c.FaceUp}
+	return uncles
+}
+
+func (c *Card) child() Card {
+	return Card{c.Rank - 1, c.Suit, c.FaceUp}
+}

@@ -92,9 +92,9 @@ newDeck:
 			}
 
 			//make this slice of int with length = 0 and capacity = gameLengthLimitOrig
-			aMovesNumberOf := make([]int, 0, gameLengthLimitOrig) //number of available Moves
+			aMovesNumberOf := make([]int, 0, cfg.PlayOrig.GameLengthLimit) //number of available Moves
 
-			for moveCounter := 1; moveCounter < gameLengthLimitOrig+2; moveCounter++ { //start with 1 to line up with Python version
+			for moveCounter := 1; moveCounter < cfg.PlayOrig.GameLengthLimit+2; moveCounter++ { //start with 1 to line up with Python version
 				aMoves := detectAvailableMoves(b, moveCounter, singleGame)
 
 				//detects Loss

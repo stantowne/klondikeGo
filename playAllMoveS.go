@@ -36,7 +36,7 @@ func playAllMoveS(bIn board,
 
 	// Check to see if the gameLenthLimit has been exceeded.
 	//If, treats this as a loss and returns with loss codes.
-	if mvsTriedTD >= gameLengthLimit {
+	if mvsTriedTD >= cfg.PlayNew.GameLengthLimit {
 		prntMDet(bIn,
 			aMoves,
 			0,
@@ -46,7 +46,7 @@ func playAllMoveS(bIn board,
 			2,
 			"\n  SL-RB: Game Length of: %v exceeds limit: %v\n",
 			strconv.Itoa(mvsTriedTD),
-			strconv.Itoa(gameLengthLimit),
+			strconv.Itoa(cfg.PlayNew.GameLengthLimit),
 			cfg,
 			varSp2PN)
 		stratLossesGML_TD++
@@ -157,7 +157,7 @@ func playAllMoveS(bIn board,
 		// OK, done with the various end-of-strategy conditions
 		// let's print out the list of available moves and make the next available move
 		// The board state was already printed above
-		if cfg.PlayNew.PrintMoveDetails && cfg.PlayNew.PrintMoveDetailOptions.Type == "BB" && prntMDetTestRange(deckNum, cfg) {
+		if cfg.PlayNew.RestrictReporting && cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "regular" && prntMDetTestRange(deckNum, cfg) {
 			prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 3, "", "", "", cfg, varSp2PN)
 		}
 
@@ -174,7 +174,7 @@ func playAllMoveS(bIn board,
 		// verboseSpecial option PROGRESSdddd starts here      Consider Moving clause to be a clause in prntMDet
 		if cfg.PlayNew.ProgressCounter > 0 && math.Mod(float64(mvsTriedTD), float64(cfg.PlayNew.ProgressCounter)) <= 0.1 {
 			avgRepTime := time.Since(startTimeTD) / time.Duration(mvsTriedTD/cfg.PlayNew.ProgressCounter)
-			estMaxRemTimeTD := time.Since(startTimeTD) * time.Duration((gameLengthLimit-mvsTriedTD)/mvsTriedTD)
+			estMaxRemTimeTD := time.Since(startTimeTD) * time.Duration((cfg.PlayNew.GameLengthLimit-mvsTriedTD)/mvsTriedTD)
 			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(varSp2PN.priorBoards), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
 			//lastPrintTime := time.Now()
 		}
@@ -200,7 +200,7 @@ func playAllMoveS(bIn board,
 
 func prntMDetTestRange(deckNum int, cfg Configuration) bool {
 	deckRangeOK := false
-	pMD := cfg.PlayNew.PrintMoveDetailOptions
+	pMD := cfg.PlayNew.RestrictReportingTo
 	if pMD.DeckStartVal == 0 && pMD.DeckContinueFor == 0 {
 		deckRangeOK = true
 	} else {
@@ -235,7 +235,6 @@ func prntMDet(b board,
 	s2 string,
 	cfg Configuration,
 	varSp2PN variablesSpecificToPlayNew) {
-	pMD := cfg.PlayNew.PrintMoveDetailOptions
 	// Done here just to clean up mainline logic of playAllMoves
 	// Do some repetitive printing to track progress
 	// This function will use the struct pMD
@@ -244,9 +243,9 @@ func prntMDet(b board,
 	// Setup pfmt to print thousands with commas
 	var pfmt = message.NewPrinter(language.English)
 
-	if pMD.Type != "none" && prntMDetTestRange(dN, cfg) {
+	if cfg.PlayNew.RestrictReporting && prntMDetTestRange(dN, cfg) {
 		switch {
-		case pTypeIn == "BB" && pMD.Type == pTypeIn && variant == 1: // for BB
+		case pTypeIn == "BB" && cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "regular" && variant == 1: // for BB
 			fmt.Printf("\n****************************************\n")
 			_, err = pfmt.Printf("\nDeck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n",
 				dN,
@@ -257,10 +256,10 @@ func prntMDet(b board,
 				time.Since(startTimeAD),
 				time.Since(startTimeTD))
 			printBoard(b)
-		case pTypeIn == "BB" && pMD.Type == pTypeIn && variant == 2: // for BB
+		case pTypeIn == "BB" && cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "regular" && variant == 2: // for BB
 			// comment must have 2 %v in it
 			_, err = pfmt.Printf(comment, s1, s2)
-		case pMD.Type == "BB" && variant == 3:
+		case pTypeIn == "BB" && cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "regular" && variant == 3:
 			fmt.Printf("\n     All Possible Moves: ")
 			for j := range aMoves {
 				if j != 0 {
@@ -272,13 +271,13 @@ func prntMDet(b board,
 				}
 				fmt.Printf("\n")
 			}
-		case strings.HasPrefix(pTypeIn, "BBS") && strings.HasPrefix(pMD.Type, "BBS") && variant == 1: // for BBS or BBSS
+		case strings.HasPrefix(pTypeIn, "BBS") && cfg.PlayNew.ReportingMoveByMove && (cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" || cfg.PlayNew.MoveByMoveReportingOptions.Type == "very short") && variant == 1: // for BBS or BBSS
 			_, err = pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
-		case pTypeIn == "BBS" && pMD.Type == pTypeIn && variant == 2:
+		case pTypeIn == "BBS" && cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" && variant == 2:
 			_, err = pfmt.Printf(comment, b)
-		case pTypeIn == "NOTX" && pMD.Type != "X" && variant == 1:
+		case pTypeIn == "NOTX" && cfg.PlayNew.ReportingMoveByMove && variant == 1:
 			_, err = pfmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
-		case pTypeIn == "NOTX" && pMD.Type != "X" && variant == 2:
+		case pTypeIn == "NOTX" && cfg.PlayNew.ReportingMoveByMove && variant == 2:
 			_, err = pfmt.Printf(comment, s1, s2)
 		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 1:
 		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 2:

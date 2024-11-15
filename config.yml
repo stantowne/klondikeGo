@@ -1,34 +1,46 @@
 #config.yml
 
 general:
-  decks: consecutive                               # must be "consecutive" or "list"
+  decks: consecutive                               # consecutive or list
   first deck number: 0                             # non-negative integer less than 10,000
-  number of decks to be played: 10                 # positive integer no more than 10,000 minus first deck number
+  number of decks to be played: 11                 # positive integer no more than 10,000 minus first deck number
   list:                                            # not implemented
-  suit symbol: icon                                # must be "icon" or "alpha"
-  rank symbol: number                              # must be "number" or "alpha"
-  type of play: playAll                            # must be playAll or playOrig
-  verbose: 0                                       # must be non-negative integer
+  type of play: playAll                            # playAll or playOrig
+  verbose: 0                                       # non-negative integer
   outputTo: C                                      # not implemented
 
 play original:
-   length of initial override strategy: 8           # non-negative integer
+   length of initial override strategy: 8          # non-negative integer
+   game length limit in moves: 150                 # non-negative integer
 
 play all moves:
-  # level of deck by deck reporting
-  deck by deck result report: short                # must be "short" or "long"
+    game length limit in moves tried: 5            # non-negative integer
+    find all winning strategies?: false            # true or false
 
-  # after how many every moves should the interim result be printed, in millions
-  move count reporting points (in millions): 5     #
+    reporting:                                     # only one true or no trues permitted
+      deck by deck: false                          # true or false
+      move by move: true                           # true or false
+      tree: false                                  # true or false
 
-  # should a win loss record be printed at the end
-  win loss record: true                            # must be true or false
+    deck by deck reporting options:
+        type:  regular                             # regular, short, very short
 
-  find all winning strategies?: false              # must be true or false
-  print move detail?: false                        # must be true or false
-  print move detail options:
-    type:                                          # must be TW, TS, super short, short, long
-    starting deck number: 0
-    continue for how many decks: 0
-    starting move number: 0
-    continue for how many moves: 0
+    move by move reporting option:
+        type:   regular                            # regular, short, very short
+
+    tree reporting options:
+        type: regular                              # regular, narrow, very narrow
+        sleep between moves: 1000000               # non-negative integer, in nanoseconds
+        sleep between strategies: 1000000000       # non-negative integer, in nanosecond
+
+    restrict reporting to:
+      starting deck number: 0                      # 0 means no restriction
+      continue for how many decks: 0               # 0 means no restriction
+      starting move number: 0                      # 0 means no restriction
+      continue for how many moves: 0               # 0 means no restriction
+
+    progress counter in millions: 5                # non-negative integer, in millions
+
+    report final deck by deck win loss record: true         # true or false
+
+

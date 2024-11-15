@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
 	"io"
 	"log"
 	"math"
@@ -14,27 +12,9 @@ import (
 
 // type cumulativeByDeckVariables map[string] int v,
 type variablesSpecificToPlayNew struct {
-	priorBoards map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
+	priorBoards                                map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
+	verboseSpecialProgressCounterLastPrintTime time.Time
 }
-
-/*
-// These are used in the Tree printing subroutine pmd(......) in playAllMoves    //commented out to eliminate warning
-const vert1 = string('\u2503')          // Looks Like: ->┃<-
-const horiz1 = string('\u2501')         // Looks Like: ->━<-
-const vert5 = "  " + vert1 + "  "       // Looks Like: ->  ┃  <-
-const vert8 = "  " + vert5 + " "        // Looks Like: ->    ┃   <-
-const horiz5 = horiz3 + horiz1 + horiz1 // Looks Like: ->━━━━━<-
-const horiz8 = horiz3 + horiz5          // Looks Like: ->━━━━━━━━<-
-
-const vert3 = " " + vert1 + " "              // Looks Like: -> ┃ <-
-const horiz3 = horiz1 + horiz1 + horiz1      // Looks Like: ->━━━<-
-const horiz1NewFirstStrat = string('\u2533') // Looks Like: ->┳<-
-const horiz3NewFirstStrat = horiz1 + horiz1NewFirstStrat + horiz1 // Looks Like: ->━┳━<-
-const horiz1NewStratLastStrat = string('\u2517') // Looks Like: ->┗<-
-const horiz3NewLastStrat = " " + horiz1NewStratLastStrat + horiz1 // Looks Like: -> ┗━<-
-const horiz1NewMidStrat = string('\u2523') // Looks Like: ->┣<-
-const horiz3NewMidStrat = horiz1 + horiz1NewMidStrat + horiz1     // Looks Like: -> ┣━<-
-*/
 
 var stratWinsTD = 0
 var stratLossesTD = 0
@@ -79,9 +59,9 @@ func playNew(reader csv.Reader, cfg Configuration) {
 	firstDeckNum := cfg.General.FirstDeckNum
 	numberOfDecksToBePlayed := cfg.General.NumberOfDecksToBePlayed
 	verbose := cfg.General.Verbose
-	pMD := cfg.PlayNew.PrintMoveDetailOptions
 	var varSp2PN variablesSpecificToPlayNew
 	varSp2PN.priorBoards = map[bCode]bool{}
+	varSp2PN.verboseSpecialProgressCounterLastPrintTime = time.Now()
 	var deckWinsAD = 0
 	var deckLossesAD = 0
 	var stratWinsAD = 0
@@ -117,8 +97,6 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		}
 	*/
 
-	// Setup pfmt to print thousands with commas
-	var pfmt = message.NewPrinter(language.English)
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
 		startTimeTD = time.Now()
@@ -151,10 +129,10 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		//temp		AllMvStratNum := 0
 		var b = dealDeck(d)
 
-		if pMD.Type == "TW" || pMD.Type == "TS" {
+		if cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.ReportingType.Tree && cfg.PlayNew.TreeReportingOptions.Type != "narrow" {
 			_, err = pfmt.Printf("\n\nDeck %v\n", deckNum)
 			fmt.Printf("\n\n Strat #")
-			if pMD.Type == "TW" {
+			if cfg.PlayNew.TreeReportingOptions.Type == "wide" {
 				for i := 1; i <= 200; i++ {
 					fmt.Printf("    %3v ", i)
 				}
@@ -194,7 +172,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 			}*/
 
 		// This If Block is Print Only
-		if cfg.PlayNew.DeckByDeckReport == "long" { // Deck-by-deck Statistics
+		if cfg.PlayNew.ReportingType.DeckByDeck && cfg.PlayNew.DeckByDeckReportingOptions.Type == "regular" { // Deck-by-deck Statistics
 			if stratWinsTD > 0 {
 				fmt.Printf("\n\n*************************\n\nDeck: %d  WON    Result Codes: %v %v", deckNum, result1, result2)
 			} else {
@@ -223,7 +201,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		}
 
 		// This If Block is Print Only
-		if cfg.PlayNew.DeckByDeckReport == "short" { // Deck-by-deck SHORT Statistics
+		if cfg.PlayNew.ReportingType.DeckByDeck && cfg.PlayNew.DeckByDeckReportingOptions.Type != "regular" {
 			var est time.Duration
 			//                      nanosecondsTD   / Decks Played So Far         * remaining decks [remaining decks = numbertobeplayed - decksplayed so far
 			est = time.Duration(float64(time.Since(startTimeAD))/float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum))) * time.Nanosecond
