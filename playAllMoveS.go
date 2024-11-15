@@ -235,16 +235,21 @@ func prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn stri
 				time.Sleep(1 * time.Second)
 			}
 			for j := range aMoves {
+				pM1, pM2 := printMove(aMoves[j])
 				if nextMove == j {
 					fmt.Printf("   Next Move ->    ")
 				} else {
 					fmt.Printf("                   ")
 				}
-				fmt.Printf("%s", printMove(aMoves[j]))
+				fmt.Printf("%s", pM1)
 				if nextMove == j {
-					pad := strings.Repeat(" ", 110-len([]rune(printMove(aMoves[j]))))
+					pad := strings.Repeat(" ", 110-len([]rune(pM1)))
 					fmt.Printf(pad + "<- Next Move")
 				}
+				if len(pM2) > 0 {
+					fmt.Printf("%s", pM2)
+				}
+
 				fmt.Printf("\n")
 			}
 		case strings.HasPrefix(pTypeIn, "BBS") && strings.HasPrefix(pMD.pType, "BBS") && variant == 1: // for BBS or BBSS
