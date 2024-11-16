@@ -218,7 +218,7 @@ func main() {
 			"    Move Progress Reporting Cycles, in Millions: %v\n",
 			cfg.PlayNew.MoveByMoveReportingOptions.Type,
 			cfg.PlayNew.ProgressCounter)
-		// add code here to turn progress reporting off if output to file unless figure oout how to print some stuff to file and progress to console
+		// add code here to turn progress reporting off if output to file unless figure out how to print some stuff to file and progress to console
 		// add code for incompatible with ????
 	}
 	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.Tree {
