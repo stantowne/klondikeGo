@@ -12,9 +12,6 @@ import (
 	"time"
 )
 
-const treeSleepBetwnMoves time.Duration = 1 * time.Millisecond
-const treeSleepBetwnStrategies time.Duration = 1 * time.Millisecond
-
 var moveNumMax int
 
 // Setup pfmt to print thousands with commas
@@ -53,8 +50,10 @@ type Configuration struct {
 			Type string `yaml:"type"`
 		} `yaml:"move by move reporting options"`
 		TreeReportingOptions struct {
-			Type string `yaml:"type"`
-		} `yaml:"tree reporting options"`
+			Type                     string        `yaml:"type"`
+			TreeSleepBetwnMoves      time.Duration `yaml:"sleep between moves"`
+			TreeSleepBetwnStrategies time.Duration `yaml:"sleep between strategies"`
+		}
 		ProgressCounter     int  `yaml:"progress counter in millions"`
 		RestrictReporting   bool //not part of yaml file, derived after yaml file is unmarshalled & validated
 		RestrictReportingTo struct {
@@ -208,25 +207,31 @@ func main() {
 	}
 	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.DeckByDeck {
 		_, err = pfmt.Printf("Deck By Deck Reporting: \n"+
-			"Type: %v\n"+
-			"Move Progress Reporting Cycles, in Millions: %v\n",
+			"                                           Type: %v\n"+
+			"    Move Progress Reporting Cycles, in Millions: %v\n",
 			cfg.PlayNew.DeckByDeckReportingOptions.Type,
 			cfg.PlayNew.ProgressCounter)
 	}
 	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.MoveByMove {
 		_, err = pfmt.Printf("Move By Move Reporting: \n"+
-			"Type: %v\n"+
-			"Move Progress Reporting Cycles, in Millions: %v\n",
+			"                                           Type: %v\n"+
+			"    Move Progress Reporting Cycles, in Millions: %v\n",
 			cfg.PlayNew.MoveByMoveReportingOptions.Type,
 			cfg.PlayNew.ProgressCounter)
+		// add code here to turn progress reporting off if output to file unless figure oout how to print some stuff to file and progress to console
+		// add code for incompatible with ????
 	}
 	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.Tree {
 		_, err = pfmt.Printf("Tree Reporting: \n"+
-			"Type: %v\n",
-			cfg.PlayNew.MoveByMoveReportingOptions.Type)
+			"                        Type: %v\n"+
+			"         TreeSleepBetwnMoves: %v\n"+
+			"    TreeSleepBetwnStrategies: %v\n",
+			cfg.PlayNew.MoveByMoveReportingOptions.Type,
+			cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves,
+			cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies)
 	}
 	if cfg.General.TypeOfPlay == "PlayAll" && cfg.PlayNew.RestrictReporting {
-		_, err = pfmt.Printf("Reporting Restricted To\n"+
+		_, err = pfmt.Printf("\nReporting Restricted To\n"+
 			"                       Staring with Deck: %v\n"+
 			"                            Continue for: %v decks (0 = all the rest)\n"+
 			"             Starting with Moves Tried #: %v\n"+
@@ -237,7 +242,7 @@ func main() {
 			cfg.PlayNew.RestrictReportingTo.MovesTriedContinueFor)
 	}
 	if cfg.General.TypeOfPlay == "playAll" {
-		_, err = pfmt.Printf("Game Length Limit, in millions: %v\n",
+		_, err = pfmt.Printf("\nGame Length Limit, in millions: %v\n",
 			cfg.PlayNew.GameLengthLimit)
 	}
 	// ******************************************

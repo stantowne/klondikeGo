@@ -39,7 +39,7 @@ func playAllMoveS(bIn board,
 
 	// Check to see if the gameLenthLimit has been exceeded.
 	//If, treats this as a loss and returns with loss codes.
-	if mvsTriedTD >= cfg.PlayNew.GameLengthLimit {
+	if mvsTriedTD >= cfg.PlayNew.GameLengthLimit*1_000_000 {
 		prntMDet(bIn,
 			aMoves,
 			0,
@@ -49,7 +49,7 @@ func playAllMoveS(bIn board,
 			2,
 			"\n  SL-GLE: Game Length of: %v exceeds limit: %v\n",
 			strconv.Itoa(mvsTriedTD),
-			strconv.Itoa(cfg.PlayNew.GameLengthLimit),
+			strconv.Itoa(cfg.PlayNew.GameLengthLimit*1_000_000),
 			cfg,
 			varSp2PN)
 		stratLossesGLE_TD++
@@ -176,14 +176,12 @@ func playAllMoveS(bIn board,
 
 		mvsTriedTD++
 
-		// verboseSpecial option PROGRESSdddd starts here      Consider Moving clause to be a clause in prntMDet
 		if cfg.PlayNew.ProgressCounter > 0 && math.Mod(float64(mvsTriedTD), float64(cfg.PlayNew.ProgressCounter)) <= 0.1 {
 			avgRepTime := time.Since(startTimeTD) / time.Duration(mvsTriedTD/cfg.PlayNew.ProgressCounter)
-			estMaxRemTimeTD := time.Since(startTimeTD) * time.Duration((cfg.PlayNew.GameLengthLimit-mvsTriedTD)/mvsTriedTD)
+			estMaxRemTimeTD := time.Since(startTimeTD) * time.Duration((cfg.PlayNew.GameLengthLimit*1_000_000-mvsTriedTD)/mvsTriedTD)
 			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, mvsTriedTD, moveNum, moveNumMax, stratNumTD, len(varSp2PN.priorBoards), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
 			//lastPrintTime := time.Now()
 		}
-		// verboseSpecial option PROGRESSdddd ends here
 
 		// ********** 2nd of the 2 MOST IMPORTANT statements in this function:  ******************************
 		recurReturnV1, recurReturnV2, recurReturnNum = playAllMoveS(bNew, moveNum+1, deckNum, cfg, varSp2PN, startTimeTD)
@@ -361,10 +359,10 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 			treeAddToPrev += strings.Repeat(treeRepeatChar, 7)
 		}
 		if nextMove == 0 {
-			time.Sleep(treeSleepBetwnMoves)
+			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves)
 			fmt.Printf("%s", treeThisMove)
 		} else {
-			time.Sleep(treeSleepBetwnStrategies)
+			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies)
 			//x := []rune(varSp2PN.treePrevMovesTD)
 			x := []rune(varSp2PN.treePrevMovesTD)
 			x = x[0 : mN*treeMoveWidth]

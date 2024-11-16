@@ -19,8 +19,8 @@ play all moves:
 
     reporting:                                     # only one true or no trues permitted
       deck by deck: false                          # true or false
-      move by move: true                           # true or false
-      tree: false                                  # true or false
+      move by move: false                          # true or false
+      tree: true                                   # true or false
 
     deck by deck reporting options:
         type:  regular                             # regular, short, very short
@@ -39,7 +39,7 @@ play all moves:
       starting move number: 0                      # 0 means no restriction
       continue for how many moves: 0               # 0 means no restriction
 
-    progress counter in millions: 5                # non-negative integer, in millions
+    progress counter in millions: 50               # non-negative integer, in millions
 
     report final deck by deck win loss record: true         # true or false
 
