@@ -39,9 +39,10 @@ type Configuration struct {
 		ReportingDeckByDeck bool //not part of yaml file, derived after yaml file is unmarshalled & validated
 		ReportingMoveByMove bool //not part of yaml file, derived after yaml file is unmarshalled & validated
 		ReportingType       struct {
-			DeckByDeck bool `yaml:"deck by deck"`
-			MoveByMove bool `yaml:"move by move"`
-			Tree       bool `yaml:"tree"`
+			DeckByDeck  bool `yaml:"deck by deck"`
+			MoveByMove  bool `yaml:"move by move"`
+			Tree        bool `yaml:"tree"`
+			NoReporting bool //  set in code below not by yaml
 		} `yaml:"reporting"`
 		DeckByDeckReportingOptions struct {
 			Type string `yaml:"type"`
@@ -245,6 +246,7 @@ func main() {
 		_, err = pfmt.Printf("\nGame Length Limit, in millions: %v\n",
 			cfg.PlayNew.GameLengthLimit)
 	}
+	cfg.PlayNew.ReportingType.NoReporting = cfg.PlayNew.ReportingType.DeckByDeck || cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree
 	// ******************************************
 	//
 	// Done printing out the configuration:
