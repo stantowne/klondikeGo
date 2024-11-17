@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -122,6 +123,13 @@ func main() {
 
 	// completing cfg
 
+	// make all strings in cfg EXCEPT cfg.General.TOutputTo lower case
+	//Try to replace with a for range loop of cfg in future
+	cfg.General.TypeOfPlay = strings.ToLower(cfg.General.TypeOfPlay)
+	cfg.PlayNew.DeckByDeckReportingOptions.Type = strings.ToLower(cfg.PlayNew.DeckByDeckReportingOptions.Type)
+	cfg.PlayNew.MoveByMoveReportingOptions.Type = strings.ToLower(cfg.PlayNew.MoveByMoveReportingOptions.Type)
+	cfg.PlayNew.TreeReportingOptions.Type = strings.ToLower(cfg.PlayNew.TreeReportingOptions.Type)
+
 	// ReportingMoveByMove zero value is false
 	if cfg.PlayNew.ReportingType.DeckByDeck {
 		cfg.PlayNew.ReportingDeckByDeck = true
@@ -196,7 +204,7 @@ func main() {
 		cfg.General.TypeOfPlay,
 		cfg.General.Verbose)
 
-	if cfg.General.TypeOfPlay == "playOrig" {
+	if cfg.General.TypeOfPlay == "playorig" {
 		nOfS := 1 << cfg.PlayOrig.Length //number of initial strategies
 		_, err = pfmt.Printf(" Style: Original iOS (Initial Override Strategies)\n\n"+
 			"                     iOS strategy length: %v\n"+
@@ -208,14 +216,14 @@ func main() {
 			nOfS*cfg.General.NumberOfDecksToBePlayed,
 			cfg.PlayOrig.GameLengthLimit)
 	}
-	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.DeckByDeck {
+	if cfg.General.TypeOfPlay == "playall" && cfg.PlayNew.ReportingType.DeckByDeck {
 		_, err = pfmt.Printf("Deck By Deck Reporting: \n"+
 			"                                           Type: %v\n"+
 			"    Move Progress Reporting Cycles, in Millions: %v\n",
 			cfg.PlayNew.DeckByDeckReportingOptions.Type,
 			cfg.General.ProgressCounter)
 	}
-	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.MoveByMove {
+	if cfg.General.TypeOfPlay == "playall" && cfg.PlayNew.ReportingType.MoveByMove {
 		_, err = pfmt.Printf("Move By Move Reporting: \n"+
 			"                                           Type: %v\n"+
 			"    Move Progress Reporting Cycles, in Millions: %v\n",
@@ -224,7 +232,7 @@ func main() {
 		// add code here to turn progress reporting off if output to file unless figure out how to print some stuff to file and progress to console
 		// add code for incompatible with ????
 	}
-	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.Tree {
+	if cfg.General.TypeOfPlay == "playall" && cfg.PlayNew.ReportingType.Tree {
 		_, err = pfmt.Printf("Tree Reporting: \n"+
 			"                        Type: %v\n"+
 			"         TreeSleepBetwnMoves: %v\n"+
@@ -233,7 +241,7 @@ func main() {
 			cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves,
 			cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies)
 	}
-	if cfg.General.TypeOfPlay == "PlayAll" && cfg.PlayNew.RestrictReporting {
+	if cfg.General.TypeOfPlay == "playall" && cfg.PlayNew.RestrictReporting {
 		_, err = pfmt.Printf("\nReporting Restricted To\n"+
 			"                       Staring with Deck: %v\n"+
 			"                            Continue for: %v decks (0 = all the rest)\n"+
@@ -244,7 +252,7 @@ func main() {
 			cfg.PlayNew.RestrictReportingTo.MovesTriedStartVal,
 			cfg.PlayNew.RestrictReportingTo.MovesTriedContinueFor)
 	}
-	if cfg.General.TypeOfPlay == "playAll" {
+	if cfg.General.TypeOfPlay == "playall" {
 		_, err = pfmt.Printf("\nGame Length Limit, in millions: %v\n",
 			cfg.PlayNew.GameLengthLimit)
 	}
@@ -303,11 +311,11 @@ func main() {
 		}
 	}
 
-	if cfg.General.TypeOfPlay == "playAll" {
+	if cfg.General.TypeOfPlay == "playall" {
 		moveBasePriority = moveBasePriorityNew
 		playNew(*reader, cfg)
 	}
-	if cfg.General.TypeOfPlay == "playOrig" {
+	if cfg.General.TypeOfPlay == "playorig" {
 		moveBasePriority = moveBasePriorityOrig
 		playOrig(*reader, cfg)
 	}

@@ -233,7 +233,7 @@ func prntMDet(b board,
 	s1 string,
 	s2 string,
 	cfg Configuration,
-	varSp2PN variablesSpecificToPlayNew) {
+	vPN variablesSpecificToPlayNew) {
 	// Done here just to clean up mainline logic of playAllMoves
 	// Do some repetitive printing to track progress
 	// This function will use the struct pMD
@@ -248,7 +248,7 @@ func prntMDet(b board,
 				mN,
 				stratNumTD,
 				mvsTriedTD,
-				len(varSp2PN.priorBoards),
+				len(vPN.priorBoards),
 				time.Since(startTimeAD),
 				time.Since(startTimeTD))
 			printBoard(b)
@@ -276,11 +276,11 @@ func prntMDet(b board,
 				fmt.Printf("\n")
 			}
 		case strings.HasPrefix(pTypeIn, "BBS") && cfg.PlayNew.ReportingMoveByMove && (cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" || cfg.PlayNew.MoveByMoveReportingOptions.Type == "very short") && variant == 1: // for BBS or BBSS
-			_, err = pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
+			_, err = pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(vPN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
 		case pTypeIn == "BBS" && cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" && variant == 2:
 			_, err = pfmt.Printf(comment, b)
 		case pTypeIn == "NOTX" && cfg.PlayNew.ReportingMoveByMove && variant == 1:
-			_, err = pfmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(varSp2PN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
+			_, err = pfmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(vPN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
 		case pTypeIn == "NOTX" && cfg.PlayNew.ReportingMoveByMove && variant == 2:
 			_, err = pfmt.Printf(comment, s1, s2)
 		case (pTypeIn == "TW" || pTypeIn == "TS" || pTypeIn == "TSS") && variant == 1:
@@ -289,7 +289,7 @@ func prntMDet(b board,
 	}
 }
 
-func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Configuration, varSp2PN variablesSpecificToPlayNew) {
+func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Configuration, vPN variablesSpecificToPlayNew) {
 
 	const (
 		vert1      = string('\u2503') // Looks Like: ->┃<-
@@ -336,7 +336,7 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 		}
 		switch cfg.PlayNew.TreeReportingOptions.Type {
 		case "very narrow":
-			//varSp2PN.treePrevMovesTD += treeAddToPrev
+			//vPN.treePrevMovesTD += treeAddToPrev
 			treeMoveWidth = 1
 		case "narrow":
 			treeThisMove += strings.Repeat(horiz1, 2)
@@ -352,16 +352,16 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 			fmt.Printf("%s", treeThisMove)
 		} else {
 			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies)
-			//x := []rune(varSp2PN.treePrevMovesTD)
-			x := []rune(varSp2PN.treePrevMovesTD)
+			//x := []rune(vPN.treePrevMovesTD)
+			x := []rune(vPN.treePrevMovesTD)
 			x = x[0 : mN*treeMoveWidth]
-			//varSp2PN.treePrevMovesTD = string(x)
-			varSp2PN.treePrevMovesTD = string(x)
-			//pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD), varSp2PN.treePrevMovesTD, treeThisMove)
-			_, err = pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD), varSp2PN.treePrevMovesTD, treeThisMove)
+			//vPN.treePrevMovesTD = string(x)
+			vPN.treePrevMovesTD = string(x)
+			//pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD), vPN.treePrevMovesTD, treeThisMove)
+			_, err = pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD), vPN.treePrevMovesTD, treeThisMove)
 		}
-		//varSp2PN.treePrevMovesTD += treeAddToPrev
-		varSp2PN.treePrevMovesTD += treeAddToPrev
+		//vPN.treePrevMovesTD += treeAddToPrev
+		vPN.treePrevMovesTD += treeAddToPrev
 	}
 }
 
