@@ -106,7 +106,7 @@ func playAllMoveS(bIn board,
 				//  	prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn string, variant int, comment string, s1 string, s2 string) {
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BB", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cfg, varSp2PN)
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "BBSS", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cfg, varSp2PN)
-				prntMDetTreeReturnComment("Repetitive Board", deckNum, recurReturnNum, cfg)
+				prntMDetTreeReturnComment("RB", deckNum, recurReturnNum, cfg)
 				return "SL", "RB", 1 // Repetitive Board
 			} else {
 				// Remember the board state by putting it into the map "varSp2PN.priorBoards"
