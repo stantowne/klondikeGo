@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
 	"io"
 	"log"
 	"math"
@@ -14,9 +12,8 @@ import (
 
 // type cumulativeByDeckVariables map[string] int v,
 type variablesSpecificToPlayNew struct {
-	priorBoards                                map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
-	verboseSpecialProgressCounterLastPrintTime time.Time
-	treePrevMovesTD                            string
+	priorBoards     map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
+	treePrevMovesTD string
 }
 
 //var treePrevMovesTD string
@@ -69,7 +66,6 @@ func playNew(reader csv.Reader, cfg Configuration) {
 	varSp2PN.treePrevMovesTD = ""
 	//treePrevMovesTD = ""
 
-	varSp2PN.verboseSpecialProgressCounterLastPrintTime = time.Now()
 	var deckWinsAD = 0
 	var deckLossesAD = 0
 	var stratWinsAD = 0
@@ -105,23 +101,20 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		}
 	*/
 
-	// Setup pfmt to print thousands with commas
-	var pfmt = message.NewPrinter(language.English)
-
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
 		startTimeTD = time.Now()
-		moveNumMax = 0                  //to keep track of length of the longest strategy so far
-		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
-		if err == io.EOF {
+		moveNumMax = 0                   //to keep track of length of the longest strategy so far
+		protoDeck, err5 := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.  // err5 used to avoid shadowing err
+		if err5 == io.EOF {
 			break
 		}
-		if err != nil {
-			log.Println("Cannot read from inputFileName:", err)
+		if err5 != nil {
+			log.Println("Cannot read from inputFileName:", err5)
 		}
 
 		if verbose > 1 {
-			pfmt.Printf("\nDeck #%d:\n", deckNum)
+			_, err = pfmt.Printf("\nDeck #%d:\n", deckNum)
 		}
 		var d Deck
 
@@ -245,7 +238,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 			if time.Since(startTimeAD) > time.Duration(5*time.Minute) {
 				elTimeSinceStartTimeADFormatted = time.Since(startTimeAD).Truncate(time.Second).String()
 			}
-			pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(varSp2PN.priorBoards), deckWinsAD, deckLossesAD, stratLossesGLE_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGLE_AD*100, deckNum+1-firstDeckNum, 1), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
+			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(varSp2PN.priorBoards), deckWinsAD, deckLossesAD, stratLossesGLE_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGLE_AD*100, deckNum+1-firstDeckNum, 1), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
 		}
 
 		// Verbose Special "BELL" Starts Here - No effect on operation

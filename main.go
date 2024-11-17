@@ -21,13 +21,15 @@ var singleGame bool // = true
 
 type Configuration struct {
 	General struct {
-		Decks                   string `yaml:"decks"`                        // must be "consecutive" or "list"
-		FirstDeckNum            int    `yaml:"first deck number"`            // must be non-negative integer
-		NumberOfDecksToBePlayed int    `yaml:"number of decks to be played"` //must be non-negative integer
-		List                    []int
-		TypeOfPlay              string `yaml:"type of play"` // must be "playOrig" or "playAll"
-		Verbose                 int    `yaml:"verbose"`
-		OutputTo                string `yaml:"outputTo"`
+		Decks                        string `yaml:"decks"`                        // must be "consecutive" or "list"
+		FirstDeckNum                 int    `yaml:"first deck number"`            // must be non-negative integer
+		NumberOfDecksToBePlayed      int    `yaml:"number of decks to be played"` //must be non-negative integer
+		List                         []int
+		TypeOfPlay                   string `yaml:"type of play"` // must be "playOrig" or "playAll"
+		Verbose                      int    `yaml:"verbose"`
+		OutputTo                     string `yaml:"outputTo"`
+		ProgressCounter              int    `yaml:"progress counter in millions"`
+		ProgressCounterLastPrintTime time.Time
 	} `yaml:"general"`
 	PlayOrig struct {
 		Length          int `yaml:"length of initial override strategy"`
@@ -42,7 +44,7 @@ type Configuration struct {
 			DeckByDeck  bool `yaml:"deck by deck"`
 			MoveByMove  bool `yaml:"move by move"`
 			Tree        bool `yaml:"tree"`
-			NoReporting bool //  set in code below not by yaml
+			NoReporting bool //not part of yaml file, derived after yaml file is unmarshalled & validated
 		} `yaml:"reporting"`
 		DeckByDeckReportingOptions struct {
 			Type string `yaml:"type"`
@@ -55,7 +57,6 @@ type Configuration struct {
 			TreeSleepBetwnMoves      time.Duration `yaml:"sleep between moves"`
 			TreeSleepBetwnStrategies time.Duration `yaml:"sleep between strategies"`
 		}
-		ProgressCounter     int  `yaml:"progress counter in millions"`
 		RestrictReporting   bool //not part of yaml file, derived after yaml file is unmarshalled & validated
 		RestrictReportingTo struct {
 			DeckStartVal          int `yaml:"starting deck number"`
@@ -78,13 +79,13 @@ func main() {
 	*/
 	// unmarshal YAML file
 	cfg := Configuration{}
-	data, err := os.ReadFile("./config.yml")
-	if err != nil {
-		panic(err)
+	data, err3 := os.ReadFile("./config.yml") // err3 used to avoid shadowing err
+	if err3 != nil {
+		panic(err3)
 	}
-	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		panic(err)
-	}
+	if err4 := yaml.Unmarshal(data, &cfg); err4 != nil {
+		panic(err4)
+	} // err4 used to avoid shadowing err
 
 	// validate cfg after unmarshal
 	if cfg.General.FirstDeckNum < 0 || cfg.General.FirstDeckNum > 9999 {
@@ -136,6 +137,7 @@ func main() {
 		cfg.PlayNew.RestrictReportingTo.MovesTriedContinueFor != 0 {
 		cfg.PlayNew.RestrictReporting = true
 	}
+	cfg.PlayNew.ReportingType.NoReporting = cfg.PlayNew.ReportingType.DeckByDeck || cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree
 
 	/*// Sixth
 	pMdArgs := strings.Split(args[6], ",")
@@ -211,14 +213,14 @@ func main() {
 			"                                           Type: %v\n"+
 			"    Move Progress Reporting Cycles, in Millions: %v\n",
 			cfg.PlayNew.DeckByDeckReportingOptions.Type,
-			cfg.PlayNew.ProgressCounter)
+			cfg.General.ProgressCounter)
 	}
 	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.MoveByMove {
 		_, err = pfmt.Printf("Move By Move Reporting: \n"+
 			"                                           Type: %v\n"+
 			"    Move Progress Reporting Cycles, in Millions: %v\n",
 			cfg.PlayNew.MoveByMoveReportingOptions.Type,
-			cfg.PlayNew.ProgressCounter)
+			cfg.General.ProgressCounter)
 		// add code here to turn progress reporting off if output to file unless figure out how to print some stuff to file and progress to console
 		// add code for incompatible with ????
 	}
@@ -246,7 +248,28 @@ func main() {
 		_, err = pfmt.Printf("\nGame Length Limit, in millions: %v\n",
 			cfg.PlayNew.GameLengthLimit)
 	}
-	cfg.PlayNew.ReportingType.NoReporting = cfg.PlayNew.ReportingType.DeckByDeck || cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree
+	if cfg.General.OutputTo == "console" {
+		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves *= 100_000_000
+		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies *= 100_000_000
+		if cfg.General.TypeOfPlay == "playorig" {
+			cfg.General.ProgressCounter = 0
+		} else {
+			if cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree {
+				cfg.General.ProgressCounter = 0
+			}
+		}
+	} else {
+		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves = 0 // Change this if figure out how to print to file AND console
+		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies = 0
+		if cfg.General.TypeOfPlay == "playorig" {
+			cfg.General.ProgressCounter = 1
+		}
+	}
+	cfg.General.ProgressCounterLastPrintTime = time.Now()
+
+	/*	for _, v = range cfg {
+		}*/
+
 	// ******************************************
 	//
 	// Done printing out the configuration:
@@ -256,14 +279,14 @@ func main() {
 	// ******************************************
 
 	inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
-	file, err := os.Open(inputFileName)
-	if err != nil {
-		log.Println("Cannot open inputFileName:", err)
+	file, err1 := os.Open(inputFileName) // err1 used to avoid shadowing err
+	if err1 != nil {
+		log.Println("Cannot open inputFileName:", err1)
 	}
 	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			println("could not close file:", err)
+		err2 := file.Close() // err2 used to avoid shadowing err
+		if err2 != nil {
+			println("could not close file:", err2)
 		}
 	}(file)
 	reader := csv.NewReader(file)

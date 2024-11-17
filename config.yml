@@ -5,11 +5,16 @@ general:
   first deck number: 3570                          # non-negative integer less than 10,000
   number of decks to be played: 1                  # positive integer no more than 10,000 minus first deck number
   list:                                            # not implemented
-  type of play: playAll                            # playAll or playOrig
+  type of play: playAll                            # playAll or playOrig    NOTE: playAll executes code in function playNew
   verbose: 0                                       # non-negative integer
   outputTo: console                                # console OR filename (if file exists a sequence number will
                                                    #                      be added before the extension)
                                                    # not yet implemented
+  progress counter in millions: 50                 # If playOrig and outputTo != "c" will be set to 1 DECK
+                                                   # ELSE non-negative integer, in millions of moves TRIED
+                                                   # will be overridden to 0 if move by move or tree
+                                                   # UNLESS outputTo != "c" and figure out to print to console AND file
+
 
 play original:
    length of initial override strategy: 8          # non-negative integer
@@ -38,18 +43,14 @@ play all moves:
 
     tree reporting options:
         type: regular                              # regular, narrow, very narrow
-        sleep between moves: 1000000               # non-negative integer, in nanoseconds
-        sleep between strategies: 1000000000       # non-negative integer, in nanosecond
+        sleep between moves: 1                     # non-negative integer, tenths of seconds
+        sleep between strategies: 1                # non-negative integer, tenths of seconds
 
     restrict reporting to:
       starting deck number: 0                      # 0 means no restriction
       continue for how many decks: 0               # 0 means no restriction
       starting move number: 0                      # 0 means no restriction
       continue for how many moves: 0               # 0 means no restriction
-
-    progress counter in millions: 50               # non-negative integer, in millions
-                                                   # will be overridden to 0 if move by move or tree
-                                                   # UNLESS outputTo != "c"
 
     report final deck by deck win loss record: true         # true or false
 
