@@ -65,7 +65,7 @@ newDeck:
 			log.Println("Cannot read from inputFileName:", err)
 		}
 
-		if verbose > 1 {
+		if cfg.General.Verbose > 1 {
 			fmt.Printf("\nDeck #%d:\n", deckNum)
 		}
 		var d Deck
@@ -87,7 +87,7 @@ newDeck:
 			//deal Deck onto board
 			var b = dealDeck(d)
 			var priorBoardNullWaste board //used in Loss Detector
-			if verbose > 1 {
+			if cfg.General.Verbose > 1 {
 				fmt.Printf("Start play of Deck %v using initial override strategy %v.\n", deckNum, iOS)
 			}
 

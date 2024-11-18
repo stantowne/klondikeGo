@@ -167,13 +167,15 @@ func (c *Card) pStr() string {
 	return c.rankSymbol() + sSuit + sFace + " "
 }
 
-func (c *Card) uncles() [2]Card {
-	uncles := [2]Card{}
-	uncles[0] = Card{c.Rank + 1, (c.Suit + 1) % 4, c.FaceUp}
-	uncles[1] = Card{c.Rank + 1, (c.Suit + 3) % 4, c.FaceUp}
-	return uncles
-}
+func (c *Card) suitSymbolColored() string {
+	var sSuit string
+	var Reset = "\033[m" //These are ANSI escape codes for colors
+	var Red = "\033[31m"
+	if c.Suit == 0 || c.Suit == 2 {
+		sSuit = string(c.suitSymbol())
+	} else {
+		sSuit = Red + string(c.suitSymbol()) + Reset
+	}
 
-func (c *Card) child() Card {
-	return Card{c.Rank - 1, c.Suit, c.FaceUp}
+	return sSuit
 }

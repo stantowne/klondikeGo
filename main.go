@@ -50,8 +50,10 @@ type Configuration struct {
 			Type string `yaml:"type"`
 		} `yaml:"move by move reporting options"`
 		TreeReportingOptions struct {
-			Type string `yaml:"type"`
-		} `yaml:"tree reporting options"`
+			Type                     string        `yaml:"type"`
+			TreeSleepBetwnMoves      time.Duration `yaml:"sleep between moves"`
+			TreeSleepBetwnStrategies time.Duration `yaml:"sleep between strategies"`
+		}
 		ProgressCounter     int  `yaml:"progress counter in millions"`
 		RestrictReporting   bool //not part of yaml file, derived after yaml file is unmarshalled & validated
 		RestrictReportingTo struct {
@@ -134,21 +136,6 @@ func main() {
 		cfg.PlayNew.RestrictReporting = true
 	}
 
-	//// Arguments 5 & 6 below applies only to playNew			****************************************************
-	//// But they must be on command line anyway
-	//switch strings.TrimSpace(args[5])[0:1] {
-	//case "A", "a":
-	//	cLArgs.findAllWinStrats = true
-	//case "F", "f":
-	//	cLArgs.findAllWinStrats = false
-	//default:
-	//	println("Fifth argument invalid - args[5]")
-	//	println("  findAllWinStrats must be either:")
-	//	println("     'F' or 'f' - Normal case stop after finding a successful set of moves")
-	//	println("     'A' or 'a' - See how many paths to success you can find")
-	//	os.Exit(1)
-	//}
-
 	/*// Sixth
 	pMdArgs := strings.Split(args[6], ",")
 	l := len(pMdArgs)
@@ -157,7 +144,7 @@ func main() {
 		if pMdArgs[0] == "BB" || pMdArgs[0] == "BBS" || pMdArgs[0] == "BBSS" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" || pMdArgs[0] == "TSS" || pMdArgs[0] == "X" {
 			pMD.pType = pMdArgs[0]
 		} else {
-			println("Sixth argument part 1 invalid - args[6];  arg[6] parts are separated by commas: *1*,2,3,4,5,6")
+			println("Sixth argument part 1 invalid - args[6];  arg[6] parts must be separated by commas: *1*,2,3,4,5,6")
 			println("  Must start with BB, BBS, BBSS, TW, TS, TSS or X")
 			os.Exit(1)
 		}
@@ -220,25 +207,31 @@ func main() {
 	}
 	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.DeckByDeck {
 		_, err = pfmt.Printf("Deck By Deck Reporting: \n"+
-			"Type: %v\n"+
-			"Move Progress Reporting Cycles, in Millions: %v\n",
+			"                                           Type: %v\n"+
+			"    Move Progress Reporting Cycles, in Millions: %v\n",
 			cfg.PlayNew.DeckByDeckReportingOptions.Type,
 			cfg.PlayNew.ProgressCounter)
 	}
 	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.MoveByMove {
 		_, err = pfmt.Printf("Move By Move Reporting: \n"+
-			"Type: %v\n"+
-			"Move Progress Reporting Cycles, in Millions: %v\n",
+			"                                           Type: %v\n"+
+			"    Move Progress Reporting Cycles, in Millions: %v\n",
 			cfg.PlayNew.MoveByMoveReportingOptions.Type,
 			cfg.PlayNew.ProgressCounter)
+		// add code here to turn progress reporting off if output to file unless figure out how to print some stuff to file and progress to console
+		// add code for incompatible with ????
 	}
 	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.Tree {
 		_, err = pfmt.Printf("Tree Reporting: \n"+
-			"Type: %v\n",
-			cfg.PlayNew.MoveByMoveReportingOptions.Type)
+			"                        Type: %v\n"+
+			"         TreeSleepBetwnMoves: %v\n"+
+			"    TreeSleepBetwnStrategies: %v\n",
+			cfg.PlayNew.MoveByMoveReportingOptions.Type,
+			cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves,
+			cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies)
 	}
 	if cfg.General.TypeOfPlay == "PlayAll" && cfg.PlayNew.RestrictReporting {
-		_, err = pfmt.Printf("Reporting Restricted To\n"+
+		_, err = pfmt.Printf("\nReporting Restricted To\n"+
 			"                       Staring with Deck: %v\n"+
 			"                            Continue for: %v decks (0 = all the rest)\n"+
 			"             Starting with Moves Tried #: %v\n"+
@@ -249,7 +242,7 @@ func main() {
 			cfg.PlayNew.RestrictReportingTo.MovesTriedContinueFor)
 	}
 	if cfg.General.TypeOfPlay == "playAll" {
-		_, err = pfmt.Printf("Game Length Limit, in millions: %v\n",
+		_, err = pfmt.Printf("\nGame Length Limit, in millions: %v\n",
 			cfg.PlayNew.GameLengthLimit)
 	}
 	// ******************************************

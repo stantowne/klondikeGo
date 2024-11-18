@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 	"io"
 	"log"
 	"math"
@@ -14,12 +16,15 @@ import (
 type variablesSpecificToPlayNew struct {
 	priorBoards                                map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
 	verboseSpecialProgressCounterLastPrintTime time.Time
+	treePrevMovesTD                            string
 }
+
+//var treePrevMovesTD string
 
 var stratWinsTD = 0
 var stratLossesTD = 0
 
-var stratLossesGML_TD = 0
+var stratLossesGLE_TD = 0
 var stratLossesNMA_TD = 0
 var stratLossesRB_TD = 0
 var stratLossesSE_TD = 0
@@ -38,7 +43,7 @@ type deckWinLossDetailStats struct {
 	stratNum                                       int    // stratNumTD
 	unqBoards                                      int
 	elapsedTime                                    time.Duration // time.Since(startTimeTD)
-	ifWonAndFindAllSuccessfulStrategiesAndGML_flag bool          // true to indicate that Elapsed time This Deck may not be relevant
+	ifWonAndFindAllSuccessfulStrategiesAndGLE_flag bool          // true to indicate that Elapsed time This Deck may not be relevant
 	resultCode1                                    string        // result1
 	resultCode2                                    string        // result2
 	moveNumMin                                     int           //
@@ -61,12 +66,15 @@ func playNew(reader csv.Reader, cfg Configuration) {
 	verbose := cfg.General.Verbose
 	var varSp2PN variablesSpecificToPlayNew
 	varSp2PN.priorBoards = map[bCode]bool{}
+	varSp2PN.treePrevMovesTD = ""
+	//treePrevMovesTD = ""
+
 	varSp2PN.verboseSpecialProgressCounterLastPrintTime = time.Now()
 	var deckWinsAD = 0
 	var deckLossesAD = 0
 	var stratWinsAD = 0
 	var stratLossesAD = 0
-	var stratLossesGML_AD = 0
+	var stratLossesGLE_AD = 0
 	var stratLossesNMA_AD = 0
 	var stratLossesRB_AD = 0
 	var stratLossesSE_AD = 0
@@ -97,6 +105,9 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		}
 	*/
 
+	// Setup pfmt to print thousands with commas
+	var pfmt = message.NewPrinter(language.English)
+
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
 		startTimeTD = time.Now()
@@ -110,7 +121,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		}
 
 		if verbose > 1 {
-			_, err = pfmt.Printf("\nDeck #%d:\n", deckNum)
+			pfmt.Printf("\nDeck #%d:\n", deckNum)
 		}
 		var d Deck
 
@@ -129,6 +140,10 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		//temp		AllMvStratNum := 0
 		var b = dealDeck(d)
 
+		// This statement is executed once per deck and transfers program execution.
+		// When this statement returns the deck has been played.
+		result1, result2, _ := playAllMoveS(b, 0, deckNum, cfg, varSp2PN, startTimeTD)
+
 		if cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.ReportingType.Tree && cfg.PlayNew.TreeReportingOptions.Type != "narrow" {
 			_, err = pfmt.Printf("\n\nDeck %v\n", deckNum)
 			fmt.Printf("\n\n Strat #")
@@ -140,13 +155,14 @@ func playNew(reader csv.Reader, cfg Configuration) {
 			}
 		}
 
-		// This statement is executed once per deck and transfers program execution.
-		// When this statement returns the deck has been played.
-		result1, result2 := playAllMoveS(b, 0, deckNum, cfg, varSp2PN, startTimeTD)
-
+		var dummy []move
 		if stratWinsTD > 0 {
 			deckWinsAD += 1
+			prntMDet(b, dummy, 1, deckNum, 1, "NOTX", 2, "\n   DECK WON\n", "", "", cfg, varSp2PN)
+			prntMDetTreeReturnComment("\n               DECK WON\n", deckNum, 0, cfg)
 		} else {
+			prntMDet(b, dummy, 1, deckNum, 1, "NOTX", 2, "\n   DECK LOST\n", "", "", cfg, varSp2PN)
+			prntMDetTreeReturnComment("\n               DECK LOST\n", deckNum, 0, cfg)
 			deckLossesAD += 1
 		}
 
@@ -187,8 +203,8 @@ func playNew(reader csv.Reader, cfg Configuration) {
 			_, err = pfmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_TD)
 			_, err = pfmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_TD)
 			_, err = pfmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_TD)
-			_, err = pfmt.Printf("\n   GML: %d   (Game Length Limit)", stratLossesGML_TD)
-			if stratLossesNMA_TD+stratLossesRB_TD+stratLossesSE_TD+stratLossesGML_TD != stratLossesTD {
+			_, err = pfmt.Printf("\n   GML: %d   (Game Length Limit)", stratLossesGLE_TD)
+			if stratLossesNMA_TD+stratLossesRB_TD+stratLossesSE_TD+stratLossesGLE_TD != stratLossesTD {
 				fmt.Printf("\n     *********** Total Strategy Losses != Sum of strategy detail")
 			}
 			if stratLossesTD+stratWinsTD != stratNumTD {
@@ -229,7 +245,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 			if time.Since(startTimeAD) > time.Duration(5*time.Minute) {
 				elTimeSinceStartTimeADFormatted = time.Since(startTimeAD).Truncate(time.Second).String()
 			}
-			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GML: %5v   Won: %5.1f%%   Lost: %5.1f%%   GML: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(varSp2PN.priorBoards), deckWinsAD, deckLossesAD, stratLossesGML_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGML_AD*100, deckNum+1-firstDeckNum, 1), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
+			pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(varSp2PN.priorBoards), deckWinsAD, deckLossesAD, stratLossesGLE_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGLE_AD*100, deckNum+1-firstDeckNum, 1), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
 		}
 
 		// Verbose Special "BELL" Starts Here - No effect on operation
@@ -242,8 +258,8 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		stratWinsTD = 0
 		stratLossesAD += stratLossesTD
 		stratLossesTD = 0
-		stratLossesGML_AD += stratLossesGML_TD
-		stratLossesGML_TD = 0
+		stratLossesGLE_AD += stratLossesGLE_TD
+		stratLossesGLE_TD = 0
 		stratLossesNMA_AD += stratLossesNMA_TD
 		stratLossesNMA_TD = 0
 		stratLossesRB_AD += stratLossesRB_TD
@@ -254,6 +270,8 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		stratNumTD = 0
 		mvsTriedAD += mvsTriedTD + 1
 		mvsTriedTD = 0
+		varSp2PN.treePrevMovesTD = ""
+		//treePrevMovesTD = ""
 		clear(varSp2PN.priorBoards)
 	}
 
@@ -275,8 +293,8 @@ func playNew(reader csv.Reader, cfg Configuration) {
 	_, err = pfmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_AD)
 	_, err = pfmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_AD)
 	_, err = pfmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_AD)
-	_, err = pfmt.Printf("\nStrategy Losses at Game Length Limit is: %d", stratLossesGML_AD)
-	if stratLossesNMA_AD+stratLossesRB_AD+stratLossesSE_AD+stratLossesGML_AD != stratLossesAD {
+	_, err = pfmt.Printf("\nStrategy Losses at Game Length Limit is: %d", stratLossesGLE_AD)
+	if stratLossesNMA_AD+stratLossesRB_AD+stratLossesSE_AD+stratLossesGLE_AD != stratLossesAD {
 		fmt.Printf("\n     *********** Total Strategy Losses != Sum of strategy detail")
 	}
 	if stratLossesAD+stratWinsAD != stratNumAD {
