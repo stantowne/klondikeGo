@@ -2,8 +2,8 @@
 
 general:
   decks: consecutive                               # consecutive or list
-  first deck number: 0                             # non-negative integer less than 10,000
-  number of decks to be played: 11                 # positive integer no more than 10,000 minus first deck number
+  first deck number: 7625                             # non-negative integer less than 10,000
+  number of decks to be played: 1                 # positive integer no more than 10,000 minus first deck number
   list:                                            # not implemented
   type of play: playAll                            # playAll or playOrig
   verbose: 0                                       # non-negative integer
