@@ -65,7 +65,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 	var vPN variablesSpecificToPlayNew
 	vPN.priorBoards = map[bCode]bool{}
 	vPN.treePrevMovesTD = ""
-	//treePrevMovesTD = ""
+	treePrevMovesTD = ""
 
 	var deckWinsAD = 0
 	var deckLossesAD = 0
