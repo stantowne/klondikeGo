@@ -126,7 +126,7 @@ func playAllMoveS(bIn board,
 			} else {
 				cmt += "  Go to Next Deck (if any)"
 			}
-			prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, cmt, "", "", cfg, vPN)
+			prntMDet(bIn, aMoves, i, deckNum, moveNum, "DbDorMbM", 1, cmt, "", "", cfg, vPN)
 
 			// Verbose Special "WL" Starts Here - No effect on operation
 			if cfg.PlayNew.WinLossReport { // Deck Win Loss Summary Statistics   MOVE THIS!!!!!!!!!
@@ -182,7 +182,7 @@ func playAllMoveS(bIn board,
 		// ********** 2nd of the 2 MOST IMPORTANT statements in this function:  ******************************
 		recurReturnV1, recurReturnV2, recurReturnNum = playAllMoveS(bNew, moveNum+1, deckNum, cfg, vPN, startTimeTD)
 
-		// CONSIDER DELETING prntMDet(bIn, aMoves, i, deckNum, moveNum, "NOTX", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2, cfg, vPN)
+		// CONSIDER DELETING prntMDet(bIn, aMoves, i, deckNum, moveNum, "DbDorMbM", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2, cfg, vPN)
 
 		if cfg.PlayNew.FindAllWinStrats != true && recurReturnV1 == "SW" {
 			// save winning moves into a slice in reverse
@@ -239,9 +239,9 @@ func prntMDet(b board,
 	// This function will use the struct pMD
 	//      variant will be used for different outputs under the same pType
 
-	if cfg.PlayNew.RestrictReporting && prntMDetTestRange(dN, cfg) {
+	if !cfg.PlayNew.RestrictReporting || prntMDetTestRange(dN, cfg) {
 		switch {
-		case pTypeIn == "MbM_R" && cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "regular" && variant == 1: // for "MbM_R"
+		case pTypeIn == "MbM_R" && cfg.PlayNew.ReportingType.MoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "regular" && variant == 1: // for "MbM_R"
 			fmt.Printf("\n****************************************\n")
 			_, err = pfmt.Printf("\nDeck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n",
 				dN,
@@ -252,10 +252,10 @@ func prntMDet(b board,
 				time.Since(startTimeAD),
 				time.Since(startTimeTD))
 			printBoard(b)
-		case pTypeIn == "MbM_R" && cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "regular" && variant == 2: // for "MbM_R"
+		case pTypeIn == "MbM_R" && cfg.PlayNew.ReportingType.MoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "regular" && variant == 2: // for "MbM_R"
 			// comment must have 2 %v in it
 			_, err = pfmt.Printf(comment, s1, s2)
-		case pTypeIn == "MbM_R" && cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "regular" && variant == 3:
+		case pTypeIn == "MbM_R" && cfg.PlayNew.ReportingType.MoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "regular" && variant == 3:
 			fmt.Printf("\n     All Possible Moves: ")
 			for j := range aMoves {
 				pM1, pM2 := printMove(aMoves[j])
@@ -275,16 +275,16 @@ func prntMDet(b board,
 
 				fmt.Printf("\n")
 			}
-		case strings.HasPrefix(pTypeIn, "MbM_S") && cfg.PlayNew.ReportingMoveByMove && (cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" || cfg.PlayNew.MoveByMoveReportingOptions.Type == "very short") && variant == 1: // for "MbM_S" or "MbM_VS"
+		case cfg.PlayNew.ReportingType.MoveByMove && (cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" || cfg.PlayNew.MoveByMoveReportingOptions.Type == "very short") && variant == 1: // for "MbM_S" or "MbM_VS"
 			_, err = pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(vPN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
-		case pTypeIn == "MbM_S" && cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" && variant == 2:
+		case pTypeIn == "MbM_S" && cfg.PlayNew.ReportingType.MoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" && variant == 2:
 			_, err = pfmt.Printf(comment, b)
-		case pTypeIn == "NOTX" && cfg.PlayNew.ReportingMoveByMove && variant == 1:
+			//	case pTypeIn == "DbDorMbM" && cfg.PlayNew.ReportingMoveByMove && variant == 1://   formerly "NOTX"
+		case pTypeIn == "DbDorMbM" && (cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.DeckByDeck) && variant == 1: //   formerly "NOTX"
 			_, err = pfmt.Printf(comment, s1, s2, dN, mN, stratNumTD, mvsTriedTD, len(vPN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
-		case pTypeIn == "NOTX" && cfg.PlayNew.ReportingMoveByMove && variant == 2:
+			//	case pTypeIn == "DbDorMbM" && cfg.PlayNew.ReportingMoveByMove && variant == 2://   formerly "NOTX"
+		case pTypeIn == "DbDorMbM" && (cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.DeckByDeck) && variant == 2: //   formerly "NOTX"
 			_, err = pfmt.Printf(comment, s1, s2)
-		case (pTypeIn == "Tree_R" || pTypeIn == "Tree_N" || pTypeIn == "Tree_VN") && variant == 1:
-		case (pTypeIn == "Tree_R" || pTypeIn == "Tree_N" || pTypeIn == "Tree_VN") && variant == 2:
 		}
 	}
 }
@@ -303,7 +303,7 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 	var treeMoveWidth int
 	var treeRepeatChar string
 
-	if prntMDetTestRange(dN, cfg) && cfg.PlayNew.ReportingType.Tree {
+	if cfg.PlayNew.ReportingType.Tree && (!cfg.PlayNew.RestrictReporting || prntMDetTestRange(dN, cfg)) {
 		if mN == 0 && nextMove == 0 {
 			_, err = pfmt.Printf("\n\n Deck: %v\n\n", dN)
 			printBoard(b)
@@ -334,9 +334,24 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 			treeAddToPrev = vert1
 			treeRepeatChar = " "
 		}
+
+		/*		switch {
+				case cfg.PlayNew.TreeReportingOptions.Type == "very narrow":
+					treePrevMovesTD += treeAddToPrev
+					treeMoveWidth = 1
+				case cfg.PlayNew.TreeReportingOptions.Type == "narrow":
+					treeThisMove += strings.Repeat(horiz1, 2)
+					treeMoveWidth = 3
+					treeAddToPrev += strings.Repeat(treeRepeatChar, 2)
+				case cfg.PlayNew.TreeReportingOptions.Type == "regular":
+					treeThisMove += moveShortName[aMoves[nextMove].name] + horiz1
+					treeMoveWidth = 8
+					treeAddToPrev += strings.Repeat(treeRepeatChar, 7)
+				}*/
+
 		switch cfg.PlayNew.TreeReportingOptions.Type {
 		case "very narrow":
-			///*vPN.*/treePrevMovesTD += treeAddToPrev
+			//treePrevMovesTD += treeAddToPrev
 			treeMoveWidth = 1
 		case "narrow":
 			treeThisMove += strings.Repeat(horiz1, 2)
@@ -347,6 +362,7 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 			treeMoveWidth = 8
 			treeAddToPrev += strings.Repeat(treeRepeatChar, 7)
 		}
+
 		if nextMove == 0 {
 			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves)
 			fmt.Printf("%s", treeThisMove)
@@ -368,7 +384,7 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 }
 
 func prntMDetTreeReturnComment(c string, dN int, recurReturnNum int, cfg Configuration) {
-	if prntMDetTestRange(dN, cfg) && cfg.PlayNew.ReportingType.Tree && recurReturnNum == 0 {
+	if cfg.PlayNew.ReportingType.Tree && recurReturnNum == 0 && prntMDetTestRange(dN, cfg) {
 		fmt.Printf(" ==> " + c)
 	}
 }

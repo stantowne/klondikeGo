@@ -45,16 +45,16 @@ type Configuration struct {
 			DeckByDeck  bool `yaml:"deck by deck"` // referred to as "DbD_R", "DbD_S" or "DbD_VS", in calls to prntMDet and calls thereto
 			MoveByMove  bool `yaml:"move by move"` // referred to as "MbM_R", "MbM_S" or "MbM_VS", in calls to prntMDet and calls thereto
 			Tree        bool `yaml:"tree"`         // referred to as "Tree_R", "Tree_N" or "Tree_VN", in calls to prntMDet and calls thereto
-			NoReporting bool //not part of yaml file, derived after yaml file is unmarshalled & validated
+			NoReporting bool //not part of yaml file, derived after yaml file is unmarshalled & validated   CONSIDER DELETING
 		} `yaml:"reporting"`
 		DeckByDeckReportingOptions struct {
-			Type string `yaml:"type"`
+			Type string `yaml:"typeDbD"`
 		} `yaml:"deck by deck reporting options"`
 		MoveByMoveReportingOptions struct {
-			Type string `yaml:"type"`
+			Type string `yaml:"typeMbM"`
 		} `yaml:"move by move reporting options"`
 		TreeReportingOptions struct {
-			Type                     string        `yaml:"type"`
+			Type                     string        `yaml:"typeTree"`
 			TreeSleepBetwnMoves      time.Duration `yaml:"sleep between moves"`
 			TreeSleepBetwnStrategies time.Duration `yaml:"sleep between strategies"`
 		}
@@ -123,6 +123,22 @@ func main() {
 
 	// completing cfg
 
+	/*****************************************
+
+		Temporary till Yaml fixed start here
+
+	*****************************************/
+
+	cfg.PlayNew.DeckByDeckReportingOptions.Type = "regular"
+	cfg.PlayNew.MoveByMoveReportingOptions.Type = "regular"
+	cfg.PlayNew.TreeReportingOptions.Type = "regular"
+
+	/*****************************************
+
+		Temporary till Yaml fixed end here
+
+	*****************************************/
+
 	// make all strings in cfg EXCEPT cfg.General.TOutputTo lower case
 	//Try to replace with a for range loop of cfg in future
 	cfg.General.TypeOfPlay = strings.ToLower(cfg.General.TypeOfPlay)
@@ -135,9 +151,9 @@ func main() {
 		cfg.PlayNew.ReportingDeckByDeck = true
 	}
 	// COMMENT
-	if cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree {
+	/*if cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree {
 		cfg.PlayNew.ReportingMoveByMove = true
-	}
+	}*/
 	// RestrictReporting zero value is false
 	if cfg.PlayNew.RestrictReportingTo.DeckStartVal != 0 ||
 		cfg.PlayNew.RestrictReportingTo.DeckContinueFor != 0 ||
@@ -145,7 +161,7 @@ func main() {
 		cfg.PlayNew.RestrictReportingTo.MovesTriedContinueFor != 0 {
 		cfg.PlayNew.RestrictReporting = true
 	}
-	cfg.PlayNew.ReportingType.NoReporting = cfg.PlayNew.ReportingType.DeckByDeck || cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree
+	cfg.PlayNew.ReportingType.NoReporting = !(cfg.PlayNew.ReportingType.DeckByDeck || cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree)
 
 	/*// Sixth
 	pMdArgs := strings.Split(args[6], ",")

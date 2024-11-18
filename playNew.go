@@ -265,7 +265,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		mvsTriedAD += mvsTriedTD + 1
 		mvsTriedTD = 0
 		vPN.treePrevMovesTD = ""
-		//treePrevMovesTD = ""
+		treePrevMovesTD = ""
 		clear(vPN.priorBoards)
 	}
 

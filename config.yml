@@ -36,18 +36,18 @@ play all moves:
                                                    #  NOTE: || == OR (looks like forward slash due to italics)
 
     deck by deck reporting options:
-        type:  regular                             # regular, short, very short
+        typeDbD: regular                           # regular, short, very short
 
     move by move reporting option:
-        type:   regular                            # regular, short, very short
+        typeMbM: regular                           # regular, short, very short
 
     tree reporting options:
-        type: very narrow                              # regular, narrow, very narrow
-        sleep between moves: 10                     # non-negative integer, tenths of seconds
+        typeTree: narrow                           # regular, narrow, very narrow
+        sleep between moves: 10                    # non-negative integer, tenths of seconds
         sleep between strategies: 1                # non-negative integer, tenths of seconds
 
     restrict reporting to:
-      starting deck number: 0                      # 0 means no restriction
+      starting deck number: 15                      # 0 means no restriction
       continue for how many decks: 0               # 0 means no restriction
       starting move number: 0                      # 0 means no restriction
       continue for how many moves: 0               # 0 means no restriction
