@@ -42,9 +42,9 @@ type Configuration struct {
 		ReportingDeckByDeck bool //not part of yaml file, derived after yaml file is unmarshalled & validated
 		ReportingMoveByMove bool //not part of yaml file, derived after yaml file is unmarshalled & validated
 		ReportingType       struct {
-			DeckByDeck  bool `yaml:"deck by deck"`
-			MoveByMove  bool `yaml:"move by move"`
-			Tree        bool `yaml:"tree"`
+			DeckByDeck  bool `yaml:"deck by deck"` // referred to as "DbD_R", "DbD_S" or "DbD_VS", in calls to prntMDet and calls thereto
+			MoveByMove  bool `yaml:"move by move"` // referred to as "MbM_R", "MbM_S" or "MbM_VS", in calls to prntMDet and calls thereto
+			Tree        bool `yaml:"tree"`         // referred to as "Tree_R", "Tree_N" or "Tree_VN", in calls to prntMDet and calls thereto
 			NoReporting bool //not part of yaml file, derived after yaml file is unmarshalled & validated
 		} `yaml:"reporting"`
 		DeckByDeckReportingOptions struct {

@@ -10,7 +10,8 @@ import (
 	"time"
 )
 
-// type cumulativeByDeckVariables map[string] int v,
+// type cumulativeByDeckVariables map[string] int v, ???????????????
+
 type variablesSpecificToPlayNew struct {
 	priorBoards     map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
 	treePrevMovesTD string
