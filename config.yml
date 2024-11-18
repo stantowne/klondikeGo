@@ -3,7 +3,7 @@
 general:
   decks: consecutive                               # consecutive or list
   first deck number: 7625                          # non-negative integer less than 10,000
-  number of decks to be played: 1                  # positive integer no more than 10,000 minus first deck number
+  number of decks to be played: 3                  # positive integer no more than 10,000 minus first deck number
   list:                                            # not implemented
   type of play: playAll                            # playAll or playOrig    NOTE: playAll executes code in function playNew
   verbose: 0                                       # non-negative integer
@@ -26,8 +26,8 @@ play all moves:
 
     reporting:                                     # only one true or no trues permitted
       deck by deck: false                          # true or false
-      move by move: true                           # true or false
-      tree: false                                  # true or false
+      move by move: false                          # true or false
+      tree: true                                   # true or false
                                                    # cfg variable NoReporting set in code:
                                                    #                 cfg.PlayNew.ReportingType.NoReporting
                                                    #              =  cfg.PlayNew.ReportingType.DeckByDeck
@@ -42,8 +42,8 @@ play all moves:
         type:   regular                            # regular, short, very short
 
     tree reporting options:
-        type: regular                              # regular, narrow, very narrow
-        sleep between moves: 1                     # non-negative integer, tenths of seconds
+        type: very narrow                              # regular, narrow, very narrow
+        sleep between moves: 10                     # non-negative integer, tenths of seconds
         sleep between strategies: 1                # non-negative integer, tenths of seconds
 
     restrict reporting to:

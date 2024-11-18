@@ -17,7 +17,7 @@ type variablesSpecificToPlayNew struct {
 	treePrevMovesTD string
 }
 
-//var treePrevMovesTD string
+var treePrevMovesTD string
 
 var stratWinsTD = 0
 var stratLossesTD = 0

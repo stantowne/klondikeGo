@@ -336,7 +336,7 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 		}
 		switch cfg.PlayNew.TreeReportingOptions.Type {
 		case "very narrow":
-			//vPN.treePrevMovesTD += treeAddToPrev
+			///*vPN.*/treePrevMovesTD += treeAddToPrev
 			treeMoveWidth = 1
 		case "narrow":
 			treeThisMove += strings.Repeat(horiz1, 2)
@@ -352,16 +352,18 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 			fmt.Printf("%s", treeThisMove)
 		} else {
 			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies)
-			//x := []rune(vPN.treePrevMovesTD)
-			x := []rune(vPN.treePrevMovesTD)
+			//x := []rune(/*vPN.*/treePrevMovesTD)
+			x := []rune( /*vPN.*/ treePrevMovesTD)
 			x = x[0 : mN*treeMoveWidth]
-			//vPN.treePrevMovesTD = string(x)
-			vPN.treePrevMovesTD = string(x)
-			//pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD), vPN.treePrevMovesTD, treeThisMove)
-			_, err = pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD), vPN.treePrevMovesTD, treeThisMove)
+			///*vPN.*/treePrevMovesTD = string(x)
+			/*vPN.*/
+			treePrevMovesTD = string(x)
+			//pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD), /*vPN.*/treePrevMovesTD, treeThisMove)
+			_, err = pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD) /*vPN.*/, treePrevMovesTD, treeThisMove)
 		}
-		//vPN.treePrevMovesTD += treeAddToPrev
-		vPN.treePrevMovesTD += treeAddToPrev
+		///*vPN.*/treePrevMovesTD += treeAddToPrev
+		/*vPN.*/
+		treePrevMovesTD += treeAddToPrev
 	}
 }
 
