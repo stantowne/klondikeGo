@@ -256,17 +256,17 @@ func prntMDet(b board,
 			// comment must have 2 %v in it
 			_, err = pfmt.Printf(comment, s1, s2)
 		case pTypeIn == "MbM_R" && cfg.PlayNew.ReportingType.MoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "regular" && variant == 3:
-			fmt.Printf("\n     All Possible Moves: ")
+			fmt.Printf("\n All Possible Moves: \n")
 			for j := range aMoves {
 				pM1, pM2 := printMove(aMoves[j])
 				if nextMove == j {
-					fmt.Printf("   Next Move ->    ")
+					fmt.Printf("     Next Move ->  ")
 				} else {
 					fmt.Printf("                   ")
 				}
 				fmt.Printf("%s", pM1)
 				if nextMove == j {
-					pad := strings.Repeat(" ", 110-len([]rune(pM1)))
+					pad := strings.Repeat(" ", 110-printableLength(pM1))
 					fmt.Printf(pad + "<- Next Move")
 				}
 				if len(pM2) > 0 {
@@ -387,4 +387,22 @@ func prntMDetTreeReturnComment(c string, dN int, recurReturnNum int, cfg Configu
 	if cfg.PlayNew.ReportingType.Tree && recurReturnNum == 0 && prntMDetTestRange(dN, cfg) {
 		fmt.Printf(" ==> " + c)
 	}
+}
+func printableLength(s string) int {
+	withinEscapeSequence := false
+	runeCount := 0
+	for _, r := range s {
+		if withinEscapeSequence {
+			if r == 'm' {
+				withinEscapeSequence = false
+			}
+		} else {
+			if r == '\x1b' {
+				withinEscapeSequence = true
+			} else {
+				runeCount++
+			}
+		}
+	}
+	return runeCount
 }
