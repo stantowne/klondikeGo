@@ -138,7 +138,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		// When this statement returns the deck has been played.
 		result1, result2, _ := playAllMoveS(b, 0, deckNum, cfg, vPN, startTimeTD)
 
-		if cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.ReportingType.Tree && cfg.PlayNew.TreeReportingOptions.Type != "narrow" {
+		if cfg.PlayNew.ReportingType.MoveByMove && cfg.PlayNew.ReportingType.Tree && cfg.PlayNew.TreeReportingOptions.Type != "narrow" {
 			_, err = pfmt.Printf("\n\nDeck %v\n", deckNum)
 			fmt.Printf("\n\n Strat #")
 			if cfg.PlayNew.TreeReportingOptions.Type == "wide" {

@@ -364,10 +364,10 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 		}
 
 		if nextMove == 0 {
-			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves)
+			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMovesDur)
 			fmt.Printf("%s", treeThisMove)
 		} else {
-			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies)
+			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategiesDur)
 			//x := []rune(/*vPN.*/treePrevMovesTD)
 			x := []rune( /*vPN.*/ treePrevMovesTD)
 			x = x[0 : mN*treeMoveWidth]
