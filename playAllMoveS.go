@@ -126,7 +126,7 @@ func playAllMoveS(bIn board,
 			} else {
 				cmt += "  Go to Next Deck (if any)"
 			}
-			prntMDet(bIn, aMoves, i, deckNum, moveNum, "DbDorMbM", 1, cmt, "", "", cfg, vPN)
+			prntMDet(bIn, aMoves, i, deckNum, moveNum, "DbDorMbM", 2, cmt, "", "", cfg, vPN)
 
 			// Verbose Special "WL" Starts Here - No effect on operation
 			if cfg.PlayNew.WinLossReport { // Deck Win Loss Summary Statistics   MOVE THIS!!!!!!!!!

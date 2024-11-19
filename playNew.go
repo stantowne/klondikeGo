@@ -150,15 +150,16 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		}
 
 		var dummy []move
-		if stratWinsTD > 0 {
+		var s string
+		if result2 == "EW" {
 			deckWinsAD += 1
-			prntMDet(b, dummy, 1, deckNum, 1, "NOTX", 2, "\n   DECK WON\n", "", "", cfg, vPN)
-			prntMDetTreeReturnComment("\n               DECK WON\n", deckNum, 0, cfg)
+			s = "DECK WON"
 		} else {
-			prntMDet(b, dummy, 1, deckNum, 1, "NOTX", 2, "\n   DECK LOST\n", "", "", cfg, vPN)
-			prntMDetTreeReturnComment("\n               DECK LOST\n", deckNum, 0, cfg)
 			deckLossesAD += 1
+			s = "DECK LOST"
 		}
+		prntMDet(b, dummy, 1, deckNum, 1, "DbDorMbM", 2, "\n   "+s+"\n", "", "", cfg, vPN) // "DbDorMbM" was formerly "NOTX"
+		prntMDetTreeReturnComment("\n               \"+s+\"\n", deckNum, 0, cfg)
 
 		/*
 			if cfg.PlayNew.WinLossReport { // Deck Win Loss Summary Statistics
