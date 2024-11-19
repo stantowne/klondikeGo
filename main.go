@@ -34,7 +34,7 @@ type Configuration struct {
 	} `yaml:"general"`
 	PlayOrig struct {
 		Length          int `yaml:"length of initial override strategy"`
-		GameLengthLimit int `yaml:"game length limit in moves"`
+		GameLengthLimit int `yaml:"game length limit in moves tried"`
 	} `yaml:"play original"`
 	PlayNew struct {
 		GameLengthLimit     int  `yaml:"game length limit in moves tried"`
@@ -48,13 +48,13 @@ type Configuration struct {
 			NoReporting bool //not part of yaml file, derived after yaml file is unmarshalled & validated   CONSIDER DELETING
 		} `yaml:"reporting"`
 		DeckByDeckReportingOptions struct {
-			Type string `yaml:"typeDbD"`
+			Type string `yaml:"type"`
 		} `yaml:"deck by deck reporting options"`
 		MoveByMoveReportingOptions struct {
-			Type string `yaml:"typeMbM"`
+			Type string `yaml:"type"`
 		} `yaml:"move by move reporting options"`
 		TreeReportingOptions struct {
-			Type                     string        `yaml:"typeTree"`
+			Type                     string        `yaml:"type"`
 			TreeSleepBetwnMoves      time.Duration `yaml:"sleep between moves"`
 			TreeSleepBetwnStrategies time.Duration `yaml:"sleep between strategies"`
 		}
