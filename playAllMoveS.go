@@ -165,8 +165,8 @@ func playAllMoveS(bIn board,
 		// ********** 1st of the 2 MOST IMPORTANT statements in this function:  ******************************
 		bNew = moveMaker(bNew, aMoves[i])
 
-		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_S", 1, "\n\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", "", "", cfg, vPN)
-		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_S", 2, "      bIn: %v\n", "", "", cfg, vPN)
+		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_SorMBM_VS", 1, "\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v", "", "", cfg, vPN)
+		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_S", 2, "\n      bIn: %v\n", "", "", cfg, vPN)
 		prntMDet(bNew, aMoves, i, deckNum, moveNum, "MbM_S", 2, "     bNew: %v\n", "", "", cfg, vPN)
 		prntMDetTree(bIn, aMoves, i, deckNum, moveNum, cfg, vPN)
 
@@ -275,9 +275,9 @@ func prntMDet(b board,
 
 				fmt.Printf("\n")
 			}
-		case cfg.PlayNew.ReportingType.MoveByMove && (cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" || cfg.PlayNew.MoveByMoveReportingOptions.Type == "very short") && variant == 1: // for "MbM_S" or "MbM_VS"
+		case cfg.PlayNew.ReportingType.MoveByMove && pTypeIn == "MbM_SorMBM_VS" && (cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" || cfg.PlayNew.MoveByMoveReportingOptions.Type == "very short") && variant == 1: // for "MbM_S" or "MbM_VS"
 			_, err = pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(vPN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
-		case pTypeIn == "MbM_S" && cfg.PlayNew.ReportingType.MoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" && variant == 2:
+		case cfg.PlayNew.ReportingType.MoveByMove && pTypeIn == "MbM_S" && cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" && variant == 2:
 			_, err = pfmt.Printf(comment, b)
 			//	case pTypeIn == "DbDorMbM" && cfg.PlayNew.ReportingMoveByMove && variant == 1://   formerly "NOTX"
 		case pTypeIn == "DbDorMbM" && (cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.DeckByDeck) && variant == 1: //   formerly "NOTX"

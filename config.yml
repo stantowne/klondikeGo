@@ -34,7 +34,7 @@ play all moves:
         type:  regular                             # regular, short, very short
 
     move by move reporting options:
-        type:   regular                            # regular, short, very short
+        type:   short                              # regular, short, very short
 
     tree reporting options:
         type: regular                              # regular, narrow, very narrow
