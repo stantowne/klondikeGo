@@ -2,7 +2,6 @@ package main
 
 import (
 	"strconv"
-	"strings"
 )
 
 type Card struct {
@@ -73,64 +72,28 @@ func (c *Card) color() string {
 
 func (c *Card) suitSymbol() rune {
 	var symbol rune
-	verboseSpecial := ""
-	if strings.Contains(verboseSpecial, ";SUITSYMBOL;") {
-		switch c.Suit {
-		case 0: //clubs
+	switch c.Suit {
+	case 0: //clubs
+		symbol = '\u2663'
+	case 1: //diamonds
+		symbol = '\u2666'
+	case 2: //spades
+		symbol = '\u2660'
+	case 3: //hearts
+		symbol = '\u2665'
 
-			symbol = 'C'
-		case 1: //diamonds
-
-			symbol = 'D'
-		case 2: //spades
-
-			symbol = 'S'
-		case 3: //hearts
-
-			symbol = 'H'
-		}
-	} else {
-		switch c.Suit {
-		case 0: //clubs
-			symbol = '\u2663'
-		case 1: //diamonds
-			symbol = '\u2666'
-		case 2: //spades
-			symbol = '\u2660'
-		case 3: //hearts
-			symbol = '\u2665'
-		}
+		return symbol
 	}
 	return symbol
 }
 
 func (c *Card) rankSymbol() string {
 	var symbol string
-	verboseSpecial := ""
-	if strings.Contains(verboseSpecial, ";RANKSYMBOL;") {
-		switch c.Rank {
-		case 1:
-			symbol = "Ac"
-		case 2, 3, 4, 5, 6, 7, 8, 9:
-			symbol = "0" + strconv.Itoa(c.Rank)
-		case 10:
-			symbol = "10"
-		case 11:
-			symbol = "Jk"
-		case 12:
-			symbol = "Qu"
-		case 13:
-			symbol = "Ki"
-		default:
-			symbol = strconv.Itoa(c.Rank)
-		}
-	} else {
-		switch {
-		case c.Rank < 10:
-			symbol = "0" + strconv.Itoa(c.Rank)
-		default:
-			symbol = strconv.Itoa(c.Rank)
-		}
+	switch {
+	case c.Rank < 10:
+		symbol = "0" + strconv.Itoa(c.Rank)
+	default:
+		symbol = strconv.Itoa(c.Rank)
 	}
 	return symbol
 }
