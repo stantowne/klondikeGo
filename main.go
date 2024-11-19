@@ -130,7 +130,7 @@ func main() {
 	*****************************************/
 
 	cfg.PlayNew.DeckByDeckReportingOptions.Type = "very short"
-	cfg.PlayNew.MoveByMoveReportingOptions.Type = "very short"
+	cfg.PlayNew.MoveByMoveReportingOptions.Type = "regular"
 	cfg.PlayNew.TreeReportingOptions.Type = "regular"
 
 	/*****************************************
