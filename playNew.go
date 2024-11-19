@@ -191,27 +191,27 @@ func playNew(reader csv.Reader, cfg Configuration) {
 			}
 			fmt.Printf("\nElapsed Time is %v.", time.Since(startTimeTD))
 			fmt.Printf("\n\nStrategies:")
-			_, err = pfmt.Printf("\n   Tried: %d", stratNumTD)
-			_, err = pfmt.Printf("\n     Won: %d", stratWinsTD)
-			_, err = pfmt.Printf("\n    Lost: %d", stratLossesTD)
+			_, err = pfmt.Printf("\n Tried: %13d", stratNumTD)
+			_, err = pfmt.Printf("\n   Won: %13d", stratWinsTD)
+			_, err = pfmt.Printf("\n  Lost: %13d", stratLossesTD)
 			fmt.Printf("\n\nStrategies Lost Detail:")
-			_, err = pfmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_TD)
-			_, err = pfmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_TD)
-			_, err = pfmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_TD)
-			_, err = pfmt.Printf("\n   GML: %d   (Game Length Limit)", stratLossesGLE_TD)
+			_, err = pfmt.Printf("\n   NMA: %13d   (No Moves Available)", stratLossesNMA_TD)
+			_, err = pfmt.Printf("\n    RB: %13d   (Repetitive Board)", stratLossesRB_TD)
+			_, err = pfmt.Printf("\n    SE: %13d   (Strategy Exhausted)", stratLossesSE_TD)
+			_, err = pfmt.Printf("\n   GLE: %13d   (Game Length Exceeded)", stratLossesGLE_TD)
 			if stratLossesNMA_TD+stratLossesRB_TD+stratLossesSE_TD+stratLossesGLE_TD != stratLossesTD {
-				fmt.Printf("\n     *********** Total Strategy Losses != Sum of strategy detail")
+				fmt.Printf("\n        ************* Total Strategy Losses != Sum of strategy detail")
 			}
 			if stratLossesTD+stratWinsTD != stratNumTD {
-				fmt.Printf("\n     *********** Strategies Tried != Strategies Lost + Strategies Won")
+				fmt.Printf("\n        ************* Strategies Tried != Strategies Lost + Strategies Won")
 			}
-			if cfg.PlayNew.FindAllWinStrats {
-				fmt.Printf("\n\n Multiple Successful Strategies were found in some wining decks.")
+			if cfg.PlayNew.FindAllWinStrats && stratWinsTD != 0 {
+				fmt.Printf("\n\n Multiple Successful Strategies were found in this deck.")
 				_, err = pfmt.Printf("   Total winning strategies found: %d\n", stratWinsTD)
 			}
 		}
 
-		// This If Block is Print Only
+		// This If Block is Print Only   ??????????????  what was this for ????????       PROGRESS?????
 		if cfg.PlayNew.ReportingType.DeckByDeck && cfg.PlayNew.DeckByDeckReportingOptions.Type != "regular" {
 			var est time.Duration
 			//                      nanosecondsTD   / Decks Played So Far         * remaining decks [remaining decks = numbertobeplayed - decksplayed so far
@@ -273,27 +273,27 @@ func playNew(reader csv.Reader, cfg Configuration) {
 	// At this point, all decks to be played have been played.  Time to report aggregate won loss.
 	// From this point on, the program only prints.
 
-	fmt.Printf("\n******************\n\n" + "Decks:")
-	_, err = pfmt.Printf("\n   Played: %d", numberOfDecksToBePlayed)
-	_, err = pfmt.Printf("\n      Won: %d", deckWinsAD)
-	_, err = pfmt.Printf("\n     Lost: %d", deckLossesAD)
+	fmt.Printf("\n\n******************   Summary Statistics   ******************\n" + "Decks:")
+	_, err = pfmt.Printf("\n Played: %6d", numberOfDecksToBePlayed)
+	_, err = pfmt.Printf("\n    Won: %6d", deckWinsAD)
+	_, err = pfmt.Printf("\n   Lost: %6d", deckLossesAD)
 	averageElapsedTimePerDeck := time.Duration(float64(time.Since(startTimeAD)) / float64(numberOfDecksToBePlayed))
 	fmt.Printf("\nElapsed Time is %v.", time.Since(startTimeAD))
 	fmt.Printf("\nAverage Elapsed Time per Deck is %s", averageElapsedTimePerDeck.Truncate(100*time.Millisecond).String())
 	fmt.Printf("\n\nStrategies:")
-	_, err = pfmt.Printf("\n   Tried: %d", stratNumAD)
-	_, err = pfmt.Printf("\n     Won: %d", stratLossesAD)
-	_, err = pfmt.Printf("\n    Lost: %d", stratWinsAD)
+	_, err = pfmt.Printf("\n  Tried: %13d", stratNumAD)
+	_, err = pfmt.Printf("\n    Won: %13d", stratLossesAD)
+	_, err = pfmt.Printf("\n   Lost: %13d", stratWinsAD)
 	fmt.Printf("\n\nStrategies Lost Detail:")
-	_, err = pfmt.Printf("\n   NMA: %d   (No Moves Available)", stratLossesNMA_AD)
-	_, err = pfmt.Printf("\n    RB: %d   (Repetitive Board)", stratLossesRB_AD)
-	_, err = pfmt.Printf("\n    SE: %d   (Strategy Exhausted)", stratLossesSE_AD)
-	_, err = pfmt.Printf("\nStrategy Losses at Game Length Limit is: %d", stratLossesGLE_AD)
+	_, err = pfmt.Printf("\n    NMA: %13d   (No Moves Available)", stratLossesNMA_AD)
+	_, err = pfmt.Printf("\n     RB: %13d   (Repetitive Board)", stratLossesRB_AD)
+	_, err = pfmt.Printf("\n     SE: %13d   (Strategy Exhausted)", stratLossesSE_AD)
+	_, err = pfmt.Printf("\n    GLE: %13d   (Game Length Exceeded)", stratLossesGLE_AD)
 	if stratLossesNMA_AD+stratLossesRB_AD+stratLossesSE_AD+stratLossesGLE_AD != stratLossesAD {
-		fmt.Printf("\n     *********** Total Strategy Losses != Sum of strategy detail")
+		fmt.Printf("\n        ************* Total Strategy Losses != Sum of strategy detail")
 	}
 	if stratLossesAD+stratWinsAD != stratNumAD {
-		fmt.Printf("\n     *********** Strategies Tried != Strategies Lost + Strategies Won")
+		fmt.Printf("\n        ************* Strategies Tried != Strategies Lost + Strategies Won")
 	}
 	if cfg.PlayNew.FindAllWinStrats {
 		fmt.Printf("\n\n Multiple Successful Strategies were found in some winng decks.")
@@ -309,7 +309,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 			_, err = pfmt.Printf("\n  %5v\t  %v\t%4v\t%8v\t%8v\t%4v\t%4v", dN, detail.winLoss, detail.moveNumAt1stWinOrAtLoss, detail.stratNumAt1stWinOrAtLoss, detail.mvsTriedAt1stWinOrAtLoss, detail.moveNumMinWinIfFindAll, detail.moveNumMaxWinIfFindAll, detail.ElapsedTimeAt1stWinOrAtLoss)
 		}*/
 	}
-
+	fmt.Printf("\n\n\n")
 }
 
 // Divide 2 integers and round to precision digits
