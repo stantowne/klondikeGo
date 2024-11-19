@@ -25,9 +25,9 @@ play all moves:
     find all winning strategies?: false            # true or false
 
     reporting:                                     # only one true or no trues permitted
-      deck by deck: false                          # true or false
+      deck by deck: true                           # true or false
       move by move: false                          # true or false
-      tree: true                                   # true or false
+      tree: false                                  # true or false
                                                    # cfg variable NoReporting set in code:
                                                    #                 cfg.PlayNew.ReportingType.NoReporting
                                                    #              =  cfg.PlayNew.ReportingType.DeckByDeck
