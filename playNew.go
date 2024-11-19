@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
 	"io"
 	"log"
 	"math"
@@ -12,14 +10,14 @@ import (
 	"time"
 )
 
-// type cumulativeByDeckVariables map[string] int v,
+// type cumulativeByDeckVariables map[string] int v, ???????????????
+
 type variablesSpecificToPlayNew struct {
-	priorBoards                                map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
-	verboseSpecialProgressCounterLastPrintTime time.Time
-	treePrevMovesTD                            string
+	priorBoards     map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
+	treePrevMovesTD string
 }
 
-//var treePrevMovesTD string
+var treePrevMovesTD string
 
 var stratWinsTD = 0
 var stratLossesTD = 0
@@ -64,12 +62,11 @@ func playNew(reader csv.Reader, cfg Configuration) {
 	firstDeckNum := cfg.General.FirstDeckNum
 	numberOfDecksToBePlayed := cfg.General.NumberOfDecksToBePlayed
 	verbose := cfg.General.Verbose
-	var varSp2PN variablesSpecificToPlayNew
-	varSp2PN.priorBoards = map[bCode]bool{}
-	varSp2PN.treePrevMovesTD = ""
-	//treePrevMovesTD = ""
+	var vPN variablesSpecificToPlayNew
+	vPN.priorBoards = map[bCode]bool{}
+	vPN.treePrevMovesTD = ""
+	treePrevMovesTD = ""
 
-	varSp2PN.verboseSpecialProgressCounterLastPrintTime = time.Now()
 	var deckWinsAD = 0
 	var deckLossesAD = 0
 	var stratWinsAD = 0
@@ -105,23 +102,20 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		}
 	*/
 
-	// Setup pfmt to print thousands with commas
-	var pfmt = message.NewPrinter(language.English)
-
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
 		startTimeTD = time.Now()
-		moveNumMax = 0                  //to keep track of length of the longest strategy so far
-		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
-		if err == io.EOF {
+		moveNumMax = 0                   //to keep track of length of the longest strategy so far
+		protoDeck, err5 := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.  // err5 used to avoid shadowing err
+		if err5 == io.EOF {
 			break
 		}
-		if err != nil {
-			log.Println("Cannot read from inputFileName:", err)
+		if err5 != nil {
+			log.Println("Cannot read from inputFileName:", err5)
 		}
 
 		if verbose > 1 {
-			pfmt.Printf("\nDeck #%d:\n", deckNum)
+			_, err = pfmt.Printf("\nDeck #%d:\n", deckNum)
 		}
 		var d Deck
 
@@ -142,7 +136,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 
 		// This statement is executed once per deck and transfers program execution.
 		// When this statement returns the deck has been played.
-		result1, result2, _ := playAllMoveS(b, 0, deckNum, cfg, varSp2PN, startTimeTD)
+		result1, result2, _ := playAllMoveS(b, 0, deckNum, cfg, vPN, startTimeTD)
 
 		if cfg.PlayNew.ReportingMoveByMove && cfg.PlayNew.ReportingType.Tree && cfg.PlayNew.TreeReportingOptions.Type != "narrow" {
 			_, err = pfmt.Printf("\n\nDeck %v\n", deckNum)
@@ -158,10 +152,10 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		var dummy []move
 		if stratWinsTD > 0 {
 			deckWinsAD += 1
-			prntMDet(b, dummy, 1, deckNum, 1, "NOTX", 2, "\n   DECK WON\n", "", "", cfg, varSp2PN)
+			prntMDet(b, dummy, 1, deckNum, 1, "NOTX", 2, "\n   DECK WON\n", "", "", cfg, vPN)
 			prntMDetTreeReturnComment("\n               DECK WON\n", deckNum, 0, cfg)
 		} else {
-			prntMDet(b, dummy, 1, deckNum, 1, "NOTX", 2, "\n   DECK LOST\n", "", "", cfg, varSp2PN)
+			prntMDet(b, dummy, 1, deckNum, 1, "NOTX", 2, "\n   DECK LOST\n", "", "", cfg, vPN)
 			prntMDetTreeReturnComment("\n               DECK LOST\n", deckNum, 0, cfg)
 			deckLossesAD += 1
 		}
@@ -245,7 +239,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 			if time.Since(startTimeAD) > time.Duration(5*time.Minute) {
 				elTimeSinceStartTimeADFormatted = time.Since(startTimeAD).Truncate(time.Second).String()
 			}
-			pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(varSp2PN.priorBoards), deckWinsAD, deckLossesAD, stratLossesGLE_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGLE_AD*100, deckNum+1-firstDeckNum, 1), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
+			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(vPN.priorBoards), deckWinsAD, deckLossesAD, stratLossesGLE_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGLE_AD*100, deckNum+1-firstDeckNum, 1), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
 		}
 
 		// Verbose Special "BELL" Starts Here - No effect on operation
@@ -270,9 +264,9 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		stratNumTD = 0
 		mvsTriedAD += mvsTriedTD + 1
 		mvsTriedTD = 0
-		varSp2PN.treePrevMovesTD = ""
-		//treePrevMovesTD = ""
-		clear(varSp2PN.priorBoards)
+		vPN.treePrevMovesTD = ""
+		treePrevMovesTD = ""
+		clear(vPN.priorBoards)
 	}
 
 	// At this point, all decks to be played have been played.  Time to report aggregate won loss.

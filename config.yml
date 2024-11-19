@@ -2,12 +2,19 @@
 
 general:
   decks: consecutive                               # consecutive or list
-  first deck number: 7625                             # non-negative integer less than 10,000
-  number of decks to be played: 1                 # positive integer no more than 10,000 minus first deck number
+  first deck number: 7625                          # non-negative integer less than 10,000
+  number of decks to be played: 3                  # positive integer no more than 10,000 minus first deck number
   list:                                            # not implemented
-  type of play: playAll                            # playAll or playOrig
+  type of play: playAll                            # playAll or playOrig    NOTE: playAll executes code in function playNew
   verbose: 0                                       # non-negative integer
-  outputTo: C                                      # not implemented
+  outputTo: console                                # console OR filename (if file exists a sequence number will
+                                                   #                      be added before the extension)
+                                                   # not yet implemented
+  progress counter in millions: 50                 # If playOrig and outputTo != "c" will be set to 1 DECK
+                                                   # ELSE non-negative integer, in millions of moves TRIED
+                                                   # will be overridden to 0 if move by move or tree
+                                                   # UNLESS outputTo != "c" and figure out to print to console AND file
+
 
 play original:
    length of initial override strategy: 8          # non-negative integer
@@ -19,27 +26,31 @@ play all moves:
 
     reporting:                                     # only one true or no trues permitted
       deck by deck: false                          # true or false
-      move by move: false                          # true or false
-      tree: true                                   # true or false
+      move by move: true                           # true or false
+      tree: false                                  # true or false
+                                                   # cfg variable NoReporting set in code:
+                                                   #                 cfg.PlayNew.ReportingType.NoReporting
+                                                   #              =  cfg.PlayNew.ReportingType.DeckByDeck
+                                                   #              || cfg.PlayNew.ReportingType.MoveByMove
+                                                   #              || cfg.PlayNew.ReportingType.Tree
+                                                   #  NOTE: || == OR (looks like forward slash due to italics)
 
     deck by deck reporting options:
-        type:  regular                             # regular, short, very short
+        typeDbD: regular                           # regular, short, very short
 
     move by move reporting option:
-        type:   regular                            # regular, short, very short
+        typeMbM: regular                           # regular, short, very short
 
     tree reporting options:
-        type: regular                              # regular, narrow, very narrow
-        sleep between moves: 1000000               # non-negative integer, in nanoseconds
-        sleep between strategies: 1000000000       # non-negative integer, in nanosecond
+        typeTree: narrow                           # regular, narrow, very narrow
+        sleep between moves: 10                    # non-negative integer, tenths of seconds
+        sleep between strategies: 1                # non-negative integer, tenths of seconds
 
     restrict reporting to:
-      starting deck number: 0                      # 0 means no restriction
+      starting deck number: 15                      # 0 means no restriction
       continue for how many decks: 0               # 0 means no restriction
       starting move number: 0                      # 0 means no restriction
       continue for how many moves: 0               # 0 means no restriction
-
-    progress counter in millions: 50               # non-negative integer, in millions
 
     report final deck by deck win loss record: true         # true or false
 

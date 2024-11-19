@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -21,13 +22,15 @@ var singleGame bool // = true
 
 type Configuration struct {
 	General struct {
-		Decks                   string `yaml:"decks"`                        // must be "consecutive" or "list"
-		FirstDeckNum            int    `yaml:"first deck number"`            // must be non-negative integer
-		NumberOfDecksToBePlayed int    `yaml:"number of decks to be played"` //must be non-negative integer
-		List                    []int
-		TypeOfPlay              string `yaml:"type of play"` // must be "playOrig" or "playAll"
-		Verbose                 int    `yaml:"verbose"`
-		OutputTo                string `yaml:"outputTo"`
+		Decks                        string `yaml:"decks"`                        // must be "consecutive" or "list"
+		FirstDeckNum                 int    `yaml:"first deck number"`            // must be non-negative integer
+		NumberOfDecksToBePlayed      int    `yaml:"number of decks to be played"` //must be non-negative integer
+		List                         []int
+		TypeOfPlay                   string `yaml:"type of play"` // must be "playOrig" or "playAll"
+		Verbose                      int    `yaml:"verbose"`
+		OutputTo                     string `yaml:"outputTo"`
+		ProgressCounter              int    `yaml:"progress counter in millions"`
+		ProgressCounterLastPrintTime time.Time
 	} `yaml:"general"`
 	PlayOrig struct {
 		Length          int `yaml:"length of initial override strategy"`
@@ -39,22 +42,22 @@ type Configuration struct {
 		ReportingDeckByDeck bool //not part of yaml file, derived after yaml file is unmarshalled & validated
 		ReportingMoveByMove bool //not part of yaml file, derived after yaml file is unmarshalled & validated
 		ReportingType       struct {
-			DeckByDeck bool `yaml:"deck by deck"`
-			MoveByMove bool `yaml:"move by move"`
-			Tree       bool `yaml:"tree"`
+			DeckByDeck  bool `yaml:"deck by deck"` // referred to as "DbD_R", "DbD_S" or "DbD_VS", in calls to prntMDet and calls thereto
+			MoveByMove  bool `yaml:"move by move"` // referred to as "MbM_R", "MbM_S" or "MbM_VS", in calls to prntMDet and calls thereto
+			Tree        bool `yaml:"tree"`         // referred to as "Tree_R", "Tree_N" or "Tree_VN", in calls to prntMDet and calls thereto
+			NoReporting bool //not part of yaml file, derived after yaml file is unmarshalled & validated   CONSIDER DELETING
 		} `yaml:"reporting"`
 		DeckByDeckReportingOptions struct {
-			Type string `yaml:"type"`
+			Type string `yaml:"typeDbD"`
 		} `yaml:"deck by deck reporting options"`
 		MoveByMoveReportingOptions struct {
-			Type string `yaml:"type"`
+			Type string `yaml:"typeMbM"`
 		} `yaml:"move by move reporting options"`
 		TreeReportingOptions struct {
-			Type                     string        `yaml:"type"`
+			Type                     string        `yaml:"typeTree"`
 			TreeSleepBetwnMoves      time.Duration `yaml:"sleep between moves"`
 			TreeSleepBetwnStrategies time.Duration `yaml:"sleep between strategies"`
 		}
-		ProgressCounter     int  `yaml:"progress counter in millions"`
 		RestrictReporting   bool //not part of yaml file, derived after yaml file is unmarshalled & validated
 		RestrictReportingTo struct {
 			DeckStartVal          int `yaml:"starting deck number"`
@@ -77,13 +80,13 @@ func main() {
 	*/
 	// unmarshal YAML file
 	cfg := Configuration{}
-	data, err := os.ReadFile("./config.yml")
-	if err != nil {
-		panic(err)
+	data, err3 := os.ReadFile("./config.yml") // err3 used to avoid shadowing err
+	if err3 != nil {
+		panic(err3)
 	}
-	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		panic(err)
-	}
+	if err4 := yaml.Unmarshal(data, &cfg); err4 != nil {
+		panic(err4)
+	} // err4 used to avoid shadowing err
 
 	// validate cfg after unmarshal
 	if cfg.General.FirstDeckNum < 0 || cfg.General.FirstDeckNum > 9999 {
@@ -120,14 +123,37 @@ func main() {
 
 	// completing cfg
 
+	/*****************************************
+
+		Temporary till Yaml fixed start here
+
+	*****************************************/
+
+	cfg.PlayNew.DeckByDeckReportingOptions.Type = "very short"
+	cfg.PlayNew.MoveByMoveReportingOptions.Type = "regular"
+	cfg.PlayNew.TreeReportingOptions.Type = "regular"
+
+	/*****************************************
+
+		Temporary till Yaml fixed end here
+
+	*****************************************/
+
+	// make all strings in cfg EXCEPT cfg.General.TOutputTo lower case
+	//Try to replace with a for range loop of cfg in future
+	cfg.General.TypeOfPlay = strings.ToLower(cfg.General.TypeOfPlay)
+	cfg.PlayNew.DeckByDeckReportingOptions.Type = strings.ToLower(cfg.PlayNew.DeckByDeckReportingOptions.Type)
+	cfg.PlayNew.MoveByMoveReportingOptions.Type = strings.ToLower(cfg.PlayNew.MoveByMoveReportingOptions.Type)
+	cfg.PlayNew.TreeReportingOptions.Type = strings.ToLower(cfg.PlayNew.TreeReportingOptions.Type)
+
 	// ReportingMoveByMove zero value is false
 	if cfg.PlayNew.ReportingType.DeckByDeck {
 		cfg.PlayNew.ReportingDeckByDeck = true
 	}
 	// COMMENT
-	if cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree {
+	/*if cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree {
 		cfg.PlayNew.ReportingMoveByMove = true
-	}
+	}*/
 	// RestrictReporting zero value is false
 	if cfg.PlayNew.RestrictReportingTo.DeckStartVal != 0 ||
 		cfg.PlayNew.RestrictReportingTo.DeckContinueFor != 0 ||
@@ -135,6 +161,7 @@ func main() {
 		cfg.PlayNew.RestrictReportingTo.MovesTriedContinueFor != 0 {
 		cfg.PlayNew.RestrictReporting = true
 	}
+	cfg.PlayNew.ReportingType.NoReporting = !(cfg.PlayNew.ReportingType.DeckByDeck || cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree)
 
 	/*// Sixth
 	pMdArgs := strings.Split(args[6], ",")
@@ -193,7 +220,7 @@ func main() {
 		cfg.General.TypeOfPlay,
 		cfg.General.Verbose)
 
-	if cfg.General.TypeOfPlay == "playOrig" {
+	if cfg.General.TypeOfPlay == "playorig" {
 		nOfS := 1 << cfg.PlayOrig.Length //number of initial strategies
 		_, err = pfmt.Printf(" Style: Original iOS (Initial Override Strategies)\n\n"+
 			"                     iOS strategy length: %v\n"+
@@ -205,23 +232,23 @@ func main() {
 			nOfS*cfg.General.NumberOfDecksToBePlayed,
 			cfg.PlayOrig.GameLengthLimit)
 	}
-	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.DeckByDeck {
+	if cfg.General.TypeOfPlay == "playall" && cfg.PlayNew.ReportingType.DeckByDeck {
 		_, err = pfmt.Printf("Deck By Deck Reporting: \n"+
 			"                                           Type: %v\n"+
 			"    Move Progress Reporting Cycles, in Millions: %v\n",
 			cfg.PlayNew.DeckByDeckReportingOptions.Type,
-			cfg.PlayNew.ProgressCounter)
+			cfg.General.ProgressCounter)
 	}
-	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.MoveByMove {
+	if cfg.General.TypeOfPlay == "playall" && cfg.PlayNew.ReportingType.MoveByMove {
 		_, err = pfmt.Printf("Move By Move Reporting: \n"+
 			"                                           Type: %v\n"+
 			"    Move Progress Reporting Cycles, in Millions: %v\n",
 			cfg.PlayNew.MoveByMoveReportingOptions.Type,
-			cfg.PlayNew.ProgressCounter)
+			cfg.General.ProgressCounter)
 		// add code here to turn progress reporting off if output to file unless figure out how to print some stuff to file and progress to console
 		// add code for incompatible with ????
 	}
-	if cfg.General.TypeOfPlay == "playAll" && cfg.PlayNew.ReportingType.Tree {
+	if cfg.General.TypeOfPlay == "playall" && cfg.PlayNew.ReportingType.Tree {
 		_, err = pfmt.Printf("Tree Reporting: \n"+
 			"                        Type: %v\n"+
 			"         TreeSleepBetwnMoves: %v\n"+
@@ -230,7 +257,7 @@ func main() {
 			cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves,
 			cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies)
 	}
-	if cfg.General.TypeOfPlay == "PlayAll" && cfg.PlayNew.RestrictReporting {
+	if cfg.General.TypeOfPlay == "playall" && cfg.PlayNew.RestrictReporting {
 		_, err = pfmt.Printf("\nReporting Restricted To\n"+
 			"                       Staring with Deck: %v\n"+
 			"                            Continue for: %v decks (0 = all the rest)\n"+
@@ -241,10 +268,32 @@ func main() {
 			cfg.PlayNew.RestrictReportingTo.MovesTriedStartVal,
 			cfg.PlayNew.RestrictReportingTo.MovesTriedContinueFor)
 	}
-	if cfg.General.TypeOfPlay == "playAll" {
+	if cfg.General.TypeOfPlay == "playall" {
 		_, err = pfmt.Printf("\nGame Length Limit, in millions: %v\n",
 			cfg.PlayNew.GameLengthLimit)
 	}
+	if cfg.General.OutputTo == "console" {
+		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves *= 100_000_000
+		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies *= 100_000_000
+		if cfg.General.TypeOfPlay == "playorig" {
+			cfg.General.ProgressCounter = 0
+		} else {
+			if cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree {
+				cfg.General.ProgressCounter = 0
+			}
+		}
+	} else {
+		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves = 0 // Change this if figure out how to print to file AND console
+		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies = 0
+		if cfg.General.TypeOfPlay == "playorig" {
+			cfg.General.ProgressCounter = 1
+		}
+	}
+	cfg.General.ProgressCounterLastPrintTime = time.Now()
+
+	/*	for _, v = range cfg {
+		}*/
+
 	// ******************************************
 	//
 	// Done printing out the configuration:
@@ -254,14 +303,14 @@ func main() {
 	// ******************************************
 
 	inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
-	file, err := os.Open(inputFileName)
-	if err != nil {
-		log.Println("Cannot open inputFileName:", err)
+	file, err1 := os.Open(inputFileName) // err1 used to avoid shadowing err
+	if err1 != nil {
+		log.Println("Cannot open inputFileName:", err1)
 	}
 	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			println("could not close file:", err)
+		err2 := file.Close() // err2 used to avoid shadowing err
+		if err2 != nil {
+			println("could not close file:", err2)
 		}
 	}(file)
 	reader := csv.NewReader(file)
@@ -278,11 +327,11 @@ func main() {
 		}
 	}
 
-	if cfg.General.TypeOfPlay == "playAll" {
+	if cfg.General.TypeOfPlay == "playall" {
 		moveBasePriority = moveBasePriorityNew
 		playNew(*reader, cfg)
 	}
-	if cfg.General.TypeOfPlay == "playOrig" {
+	if cfg.General.TypeOfPlay == "playorig" {
 		moveBasePriority = moveBasePriorityOrig
 		playOrig(*reader, cfg)
 	}

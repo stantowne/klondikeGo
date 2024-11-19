@@ -25,7 +25,7 @@ outer:
 			os.Exit(1)
 		}
 		if len(FaceUpPortion) > 1 {
-			for stepdown := 0; stepdown < len(FaceUpPortion); stepdown++ {
+			for stepdown := 0; stepdown < len(FaceUpPortion)-1; stepdown++ {
 				candidateMoveUpCard := FaceUpPortion[stepdown]
 				/*				***************   STAN REMOVE ???????????
 								if singleGame && mc == 1 {
