@@ -27,8 +27,8 @@ play all moves:
 
     reporting:                                     # only one true or no trues permitted  non yaml       cfg.PlayNew.ReportingType.NoReporting set in code
       deck by deck: false                          # true or false                                 =     cfg.PlayNew.ReportingType.DeckByDeck
-      move by move: true                           # true or false                                    || cfg.PlayNew.ReportingType.MoveByMove
-      tree: false                                  # true or false                                    || cfg.PlayNew.ReportingType.Tree
+      move by move: false                          # true or false                                    || cfg.PlayNew.ReportingType.MoveByMove
+      tree: true                                   # true or false                                    || cfg.PlayNew.ReportingType.Tree
                                                    #                                                NOTE: || == OR (looks like forward slash due to italics)
     deck by deck reporting options:
         type:  very short                          # regular, short, very short
@@ -37,7 +37,7 @@ play all moves:
         type: very short                           # regular, short, very short
 
     tree reporting options:
-        type: very narrow                          # regular, narrow, very narrow
+        type: regular                              # regular, narrow, very narrow
         sleep between moves: 0                     # non-negative integer, in tenths of seconds
         sleep between strategies: 0                # non-negative integer, in tenths of seconds
 

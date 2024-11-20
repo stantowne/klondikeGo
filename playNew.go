@@ -17,8 +17,6 @@ type variablesSpecificToPlayNew struct {
 	treePrevMovesTD string
 }
 
-var treePrevMovesTD string
-
 var stratWinsTD = 0
 var stratLossesTD = 0
 
@@ -65,7 +63,6 @@ func playNew(reader csv.Reader, cfg Configuration) {
 	var vPN variablesSpecificToPlayNew
 	vPN.priorBoards = map[bCode]bool{}
 	vPN.treePrevMovesTD = ""
-	treePrevMovesTD = ""
 
 	var deckWinsAD = 0
 	var deckLossesAD = 0
@@ -255,7 +252,6 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		mvsTriedAD += mvsTriedTD + 1
 		mvsTriedTD = 0
 		vPN.treePrevMovesTD = ""
-		treePrevMovesTD = ""
 		clear(vPN.priorBoards)
 	}
 
