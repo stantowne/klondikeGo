@@ -49,7 +49,7 @@ func playAllMoveS(bIn board,
 			cfg,
 			vPN)
 		stratLossesGLE_TD++
-		prntMDetTreeReturnComment("Game Length Limit Exceeded", deckNum, recurReturnNum, cfg)
+		prntMDetTreeReturnComment(" ==> GLE", deckNum, recurReturnNum, cfg)
 		return "SL", "GLE", 1
 	}
 
@@ -102,7 +102,7 @@ func playAllMoveS(bIn board,
 				//  	prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn string, variant int, comment string, s1 string, s2 string) {
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_R", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cfg, vPN)
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_VS", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cfg, vPN)
-				prntMDetTreeReturnComment("RB", deckNum, recurReturnNum, cfg)
+				prntMDetTreeReturnComment(" ==> RB", deckNum, recurReturnNum, cfg)
 				return "SL", "RB", 1 // Repetitive Board
 			} else {
 				// Remember the board state by putting it into the map "vPN.priorBoards"
@@ -114,6 +114,7 @@ func playAllMoveS(bIn board,
 		if i == 0 && aMoves[0].name == "No Moves Available" {
 			stratLossesNMA_TD++
 			prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_R", 2, "  SL-NMA: No Moves Available: Strategy Lost %v%v\n", "", "", cfg, vPN)
+			prntMDetTreeReturnComment(" ==> NMA", deckNum, recurReturnNum, cfg)
 			return "SL", "NMA", 1
 		}
 
@@ -149,7 +150,7 @@ func playAllMoveS(bIn board,
 
 			}
 			// Verbose Special "WL" Ends Here - No effect on operation
-			prntMDetTreeReturnComment("DECK WON", deckNum, recurReturnNum, cfg)
+			prntMDetTreeReturnComment(" ==> DECK WON", deckNum, recurReturnNum, cfg)
 			return "SW", "EW", 1 //  Strategy Early Win
 		}
 
@@ -194,7 +195,7 @@ func playAllMoveS(bIn board,
 	}
 
 	stratLossesSE_TD++
-	prntMDetTreeReturnComment("No More Moves", deckNum, recurReturnNum, cfg)
+	prntMDetTreeReturnComment(" ==> SE", deckNum, recurReturnNum, cfg)
 	return "SL", "SE", recurReturnNum + 1 //  Strategy Exhausted
 }
 
@@ -307,14 +308,18 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 		if mN == 0 && nextMove == 0 {
 			_, err = pfmt.Printf("\n\n Deck: %v\n\n", dN)
 			printBoard(b)
-			fmt.Printf("\n\n Strategy #   ")
 			if cfg.PlayNew.TreeReportingOptions.Type == "regular" {
-				fmt.Printf("\n             ")
+				fmt.Printf("\n       Move # ==>")
 				for i := 1; i <= 150; i++ {
-					fmt.Printf("%8s", strconv.Itoa(i)+"  ")
+					if i == 1 {
+						fmt.Printf("%4s", strconv.Itoa(i)+"  ")
+					} else {
+						fmt.Printf("%8s", strconv.Itoa(i)+"  ")
+					}
 				}
 			}
-			fmt.Printf("\n\n            0  ")
+			fmt.Printf("\n   Strategy # ")
+			fmt.Printf("\n            0  ")
 		}
 		switch {
 		case len(aMoves) == 1:
@@ -385,7 +390,7 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 
 func prntMDetTreeReturnComment(c string, dN int, recurReturnNum int, cfg Configuration) {
 	if cfg.PlayNew.ReportingType.Tree && recurReturnNum == 0 && prntMDetTestRange(dN, cfg) {
-		fmt.Printf(" ==> " + c)
+		fmt.Printf(c)
 	}
 }
 func printableLength(s string) int {

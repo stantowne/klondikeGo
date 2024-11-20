@@ -138,17 +138,6 @@ func playNew(reader csv.Reader, cfg Configuration) {
 		// When this statement returns the deck has been played.
 		result1, result2, _ := playAllMoveS(b, 0, deckNum, cfg, vPN, startTimeTD)
 
-		if cfg.PlayNew.ReportingType.Tree {
-			_, err = pfmt.Printf("\n\nDeck %v\n", deckNum)
-			fmt.Printf("\n\n Strat #")
-			if cfg.PlayNew.TreeReportingOptions.Type == "wide" {
-				for i := 1; i <= 200; i++ {
-					fmt.Printf("    %3v ", i)
-				}
-				fmt.Printf("\n")
-			}
-		}
-
 		var dummy []move
 		var s string
 		if result2 == "EW" {
@@ -159,7 +148,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 			s = "DECK LOST"
 		}
 		prntMDet(b, dummy, 1, deckNum, 1, "DbDorMbM", 2, "\n   "+s+"\n", "", "", cfg, vPN) // "DbDorMbM" was formerly "NOTX"
-		prntMDetTreeReturnComment("\n               \"+s+\"\n", deckNum, 0, cfg)
+		prntMDetTreeReturnComment("\n   "+s+"\n", deckNum, 0, cfg)
 
 		/*
 			if cfg.PlayNew.WinLossReport { // Deck Win Loss Summary Statistics
