@@ -13,8 +13,14 @@ import (
 // type cumulativeByDeckVariables map[string] int v, ???????????????
 
 type variablesSpecificToPlayAll struct {
-	priorBoards     map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
-	treePrevMovesTD string
+	priorBoards map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
+	TD          struct {
+		mvsTried      int
+		treePrevMoves string
+	}
+	AD struct {
+		mvsTried int
+	}
 }
 
 var stratWinsTD = 0
@@ -25,8 +31,8 @@ var stratLossesNMA_TD = 0
 var stratLossesRB_TD = 0
 var stratLossesSE_TD = 0
 var stratNumTD = 0
-var mvsTriedTD = 0
 
+//var mvsTriedTD = 0
 //var mvsTriedAD = 0
 
 var startTimeTD time.Time
@@ -35,7 +41,6 @@ var startTimeAD time.Time
 /*type deckWinLossDetailStats struct {
 	wonLost                                        string //
 	moveNum                                        int    // Do Not Report if wonTotal > 1  OR  if wonLost == "Lost"
-	mvsTried                                       int    // mvsTriedTD
 	stratNum                                       int    // stratNumTD
 	unqBoards                                      int
 	elapsedTime                                    time.Duration // time.Since(startTimeTD)
@@ -62,7 +67,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	verbose := cfg.General.Verbose
 	var vPA variablesSpecificToPlayAll
 	vPA.priorBoards = map[bCode]bool{}
-	vPA.treePrevMovesTD = ""
+	vPA.TD.treePrevMoves = ""
 
 	var deckWinsAD = 0
 	var deckLossesAD = 0
@@ -73,7 +78,6 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	var stratLossesRB_AD = 0
 	var stratLossesSE_AD = 0
 	var stratNumAD = 0
-	var mvsTriedAD = 0
 	startTimeAD = time.Now()
 
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
@@ -132,7 +136,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 					dWLDStats.moveNumMinWinIfFindAll = 0
 					dWLDStats.moveNumMaxWinIfFindAll = 0
 					dWLDStats.stratNumAt1stWinOrAtLoss = stratWinsTD
-					dWLDStats.mvsTriedAt1stWinOrAtLoss = mvsTriedTD
+					dWLDStats.mvsTriedAt1stWinOrAtLoss = vPA.TD.mvsTried
 					// Add maxUnique Boards
 					//add max movenum
 					// add ElapsedTimeAt1stWin
@@ -203,7 +207,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			if time.Since(startTimeAD) > time.Duration(5*time.Minute) {
 				elTimeSinceStartTimeADFormatted = time.Since(startTimeAD).Truncate(time.Second).String()
 			}
-			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, mvsTriedTD /*moveNum, maxMoveNum, */, stratNumTD, len(vPA.priorBoards), deckWinsAD, deckLossesAD, stratLossesGLE_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGLE_AD*100, deckNum+1-firstDeckNum, 1), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
+			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, vPA.TD.mvsTried /*moveNum, maxMoveNum, */, stratNumTD, len(vPA.priorBoards), deckWinsAD, deckLossesAD, stratLossesGLE_AD, roundFloatIntDiv(deckWinsAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(deckLossesAD*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(stratLossesGLE_AD*100, deckNum+1-firstDeckNum, 1), time.Since(startTimeTD).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
 		}
 
 		// Verbose Special "BELL" Starts Here - No effect on operation
@@ -226,9 +230,9 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		stratLossesSE_TD = 0
 		stratNumAD += stratNumTD + 1 // Because we start at strategy 0 which is all best moves
 		stratNumTD = 0
-		mvsTriedAD += mvsTriedTD + 1
-		mvsTriedTD = 0
-		vPA.treePrevMovesTD = ""
+		vPA.AD.mvsTried += vPA.TD.mvsTried + 1
+		vPA.TD.mvsTried = 0
+		vPA.TD.treePrevMoves = ""
 		clear(vPA.priorBoards)
 	}
 
