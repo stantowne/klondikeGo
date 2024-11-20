@@ -32,7 +32,7 @@ func findFlip(moves []move) move {
 	return moves[len(moves)-1]
 }
 
-func playOrig(reader csv.Reader, cfg Configuration) {
+func playOrig(reader csv.Reader, cfg *Configuration) {
 
 	// Need to define variable err type error here.  Originally it was implicitly created by the following statement and then reused many times
 	//   inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"

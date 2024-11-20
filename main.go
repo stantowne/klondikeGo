@@ -316,10 +316,10 @@ func main() {
 
 	if cfg.General.TypeOfPlay == "playall" {
 		moveBasePriority = moveBasePriorityNew
-		playAll(*reader, cfg)
+		playAll(*reader, &cfg)
 	}
 	if cfg.General.TypeOfPlay == "playorig" {
 		moveBasePriority = moveBasePriorityOrig
-		playOrig(*reader, cfg)
+		playOrig(*reader, &cfg)
 	}
 }
