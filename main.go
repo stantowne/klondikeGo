@@ -72,14 +72,7 @@ type Configuration struct {
 }
 
 func main() {
-	/*
-		NOTE: Certain options of VerboseSpecial and/or pMD are incompatible:
 
-			!!!!!! ADD CHECK TO SAY DBD AND DBDS can not be BOTH included in verbosespecial
-			!!!!!!                 and that neither CAN be selected if the sixth argument pMD.pType is anything other than "X"
-			!!!!!!  PROGRESSdddd can not be selected with argument 5 = TW, TS, or TSS
-
-	*/
 	// unmarshal YAML file
 	cfg := Configuration{}
 	data, err3 := os.ReadFile("./config.yml") // err3 used to avoid shadowing err
@@ -91,6 +84,16 @@ func main() {
 	} // err4 used to avoid shadowing err
 
 	// validate cfg after unmarshal
+	// BEFORE validation, make all strings in cfg EXCEPT cfg.PlayAll.SQLConnectionString lower case
+	cfg.General.TypeOfPlay = strings.ToLower(cfg.General.TypeOfPlay)
+	cfg.PlayAll.DeckByDeckReportingOptions.Type = strings.ToLower(cfg.PlayAll.DeckByDeckReportingOptions.Type)
+	cfg.PlayAll.MoveByMoveReportingOptions.Type = strings.ToLower(cfg.PlayAll.MoveByMoveReportingOptions.Type)
+	cfg.PlayAll.TreeReportingOptions.Type = strings.ToLower(cfg.PlayAll.TreeReportingOptions.Type)
+	if strings.ToLower(cfg.General.OutputTo) == "console" {
+		cfg.General.OutputTo = strings.ToLower(cfg.General.OutputTo)
+	}
+
+	// validate cfg after unmarshal and conversion to lower case
 	if cfg.General.FirstDeckNum < 0 || cfg.General.FirstDeckNum > 9999 {
 		println("FirstDeckNum invalid")
 		println("FirstDeckNum must be non-negative integer less than 10,000")
@@ -123,14 +126,23 @@ func main() {
 		os.Exit(1)
 	}
 
-	// completing cfg
+	/*
 
-	// make all strings in cfg EXCEPT cfg.General.TOutputTo lower case
-	//Try to replace with a for range loop of cfg in future
-	cfg.General.TypeOfPlay = strings.ToLower(cfg.General.TypeOfPlay)
-	cfg.PlayAll.DeckByDeckReportingOptions.Type = strings.ToLower(cfg.PlayAll.DeckByDeckReportingOptions.Type)
-	cfg.PlayAll.MoveByMoveReportingOptions.Type = strings.ToLower(cfg.PlayAll.MoveByMoveReportingOptions.Type)
-	cfg.PlayAll.TreeReportingOptions.Type = strings.ToLower(cfg.PlayAll.TreeReportingOptions.Type)
+				Additional cfg validations needed:
+
+				1. cfg.PlayAll.ReportingType.xxx no more than 1 true
+				2. cfg.PlayAll.xxxReportingOptions.Type  are valid
+				3. TreeSleepBetwnMoves and TreeSleepBetwnStrategies non negative integer
+
+		        I checked all of the commented out validations from the former command line arguments (which I have now deleted)
+		        and they are all now included in the above or section below (Search for "start ProgressCounterOverRides")
+
+			    Can you catch non-numeric entry into integer in yaml without a panic or who cares?
+			    Can you catch fractional entry into integer in yaml without a panic or who cares?
+		        Can you catch non boolean entry into integer in yaml without a panic or who cares?
+	*/
+
+	// completing cfg
 
 	cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMovesDur = time.Duration(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves*100) * time.Millisecond
 	cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategiesDur = time.Duration(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategies*100) * time.Millisecond
@@ -143,45 +155,6 @@ func main() {
 		cfg.PlayAll.RestrictReporting = true
 	}
 	cfg.PlayAll.ReportingType.NoReporting = !(cfg.PlayAll.ReportingType.DeckByDeck || cfg.PlayAll.ReportingType.MoveByMove || cfg.PlayAll.ReportingType.Tree)
-
-	/*// Sixth
-	pMdArgs := strings.Split(args[6], ",")
-	l := len(pMdArgs)
-
-	if l >= 1 {
-		if pMdArgs[0] == "BB" || pMdArgs[0] == "BBS" || pMdArgs[0] == "BBSS" || pMdArgs[0] == "TW" || pMdArgs[0] == "TS" || pMdArgs[0] == "TSS" || pMdArgs[0] == "X" {
-			pMD.pType = pMdArgs[0]
-		} else {
-			println("Sixth argument part 1 invalid - args[6];  arg[6] parts must be separated by commas: *1*,2,3,4,5,6")
-			println("  Must start with BB, BBS, BBSS, TW, TS, TSS or X")
-			os.Exit(1)
-		}
-	}
-
-
-	// Arguments 5 & 6 above apply only to playNew			****************************************************
-
-	/* Check for incompatible options among argument 5 or 6:
-	          DBD AND DBDS can not be BOTH included in verbosespecial
-			      and that neither CAN be selected if the sixth argument pMD.pType is anything other than "X"
-			  PROGRESSdddd can not be selected with argument 5 = TW, TS, or TS
-	*/
-	/*if strings.Contains(cLArgs.verboseSpecial, ";DBD;") || strings.Contains(cLArgs.verboseSpecial, ";DBDS;") {
-		if strings.Contains(cLArgs.verboseSpecial, ";DBD;") && strings.Contains(cLArgs.verboseSpecial, ";DBDS;") {
-			println("Fifth argument cannot specify BOTH DBD and DBDS")
-			os.Exit(1)
-		} else {
-			if pMD.pType != "X" {
-				println("Fifth argument of \"DBD\" and \"DBDS\" incompatible with sixth argument equal to anything other than \"X\"")
-				os.Exit(1)
-			}
-		}
-		if pMD.pType == "TW" || pMD.pType == "TS" || pMD.pType == "TSS" {
-			println("Sixth argument of \"TW\", \"TS\", or \"TSS\" incompatible with fifth argument (verboseSpecial of type \"PROGRESSdddd\"")
-			os.Exit(1)
-		}
-	}
-	*/
 
 	// ******************************************
 	//
@@ -202,6 +175,32 @@ func main() {
 		cfg.General.TypeOfPlay,
 		cfg.General.Verbose)
 
+	// DO BELOW edits to ProgressCounter so that it will be set to 0 when inappropriate and based on tests in prints will not print out
+	//               start ProgressCounterOverRides
+	if cfg.General.OutputTo == "console" {
+		if cfg.General.TypeOfPlay == "playorig" {
+			cfg.General.ProgressCounter = 0
+		} else {
+			if cfg.PlayAll.ReportingType.DeckByDeck {
+				cfg.General.ProgressCounter *= 1_000_000
+			} else {
+				cfg.General.ProgressCounter = 0
+			}
+		}
+	} else {
+		cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves = 0      // Delete this if figure out how to print to file AND console
+		cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategies = 0 // Delete this if figure out how to print to file AND console
+		if cfg.General.TypeOfPlay == "playorig" {
+			cfg.General.ProgressCounter = 0 // Change this to 1 if figure out how to print to file AND console
+		} else {
+			cfg.General.ProgressCounter = 0 // replace this with cfg.General.ProgressCounter *= 1_000_000 if figure out how to print to file AND console
+		}
+	}
+	//               end ProgressCounterOverRides
+	//DO ABOVE edits to ProgressCounter so that it will be set to 0 when inappropriate and based on tests in prints will not print out
+
+	cfg.General.ProgressCounterLastPrintTime = time.Now()
+
 	if cfg.General.TypeOfPlay == "playorig" {
 		nOfS := 1 << cfg.PlayOrig.Length //number of initial strategies
 		_, err = pfmt.Printf(" Style: Original iOS (Initial Override Strategies)\n\n"+
@@ -212,10 +211,15 @@ func main() {
 			cfg.PlayOrig.Length,
 			nOfS,
 			nOfS*cfg.General.NumberOfDecksToBePlayed,
-			cfg.PlayOrig.GameLengthLimit) // add progressCounter when added to playOrig
+			cfg.PlayOrig.GameLengthLimit)
+		if cfg.General.ProgressCounter != 0 {
+			// Note: will not ever print due to the overrides (Search for "start ProgressCounterOverRides")
+			//       until figure out how to print to console and file and until code added to playOrig
+			_, err = pfmt.Printf("    Move Progress Reporting Cycles, in Decks: %v\n", cfg.General.ProgressCounter)
+		}
 	} else {
 		if cfg.PlayAll.ReportingType.NoReporting {
-			_, err = pfmt.Printf("No Deck-by-Dec, Move-by-Move or Tree Reporting\n")
+			_, err = pfmt.Printf("No Deck-by-Deck, Move-by-Move or Tree Reporting\n")
 		} else {
 			if cfg.PlayAll.ReportingType.DeckByDeck {
 				_, err = pfmt.Printf("Deck By Deck Reporting: \n"+
@@ -263,23 +267,6 @@ func main() {
 		_, err = pfmt.Printf("\nGame Length Limit, in millions: %v\n",
 			cfg.PlayAll.GameLengthLimit)
 	}
-	if cfg.General.OutputTo == "console" {
-		if cfg.General.TypeOfPlay == "playorig" {
-			cfg.General.ProgressCounter = 0
-		} else {
-			cfg.General.ProgressCounter *= 1_000_000
-		}
-	} else {
-		cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves = 0      // Delete this if figure out how to print to file AND console
-		cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategies = 0 // Delete this if figure out how to print to file AND console
-		if cfg.General.TypeOfPlay == "playorig" {
-			cfg.General.ProgressCounter = 0 // Change this to 1 if figure out how to print to file AND console
-		}
-	}
-	cfg.General.ProgressCounterLastPrintTime = time.Now()
-
-	/*	for _, v = range cfg {
-		}*/
 
 	// ******************************************
 	//

@@ -10,7 +10,10 @@ general:
   outputTo: console                                # console OR filename (if file exists a sequence number will be added before the extension) not yet implemented
 
   progress counter in millions: 50                 # If playOrig && outputTo != "console" will be set to 1 DECK in code
-                                                   # If playAll  && outputTo == "console" && cfg.PlayAll.ReportingType.DeckByDeck == false will be set to 0 in code
+                                                   # If playAll  && outputTo == "console" && cfg.PlayAll.ReportingType.DeckByDeck == false
+                                                   #    will be set to 0 in code
+
+
 play original:
   length of initial override strategy: 8          # non-negative integer
   game length limit moveCounter: 150              # non-negative integer
@@ -39,12 +42,12 @@ play all moves:
         sleep between strategies: 0                # non-negative integer, in tenths of seconds
 
     restrict reporting to:
-      starting deck number: 0                      # 0 means no restriction
+      starting deck number: 0                   # 0 means no restriction
       continue for how many decks: 0               # 0 means no restriction
       starting move number: 0                      # 0 means no restriction
       continue for how many moves: 0               # 0 means no restriction
 
-    print final deck by deck W/L record: false     # true or false
+    print final deck by deck W/L record: dog     # true or false
 
     save results to SQL: false     # true or false
     sql connection string: "test"
