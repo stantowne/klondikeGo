@@ -56,7 +56,7 @@ type deckWinLossDetailStats struct {
 var dWLDStats deckWinLossDetailStats
 var deckWinLossDetail []deckWinLossDetailStats
 
-func playNew(reader csv.Reader, cfg Configuration) {
+func playAll(reader csv.Reader, cfg Configuration) {
 	firstDeckNum := cfg.General.FirstDeckNum
 	numberOfDecksToBePlayed := cfg.General.NumberOfDecksToBePlayed
 	verbose := cfg.General.Verbose
@@ -133,7 +133,7 @@ func playNew(reader csv.Reader, cfg Configuration) {
 
 		// This statement is executed once per deck and transfers program execution.
 		// When this statement returns the deck has been played.
-		result1, result2, _ := playAllMoveS(b, 0, deckNum, cfg, vPN, startTimeTD)
+		result1, result2, _ := playAllMoves(b, 0, deckNum, cfg, vPN, startTimeTD)
 
 		var dummy []move
 		var s string

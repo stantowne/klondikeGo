@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func playAllMoveS(bIn board,
+func playAllMoves(bIn board,
 	moveNum int,
 	deckNum int,
 	cfg Configuration,
@@ -181,7 +181,7 @@ func playAllMoveS(bIn board,
 		}
 
 		// ********** 2nd of the 2 MOST IMPORTANT statements in this function:  ******************************
-		recurReturnV1, recurReturnV2, recurReturnNum = playAllMoveS(bNew, moveNum+1, deckNum, cfg, vPN, startTimeTD)
+		recurReturnV1, recurReturnV2, recurReturnNum = playAllMoves(bNew, moveNum+1, deckNum, cfg, vPN, startTimeTD)
 
 		// CONSIDER DELETING prntMDet(bIn, aMoves, i, deckNum, moveNum, "DbDorMbM", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2, cfg, vPN)
 
