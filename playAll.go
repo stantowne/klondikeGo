@@ -148,7 +148,7 @@ func playAll(reader csv.Reader, cfg Configuration) {
 		prntMDetTreeReturnComment("\n   "+s+"\n", deckNum, 0, cfg)
 
 		/*
-			if cfg.PlayNew.WinLossReport { // Deck Win Loss Summary Statistics
+			if cfg.PlayAll.WinLossReport { // Deck Win Loss Summary Statistics
 				if stratWinsTD == 0 {
 					dWLDStats.winLoss = "L"
 					dWLDStats.moveNumAt1stWinOrAtLoss = 0
@@ -169,7 +169,7 @@ func playAll(reader csv.Reader, cfg Configuration) {
 			}*/
 
 		// This If Block is Print Only
-		if cfg.PlayNew.ReportingType.DeckByDeck && cfg.PlayNew.DeckByDeckReportingOptions.Type == "regular" { // Deck-by-deck Statistics
+		if cfg.PlayAll.ReportingType.DeckByDeck && cfg.PlayAll.DeckByDeckReportingOptions.Type == "regular" { // Deck-by-deck Statistics
 			if stratWinsTD > 0 {
 				fmt.Printf("\n\n*************************\n\nDeck: %d  WON    Result Codes: %v %v", deckNum, result1, result2)
 			} else {
@@ -191,14 +191,14 @@ func playAll(reader csv.Reader, cfg Configuration) {
 			if stratLossesTD+stratWinsTD != stratNumTD {
 				fmt.Printf("\n        ************* Strategies Tried != Strategies Lost + Strategies Won")
 			}
-			if cfg.PlayNew.FindAllWinStrats && stratWinsTD != 0 {
+			if cfg.PlayAll.FindAllWinStrats && stratWinsTD != 0 {
 				fmt.Printf("\n\n Multiple Successful Strategies were found in this deck.")
 				_, err = pfmt.Printf("   Total winning strategies found: %d\n", stratWinsTD)
 			}
 		}
 
 		// This If Block is Print Only   ??????????????  what was this for ????????       PROGRESS?????
-		if cfg.PlayNew.ReportingType.DeckByDeck && cfg.PlayNew.DeckByDeckReportingOptions.Type != "regular" {
+		if cfg.PlayAll.ReportingType.DeckByDeck && cfg.PlayAll.DeckByDeckReportingOptions.Type != "regular" {
 			var est time.Duration
 			//                      nanosecondsTD   / Decks Played So Far         * remaining decks [remaining decks = numbertobeplayed - decksplayed so far
 			est = time.Duration(float64(time.Since(startTimeAD))/float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum))) * time.Nanosecond
@@ -280,14 +280,14 @@ func playAll(reader csv.Reader, cfg Configuration) {
 	if stratLossesAD+stratWinsAD != stratNumAD {
 		fmt.Printf("\n        ************* Strategies Tried != Strategies Lost + Strategies Won")
 	}
-	if cfg.PlayNew.FindAllWinStrats {
+	if cfg.PlayAll.FindAllWinStrats {
 		fmt.Printf("\n\n Multiple Successful Strategies were found in some winng decks.")
 		_, err = pfmt.Printf("   Decks Won: %d\n", deckWinsAD)
 		_, err = pfmt.Printf("   Total winning strategies found: %d\n", stratWinsAD)
 		_, err = pfmt.Printf("   Average winning strategies found: %d\n", stratWinsAD/deckWinsAD)
 	}
 
-	if cfg.PlayNew.WinLossReport { // Deck Win Loss Summary Statistics
+	if cfg.PlayAll.WinLossReport { // Deck Win Loss Summary Statistics
 		fmt.Printf("\n\n\n Deck-by Deck Win/Loss Detail   (Copy to Excel to get headings to line up with the columns)")
 		fmt.Printf("\n\n Deck\tW/L\tMoveNum 1ST-Win\tStratNum At 1st-Win Or At-Loss\tMvsTried At 1st-Win Or At-Loss\tMoveNum Min-Win If-Find-All\tMoveNum Max-Win If-Find-All\tElapsed Time At 1st-Win Or At Loss\n")
 		/*for dN, detail := range deckWinLossDetail {

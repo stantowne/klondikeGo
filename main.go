@@ -36,7 +36,7 @@ type Configuration struct {
 		Length          int `yaml:"length of initial override strategy"`
 		GameLengthLimit int `yaml:"game length limit moveCounter"`
 	} `yaml:"play original"`
-	PlayNew struct {
+	PlayAll struct {
 		GameLengthLimit  int  `yaml:"game length limit in moves tried"`
 		FindAllWinStrats bool `yaml:"find all winning strategies?"`
 		ReportingType    struct {
@@ -65,7 +65,9 @@ type Configuration struct {
 			MovesTriedStartVal    int `yaml:"starting move number"`
 			MovesTriedContinueFor int `yaml:"continue for how many moves"`
 		} `yaml:"restrict reporting to"`
-		WinLossReport bool `yaml:"report final deck by deck win loss record"`
+		WinLossReport       bool   `yaml:"print final deck by deck win loss record"`
+		SaveResultsToSQL    bool   `yaml:"save results to SQL"`
+		SQLConnectionString string `yaml:"sql connection string"`
 	} `yaml:"play all moves"`
 }
 
@@ -126,21 +128,21 @@ func main() {
 	// make all strings in cfg EXCEPT cfg.General.TOutputTo lower case
 	//Try to replace with a for range loop of cfg in future
 	cfg.General.TypeOfPlay = strings.ToLower(cfg.General.TypeOfPlay)
-	cfg.PlayNew.DeckByDeckReportingOptions.Type = strings.ToLower(cfg.PlayNew.DeckByDeckReportingOptions.Type)
-	cfg.PlayNew.MoveByMoveReportingOptions.Type = strings.ToLower(cfg.PlayNew.MoveByMoveReportingOptions.Type)
-	cfg.PlayNew.TreeReportingOptions.Type = strings.ToLower(cfg.PlayNew.TreeReportingOptions.Type)
+	cfg.PlayAll.DeckByDeckReportingOptions.Type = strings.ToLower(cfg.PlayAll.DeckByDeckReportingOptions.Type)
+	cfg.PlayAll.MoveByMoveReportingOptions.Type = strings.ToLower(cfg.PlayAll.MoveByMoveReportingOptions.Type)
+	cfg.PlayAll.TreeReportingOptions.Type = strings.ToLower(cfg.PlayAll.TreeReportingOptions.Type)
 
-	cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMovesDur = time.Duration(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves*100) * time.Millisecond
-	cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategiesDur = time.Duration(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies*100) * time.Millisecond
+	cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMovesDur = time.Duration(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves*100) * time.Millisecond
+	cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategiesDur = time.Duration(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategies*100) * time.Millisecond
 
 	// RestrictReporting zero value is false
-	if cfg.PlayNew.RestrictReportingTo.DeckStartVal != 0 ||
-		cfg.PlayNew.RestrictReportingTo.DeckContinueFor != 0 ||
-		cfg.PlayNew.RestrictReportingTo.MovesTriedStartVal != 0 ||
-		cfg.PlayNew.RestrictReportingTo.MovesTriedContinueFor != 0 {
-		cfg.PlayNew.RestrictReporting = true
+	if cfg.PlayAll.RestrictReportingTo.DeckStartVal != 0 ||
+		cfg.PlayAll.RestrictReportingTo.DeckContinueFor != 0 ||
+		cfg.PlayAll.RestrictReportingTo.MovesTriedStartVal != 0 ||
+		cfg.PlayAll.RestrictReportingTo.MovesTriedContinueFor != 0 {
+		cfg.PlayAll.RestrictReporting = true
 	}
-	cfg.PlayNew.ReportingType.NoReporting = !(cfg.PlayNew.ReportingType.DeckByDeck || cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree)
+	cfg.PlayAll.ReportingType.NoReporting = !(cfg.PlayAll.ReportingType.DeckByDeck || cfg.PlayAll.ReportingType.MoveByMove || cfg.PlayAll.ReportingType.Tree)
 
 	/*// Sixth
 	pMdArgs := strings.Split(args[6], ",")
@@ -212,54 +214,54 @@ func main() {
 			nOfS*cfg.General.NumberOfDecksToBePlayed,
 			cfg.PlayOrig.GameLengthLimit) // add progressCounter when added to playOrig
 	} else {
-		if cfg.PlayNew.ReportingType.NoReporting {
+		if cfg.PlayAll.ReportingType.NoReporting {
 			_, err = pfmt.Printf("No Deck-by-Dec, Move-by-Move or Tree Reporting\n")
 		} else {
-			if cfg.PlayNew.ReportingType.DeckByDeck {
+			if cfg.PlayAll.ReportingType.DeckByDeck {
 				_, err = pfmt.Printf("Deck By Deck Reporting: \n"+
 					"                                           Type: %v\n",
-					cfg.PlayNew.DeckByDeckReportingOptions.Type)
+					cfg.PlayAll.DeckByDeckReportingOptions.Type)
 				if cfg.General.ProgressCounter != 0 {
 					_, err = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", cfg.General.ProgressCounter)
 				}
 			}
-			if cfg.PlayNew.ReportingType.MoveByMove {
+			if cfg.PlayAll.ReportingType.MoveByMove {
 				_, err = pfmt.Printf("Move By Move Reporting: \n"+
 					"                                           Type: %v\n",
-					cfg.PlayNew.MoveByMoveReportingOptions.Type)
+					cfg.PlayAll.MoveByMoveReportingOptions.Type)
 				if cfg.General.ProgressCounter != 0 {
 					_, err = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", cfg.General.ProgressCounter)
 				}
 			}
-			if cfg.PlayNew.ReportingType.Tree {
+			if cfg.PlayAll.ReportingType.Tree {
 				_, err = pfmt.Printf("Tree Reporting: \n"+
 					"                        Type: %v\n"+
 					"         TreeSleepBetwnMoves: %v\n"+
 					"    TreeSleepBetwnStrategies: %v\n",
 
-					cfg.PlayNew.MoveByMoveReportingOptions.Type,
-					cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves,
-					cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies)
+					cfg.PlayAll.MoveByMoveReportingOptions.Type,
+					cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves,
+					cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategies)
 				if cfg.General.ProgressCounter != 0 {
 					_, err = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", cfg.General.ProgressCounter)
 				}
 			}
-			if cfg.PlayNew.RestrictReporting {
+			if cfg.PlayAll.RestrictReporting {
 				_, err = pfmt.Printf("\nReporting Restricted To\n"+
 					"                       Staring with Deck: %v\n"+
 					"                            Continue for: %v decks (0 = all the rest)\n"+
 					"             Starting with Moves Tried #: %v\n"+
 					"                            Continue for: %v moves tried (0 = all the rest)\n",
-					cfg.PlayNew.RestrictReportingTo.DeckStartVal,
-					cfg.PlayNew.RestrictReportingTo.DeckContinueFor,
-					cfg.PlayNew.RestrictReportingTo.MovesTriedStartVal,
-					cfg.PlayNew.RestrictReportingTo.MovesTriedContinueFor)
+					cfg.PlayAll.RestrictReportingTo.DeckStartVal,
+					cfg.PlayAll.RestrictReportingTo.DeckContinueFor,
+					cfg.PlayAll.RestrictReportingTo.MovesTriedStartVal,
+					cfg.PlayAll.RestrictReportingTo.MovesTriedContinueFor)
 			}
 		}
 	}
 	if cfg.General.TypeOfPlay == "playall" {
 		_, err = pfmt.Printf("\nGame Length Limit, in millions: %v\n",
-			cfg.PlayNew.GameLengthLimit)
+			cfg.PlayAll.GameLengthLimit)
 	}
 	if cfg.General.OutputTo == "console" {
 		if cfg.General.TypeOfPlay == "playorig" {
@@ -268,8 +270,8 @@ func main() {
 			cfg.General.ProgressCounter *= 1_000_000
 		}
 	} else {
-		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves = 0      // Delete this if figure out how to print to file AND console
-		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies = 0 // Delete this if figure out how to print to file AND console
+		cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves = 0      // Delete this if figure out how to print to file AND console
+		cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategies = 0 // Delete this if figure out how to print to file AND console
 		if cfg.General.TypeOfPlay == "playorig" {
 			cfg.General.ProgressCounter = 0 // Change this to 1 if figure out how to print to file AND console
 		}
