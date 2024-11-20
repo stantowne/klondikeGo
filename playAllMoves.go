@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func playAllMoveS(bIn board,
+func playAllMoves(bIn board,
 	moveNum int,
 	deckNum int,
 	cfg Configuration,
@@ -169,7 +169,7 @@ func playAllMoveS(bIn board,
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_SorMBM_VS", 1, "\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v", "", "", cfg, vPN)
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_S", 2, "\n      bIn: %v\n", "", "", cfg, vPN)
 		prntMDet(bNew, aMoves, i, deckNum, moveNum, "MbM_S", 2, "     bNew: %v\n", "", "", cfg, vPN)
-		prntMDetTree(bIn, aMoves, i, deckNum, moveNum, cfg, vPN)
+		prntMDetTree(bIn, aMoves, i, deckNum, moveNum, cfg, &vPN)
 
 		mvsTriedTD++
 
@@ -181,7 +181,7 @@ func playAllMoveS(bIn board,
 		}
 
 		// ********** 2nd of the 2 MOST IMPORTANT statements in this function:  ******************************
-		recurReturnV1, recurReturnV2, recurReturnNum = playAllMoveS(bNew, moveNum+1, deckNum, cfg, vPN, startTimeTD)
+		recurReturnV1, recurReturnV2, recurReturnNum = playAllMoves(bNew, moveNum+1, deckNum, cfg, vPN, startTimeTD)
 
 		// CONSIDER DELETING prntMDet(bIn, aMoves, i, deckNum, moveNum, "DbDorMbM", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   StratNumTD: %v   MvsTriedTD: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2, cfg, vPN)
 
@@ -290,7 +290,7 @@ func prntMDet(b board,
 	}
 }
 
-func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Configuration, vPN variablesSpecificToPlayNew) {
+func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Configuration, vPN *variablesSpecificToPlayNew) {
 
 	const (
 		vert1      = string('\u2503') // Looks Like: ->┃<-
@@ -340,23 +340,8 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 			treeRepeatChar = " "
 		}
 
-		/*		switch {
-				case cfg.PlayNew.TreeReportingOptions.Type == "very narrow":
-					treePrevMovesTD += treeAddToPrev
-					treeMoveWidth = 1
-				case cfg.PlayNew.TreeReportingOptions.Type == "narrow":
-					treeThisMove += strings.Repeat(horiz1, 2)
-					treeMoveWidth = 3
-					treeAddToPrev += strings.Repeat(treeRepeatChar, 2)
-				case cfg.PlayNew.TreeReportingOptions.Type == "regular":
-					treeThisMove += moveShortName[aMoves[nextMove].name] + horiz1
-					treeMoveWidth = 8
-					treeAddToPrev += strings.Repeat(treeRepeatChar, 7)
-				}*/
-
 		switch cfg.PlayNew.TreeReportingOptions.Type {
 		case "very narrow":
-			//treePrevMovesTD += treeAddToPrev
 			treeMoveWidth = 1
 		case "narrow":
 			treeThisMove += strings.Repeat(horiz1, 2)
@@ -373,18 +358,12 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 			fmt.Printf("%s", treeThisMove)
 		} else {
 			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategiesDur)
-			//x := []rune(/*vPN.*/treePrevMovesTD)
-			x := []rune( /*vPN.*/ treePrevMovesTD)
+			x := []rune(vPN.treePrevMovesTD)
 			x = x[0 : mN*treeMoveWidth]
-			///*vPN.*/treePrevMovesTD = string(x)
-			/*vPN.*/
-			treePrevMovesTD = string(x)
-			//pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD), /*vPN.*/treePrevMovesTD, treeThisMove)
-			_, err = pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD) /*vPN.*/, treePrevMovesTD, treeThisMove)
+			vPN.treePrevMovesTD = string(x)
+			_, err = pfmt.Printf("\n%13s  %s%s", strconv.Itoa(stratNumTD), vPN.treePrevMovesTD, treeThisMove)
 		}
-		///*vPN.*/treePrevMovesTD += treeAddToPrev
-		/*vPN.*/
-		treePrevMovesTD += treeAddToPrev
+		vPN.treePrevMovesTD += treeAddToPrev
 	}
 }
 
