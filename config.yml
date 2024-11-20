@@ -7,51 +7,47 @@ general:
   list:                                            # not implemented
   type of play: playAll                            # playAll or playOrig    NOTE: playAll executes code in function playNew
   verbose: 0                                       # non-negative integer
-  outputTo: console                                # console OR filename (if file exists a sequence number will
-                                                   #                      be added before the extension)
-                                                   # not yet implemented
+  outputTo: console                                # console OR filename (if file exists a sequence number will be added before the extension) not yet implemented
+
   progress counter in millions: 50                 # If playOrig and outputTo != "c" will be set to 1 DECK
+
+play original:
+  length of initial override strategy: 8          # non-negative integer
+  game length limit moveCounter: 150              # non-negative integer
+
+
+
+play all moves:
+    game length limit in moves tried: 50           # non-negative integer
                                                    # ELSE non-negative integer, in millions of moves TRIED
                                                    # will be overridden to 0 if move by move or tree
                                                    # UNLESS outputTo != "c" and figure out to print to console AND file
 
-
-play original:
-   length of initial override strategy: 8          # non-negative integer
-   game length limit in moves: 150                 # non-negative integer
-
-play all moves:
-    game length limit in moves tried: 5            # non-negative integer
     find all winning strategies?: false            # true or false
 
-    reporting:                                     # only one true or no trues permitted
-      deck by deck: false                          # true or false
-      move by move: true                           # true or false
-      tree: false                                  # true or false
-                                                   # cfg variable NoReporting set in code:
-                                                   #                 cfg.PlayNew.ReportingType.NoReporting
-                                                   #              =  cfg.PlayNew.ReportingType.DeckByDeck
-                                                   #              || cfg.PlayNew.ReportingType.MoveByMove
-                                                   #              || cfg.PlayNew.ReportingType.Tree
-                                                   #  NOTE: || == OR (looks like forward slash due to italics)
-
+    reporting:                                     # only one true or no trues permitted  non yaml       cfg.PlayNew.ReportingType.NoReporting set in code
+      deck by deck: false                          # true or false                                 =     cfg.PlayNew.ReportingType.DeckByDeck
+      move by move: true                           # true or false                                    || cfg.PlayNew.ReportingType.MoveByMove
+      tree: false                                  # true or false                                    || cfg.PlayNew.ReportingType.Tree
+                                                   #                                                NOTE: || == OR (looks like forward slash due to italics)
     deck by deck reporting options:
-        typeDbD: regular                           # regular, short, very short
+        type:  very short                          # regular, short, very short
 
-    move by move reporting option:
-        typeMbM: regular                           # regular, short, very short
+    move by move reporting options:
+        type: very short                           # regular, short, very short
 
     tree reporting options:
-        typeTree: narrow                           # regular, narrow, very narrow
-        sleep between moves: 10                    # non-negative integer, tenths of seconds
-        sleep between strategies: 1                # non-negative integer, tenths of seconds
+        type: very narrow                          # regular, narrow, very narrow
+        sleep between moves: 0                     # non-negative integer, in tenths of seconds
+        sleep between strategies: 0                # non-negative integer, in tenths of seconds
 
     restrict reporting to:
-      starting deck number: 15                      # 0 means no restriction
+      starting deck number: 0                      # 0 means no restriction
       continue for how many decks: 0               # 0 means no restriction
       starting move number: 0                      # 0 means no restriction
       continue for how many moves: 0               # 0 means no restriction
 
-    report final deck by deck win loss record: true         # true or false
+    report final deck by deck win loss record: false        # true or false for now soon make string then console, SQL or both add force input to lowercase
+                                                            # add SQL connection string
 
 

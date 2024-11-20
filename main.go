@@ -34,30 +34,30 @@ type Configuration struct {
 	} `yaml:"general"`
 	PlayOrig struct {
 		Length          int `yaml:"length of initial override strategy"`
-		GameLengthLimit int `yaml:"game length limit in moves"`
+		GameLengthLimit int `yaml:"game length limit moveCounter"`
 	} `yaml:"play original"`
 	PlayNew struct {
-		GameLengthLimit     int  `yaml:"game length limit in moves tried"`
-		FindAllWinStrats    bool `yaml:"find all winning strategies?"`
-		ReportingDeckByDeck bool //not part of yaml file, derived after yaml file is unmarshalled & validated
-		ReportingMoveByMove bool //not part of yaml file, derived after yaml file is unmarshalled & validated
-		ReportingType       struct {
+		GameLengthLimit  int  `yaml:"game length limit in moves tried"`
+		FindAllWinStrats bool `yaml:"find all winning strategies?"`
+		ReportingType    struct {
 			DeckByDeck  bool `yaml:"deck by deck"` // referred to as "DbD_R", "DbD_S" or "DbD_VS", in calls to prntMDet and calls thereto
 			MoveByMove  bool `yaml:"move by move"` // referred to as "MbM_R", "MbM_S" or "MbM_VS", in calls to prntMDet and calls thereto
 			Tree        bool `yaml:"tree"`         // referred to as "Tree_R", "Tree_N" or "Tree_VN", in calls to prntMDet and calls thereto
 			NoReporting bool //not part of yaml file, derived after yaml file is unmarshalled & validated   CONSIDER DELETING
 		} `yaml:"reporting"`
 		DeckByDeckReportingOptions struct {
-			Type string `yaml:"typeDbD"`
+			Type string `yaml:"type"`
 		} `yaml:"deck by deck reporting options"`
 		MoveByMoveReportingOptions struct {
-			Type string `yaml:"typeMbM"`
+			Type string `yaml:"type"`
 		} `yaml:"move by move reporting options"`
 		TreeReportingOptions struct {
-			Type                     string        `yaml:"typeTree"`
-			TreeSleepBetwnMoves      time.Duration `yaml:"sleep between moves"`
-			TreeSleepBetwnStrategies time.Duration `yaml:"sleep between strategies"`
-		}
+			Type                        string `yaml:"type"`
+			TreeSleepBetwnMoves         int    `yaml:"sleep between moves"`
+			TreeSleepBetwnMovesDur      time.Duration
+			TreeSleepBetwnStrategies    int `yaml:"sleep between strategies"`
+			TreeSleepBetwnStrategiesDur time.Duration
+		} `yaml:"tree reporting options"`
 		RestrictReporting   bool //not part of yaml file, derived after yaml file is unmarshalled & validated
 		RestrictReportingTo struct {
 			DeckStartVal          int `yaml:"starting deck number"`
@@ -123,22 +123,6 @@ func main() {
 
 	// completing cfg
 
-	/*****************************************
-
-		Temporary till Yaml fixed start here
-
-	*****************************************/
-
-	cfg.PlayNew.DeckByDeckReportingOptions.Type = "very short"
-	cfg.PlayNew.MoveByMoveReportingOptions.Type = "regular"
-	cfg.PlayNew.TreeReportingOptions.Type = "regular"
-
-	/*****************************************
-
-		Temporary till Yaml fixed end here
-
-	*****************************************/
-
 	// make all strings in cfg EXCEPT cfg.General.TOutputTo lower case
 	//Try to replace with a for range loop of cfg in future
 	cfg.General.TypeOfPlay = strings.ToLower(cfg.General.TypeOfPlay)
@@ -146,14 +130,9 @@ func main() {
 	cfg.PlayNew.MoveByMoveReportingOptions.Type = strings.ToLower(cfg.PlayNew.MoveByMoveReportingOptions.Type)
 	cfg.PlayNew.TreeReportingOptions.Type = strings.ToLower(cfg.PlayNew.TreeReportingOptions.Type)
 
-	// ReportingMoveByMove zero value is false
-	if cfg.PlayNew.ReportingType.DeckByDeck {
-		cfg.PlayNew.ReportingDeckByDeck = true
-	}
-	// COMMENT
-	/*if cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree {
-		cfg.PlayNew.ReportingMoveByMove = true
-	}*/
+	cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMovesDur = time.Duration(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves*100) * time.Millisecond
+	cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategiesDur = time.Duration(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies*100) * time.Millisecond
+
 	// RestrictReporting zero value is false
 	if cfg.PlayNew.RestrictReportingTo.DeckStartVal != 0 ||
 		cfg.PlayNew.RestrictReportingTo.DeckContinueFor != 0 ||
@@ -201,6 +180,7 @@ func main() {
 		}
 	}
 	*/
+
 	// ******************************************
 	//
 	// Print out the configuration:
@@ -230,63 +210,68 @@ func main() {
 			cfg.PlayOrig.Length,
 			nOfS,
 			nOfS*cfg.General.NumberOfDecksToBePlayed,
-			cfg.PlayOrig.GameLengthLimit)
-	}
-	if cfg.General.TypeOfPlay == "playall" && cfg.PlayNew.ReportingType.DeckByDeck {
-		_, err = pfmt.Printf("Deck By Deck Reporting: \n"+
-			"                                           Type: %v\n"+
-			"    Move Progress Reporting Cycles, in Millions: %v\n",
-			cfg.PlayNew.DeckByDeckReportingOptions.Type,
-			cfg.General.ProgressCounter)
-	}
-	if cfg.General.TypeOfPlay == "playall" && cfg.PlayNew.ReportingType.MoveByMove {
-		_, err = pfmt.Printf("Move By Move Reporting: \n"+
-			"                                           Type: %v\n"+
-			"    Move Progress Reporting Cycles, in Millions: %v\n",
-			cfg.PlayNew.MoveByMoveReportingOptions.Type,
-			cfg.General.ProgressCounter)
-		// add code here to turn progress reporting off if output to file unless figure out how to print some stuff to file and progress to console
-		// add code for incompatible with ????
-	}
-	if cfg.General.TypeOfPlay == "playall" && cfg.PlayNew.ReportingType.Tree {
-		_, err = pfmt.Printf("Tree Reporting: \n"+
-			"                        Type: %v\n"+
-			"         TreeSleepBetwnMoves: %v\n"+
-			"    TreeSleepBetwnStrategies: %v\n",
-			cfg.PlayNew.MoveByMoveReportingOptions.Type,
-			cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves,
-			cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies)
-	}
-	if cfg.General.TypeOfPlay == "playall" && cfg.PlayNew.RestrictReporting {
-		_, err = pfmt.Printf("\nReporting Restricted To\n"+
-			"                       Staring with Deck: %v\n"+
-			"                            Continue for: %v decks (0 = all the rest)\n"+
-			"             Starting with Moves Tried #: %v\n"+
-			"                            Continue for: %v moves tried (0 = all the rest)\n",
-			cfg.PlayNew.RestrictReportingTo.DeckStartVal,
-			cfg.PlayNew.RestrictReportingTo.DeckContinueFor,
-			cfg.PlayNew.RestrictReportingTo.MovesTriedStartVal,
-			cfg.PlayNew.RestrictReportingTo.MovesTriedContinueFor)
+			cfg.PlayOrig.GameLengthLimit) // add progressCounter when added to playOrig
+	} else {
+		if cfg.PlayNew.ReportingType.NoReporting {
+			_, err = pfmt.Printf("No Deck-by-Dec, Move-by-Move or Tree Reporting\n")
+		} else {
+			if cfg.PlayNew.ReportingType.DeckByDeck {
+				_, err = pfmt.Printf("Deck By Deck Reporting: \n"+
+					"                                           Type: %v\n",
+					cfg.PlayNew.DeckByDeckReportingOptions.Type)
+				if cfg.General.ProgressCounter != 0 {
+					_, err = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", cfg.General.ProgressCounter)
+				}
+			}
+			if cfg.PlayNew.ReportingType.MoveByMove {
+				_, err = pfmt.Printf("Move By Move Reporting: \n"+
+					"                                           Type: %v\n",
+					cfg.PlayNew.MoveByMoveReportingOptions.Type)
+				if cfg.General.ProgressCounter != 0 {
+					_, err = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", cfg.General.ProgressCounter)
+				}
+			}
+			if cfg.PlayNew.ReportingType.Tree {
+				_, err = pfmt.Printf("Tree Reporting: \n"+
+					"                        Type: %v\n"+
+					"         TreeSleepBetwnMoves: %v\n"+
+					"    TreeSleepBetwnStrategies: %v\n",
+
+					cfg.PlayNew.MoveByMoveReportingOptions.Type,
+					cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves,
+					cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies)
+				if cfg.General.ProgressCounter != 0 {
+					_, err = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", cfg.General.ProgressCounter)
+				}
+			}
+			if cfg.PlayNew.RestrictReporting {
+				_, err = pfmt.Printf("\nReporting Restricted To\n"+
+					"                       Staring with Deck: %v\n"+
+					"                            Continue for: %v decks (0 = all the rest)\n"+
+					"             Starting with Moves Tried #: %v\n"+
+					"                            Continue for: %v moves tried (0 = all the rest)\n",
+					cfg.PlayNew.RestrictReportingTo.DeckStartVal,
+					cfg.PlayNew.RestrictReportingTo.DeckContinueFor,
+					cfg.PlayNew.RestrictReportingTo.MovesTriedStartVal,
+					cfg.PlayNew.RestrictReportingTo.MovesTriedContinueFor)
+			}
+		}
 	}
 	if cfg.General.TypeOfPlay == "playall" {
 		_, err = pfmt.Printf("\nGame Length Limit, in millions: %v\n",
 			cfg.PlayNew.GameLengthLimit)
 	}
 	if cfg.General.OutputTo == "console" {
-		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves *= 100_000_000
-		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies *= 100_000_000
 		if cfg.General.TypeOfPlay == "playorig" {
 			cfg.General.ProgressCounter = 0
 		} else {
-			if cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.Tree {
-				cfg.General.ProgressCounter = 0
-			}
+			cfg.General.ProgressCounter *= 1_000_000
 		}
 	} else {
-		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves = 0 // Change this if figure out how to print to file AND console
-		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies = 0
+		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves = 0      // Delete this if figure out how to print to file AND console
+		cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies = 0 // Delete this if figure out how to print to file AND console
 		if cfg.General.TypeOfPlay == "playorig" {
-			cfg.General.ProgressCounter = 1
+			cfg.General.ProgressCounter = 0 // Change this to 1 if figure out how to print to file AND console
 		}
 	}
 	cfg.General.ProgressCounterLastPrintTime = time.Now()

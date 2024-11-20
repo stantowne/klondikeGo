@@ -49,7 +49,7 @@ func playAllMoveS(bIn board,
 			cfg,
 			vPN)
 		stratLossesGLE_TD++
-		prntMDetTreeReturnComment("Game Length Limit Exceeded", deckNum, recurReturnNum, cfg)
+		prntMDetTreeReturnComment(" ==> GLE", deckNum, recurReturnNum, cfg)
 		return "SL", "GLE", 1
 	}
 
@@ -102,7 +102,7 @@ func playAllMoveS(bIn board,
 				//  	prntMDet(b board, aMoves []move, nextMove int, dN int, mN int, pTypeIn string, variant int, comment string, s1 string, s2 string) {
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_R", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cfg, vPN)
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_VS", 2, "\n  SF-RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cfg, vPN)
-				prntMDetTreeReturnComment("RB", deckNum, recurReturnNum, cfg)
+				prntMDetTreeReturnComment(" ==> RB", deckNum, recurReturnNum, cfg)
 				return "SL", "RB", 1 // Repetitive Board
 			} else {
 				// Remember the board state by putting it into the map "vPN.priorBoards"
@@ -114,6 +114,7 @@ func playAllMoveS(bIn board,
 		if i == 0 && aMoves[0].name == "No Moves Available" {
 			stratLossesNMA_TD++
 			prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_R", 2, "  SL-NMA: No Moves Available: Strategy Lost %v%v\n", "", "", cfg, vPN)
+			prntMDetTreeReturnComment(" ==> NMA", deckNum, recurReturnNum, cfg)
 			return "SL", "NMA", 1
 		}
 
@@ -126,7 +127,7 @@ func playAllMoveS(bIn board,
 			} else {
 				cmt += "  Go to Next Deck (if any)"
 			}
-			prntMDet(bIn, aMoves, i, deckNum, moveNum, "DbDorMbM", 1, cmt, "", "", cfg, vPN)
+			prntMDet(bIn, aMoves, i, deckNum, moveNum, "DbDorMbM", 2, cmt, "", "", cfg, vPN)
 
 			// Verbose Special "WL" Starts Here - No effect on operation
 			if cfg.PlayNew.WinLossReport { // Deck Win Loss Summary Statistics   MOVE THIS!!!!!!!!!
@@ -149,7 +150,7 @@ func playAllMoveS(bIn board,
 
 			}
 			// Verbose Special "WL" Ends Here - No effect on operation
-			prntMDetTreeReturnComment("DECK WON", deckNum, recurReturnNum, cfg)
+			prntMDetTreeReturnComment(" ==> DECK WON", deckNum, recurReturnNum, cfg)
 			return "SW", "EW", 1 //  Strategy Early Win
 		}
 
@@ -165,8 +166,8 @@ func playAllMoveS(bIn board,
 		// ********** 1st of the 2 MOST IMPORTANT statements in this function:  ******************************
 		bNew = moveMaker(bNew, aMoves[i])
 
-		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_S", 1, "\n\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v\n", "", "", cfg, vPN)
-		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_S", 2, "      bIn: %v\n", "", "", cfg, vPN)
+		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_SorMBM_VS", 1, "\nBefore Call at Deck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v", "", "", cfg, vPN)
+		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_S", 2, "\n      bIn: %v\n", "", "", cfg, vPN)
 		prntMDet(bNew, aMoves, i, deckNum, moveNum, "MbM_S", 2, "     bNew: %v\n", "", "", cfg, vPN)
 		prntMDetTree(bIn, aMoves, i, deckNum, moveNum, cfg, vPN)
 
@@ -194,7 +195,7 @@ func playAllMoveS(bIn board,
 	}
 
 	stratLossesSE_TD++
-	prntMDetTreeReturnComment("No More Moves", deckNum, recurReturnNum, cfg)
+	prntMDetTreeReturnComment(" ==> SE", deckNum, recurReturnNum, cfg)
 	return "SL", "SE", recurReturnNum + 1 //  Strategy Exhausted
 }
 
@@ -256,17 +257,17 @@ func prntMDet(b board,
 			// comment must have 2 %v in it
 			_, err = pfmt.Printf(comment, s1, s2)
 		case pTypeIn == "MbM_R" && cfg.PlayNew.ReportingType.MoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "regular" && variant == 3:
-			fmt.Printf("\n     All Possible Moves: ")
+			fmt.Printf("\n All Possible Moves: \n")
 			for j := range aMoves {
 				pM1, pM2 := printMove(aMoves[j])
 				if nextMove == j {
-					fmt.Printf("   Next Move ->    ")
+					fmt.Printf("     Next Move ->  ")
 				} else {
 					fmt.Printf("                   ")
 				}
 				fmt.Printf("%s", pM1)
 				if nextMove == j {
-					pad := strings.Repeat(" ", 110-len([]rune(pM1)))
+					pad := strings.Repeat(" ", 110-printableLength(pM1))
 					fmt.Printf(pad + "<- Next Move")
 				}
 				if len(pM2) > 0 {
@@ -275,9 +276,9 @@ func prntMDet(b board,
 
 				fmt.Printf("\n")
 			}
-		case cfg.PlayNew.ReportingType.MoveByMove && (cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" || cfg.PlayNew.MoveByMoveReportingOptions.Type == "very short") && variant == 1: // for "MbM_S" or "MbM_VS"
+		case cfg.PlayNew.ReportingType.MoveByMove && pTypeIn == "MbM_SorMBM_VS" && (cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" || cfg.PlayNew.MoveByMoveReportingOptions.Type == "very short") && variant == 1: // for "MbM_S" or "MbM_VS"
 			_, err = pfmt.Printf(comment, dN, mN, stratNumTD, mvsTriedTD, len(vPN.priorBoards), time.Since(startTimeAD), time.Since(startTimeTD))
-		case pTypeIn == "MbM_S" && cfg.PlayNew.ReportingType.MoveByMove && cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" && variant == 2:
+		case cfg.PlayNew.ReportingType.MoveByMove && pTypeIn == "MbM_S" && cfg.PlayNew.MoveByMoveReportingOptions.Type == "short" && variant == 2:
 			_, err = pfmt.Printf(comment, b)
 			//	case pTypeIn == "DbDorMbM" && cfg.PlayNew.ReportingMoveByMove && variant == 1://   formerly "NOTX"
 		case pTypeIn == "DbDorMbM" && (cfg.PlayNew.ReportingType.MoveByMove || cfg.PlayNew.ReportingType.DeckByDeck) && variant == 1: //   formerly "NOTX"
@@ -307,14 +308,18 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 		if mN == 0 && nextMove == 0 {
 			_, err = pfmt.Printf("\n\n Deck: %v\n\n", dN)
 			printBoard(b)
-			fmt.Printf("\n\n Strategy #   ")
 			if cfg.PlayNew.TreeReportingOptions.Type == "regular" {
-				fmt.Printf("\n             ")
+				fmt.Printf("\n       Move # ==>")
 				for i := 1; i <= 150; i++ {
-					fmt.Printf("%8s", strconv.Itoa(i)+"  ")
+					if i == 1 {
+						fmt.Printf("%4s", strconv.Itoa(i)+"  ")
+					} else {
+						fmt.Printf("%8s", strconv.Itoa(i)+"  ")
+					}
 				}
 			}
-			fmt.Printf("\n\n            0  ")
+			fmt.Printf("\n   Strategy # ")
+			fmt.Printf("\n            0  ")
 		}
 		switch {
 		case len(aMoves) == 1:
@@ -364,10 +369,10 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 		}
 
 		if nextMove == 0 {
-			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMoves)
+			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnMovesDur)
 			fmt.Printf("%s", treeThisMove)
 		} else {
-			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategies)
+			time.Sleep(cfg.PlayNew.TreeReportingOptions.TreeSleepBetwnStrategiesDur)
 			//x := []rune(/*vPN.*/treePrevMovesTD)
 			x := []rune( /*vPN.*/ treePrevMovesTD)
 			x = x[0 : mN*treeMoveWidth]
@@ -385,6 +390,24 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg Conf
 
 func prntMDetTreeReturnComment(c string, dN int, recurReturnNum int, cfg Configuration) {
 	if cfg.PlayNew.ReportingType.Tree && recurReturnNum == 0 && prntMDetTestRange(dN, cfg) {
-		fmt.Printf(" ==> " + c)
+		fmt.Printf(c)
 	}
+}
+func printableLength(s string) int {
+	withinEscapeSequence := false
+	runeCount := 0
+	for _, r := range s {
+		if withinEscapeSequence {
+			if r == 'm' {
+				withinEscapeSequence = false
+			}
+		} else {
+			if r == '\x1b' {
+				withinEscapeSequence = true
+			} else {
+				runeCount++
+			}
+		}
+	}
+	return runeCount
 }
