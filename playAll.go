@@ -14,7 +14,7 @@ import (
 
 type variablesSpecificToPlayAll struct {
 	priorBoards map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
-	TD          struct {
+	TD          struct {       // TD = This Deck
 		mvsTried       int
 		stratWins      int
 		stratLosses    int
@@ -25,14 +25,15 @@ type variablesSpecificToPlayAll struct {
 		stratLossesEL  int // Strategy Early Loss
 		stratNum       int
 		unqBoards      int
+		moveNumAtWin   int
 		moveNumMax     int
 		elapsedTime    time.Duration
 		startTime      time.Time
 		treePrevMoves  string // Used to retain values between calls to prntMDetTree for a single deck - Needed for when the strategy "Backs Uo"
 	}
-	AD struct {
-		mvsTried       int
-		stratWins      int
+	AD struct { // AD = All Decks This run
+		mvsTried       int // NOTE: Removed various min and max versions of variables here in AD struct as they would only pertain to the specific decks included in this run
+		stratWins      int //       if info across any set of decks is wanted it should be derived from the saved deck history to be found in SQL
 		stratLosses    int
 		stratLossesGLE int // Strategy Game Length Exceeded
 		stratLossesNMA int // Strategy No Moves Available
@@ -82,7 +83,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
 		vPA.TD.startTime = time.Now()
-		moveNumMax = 0                  //to keep track of length of the longest strategy so far
+		vPA.TD.moveNumMax = 0           //to keep track of length of the longest strategy so far
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {
 			break
@@ -192,14 +193,8 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			if time.Since(vPA.AD.startTime) > time.Duration(5*time.Minute) {
 				elTimeSinceStartTimeADFormatted = time.Since(vPA.AD.startTime).Truncate(time.Second).String()
 			}
-			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: xxx   Max MoveNum: xxx   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, vPA.TD.mvsTried /*moveNum, maxMoveNum, */, vPA.TD.stratNum, len(vPA.priorBoards), vPA.AD.deckWins, vPA.AD.deckLosses, vPA.AD.stratLossesGLE, roundFloatIntDiv(vPA.AD.deckWins*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.deckLosses*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.stratLossesGLE*100, deckNum+1-firstDeckNum, 1), time.Since(vPA.TD.startTime).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
+			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, vPA.TD.mvsTried, vPA.TD.moveNumAtWin, vPA.TD.moveNumMax, vPA.TD.stratNum, len(vPA.priorBoards), vPA.AD.deckWins, vPA.AD.deckLosses, vPA.AD.stratLossesGLE, roundFloatIntDiv(vPA.AD.deckWins*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.deckLosses*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.stratLossesGLE*100, deckNum+1-firstDeckNum, 1), time.Since(vPA.TD.startTime).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
 		}
-
-		// Verbose Special "BELL" Starts Here - No effect on operation
-		/*if strings.Contains(verboseSpecial, ";BELL;") && time.Since(vPA.TD.startTime) > 1*time.Second { // changed 5*time.Minute to 1*time.Second for test change it back
-			fmt.Printf("\a") // Ring Bell
-		}*/
-		// Verbose Special "BELL" Ends Here - No effect on operation
 
 		vPA.AD.stratWins += vPA.TD.stratWins
 		vPA.TD.stratWins = 0
@@ -218,6 +213,8 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		vPA.AD.mvsTried += vPA.TD.mvsTried + 1
 		vPA.TD.mvsTried = 0
 		vPA.TD.treePrevMoves = ""
+		vPA.TD.moveNumMax = 0
+		vPA.TD.moveNumAtWin = 0
 		clear(vPA.priorBoards)
 	}
 
@@ -225,21 +222,21 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	// From this point on, the program only prints.
 
 	fmt.Printf("\n\n******************   Summary Statistics   ******************\n" + "Decks:")
-	_, err = pfmt.Printf("\n Played: %6d", numberOfDecksToBePlayed)
-	_, err = pfmt.Printf("\n    Won: %6d", vPA.AD.deckWins)
-	_, err = pfmt.Printf("\n   Lost: %6d", vPA.AD.deckLosses)
+	_, _ = pfmt.Printf("\n Played: %6d", numberOfDecksToBePlayed)
+	_, _ = pfmt.Printf("\n    Won: %6d", vPA.AD.deckWins)
+	_, _ = pfmt.Printf("\n   Lost: %6d", vPA.AD.deckLosses)
 	averageElapsedTimePerDeck := time.Duration(float64(time.Since(vPA.AD.startTime)) / float64(numberOfDecksToBePlayed))
 	fmt.Printf("\nElapsed Time is %v.", time.Since(vPA.AD.startTime))
 	fmt.Printf("\nAverage Elapsed Time per Deck is %s", averageElapsedTimePerDeck.Truncate(100*time.Millisecond).String())
 	fmt.Printf("\n\nStrategies:")
-	_, err = pfmt.Printf("\n  Tried: %13d", vPA.AD.stratNum)
-	_, err = pfmt.Printf("\n    Won: %13d", vPA.AD.stratLosses)
-	_, err = pfmt.Printf("\n   Lost: %13d", vPA.AD.stratWins)
+	_, _ = pfmt.Printf("\n  Tried: %13d", vPA.AD.stratNum)
+	_, _ = pfmt.Printf("\n    Won: %13d", vPA.AD.stratLosses)
+	_, _ = pfmt.Printf("\n   Lost: %13d", vPA.AD.stratWins)
 	fmt.Printf("\n\nStrategies Lost Detail:")
-	_, err = pfmt.Printf("\n    NMA: %13d   (No Moves Available)", vPA.AD.stratLossesNMA)
-	_, err = pfmt.Printf("\n     RB: %13d   (Repetitive Board)", vPA.AD.stratLossesRB)
-	_, err = pfmt.Printf("\n     SE: %13d   (Strategy Exhausted)", vPA.AD.stratLossesSE)
-	_, err = pfmt.Printf("\n    GLE: %13d   (Game Length Exceeded)", vPA.AD.stratLossesGLE)
+	_, _ = pfmt.Printf("\n    NMA: %13d   (No Moves Available)", vPA.AD.stratLossesNMA)
+	_, _ = pfmt.Printf("\n     RB: %13d   (Repetitive Board)", vPA.AD.stratLossesRB)
+	_, _ = pfmt.Printf("\n     SE: %13d   (Strategy Exhausted)", vPA.AD.stratLossesSE)
+	_, _ = pfmt.Printf("\n    GLE: %13d   (Game Length Exceeded)", vPA.AD.stratLossesGLE)
 	if vPA.AD.stratLossesNMA+vPA.AD.stratLossesRB+vPA.AD.stratLossesSE+vPA.AD.stratLossesGLE != vPA.AD.stratLosses {
 		fmt.Printf("\n        ************* Total Strategy Losses != Sum of strategy detail")
 	}
@@ -248,9 +245,9 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	}
 	if cfg.PlayAll.FindAllWinStrats {
 		fmt.Printf("\n\n Multiple Successful Strategies were found in some winng decks.")
-		_, err = pfmt.Printf("   Decks Won: %d\n", vPA.AD.deckWins)
-		_, err = pfmt.Printf("   Total winning strategies found: %d\n", vPA.AD.stratWins)
-		_, err = pfmt.Printf("   Average winning strategies found: %d\n", vPA.AD.stratWins/vPA.AD.deckWins)
+		_, _ = pfmt.Printf("   Decks Won: %d\n", vPA.AD.deckWins)
+		_, _ = pfmt.Printf("   Total winning strategies found: %d\n", vPA.AD.stratWins)
+		_, _ = pfmt.Printf("   Average winning strategies found: %d\n", vPA.AD.stratWins/vPA.AD.deckWins)
 	}
 
 	if cfg.PlayAll.WinLossReport { // Deck Win Loss Summary Statistics

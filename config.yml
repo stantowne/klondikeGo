@@ -9,14 +9,11 @@ general:
   verbose: 0                                       # non-negative integer
   outputTo: console                                # console OR filename (if file exists a sequence number will be added before the extension) not yet implemented
 
-  progress counter in millions: 50                 # If playOrig && outputTo != "console" will be set to 1 DECK in code
-                                                   # If playAll  && outputTo == "console" && cfg.PlayAll.ReportingType.DeckByDeck == false
-                                                   #    will be set to 0 in code
-
+  progress counter in millions: 50
 
 play original:
-  length of initial override strategy: 8          # non-negative integer
-  game length limit moveCounter: 150              # non-negative integer
+  length of initial override strategy: 8           # non-negative integer
+  game length limit in moves made: 150             # non-negative integer
 
 
 
@@ -37,17 +34,19 @@ play all moves:
         type: very short                           # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.MoveByMove == false
 
     tree reporting options:
-        type: regular                              # regular, narrow, very narrow   All 3 Ignored if cfg.PlayAll.ReportingType.Tree == false
+        type: regular                              # regular, narrow, very narrow   Ignored if cfg.PlayAll.ReportingType.Tree == false
         sleep between moves: 5                     # non-negative integer, in tenths of seconds
-        sleep between strategies: 90                # non-negative integer, in tenths of seconds
+        sleep between strategies: 90               # non-negative integer, in tenths of seconds
 
     restrict reporting to:
-      starting deck number: 0                   # 0 means no restriction
+      starting deck number: 0                       # 0 means no restriction
       continue for how many decks: 0               # 0 means no restriction
       starting move number: 0                      # 0 means no restriction
       continue for how many moves: 0               # 0 means no restriction
 
-    print final deck by deck W/L record: dog     # true or false
+    progress counter in millions: 50
+
+    print final deck by deck W/L record: true     # true or false
 
     save results to SQL: false     # true or false
     sql connection string: "test"
