@@ -214,6 +214,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		vPA.TD.mvsTried = 0
 		vPA.TD.treePrevMoves = ""
 		vPA.TD.moveNumMax = 0
+		vPA.TD.moveNumAtWin = 0
 		clear(vPA.priorBoards)
 	}
 

@@ -151,6 +151,7 @@ func playAllMoves(bIn board,
 			}
 			// Verbose Special "WL" Ends Here - No effect on operation
 			prntMDetTreeReturnComment(" ==> DECK WON", deckNum, recurReturnNum, cfg, vPA)
+			vPA.TD.moveNumAtWin = moveNum
 			return "SW", "EW", 1 //  Strategy Early Win
 		}
 
