@@ -29,8 +29,8 @@ func playAllMoves(bIn board,
 
 	var aMoves []move //available Moves
 	var recurReturnV1, recurReturnV2 string
-	if moveNum > moveNumMax {
-		moveNumMax = moveNum
+	if moveNum > vPA.TD.moveNumMax {
+		vPA.TD.moveNumMax = moveNum
 	}
 
 	// Check to see if the gameLenthLimit has been exceeded.
@@ -176,7 +176,7 @@ func playAllMoves(bIn board,
 		if cfg.PlayAll.ProgressCounter > 0 && math.Mod(float64(vPA.TD.mvsTried+vPA.AD.mvsTried), float64(cfg.PlayAll.ProgressCounter)) <= 0.1 {
 			avgRepTime := time.Since(vPA.TD.startTime) / time.Duration(vPA.TD.mvsTried+vPA.AD.mvsTried/cfg.PlayAll.ProgressCounter)
 			estMaxRemTimeTD := time.Since(vPA.TD.startTime) * time.Duration((cfg.PlayAll.GameLengthLimit*1_000_000-vPA.TD.mvsTried+vPA.AD.mvsTried)/vPA.TD.mvsTried+vPA.AD.mvsTried)
-			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, vPA.TD.mvsTried+vPA.AD.mvsTried, moveNum, moveNumMax, vPA.TD.stratNum, len(vPA.priorBoards), time.Since(vPA.TD.startTime).Truncate(100*time.Millisecond).String(), time.Since(vPA.TD.startTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
+			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, vPA.TD.mvsTried+vPA.AD.mvsTried, moveNum, vPA.TD.moveNumMax, vPA.TD.stratNum, len(vPA.priorBoards), time.Since(vPA.TD.startTime).Truncate(100*time.Millisecond).String(), time.Since(vPA.TD.startTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
 			//lastPrintTime := time.Now()
 		}
 

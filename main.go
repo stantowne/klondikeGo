@@ -12,8 +12,6 @@ import (
 	"time"
 )
 
-var moveNumMax int
-
 // Setup pfmt to print thousands with commas
 var pfmt = message.NewPrinter(language.English)
 var err error
