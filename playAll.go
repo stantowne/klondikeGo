@@ -28,8 +28,11 @@ type variablesSpecificToPlayAll struct {
 		moveNumAtWin   int
 		moveNumMax     int
 		elapsedTime    time.Duration
-		startTime      time.Time
-		treePrevMoves  string // Used to retain values between calls to prntMDetTree for a single deck - Needed for when the strategy "Backs Uo"
+		winningMoves   []move
+	}
+	TDother struct { // Variables NOT needed in SQL output
+		startTime     time.Time
+		treePrevMoves string // Used to retain values between calls to prntMDetTree for a single deck - Needed for when the strategy "Backs Uo"
 	}
 	AD struct { // AD = All Decks This run
 		mvsTried       int // NOTE: Removed various min and max versions of variables here in AD struct as they would only pertain to the specific decks included in this run
@@ -66,7 +69,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	verbose := cfg.General.Verbose                                 // Shorthand name but really is a copy - OK since never changed (but would Pointer or address be better?)
 	var vPA variablesSpecificToPlayAll
 	vPA.priorBoards = map[bCode]bool{}
-	vPA.TD.treePrevMoves = ""
+	vPA.TDother.treePrevMoves = ""
 
 	//var deckWinsAD = 0
 	//var deckLossesAD = 0
@@ -77,12 +80,12 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	//var stratLossesRB_AD = 0
 	//var stratLossesSE_AD = 0
 	//var stratNumAD = 0
-	vPA.TD.startTime = time.Now()
+	vPA.TDother.startTime = time.Now()
 	vPA.AD.startTime = time.Now()
 
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
-		vPA.TD.startTime = time.Now()
+		vPA.TDother.startTime = time.Now()
 		vPA.TD.moveNumMax = 0           //to keep track of length of the longest strategy so far
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {
@@ -128,27 +131,6 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		prntMDet(b, dummy, 1, deckNum, 1, "DbDorMbM", 2, "\n   "+s+"\n", "", "", cfg, &vPA) // "DbDorMbM" was formerly "NOTX"
 		prntMDetTreeReturnComment("\n   "+s+"\n", deckNum, 0, cfg, &vPA)
 
-		/*
-			if cfg.PlayAll.WinLossReport { // Deck Win Loss Summary Statistics
-				if vPA.TD.stratWins == 0 {
-					dWLDStats.winLoss = "L"
-					dWLDStats.moveNumAt1stWinOrAtLoss = 0
-					dWLDStats.moveNumMinWinIfFindAll = 0
-					dWLDStats.moveNumMaxWinIfFindAll = 0
-					dWLDStats.stratNumAt1stWinOrAtLoss = vPA.TD.stratWins
-					dWLDStats.mvsTriedAt1stWinOrAtLoss = vPA.TD.mvsTried
-					// Add maxUnique Boards
-					//add max movenum
-					// add ElapsedTimeAt1stWin
-					dWLDStats.ElapsedTimeAt1stWinOrAtLoss = time.Now().Sub(vPA.TD.startTime)
-				} else {
-					dWLDStats.winLoss = "W"
-					dWLDStats.ElapsedTimeAt1stWinOrAtLoss = time.Now().Sub(vPA.TD.startTime)
-				}
-				deckWinLossDetail = append(deckWinLossDetail, dWLDStats)
-
-			}*/
-
 		// This If Block is Print Only
 		if cfg.PlayAll.ReportingType.DeckByDeck && cfg.PlayAll.DeckByDeckReportingOptions.Type == "regular" { // Deck-by-deck Statistics
 			if vPA.TD.stratWins > 0 {
@@ -156,7 +138,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			} else {
 				fmt.Printf("\n\n*************************\n\nDeck: %d  LOST   Result Codes: %v %v", deckNum, result1, result2)
 			}
-			fmt.Printf("\nElapsed Time is %v.", time.Since(vPA.TD.startTime))
+			fmt.Printf("\nElapsed Time is %v.", time.Since(vPA.TDother.startTime))
 			fmt.Printf("\n\nStrategies:")
 			_, err = pfmt.Printf("\n Tried: %13d", vPA.TD.stratNum)
 			_, err = pfmt.Printf("\n   Won: %13d", vPA.TD.stratWins)
@@ -193,9 +175,11 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			if time.Since(vPA.AD.startTime) > time.Duration(5*time.Minute) {
 				elTimeSinceStartTimeADFormatted = time.Since(vPA.AD.startTime).Truncate(time.Second).String()
 			}
-			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, vPA.TD.mvsTried, vPA.TD.moveNumAtWin, vPA.TD.moveNumMax, vPA.TD.stratNum, len(vPA.priorBoards), vPA.AD.deckWins, vPA.AD.deckLosses, vPA.AD.stratLossesGLE, roundFloatIntDiv(vPA.AD.deckWins*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.deckLosses*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.stratLossesGLE*100, deckNum+1-firstDeckNum, 1), time.Since(vPA.TD.startTime).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
+			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, vPA.TD.mvsTried, vPA.TD.moveNumAtWin, vPA.TD.moveNumMax, vPA.TD.stratNum, len(vPA.priorBoards), vPA.AD.deckWins, vPA.AD.deckLosses, vPA.AD.stratLossesGLE, roundFloatIntDiv(vPA.AD.deckWins*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.deckLosses*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.stratLossesGLE*100, deckNum+1-firstDeckNum, 1), time.Since(vPA.TDother.startTime).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
 		}
-
+		if cfg.PlayAll.SaveResultsToSQL {
+			// write ConfigurationSubsetOnlyForSQLWriting and vPA.TD out here
+		}
 		vPA.AD.stratWins += vPA.TD.stratWins
 		vPA.TD.stratWins = 0
 		vPA.AD.stratLosses += vPA.TD.stratLosses
@@ -212,7 +196,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		vPA.TD.stratNum = 0
 		vPA.AD.mvsTried += vPA.TD.mvsTried + 1
 		vPA.TD.mvsTried = 0
-		vPA.TD.treePrevMoves = ""
+		vPA.TDother.treePrevMoves = ""
 		vPA.TD.moveNumMax = 0
 		vPA.TD.moveNumAtWin = 0
 		clear(vPA.priorBoards)
@@ -251,13 +235,8 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	}
 
 	if cfg.PlayAll.WinLossReport { // Deck Win Loss Summary Statistics
-		fmt.Printf("\n\n\n Deck-by Deck Win/Loss Detail   (Copy to Excel to get headings to line up with the columns)")
-		fmt.Printf("\n\n Deck\tW/L\tMoveNum 1ST-Win\tStratNum At 1st-Win Or At-Loss\tMvsTried At 1st-Win Or At-Loss\tMoveNum Min-Win If-Find-All\tMoveNum Max-Win If-Find-All\tElapsed Time At 1st-Win Or At Loss\n")
-		/*for dN, detail := range deckWinLossDetail {
-			_, err = pfmt.Printf("\n  %5v\t  %v\t%4v\t%8v\t%8v\t%4v\t%4v", dN, detail.winLoss, detail.moveNumAt1stWinOrAtLoss, detail.stratNumAt1stWinOrAtLoss, detail.mvsTriedAt1stWinOrAtLoss, detail.moveNumMinWinIfFindAll, detail.moveNumMaxWinIfFindAll, detail.ElapsedTimeAt1stWinOrAtLoss)
-		}*/
+		// Close sql/csv file for writing and open it for reading and report it here
 	}
-	fmt.Printf("\n\n\n")
 }
 
 // Divide 2 integers and round to precision digits

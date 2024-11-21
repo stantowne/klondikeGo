@@ -18,7 +18,9 @@ var err error
 var singleGame bool // = true
 
 type Configuration struct {
-	General struct {
+	RunStartTime time.Time
+	GitVersion   string // Stan we need to figure out how to get this
+	General      struct {
 		Decks                   string `yaml:"decks"`                        // must be "consecutive" or "list"
 		FirstDeckNum            int    `yaml:"first deck number"`            // must be non-negative integer
 		NumberOfDecksToBePlayed int    `yaml:"number of decks to be played"` //must be non-negative integer
@@ -67,11 +69,49 @@ type Configuration struct {
 		SQLConnectionString          string `yaml:"sql connection string"`
 	} `yaml:"play all moves"`
 }
+type ConfigurationSubsetOnlyForSQLWriting struct { // STAN not sure we even need to create this it is simply here for me to communicatewhat needs to be written
+	RunStartTime time.Time
+	GitVersion   string // Stan we need to figure out how to get this
+	General      struct {
+		Verbose  int    `yaml:"verbose"`
+		OutputTo string `yaml:"outputTo"`
+	}
+	PlayAll struct {
+		GameLengthLimit  int  `yaml:"game length limit in moves tried"`
+		FindAllWinStrats bool `yaml:"find all winning strategies?"`
+		ReportingType    struct {
+			DeckByDeck bool `yaml:"deck by deck"` // referred to as "DbD_R", "DbD_S" or "DbD_VS", in calls to prntMDet and calls thereto
+			MoveByMove bool `yaml:"move by move"` // referred to as "MbM_R", "MbM_S" or "MbM_VS", in calls to prntMDet and calls thereto
+			Tree       bool `yaml:"tree"`         // referred to as "Tree_R", "Tree_N" or "Tree_VN", in calls to prntMDet and calls thereto
+		} `yaml:"reporting"`
+		DeckByDeckReportingOptions struct {
+			Type string `yaml:"type"`
+		} `yaml:"deck by deck reporting options"`
+		MoveByMoveReportingOptions struct {
+			Type string `yaml:"type"`
+		} `yaml:"move by move reporting options"`
+		TreeReportingOptions struct {
+			Type                     string `yaml:"type"`
+			TreeSleepBetwnMoves      int    `yaml:"sleep between moves"`
+			TreeSleepBetwnStrategies int    `yaml:"sleep between strategies"`
+		} `yaml:"tree reporting options"`
+		RestrictReporting   bool //not part of yaml file, derived after yaml file is unmarshalled & validated
+		RestrictReportingTo struct {
+			DeckStartVal          int `yaml:"starting deck number"`
+			DeckContinueFor       int `yaml:"continue for how many decks"`
+			MovesTriedStartVal    int `yaml:"starting move number"`
+			MovesTriedContinueFor int `yaml:"continue for how many moves"`
+		} `yaml:"restrict reporting to"`
+		ProgressCounter int `yaml:"progress counter in millions"`
+	} `yaml:"play all moves"`
+}
 
 func main() {
 
 	// unmarshal YAML file
 	cfg := Configuration{}
+	cfg.RunStartTime = time.Now()
+	cfg.GitVersion = "" // Stan we need to figure out how to get this
 	data, err := os.ReadFile("./config.yml")
 	if err != nil {
 		panic(err)
@@ -113,21 +153,33 @@ func main() {
 		os.Exit(1)
 	}
 
+	if /*cfg.General.TypeOfPlay == "playALL" && */ cfg.General.OutputTo != "console" { // STAN I leave it to you if outputTo file works for playOrig or just playAll
+		// try to open file with name: cfg.General.OutputTo + Date/TimeStamp + ".txt" or some extension that indicates UTF8 is encoding
+		// do not actually redirect output until after cfg is printed then if not console reprint config
+	}
+
+	if cfg.General.TypeOfPlay == "playALL" && cfg.PlayAll.SaveResultsToSQL {
+		// try to open file with name: cfg.PlayAll.SQLConnectionString + Date/TimeStamp + ".csv"
+		// do not actually redirect output until after cfg is printed then if not console reprint config
+	}
+
 	/*
 
-					Additional cfg validations needed:
+							Additional cfg validations needed:
 
-					1. cfg.PlayAll.ReportingType.xxx no more than 1 true
-					2. cfg.PlayAll.xxxReportingOptions.Type  are valid
-					3. TreeSleepBetwnMoves and TreeSleepBetwnStrategies non negative integer
-		            4. Progress counter must be non negative integer
+							1. cfg.PlayAll.ReportingType.xxx no more than 1 true
+							2. cfg.PlayAll.xxxReportingOptions.Type  are valid
+							3. TreeSleepBetwnMoves and TreeSleepBetwnStrategies non negative integer
+				            4. Progress counter must be non negative integer
+			                5. add validation of filename for OutputTo dummied in ABOVE
+		                    6. add validation of filename for SQLConnectionString dummied in ABOVE
 
-			        I checked all of the commented out validations from the former command line arguments (which I have now deleted)
-			        and they are all now included in the above or section below (Search for "start ProgressCounterOverRides")
+					        I checked all of the commented out validations from the former command line arguments (which I have now deleted)
+					        and they are all now included in the above or section below (Search for "start ProgressCounterOverRides")
 
-				    Can you catch non-numeric entry into integer in yaml without a panic or who cares?
-				    Can you catch fractional entry into integer in yaml without a panic or who cares?
-			        Can you catch non boolean entry into integer in yaml without a panic or who cares?
+						    Can you catch non-numeric entry into integer in yaml without a panic or who cares?
+						    Can you catch fractional entry into integer in yaml without a panic or who cares?
+					        Can you catch non boolean entry into integer in yaml without a panic or who cares?
 	*/
 
 	// completing cfg
@@ -152,7 +204,7 @@ func main() {
 	//    Will be especially useful when we figure out how to include the versioning
 
 	fmt.Printf("\nCalling Program: %v\n\n", os.Args[0])
-	fmt.Printf("\nRun Start Time: %15s\n\n", time.Now().Format("2006.01.02  3:04:05 pm"))
+	fmt.Printf("\nRun Start Time: %15s\n\n", cfg.RunStartTime.Format("2006.01.02  3:04:05 pm"))
 	_, err = pfmt.Printf("General:\n"+
 		"            Number Of Decks To Be Played: %v\n"+
 		"                      Starting with deck: %v\n"+
