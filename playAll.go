@@ -25,9 +25,10 @@ type variablesSpecificToPlayAll struct {
 		stratLossesEL  int // Strategy Early Loss
 		stratNum       int
 		unqBoards      int
+		moveNumMax     int
 		elapsedTime    time.Duration
 		startTime      time.Time
-		treePrevMoves  string
+		treePrevMoves  string // Used to retain values between calls to prntMDetTree for a single deck - Needed for when the strategy "Backs Uo"
 	}
 	AD struct {
 		mvsTried       int
@@ -41,14 +42,9 @@ type variablesSpecificToPlayAll struct {
 		stratNum       int
 		unqBoards      int
 		elapsedTime    time.Duration
-		min            struct {
-			moveNum int
-		}
-		moveNumMin int
-		moveNumMax int
-		startTime  time.Time
-		deckWins   int
-		deckLosses int
+		startTime      time.Time
+		deckWins       int
+		deckLosses     int
 	}
 }
 
@@ -63,33 +59,10 @@ type variablesSpecificToPlayAll struct {
 //var mvsTriedTD = 0
 //var mvsTriedAD = 0
 
-/*type deckWinLossDetailStats struct {
-	wonLost                                        string //
-	moveNum                                        int    // Do Not Report if wonTotal > 1  OR  if wonLost == "Lost"
-	stratNum                                       int    // vPA.TD.stratNum
-	unqBoards                                      int
-	elapsedTime                                    time.Duration // time.Since(vPA.TD.startTime)
-	ifWonAndFindAllSuccessfulStrategiesAndGLE_flag bool          // true to indicate that Elapsed time This Deck may not be relevant
-	resultCode1                                    string        // result1
-	resultCode2                                    string        // result2
-	moveNumMin                                     int           //
-	moveNumMax                                     int           //
-	wonTotal                                       int
-	elapsedTimeAt1stWin                            time.Duration
-	moveNumAt1stWin                                int //
-	mvsTriedAt1stWin                               int //
-	stratNumAt1stWin                               int //
-	moveNumMinAt1stWin                             int //
-	moveNumMaxAt1stWin                             int //
-}*/
-
-//var dWLDStats deckWinLossDetailStats
-//var deckWinLossDetail []deckWinLossDetailStats
-
 func playAll(reader csv.Reader, cfg *Configuration) {
-	firstDeckNum := cfg.General.FirstDeckNum
-	numberOfDecksToBePlayed := cfg.General.NumberOfDecksToBePlayed
-	verbose := cfg.General.Verbose
+	firstDeckNum := cfg.General.FirstDeckNum                       // Shorthand name but really is a copy - OK since never changed (but would Pointer or address be better?)
+	numberOfDecksToBePlayed := cfg.General.NumberOfDecksToBePlayed // Shorthand name but really is a copy - OK since never changed (but would Pointer or address be better?)
+	verbose := cfg.General.Verbose                                 // Shorthand name but really is a copy - OK since never changed (but would Pointer or address be better?)
 	var vPA variablesSpecificToPlayAll
 	vPA.priorBoards = map[bCode]bool{}
 	vPA.TD.treePrevMoves = ""
@@ -109,13 +82,13 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 
 		vPA.TD.startTime = time.Now()
-		moveNumMax = 0                   //to keep track of length of the longest strategy so far
-		protoDeck, err5 := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.  // err5 used to avoid shadowing err
-		if err5 == io.EOF {
+		moveNumMax = 0                  //to keep track of length of the longest strategy so far
+		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
+		if err == io.EOF {
 			break
 		}
-		if err5 != nil {
-			log.Println("Cannot read from inputFileName:", err5)
+		if err != nil {
+			log.Println("Cannot read from inputFileName:", err)
 		}
 
 		if verbose > 1 {
@@ -209,20 +182,6 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			var est time.Duration
 			//                      nanosecondsTD   / Decks Played So Far         * remaining decks [remaining decks = numbertobeplayed - decksplayed so far
 			est = time.Duration(float64(time.Since(vPA.AD.startTime))/float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum))) * time.Nanosecond
-			/*			est = time.Duration(float64(elapsedTimeAD)           / float64(deckNum-firstDeckNum+1)*float64(numberOfDecksToBePlayed-(deckNum-firstDeckNum+1))) * time.Nanosecond
-						fmt.Printf("       (deckNum+1-firstDeckNum)                                                           = %v\n", (deckNum + 1 - firstDeckNum))
-						fmt.Printf("float64(deckNum+1-firstDeckNum)                                                           = %v\n", float64(deckNum+1-firstDeckNum))
-						fmt.Printf("                                                                (deckNum+1-firstDeckNum)  = %v\n", (deckNum + 1 - firstDeckNum))
-						fmt.Printf("                                        numberOfDecksToBePlayed                           = %v\n", numberOfDecksToBePlayed)
-						fmt.Printf("                                       (numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)) = %v\n", (numberOfDecksToBePlayed - (deckNum + 1 - firstDeckNum)))
-						fmt.Printf("                                float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)) = %v\n", float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)))
-						fmt.Printf("float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)) = %v\n", float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)))
-						fmt.Printf("float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)) = %v\n", float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum)))
-						fmt.Printf("time.Since(vPA.AD.startTime)                                                                                                            = %v\n", time.Since(vPA.AD.startTime))
-						fmt.Printf("time.Since(vPA.AD.startTime)                                                                                                            = %v\n", time.Since(vPA.AD.startTime))
-						fmt.Printf("                          time.Duration(float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum))) = %v\n", time.Duration(float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum))))
-						fmt.Printf("time.Since(vPA.AD.startTime) / time.Duration(float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum))) = %v\n", time.Since(vPA.AD.startTime)/time.Duration(float64(deckNum+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(deckNum+1-firstDeckNum))))
-			*/
 			wL := ""
 			if vPA.TD.stratWins > 0 {
 				wL = "WON " // Note additional space -- for alignment

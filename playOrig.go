@@ -34,6 +34,7 @@ func findFlip(moves []move) move {
 
 func playOrig(reader csv.Reader, cfg *Configuration) {
 
+	// comment probably obsolete
 	// Need to define variable err type error here.  Originally it was implicitly created by the following statement and then reused many times
 	//   inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
 	// That statement has been moved up into main so we need to explicitly create it here.

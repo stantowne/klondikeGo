@@ -75,13 +75,13 @@ func main() {
 
 	// unmarshal YAML file
 	cfg := Configuration{}
-	data, err3 := os.ReadFile("./config.yml") // err3 used to avoid shadowing err
-	if err3 != nil {
-		panic(err3)
+	data, err := os.ReadFile("./config.yml")
+	if err != nil {
+		panic(err)
 	}
-	if err4 := yaml.Unmarshal(data, &cfg); err4 != nil {
-		panic(err4)
-	} // err4 used to avoid shadowing err
+	if err := yaml.Unmarshal(data, &cfg); err != nil {
+		panic(err)
+	}
 
 	// validate cfg after unmarshal
 	// BEFORE validation, make all strings in cfg EXCEPT cfg.PlayAll.SQLConnectionString lower case
@@ -279,14 +279,14 @@ func main() {
 	// ******************************************
 
 	inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
-	file, err1 := os.Open(inputFileName) // err1 used to avoid shadowing err
-	if err1 != nil {
-		log.Println("Cannot open inputFileName:", err1)
+	file, err := os.Open(inputFileName)
+	if err != nil {
+		log.Println("Cannot open inputFileName:", err)
 	}
 	defer func(file *os.File) {
-		err2 := file.Close() // err2 used to avoid shadowing err
-		if err2 != nil {
-			println("could not close file:", err2)
+		err := file.Close()
+		if err != nil {
+			println("could not close file:", err)
 		}
 	}(file)
 	reader := csv.NewReader(file)
