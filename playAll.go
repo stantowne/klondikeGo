@@ -24,6 +24,8 @@ type variablesSpecificToPlayAll struct {
 		stratLossesSE  int // Strategy Exhausted
 		stratLossesEL  int // Strategy Early Loss
 		stratNum       int
+		unqBoards      int
+		elapsedTime    time.Duration
 		startTime      time.Time
 		treePrevMoves  string
 	}
@@ -37,9 +39,16 @@ type variablesSpecificToPlayAll struct {
 		stratLossesSE  int // Strategy Exhausted
 		stratLossesEL  int // Strategy Early Loss
 		stratNum       int
-		startTime      time.Time
-		deckWins       int
-		deckLosses     int
+		unqBoards      int
+		elapsedTime    time.Duration
+		min            struct {
+			moveNum int
+		}
+		moveNumMin int
+		moveNumMax int
+		startTime  time.Time
+		deckWins   int
+		deckLosses int
 	}
 }
 

@@ -38,8 +38,8 @@ play all moves:
 
     tree reporting options:
         type: regular                              # regular, narrow, very narrow   All 3 Ignored if cfg.PlayAll.ReportingType.Tree == false
-        sleep between moves: 0                     # non-negative integer, in tenths of seconds
-        sleep between strategies: 0                # non-negative integer, in tenths of seconds
+        sleep between moves: 5                     # non-negative integer, in tenths of seconds
+        sleep between strategies: 90                # non-negative integer, in tenths of seconds
 
     restrict reporting to:
       starting deck number: 0                   # 0 means no restriction

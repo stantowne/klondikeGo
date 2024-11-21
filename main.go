@@ -128,18 +128,19 @@ func main() {
 
 	/*
 
-				Additional cfg validations needed:
+					Additional cfg validations needed:
 
-				1. cfg.PlayAll.ReportingType.xxx no more than 1 true
-				2. cfg.PlayAll.xxxReportingOptions.Type  are valid
-				3. TreeSleepBetwnMoves and TreeSleepBetwnStrategies non negative integer
+					1. cfg.PlayAll.ReportingType.xxx no more than 1 true
+					2. cfg.PlayAll.xxxReportingOptions.Type  are valid
+					3. TreeSleepBetwnMoves and TreeSleepBetwnStrategies non negative integer
+		            4. Progress counter must be non negative integer
 
-		        I checked all of the commented out validations from the former command line arguments (which I have now deleted)
-		        and they are all now included in the above or section below (Search for "start ProgressCounterOverRides")
+			        I checked all of the commented out validations from the former command line arguments (which I have now deleted)
+			        and they are all now included in the above or section below (Search for "start ProgressCounterOverRides")
 
-			    Can you catch non-numeric entry into integer in yaml without a panic or who cares?
-			    Can you catch fractional entry into integer in yaml without a panic or who cares?
-		        Can you catch non boolean entry into integer in yaml without a panic or who cares?
+				    Can you catch non-numeric entry into integer in yaml without a panic or who cares?
+				    Can you catch fractional entry into integer in yaml without a panic or who cares?
+			        Can you catch non boolean entry into integer in yaml without a panic or who cares?
 	*/
 
 	// completing cfg
@@ -175,6 +176,7 @@ func main() {
 		cfg.General.TypeOfPlay,
 		cfg.General.Verbose)
 
+	cfg.General.ProgressCounter *= 1_000_000
 	// DO BELOW edits to ProgressCounter so that it will be set to 0 when inappropriate and based on tests in prints will not print out
 	//               start ProgressCounterOverRides
 	if cfg.General.OutputTo == "console" {

@@ -126,7 +126,6 @@ func (c *Card) pStr() string {
 	} else {
 		sFace = c.faceSymbol()
 	}
-
 	return c.rankSymbol() + sSuit + sFace + " "
 }
 
