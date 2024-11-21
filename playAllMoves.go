@@ -173,8 +173,8 @@ func playAllMoves(bIn board,
 
 		vPA.TD.mvsTried++
 
-		if cfg.General.ProgressCounter > 0 && math.Mod(float64(vPA.TD.mvsTried+vPA.AD.mvsTried), float64(cfg.General.ProgressCounter)) <= 0.1 {
-			avgRepTime := time.Since(vPA.TD.startTime) / time.Duration(vPA.TD.mvsTried+vPA.AD.mvsTried/cfg.General.ProgressCounter)
+		if cfg.PlayAll.ProgressCounter > 0 && math.Mod(float64(vPA.TD.mvsTried+vPA.AD.mvsTried), float64(cfg.PlayAll.ProgressCounter)) <= 0.1 {
+			avgRepTime := time.Since(vPA.TD.startTime) / time.Duration(vPA.TD.mvsTried+vPA.AD.mvsTried/cfg.PlayAll.ProgressCounter)
 			estMaxRemTimeTD := time.Since(vPA.TD.startTime) * time.Duration((cfg.PlayAll.GameLengthLimit*1_000_000-vPA.TD.mvsTried+vPA.AD.mvsTried)/vPA.TD.mvsTried+vPA.AD.mvsTried)
 			_, err = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, vPA.TD.mvsTried+vPA.AD.mvsTried, moveNum, moveNumMax, vPA.TD.stratNum, len(vPA.priorBoards), time.Since(vPA.TD.startTime).Truncate(100*time.Millisecond).String(), time.Since(vPA.TD.startTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
 			//lastPrintTime := time.Now()
@@ -354,10 +354,14 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg *Con
 		}
 
 		if nextMove == 0 {
-			time.Sleep(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMovesDur)
+			if cfg.General.OutputTo != "console" { // No need to sleep if not printing to console where
+				time.Sleep(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMovesDur) // someone would be watching in real time
+			}
 			fmt.Printf("%s", treeThisMove)
 		} else {
-			time.Sleep(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategiesDur)
+			if cfg.General.OutputTo != "console" { // No need to sleep if not printing to console where
+				time.Sleep(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategiesDur) // someone would be watching in real time
+			}
 			x := []rune(vPA.TD.treePrevMoves)
 			x = x[0 : mN*treeMoveWidth]
 			vPA.TD.treePrevMoves = string(x)
