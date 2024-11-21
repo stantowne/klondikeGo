@@ -165,6 +165,9 @@ func playAllMoves(bIn board,
 
 		if cfg.PlayAll.FindAllWinStrats != true && recurReturnV1 == "SW" {
 			// save winning moves into a slice in reverse
+			if cfg.PlayAll.SaveResultsToSQL || PrintWinningMoves {
+				vPA.TD.winningMoves = append(vPA.TD.winningMoves, aMoves[i])
+			}
 			return recurReturnV1, recurReturnV2, recurReturnNum + 1 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
 		}
 		if recurReturnV1 == "SL" && recurReturnV2 == "GLE" {
@@ -237,7 +240,7 @@ func prntMDet(b board,
 		case pTypeIn == "MbM_R" && cfg.PlayAll.ReportingType.MoveByMove && cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular" && variant == 3:
 			fmt.Printf("\n All Possible Moves: \n")
 			for j := range aMoves {
-				pM1, pM2 := printMove(aMoves[j])
+				pM1, pM2 := printMove(aMoves[j], false)
 				if nextMove == j {
 					fmt.Printf("     Next Move ->  ")
 				} else {

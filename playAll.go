@@ -131,7 +131,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		prntMDet(b, dummy, 1, deckNum, 1, "DbDorMbM", 2, "\n   "+s+"\n", "", "", cfg, &vPA) // "DbDorMbM" was formerly "NOTX"
 		prntMDetTreeReturnComment("\n   "+s+"\n", deckNum, 0, cfg, &vPA)
 
-		// This If Block is Print Only
+		// This If Block is Print Only for DbD_R
 		if cfg.PlayAll.ReportingType.DeckByDeck && cfg.PlayAll.DeckByDeckReportingOptions.Type == "regular" { // Deck-by-deck Statistics
 			if vPA.TD.stratWins > 0 {
 				fmt.Printf("\n\n*************************\n\nDeck: %d  WON    Result Codes: %v %v", deckNum, result1, result2)
@@ -160,7 +160,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			}
 		}
 
-		// This If Block is Print Only   ??????????????  what was this for ????????       PROGRESS?????
+		// This If Block is Print Only for DbD_S or DbD_VS
 		if cfg.PlayAll.ReportingType.DeckByDeck && cfg.PlayAll.DeckByDeckReportingOptions.Type != "regular" {
 			var est time.Duration
 			//                      nanosecondsTD   / Decks Played So Far         * remaining decks [remaining decks = numbertobeplayed - decksplayed so far
@@ -177,9 +177,27 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			}
 			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, vPA.TD.mvsTried, vPA.TD.moveNumAtWin, vPA.TD.moveNumMax, vPA.TD.stratNum, len(vPA.priorBoards), vPA.AD.deckWins, vPA.AD.deckLosses, vPA.AD.stratLossesGLE, roundFloatIntDiv(vPA.AD.deckWins*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.deckLosses*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.stratLossesGLE*100, deckNum+1-firstDeckNum, 1), time.Since(vPA.TDother.startTime).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
 		}
-		if cfg.PlayAll.SaveResultsToSQL {
-			// write ConfigurationSubsetOnlyForSQLWriting and vPA.TD out to sql/csv here
+		if cfg.PlayAll.SaveResultsToSQL || PrintWinningMoves {
+			// reverse the slice
+			for i := 0; i < len(vPA.TD.winningMoves)/2; i++ {
+				vPA.TD.winningMoves[i], vPA.TD.winningMoves[len(vPA.TD.winningMoves)-i-1] = vPA.TD.winningMoves[len(vPA.TD.winningMoves)-i-1], vPA.TD.winningMoves[i]
+			}
+			if PrintWinningMoves {
+				fmt.Printf("\n     Winning Moves:\n")
+				for mN := range vPA.TD.winningMoves {
+					m1, m2 := printMove(vPA.TD.winningMoves[mN], true)
+					fmt.Printf("        %3v.  %s\n", mN+1, m1)
+					if len(m2) != 0 {
+						fmt.Printf("          %s\n", m2)
+					}
+				}
+				//fmt.Printf("\n")
+			}
+			if cfg.PlayAll.SaveResultsToSQL {
+				// write ConfigurationSubsetOnlyForSQLWriting and vPA.TD out to sql/csv here
+			}
 		}
+
 		vPA.AD.stratWins += vPA.TD.stratWins
 		vPA.TD.stratWins = 0
 		vPA.AD.stratLosses += vPA.TD.stratLosses
