@@ -178,7 +178,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, vPA.TD.mvsTried, vPA.TD.moveNumAtWin, vPA.TD.moveNumMax, vPA.TD.stratNum, len(vPA.priorBoards), vPA.AD.deckWins, vPA.AD.deckLosses, vPA.AD.stratLossesGLE, roundFloatIntDiv(vPA.AD.deckWins*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.deckLosses*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.stratLossesGLE*100, deckNum+1-firstDeckNum, 1), time.Since(vPA.TDother.startTime).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
 		}
 		if cfg.PlayAll.SaveResultsToSQL {
-			// write ConfigurationSubsetOnlyForSQLWriting and vPA.TD out here
+			// write ConfigurationSubsetOnlyForSQLWriting and vPA.TD out to sql/csv here
 		}
 		vPA.AD.stratWins += vPA.TD.stratWins
 		vPA.TD.stratWins = 0
@@ -199,6 +199,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		vPA.TDother.treePrevMoves = ""
 		vPA.TD.moveNumMax = 0
 		vPA.TD.moveNumAtWin = 0
+		vPA.TD.winningMoves = nil
 		clear(vPA.priorBoards)
 	}
 
