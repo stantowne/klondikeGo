@@ -55,9 +55,6 @@ type ConfigurationSubsetForSQLWriting struct { // STAN not sure we even need to 
 }
 
 func main() {
-	// Temp **********************
-	PrintWinningMoves = true
-	// Temp **********************
 
 	// unmarshal YAML file
 	cfg := Configuration{}
