@@ -16,11 +16,6 @@ import (
 var pfmt = message.NewPrinter(language.English)
 var singleGame bool // = true
 
-// Temp **********************
-var PrintWinningMoves bool
-
-// Temp **********************
-
 type ConfigurationSubsetOnlyForSQLWriting struct { // STAN not sure we even need to create this it is simply here for me to communicatewhat needs to be written
 	RunStartTime time.Time
 	GitVersion   string // Stan we need to figure out how to get this
@@ -59,9 +54,6 @@ type ConfigurationSubsetOnlyForSQLWriting struct { // STAN not sure we even need
 }
 
 func main() {
-	// Temp **********************
-	PrintWinningMoves = true
-	// Temp **********************
 
 	// unmarshal YAML file
 	cfg := Configuration{}
