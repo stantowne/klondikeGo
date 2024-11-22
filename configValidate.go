@@ -7,7 +7,7 @@ import (
 
 // validate cfg struct
 // bool fields not validated because an attempt to assign a non-bool value to a bool variable causes panic
-func validateConfig(c Configuration) {
+func configValidate(c Configuration) {
 	//
 	//General section
 	if !(c.General.Decks == "consecutive" || c.General.Decks == "list") {

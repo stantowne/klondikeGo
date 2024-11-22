@@ -1,6 +1,6 @@
 package main
 
-func printConfig(c Configuration) {
+func configPrint(c Configuration) {
 	_, _ = pfmt.Printf("General:\n"+
 		"            Number Of Decks To Be Played: %v\n"+
 		"                      Starting with deck: %v\n"+
