@@ -14,7 +14,6 @@ import (
 
 // Setup pfmt to print thousands with commas
 var pfmt = message.NewPrinter(language.English)
-var singleGame bool // = true
 
 func main() {
 	// unmarshal YAML file
@@ -33,10 +32,9 @@ func main() {
 		!(cfg.PlayAll.ReportingType.DeckByDeck ||
 			cfg.PlayAll.ReportingType.MoveByMove ||
 			cfg.PlayAll.ReportingType.Tree)
+
 	configValidate(cfg)
-	if cfg.General.NumberOfDecksToBePlayed == 1 {
-		singleGame = true
-	}
+
 	cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMovesDur =
 		time.Duration(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves*100) * time.Millisecond
 	cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategiesDur =

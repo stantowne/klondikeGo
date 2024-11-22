@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func detectUpMoves(b board, mc int, _ bool) []move {
+func detectUpMoves(b board, mc int) []move {
 	var moves []move
 	if mc < 0 {
 		return moves

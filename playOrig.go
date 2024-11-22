@@ -96,7 +96,7 @@ newDeck:
 			aMovesNumberOf := make([]int, 0, cfg.PlayOrig.GameLengthLimit) //number of available Moves
 
 			for moveCounter := 1; moveCounter < cfg.PlayOrig.GameLengthLimit+2; moveCounter++ { //start with 1 to line up with Python version
-				aMoves := detectAvailableMoves(b, moveCounter, singleGame)
+				aMoves := detectAvailableMoves(b, moveCounter, cfg.General.NumberOfDecksToBePlayed == 1)
 
 				//detects Loss
 				if len(aMoves) == 0 { //No available moves; game lost.
