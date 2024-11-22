@@ -258,6 +258,7 @@ func prntMDet(b board,
 				fmt.Printf("\n")
 			}
 		case cfg.PlayAll.ReportingType.MoveByMove && pTypeIn == "MbM_SorMBM_VS" && (cfg.PlayAll.MoveByMoveReportingOptions.Type == "short" || cfg.PlayAll.MoveByMoveReportingOptions.Type == "very short") && variant == 1: // for "MbM_S" or "MbM_VS"
+			_, _ = pfmt.Printf(comment, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.priorBoards), time.Since(vPA.AD.startTime), time.Since(vPA.TD.startTime))
 			_, _ = pfmt.Printf(comment, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.priorBoards), time.Since(vPA.AD.startTime), time.Since(vPA.TDother.startTime))
 		case cfg.PlayAll.ReportingType.MoveByMove && pTypeIn == "MbM_S" && cfg.PlayAll.MoveByMoveReportingOptions.Type == "short" && variant == 2:
 			_, _ = pfmt.Printf(comment, b)

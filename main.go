@@ -106,91 +106,11 @@ func main() {
 	// Always a good idea to print out the program source of the output.
 	//    Will be especially useful when we figure out how to include the versioning
 
+	printConfig(cfg)
+	cfg.PlayAll.ProgressCounter *= 1_000_000
+	cfg.PlayAll.ProgressCounterLastPrintTime = time.Now()
 	fmt.Printf("\nCalling Program: %v\n\n", os.Args[0])
 	fmt.Printf("\nRun Start Time: %15s\n\n", cfg.RunStartTime.Format("2006.01.02  3:04:05 pm"))
-	_, err = pfmt.Printf("General:\n"+
-		"            Number Of Decks To Be Played: %v\n"+
-		"                      Starting with deck: %v\n"+
-		"                            Type of Play: %v\n"+
-		"                                 Verbose: %v\n\n",
-		cfg.General.NumberOfDecksToBePlayed,
-		cfg.General.FirstDeckNum,
-		cfg.General.TypeOfPlay,
-		cfg.General.Verbose)
-
-	cfg.PlayAll.ProgressCounter *= 1_000_000
-
-	cfg.PlayAll.ProgressCounterLastPrintTime = time.Now()
-
-	if cfg.General.TypeOfPlay == "playOrig" {
-		nOfS := 1 << cfg.PlayOrig.Length //number of initial strategies
-		_, err = pfmt.Printf(" Style: Original iOS (Initial Override Strategies)\n\n"+
-			"                     iOS strategy length: %v\n"+
-			"          Max possible attempts per deck: %v\n"+
-			"       Total possible attempts all decks: %v\n"+
-			"                       Game Length Limit: %v\n\n",
-			cfg.PlayOrig.Length,
-			nOfS,
-			nOfS*cfg.General.NumberOfDecksToBePlayed,
-			cfg.PlayOrig.GameLengthLimit)
-	} else {
-		if cfg.PlayAll.ReportingType.NoReporting {
-			_, err = pfmt.Printf("No Deck-by-Deck, Move-by-Move or Tree Reporting\n")
-		} else {
-			if cfg.PlayAll.ReportingType.DeckByDeck {
-				_, err = pfmt.Printf("Deck By Deck Reporting: \n"+
-					"                                           Type: %v\n",
-					cfg.PlayAll.DeckByDeckReportingOptions.Type)
-				if cfg.PlayAll.ProgressCounter != 0 {
-					_, err = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", cfg.PlayAll.ProgressCounter)
-				}
-			}
-			if cfg.PlayAll.ReportingType.MoveByMove {
-				_, err = pfmt.Printf("Move By Move Reporting: \n"+
-					"                                           Type: %v\n",
-					cfg.PlayAll.MoveByMoveReportingOptions.Type)
-				if cfg.PlayAll.ProgressCounter != 0 {
-					_, err = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", cfg.PlayAll.ProgressCounter)
-				}
-			}
-			if cfg.PlayAll.ReportingType.Tree {
-				_, err = pfmt.Printf("Tree Reporting: \n"+
-					"                        Type: %v\n"+
-					"         TreeSleepBetwnMoves: %v\n"+
-					"    TreeSleepBetwnStrategies: %v\n",
-
-					cfg.PlayAll.MoveByMoveReportingOptions.Type,
-					cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves,
-					cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategies)
-				if cfg.PlayAll.ProgressCounter != 0 {
-					_, err = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", cfg.PlayAll.ProgressCounter)
-				}
-			}
-			if cfg.PlayAll.RestrictReporting {
-				_, err = pfmt.Printf("\nReporting Restricted To\n"+
-					"                       Staring with Deck: %v\n"+
-					"                            Continue for: %v decks (0 = all the rest)\n"+
-					"             Starting with Moves Tried #: %v\n"+
-					"                            Continue for: %v moves tried (0 = all the rest)\n",
-					cfg.PlayAll.RestrictReportingTo.DeckStartVal,
-					cfg.PlayAll.RestrictReportingTo.DeckContinueFor,
-					cfg.PlayAll.RestrictReportingTo.MovesTriedStartVal,
-					cfg.PlayAll.RestrictReportingTo.MovesTriedContinueFor)
-			}
-		}
-	}
-	if cfg.General.TypeOfPlay == "playAll" {
-		_, err = pfmt.Printf("\nGame Length Limit, in millions: %v\n",
-			cfg.PlayAll.GameLengthLimit)
-	}
-
-	// ******************************************
-	//
-	// Done printing out the configuration:
-	//
-	// Set up the code for reading the decks skipping to the firstDeckNum if not 0
-	//
-	// ******************************************
 
 	inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
 	file, err := os.Open(inputFileName)
