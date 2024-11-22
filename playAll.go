@@ -225,21 +225,21 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	// From this point on, the program only prints.
 
 	fmt.Printf("\n\n******************   Summary Statistics   ******************\n" + "Decks:")
-	_, err = pfmt.Printf("\n Played: %6d", numberOfDecksToBePlayed)
-	_, err = pfmt.Printf("\n    Won: %6d", vPA.AD.deckWins)
-	_, err = pfmt.Printf("\n   Lost: %6d", vPA.AD.deckLosses)
+	_, _ = pfmt.Printf("\n Played: %6d", numberOfDecksToBePlayed)
+	_, _ = pfmt.Printf("\n    Won: %6d", vPA.AD.deckWins)
+	_, _ = pfmt.Printf("\n   Lost: %6d", vPA.AD.deckLosses)
 	averageElapsedTimePerDeck := time.Duration(float64(time.Since(vPA.AD.startTime)) / float64(numberOfDecksToBePlayed))
 	fmt.Printf("\nElapsed Time is %v.", time.Since(vPA.AD.startTime))
 	fmt.Printf("\nAverage Elapsed Time per Deck is %s", averageElapsedTimePerDeck.Truncate(100*time.Millisecond).String())
 	fmt.Printf("\n\nStrategies:")
-	_, err = pfmt.Printf("\n  Tried: %13d", vPA.AD.stratNum)
-	_, err = pfmt.Printf("\n    Won: %13d", vPA.AD.stratLosses)
-	_, err = pfmt.Printf("\n   Lost: %13d", vPA.AD.stratWins)
+	_, _ = pfmt.Printf("\n  Tried: %13d", vPA.AD.stratNum)
+	_, _ = pfmt.Printf("\n    Won: %13d", vPA.AD.stratLosses)
+	_, _ = pfmt.Printf("\n   Lost: %13d", vPA.AD.stratWins)
 	fmt.Printf("\n\nStrategies Lost Detail:")
-	_, err = pfmt.Printf("\n    NMA: %13d   (No Moves Available)", vPA.AD.stratLossesNMA)
-	_, err = pfmt.Printf("\n     RB: %13d   (Repetitive Board)", vPA.AD.stratLossesRB)
-	_, err = pfmt.Printf("\n     SE: %13d   (Strategy Exhausted)", vPA.AD.stratLossesSE)
-	_, err = pfmt.Printf("\n    GLE: %13d   (Game Length Exceeded)", vPA.AD.stratLossesGLE)
+	_, _ = pfmt.Printf("\n    NMA: %13d   (No Moves Available)", vPA.AD.stratLossesNMA)
+	_, _ = pfmt.Printf("\n     RB: %13d   (Repetitive Board)", vPA.AD.stratLossesRB)
+	_, _ = pfmt.Printf("\n     SE: %13d   (Strategy Exhausted)", vPA.AD.stratLossesSE)
+	_, _ = pfmt.Printf("\n    GLE: %13d   (Game Length Exceeded)", vPA.AD.stratLossesGLE)
 	if vPA.AD.stratLossesNMA+vPA.AD.stratLossesRB+vPA.AD.stratLossesSE+vPA.AD.stratLossesGLE != vPA.AD.stratLosses {
 		fmt.Printf("\n        ************* Total Strategy Losses != Sum of strategy detail")
 	}
@@ -248,9 +248,9 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	}
 	if cfg.PlayAll.FindAllWinStrats {
 		fmt.Printf("\n\n Multiple Successful Strategies were found in some winng decks.")
-		_, err = pfmt.Printf("   Decks Won: %d\n", vPA.AD.deckWins)
-		_, err = pfmt.Printf("   Total winning strategies found: %d\n", vPA.AD.stratWins)
-		_, err = pfmt.Printf("   Average winning strategies found: %d\n", vPA.AD.stratWins/vPA.AD.deckWins)
+		_, _ = pfmt.Printf("   Decks Won: %d\n", vPA.AD.deckWins)
+		_, _ = pfmt.Printf("   Total winning strategies found: %d\n", vPA.AD.stratWins)
+		_, _ = pfmt.Printf("   Average winning strategies found: %d\n", vPA.AD.stratWins/vPA.AD.deckWins)
 	}
 
 	if cfg.PlayAll.WinLossReport { // Deck Win Loss Summary Statistics
