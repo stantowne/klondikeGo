@@ -16,12 +16,7 @@ import (
 var pfmt = message.NewPrinter(language.English)
 var singleGame bool // = true
 
-// Temp **********************
-var PrintWinningMoves bool
-
-// Temp **********************
-
-type ConfigurationSubsetOnlyForSQLWriting struct { // STAN not sure we even need to create this it is simply here for me to communicatewhat needs to be written
+type ConfigurationSubsetForSQLWriting struct { // STAN not sure we even need to create this it is simply here for me to communicatewhat needs to be written
 	RunStartTime time.Time
 	GitVersion   string // Stan we need to figure out how to get this
 	General      struct {
@@ -54,14 +49,12 @@ type ConfigurationSubsetOnlyForSQLWriting struct { // STAN not sure we even need
 			MovesTriedStartVal    int `yaml:"starting move number"`
 			MovesTriedContinueFor int `yaml:"continue for how many moves"`
 		} `yaml:"restrict reporting to"`
-		ProgressCounter int `yaml:"progress counter in millions"`
+		PrintWinningMoves bool `yaml:"print winning moves"`
+		ProgressCounter   int  `yaml:"progress counter in millions"`
 	} `yaml:"play all moves"`
 }
 
 func main() {
-	// Temp **********************
-	PrintWinningMoves = true
-	// Temp **********************
 
 	// unmarshal YAML file
 	cfg := Configuration{}

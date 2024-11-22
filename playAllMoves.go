@@ -165,7 +165,7 @@ func playAllMoves(bIn board,
 
 		if cfg.PlayAll.FindAllWinStrats != true && recurReturnV1 == "SW" {
 			// save winning moves into a slice in reverse
-			if cfg.PlayAll.SaveResultsToSQL || PrintWinningMoves {
+			if cfg.PlayAll.SaveResultsToSQL || cfg.PlayAll.PrintWinningMoves {
 				vPA.TD.winningMoves = append(vPA.TD.winningMoves, aMoves[i])
 			}
 			return recurReturnV1, recurReturnV2, recurReturnNum + 1 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
