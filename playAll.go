@@ -117,16 +117,17 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 
 		// This statement is executed once per deck and transfers program execution.
 		// When this statement returns the deck has been played.
-		result1, result2, _ := playAllMoves(b, 0, deckNum, cfg, &vPA)
+		result1, _ := playAllMoves(b, 0, deckNum, cfg, &vPA)
 
 		var dummy []move
 		var s string
-		if result2 == "EW" {
+		if result1 == "SW" {
 			vPA.AD.deckWins += 1
 			s = "DECK WON"
 		} else {
 			vPA.AD.deckLosses += 1
 			s = "DECK LOST"
+
 		}
 		prntMDet(b, dummy, 1, deckNum, 1, "DbDorMbM", 2, "\n   "+s+"\n", "", "", cfg, &vPA) // "DbDorMbM" was formerly "NOTX"
 		prntMDetTreeReturnComment("\n   "+s+"\n", deckNum, 0, cfg, &vPA)
@@ -134,9 +135,9 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		// This If Block is Print Only for DbD_R
 		if cfg.PlayAll.ReportingType.DeckByDeck && cfg.PlayAll.DeckByDeckReportingOptions.Type == "regular" { // Deck-by-deck Statistics
 			if vPA.TD.stratWins > 0 {
-				fmt.Printf("\n\n*************************\n\nDeck: %d  WON    Result Codes: %v %v", deckNum, result1, result2)
+				fmt.Printf("\n\n*************************\n\nDeck: %d  WON    Result Codes: %v %v", deckNum, result1, "")
 			} else {
-				fmt.Printf("\n\n*************************\n\nDeck: %d  LOST   Result Codes: %v %v", deckNum, result1, result2)
+				fmt.Printf("\n\n*************************\n\nDeck: %d  LOST   Result Codes: %v %v", deckNum, result1, "")
 			}
 			fmt.Printf("\nElapsed Time is %v.", time.Since(vPA.TDother.startTime))
 			fmt.Printf("\n\nStrategies:")
@@ -175,7 +176,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			if time.Since(vPA.AD.startTime) > time.Duration(5*time.Minute) {
 				elTimeSinceStartTimeADFormatted = time.Since(vPA.AD.startTime).Truncate(time.Second).String()
 			}
-			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, vPA.TD.mvsTried, vPA.TD.moveNumAtWin, vPA.TD.moveNumMax, vPA.TD.stratNum, len(vPA.priorBoards), vPA.AD.deckWins, vPA.AD.deckLosses, vPA.AD.stratLossesGLE, roundFloatIntDiv(vPA.AD.deckWins*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.deckLosses*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.stratLossesGLE*100, deckNum+1-firstDeckNum, 1), time.Since(vPA.TDother.startTime).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, result2, time.Now().Format(" 3:04 pm"))
+			_, err = pfmt.Printf("Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, vPA.TD.mvsTried, vPA.TD.moveNumAtWin, vPA.TD.moveNumMax, vPA.TD.stratNum, len(vPA.priorBoards), vPA.AD.deckWins, vPA.AD.deckLosses, vPA.AD.stratLossesGLE, roundFloatIntDiv(vPA.AD.deckWins*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.deckLosses*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.stratLossesGLE*100, deckNum+1-firstDeckNum, 1), time.Since(vPA.TDother.startTime).Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, "", time.Now().Format(" 3:04 pm"))
 		}
 		if cfg.PlayAll.SaveResultsToSQL || cfg.PlayAll.PrintWinningMoves {
 			// reverse the slice

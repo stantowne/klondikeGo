@@ -44,7 +44,7 @@ play all moves:
       starting move number: 0                      # 0 means no restriction
       continue for how many moves: 0               # 0 means no restriction
 
-    print winning moves: true                      # true or false
+    print winning moves: false                     # true or false
     progress counter in millions: 50
 
     print final deck by deck W/L record: true     # true or false
