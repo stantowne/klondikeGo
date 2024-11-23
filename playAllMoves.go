@@ -91,6 +91,7 @@ func playAllMoves(bIn board,
 		//       This had to be done after possible increment to vPA.TD.stratNum so that each time a board is reprinted it shows the NEW strategy number
 		//       Before when it was above the possible increment the board was printing out with the stratNum of the last failed strategy
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_ANY", 1, "", "", "", cfg, vPA)
+		prntMDetTree(bIn, aMoves, i, deckNum, moveNum, cfg, vPA)
 
 		if i == 0 {
 			// Check for repetitive board
@@ -104,6 +105,7 @@ func playAllMoves(bIn board,
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_R", 2, "\n  RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cfg, vPA)
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_SorMBM_VS", 2, "   RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.", "", "", cfg, vPA)
 				prntMDetTreeReturnComment(" ==> RB", deckNum, recurReturnNum, cfg, vPA)
+				// delete				fmt.Printf("    %v   %v", vPA.TD.stratNum, moveNum)
 				return "RB", 1 // Repetitive Board
 			} else {
 				// Remember the board state by putting it into the map "vPA.priorBoards"
@@ -346,12 +348,12 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg *Con
 		}
 
 		if nextMove == 0 {
-			if cfg.General.OutputTo != "console" { // No need to sleep if not printing to console where
+			if cfg.General.OutputTo == "console" { // No need to sleep if not printing to console where
 				time.Sleep(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMovesDur) // someone would be watching in real time
 			}
 			fmt.Printf("%s", treeThisMove)
 		} else {
-			if cfg.General.OutputTo != "console" { // No need to sleep if not printing to console where
+			if cfg.General.OutputTo == "console" { // No need to sleep if not printing to console where
 				time.Sleep(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategiesDur) // someone would be watching in real time
 			}
 			x := []rune(vPA.TDother.treePrevMoves)
