@@ -283,6 +283,7 @@
 432,regularLoss
 434,regularLoss
 435,regularLoss
+436,regularLoss
 438,regularLoss
 439,regularLoss
 441,regularLoss
@@ -1068,7 +1069,6 @@
 1645,regularLoss
 1646,regularLoss
 1647,regularLoss
-1651,regularLoss
 1652,regularLoss
 1653,regularLoss
 1655,regularLoss
@@ -1683,6 +1683,7 @@
 2560,regularLoss
 2561,regularLoss
 2563,regularLoss
+2565,regularLoss
 2567,regularLoss
 2568,regularLoss
 2569,regularLoss
@@ -3074,6 +3075,7 @@
 4672,regularLoss
 4676,regularLoss
 4678,regularLoss
+4680,regularLoss
 4681,regularLoss
 4683,regularLoss
 4684,regularLoss
@@ -3331,6 +3333,7 @@
 5081,regularLoss
 5083,regularLoss
 5085,regularLoss
+5086,regularLoss
 5088,regularLoss
 5089,regularLoss
 5090,regularLoss
@@ -3437,6 +3440,7 @@
 5245,regularLoss
 5246,regularLoss
 5247,regularLoss
+5248,regularLoss
 5250,regularLoss
 5252,regularLoss
 5255,regularLoss
@@ -3735,7 +3739,6 @@
 5696,regularLoss
 5698,regularLoss
 5700,regularLoss
-5701,regularLoss
 5703,regularLoss
 5704,regularLoss
 5707,regularLoss

@@ -52,7 +52,7 @@ func main() {
 	fmt.Printf("\nCalling Program: %v\n\n", os.Args[0])
 	fmt.Printf("\nRun Start Time: %15s\n\n", cfg.RunStartTime.Format("2006.01.02  3:04:05 pm"))
 
-	inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
+	inputFileName := cfg.General.DeckFileName
 	file, err := os.Open(inputFileName)
 	if err != nil {
 		log.Println("Cannot open inputFileName:", err)

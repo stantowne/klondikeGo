@@ -6,6 +6,7 @@ type Configuration struct {
 	RunStartTime time.Time
 	GitVersion   string // Stan we need to figure out how to get this
 	General      struct {
+		DeckFileName            string `yaml:"deck file name"`
 		Decks                   string `yaml:"decks"`                        // must be "consecutive" or "list"
 		FirstDeckNum            int    `yaml:"first deck number"`            // must be non-negative integer
 		NumberOfDecksToBePlayed int    `yaml:"number of decks to be played"` //must be non-negative integer
