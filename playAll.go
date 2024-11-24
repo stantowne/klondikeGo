@@ -51,7 +51,6 @@ type variablesSpecificToPlayAll struct {
 		stratLossesMinSE int // Strategy Exhausted Minor
 		stratLossesEL    int // Strategy Early Loss
 		unqBoards        int
-		elapsedTime      time.Duration
 		startTime        time.Time
 		deckWins         int
 		deckLosses       int
@@ -126,7 +125,11 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			} else {
 				_, _ = pfmt.Printf("\n\n*************************\n\nDeck: %d  LOST   Result Codes: %v   Moves Tried: %v", deckNum, result1, vPA.TD.mvsTried)
 			}
-			fmt.Printf("\nElapsed Time: %v", vPA.TD.elapsedTime)
+			if vPA.TD.elapsedTime == 0 {
+				fmt.Printf("\nElapsed Time: <.5ms    (Windows Minimum Resolution)")
+			} else {
+				fmt.Printf("\nElapsed Time: %v", vPA.TD.elapsedTime)
+			}
 			fmt.Printf("\n\nStrategies:")
 			_, _ = pfmt.Printf("\n Tried: %13d", vPA.TD.stratTried)
 			_, _ = pfmt.Printf("\n   Won: %13d", vPA.TD.stratWins)
