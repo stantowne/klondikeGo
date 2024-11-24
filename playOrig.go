@@ -11,12 +11,11 @@ import (
 	"reflect"
 	"sort"
 	"strconv"
-	"strings"
 	"time"
 )
 
 // because aMoves sometimes includes moves with priority badMove, which would sort to the very end
-// this function is needed to that, when iOS needs NOT to call the best move
+// this function is needed to ensure that, when iOS needs NOT to call the best move
 // it instead calls a flip, rather than a bad move.
 // oddly, although this function would seem to be necessary, introducing it had no effect on the win rate
 func findFlip(moves []move) move {
@@ -33,11 +32,6 @@ func findFlip(moves []move) move {
 }
 
 func playOrig(reader csv.Reader, cfg *Configuration) {
-
-	// comment probably obsolete
-	// Need to define variable err type error here.  Originally it was implicitly created by the following statement and then reused many times
-	//   inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
-	// That statement has been moved up into main so we need to explicitly create it here.
 
 	numberOfStrategies := 1 << cfg.PlayOrig.Length //number of initial strategies
 
@@ -122,20 +116,6 @@ newDeck:
 						return aMoves[i].priority < aMoves[j].priority
 					})
 				}
-				// DanTest remove below
-				for z := range aMoves {
-					if aMoves[z].cardToMove.Rank == 0 && strings.Contains("moveDown/", aMoves[z].name+"/") || aMoves[z].name == "" {
-						fmt.Printf("\n****************\nBad Move generated %v\n\n", aMoves[z])
-						fmt.Printf("  Within these generated moves: ")
-						for w := range aMoves {
-							fmt.Printf("\n%v", aMoves[w])
-						}
-						fmt.Printf("\n\n")
-						printBoard(b)
-						fmt.Printf("\n\n%d", b.boardCode(deckNum))
-					}
-				}
-				// DanTest remove above
 
 				selectedMove := aMoves[0]
 
@@ -235,7 +215,13 @@ newDeck:
 	if err != nil {
 		log.Println("Cannot create csv file:", err)
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			println("cannot close file")
+			os.Exit(1)
+		}
+	}(file)
 	writer := csv.NewWriter(file)
 	err = writer.WriteAll(losses)
 	if err != nil {
