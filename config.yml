@@ -23,23 +23,23 @@ play all moves:
     find all winning strategies?: false            # true or false   true not yet implemented
 
     reporting:                                     # only one true or no trues permitted   non yaml     cfg.PlayNew.ReportingType.NoReporting set in code
-      deck by deck: false                          # true or false                                 =     cfg.PlayNew.ReportingType.DeckByDeck
-      move by move: false                           # true or false                                    || cfg.PlayNew.ReportingType.MoveByMove
-      tree: true                                  # true or false                                    || cfg.PlayNew.ReportingType.Tree
+      deck by deck: true                           # true or false                                 =     cfg.PlayNew.ReportingType.DeckByDeck
+      move by move: false                          # true or false                                    || cfg.PlayNew.ReportingType.MoveByMove
+      tree: false                                  # true or false                                    || cfg.PlayNew.ReportingType.Tree
                                                    #                                                NOTE: || == OR (looks like forward slash due to italics)
     deck by deck reporting options:
-        type:  very short                          # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.DeckByDeck == false
+        type: regular                              # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.DeckByDeck == false
 
     move by move reporting options:
         type: regular                              # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.MoveByMove == false
 
     tree reporting options:
         type: regular                              # regular, narrow, very narrow   All 3 Ignored if cfg.PlayAll.ReportingType.Tree == false
-        sleep between moves: 1                     # non-negative integer, in tenths of seconds
-        sleep between strategies: 3                # non-negative integer, in tenths of seconds
+        sleep between moves: 0                     # non-negative integer, in tenths of seconds
+        sleep between strategies: 0                # non-negative integer, in tenths of seconds
 
     restrict reporting to:
-      starting deck number: 0                   # 0 means no restriction
+      starting deck number: 0                      # 0 means no restriction
       continue for how many decks: 0               # 0 means no restriction
       starting move number: 0                      # 0 means no restriction
       continue for how many moves: 0               # 0 means no restriction
@@ -47,7 +47,7 @@ play all moves:
     print winning moves: false                     # true or false
     progress counter in millions: 50
 
-    print final deck by deck W/L record: true     # true or false
+    print final deck by deck W/L record: true      # true or false
 
-    save results to SQL: false     # true or false
+    save results to SQL: false                     # true or false
     sql connection string: "test"

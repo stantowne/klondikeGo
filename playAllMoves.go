@@ -18,11 +18,12 @@ func playAllMoves(bIn board,
 
 	// if cfg.PlayAll.PrintMoveDetails {}
 	/* Return Codes: NMA = Strategy Loss: No Moves Available
-	   RB  = Strategy Loss: Repetitive Board
-	   SE  = Strategy Loss: all possible moves Exhausted
-	   GLE = Strategy Loss: GameLength Limit Exceeded
-	   EL  = Strategy Loss: Early Loss
-	   SW  = Strategy Win
+	   RB     = Strategy Loss: Repetitive Board
+	   MajSE  = Major Strategy Loss: all possible moves Exhausted
+	   MinSE  = Minor Strategy Loss: all possible moves Exhausted
+	   GLE    = Strategy Loss: GameLength Limit Exceeded
+	   EL     = Strategy Loss: Early Loss
+	   SW     = Strategy Win
 
 	*/
 	// add code for findAllWinStrats
@@ -52,7 +53,7 @@ func playAllMoves(bIn board,
 			vPA)
 		vPA.TD.stratLossesGLE++
 		prntMDetTreeReturnComment(" ==> GLE", deckNum, recurReturnNum, cfg, vPA)
-		return "GLE", 1
+		return "GLE", recurReturnNum + 1
 	}
 
 	// Find Next Moves
@@ -81,10 +82,11 @@ func playAllMoves(bIn board,
 
 		// Possible increment to vPA.TD.stratNum
 		if i != 0 {
-			// Started at 0 in playNew for each deck.  Increment each time a second through nth move is made
+			// Started at 0 in playAll for each deck.  Increment each time a second through nth move is made
 			//     That way strategy 0 is the "All Best Moves" strategy.  It is also why in playNew aMStratTriedAllDecks
 			//     is incremented by vPA.TD.stratNum + 1 after each deck.
 			vPA.TD.stratNum++
+			vPA.TD.stratTried++
 		}
 
 		// Print the incoming board EVEN IF we are returning to it to try the next available move
@@ -105,8 +107,7 @@ func playAllMoves(bIn board,
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_R", 2, "\n  RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cfg, vPA)
 				prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_SorMBM_VS", 2, "   RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.", "", "", cfg, vPA)
 				prntMDetTreeReturnComment(" ==> RB", deckNum, recurReturnNum, cfg, vPA)
-				// delete				fmt.Printf("    %v   %v", vPA.TD.stratNum, moveNum)
-				return "RB", 1 // Repetitive Board
+				return "RB", recurReturnNum + 1 // Repetitive Board
 			} else {
 				// Remember the board state by putting it into the map "vPA.priorBoards"
 				vPA.priorBoards[bNewBcode] = true
@@ -118,7 +119,7 @@ func playAllMoves(bIn board,
 			vPA.TD.stratLossesNMA++
 			prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_R", 2, "  NMA: No Moves Available: Strategy Lost %v%v\n", "", "", cfg, vPA)
 			prntMDetTreeReturnComment(" ==> NMA", deckNum, recurReturnNum, cfg, vPA)
-			return "NMA", 1
+			return "NMA", recurReturnNum + 1
 		}
 
 		//Detect Win (formerly Early Win)
@@ -134,7 +135,7 @@ func playAllMoves(bIn board,
 
 			prntMDetTreeReturnComment(" ==> DECK WON", deckNum, recurReturnNum, cfg, vPA)
 			vPA.TD.moveNumAtWin = moveNum
-			return "SW", 1 //  Strategy Win
+			return "SW", recurReturnNum + 1 //  Strategy Win
 		}
 
 		// OK, done with the various end-of-strategy conditions
@@ -164,7 +165,7 @@ func playAllMoves(bIn board,
 
 		// CONSIDER DELETING prntMDet(bIn, aMoves, i, deckNum, moveNum, "DbDorMbM", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   vPA.TD.stratNum: %v   vPA.TD.mvsTried: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2, cfg, vPA)
 
-		if cfg.PlayAll.FindAllWinStrats != true && recurReturnV1 == "SW" {
+		if recurReturnV1 == "SW" {
 			// save winning moves into a slice in reverse
 			if cfg.PlayAll.SaveResultsToSQL || cfg.PlayAll.PrintWinningMoves {
 				vPA.TD.winningMoves = append(vPA.TD.winningMoves, aMoves[i])
@@ -176,12 +177,16 @@ func playAllMoves(bIn board,
 		}
 	}
 
-	vPA.TD.stratLossesSE++
-	cmt := "  SE   Strategy loss: all possible moves Exhausted%v%v"
+	if len(aMoves) == 1 {
+		vPA.TD.stratLossesMinSE++
+	} else {
+		vPA.TD.stratLossesMajSE++
+	}
+	cmt := "  MajSE   Major Strategy loss: all possible moves Exhausted%v%v"
 	if recurReturnNum == 0 {
 		prntMDet(bIn, aMoves, len(aMoves), deckNum, moveNum, "DbDorMbM", 2, cmt, "", "", cfg, vPA)
 	}
-	prntMDetTreeReturnComment(" ==> SE", deckNum, recurReturnNum, cfg, vPA)
+	prntMDetTreeReturnComment("^Maj SE^", deckNum, recurReturnNum, cfg, vPA)
 	return "SE", recurReturnNum + 1 //  Strategy Exhausted
 }
 
