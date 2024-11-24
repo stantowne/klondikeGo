@@ -8,7 +8,6 @@ general:
   type of play: playAll                            # playAll or playOrig    NOTE: playAll executes code in function playNew
   verbose: 0                                       # non-negative integer
   outputTo: console                                # console OR filename (if file exists a sequence number will be added before the extension) not yet implemented
-
   progress counter in millions: 50
 
 play original:
