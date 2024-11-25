@@ -38,7 +38,7 @@ func (bIn board) copyBoard() board {
 	return bOut
 }
 
-func (b board) boardCode(dN int) bCode {
+func (b board) boardCode(dN int) bCode { // add filename of deck source file after added to cfg then include it in error msgs
 	//
 	// This method takes a struct of type board which contains four fields:
 	//		columns:	an array of 7 column (each column being a slice of Card)
@@ -133,14 +133,14 @@ func (b board) boardCode(dN int) bCode {
 		bC[i] = 0b_10000110 + col
 		i++
 		for _, c := range b.columns[col] {
-			for i >= 65 { // remove in to provide debug point only
+			TotalRankCheck += c.Rank + 1
+			TotalSuitCheck += c.Suit + 1
+			for i >= 65 {
 				fmt.Printf("\n\nMore Than 65 cards on board %v os.exit(65):\n", dN)
 				printBoard(b)
 				fmt.Printf("\nMore Than 65 cards on board %v os.exit(65)   TotalRankCheck: %v   TotalSuitCheck: %v \n", dN, TotalRankCheck, TotalSuitCheck)
 				os.Exit(65)
 			}
-			TotalRankCheck += c.Rank + 1
-			TotalSuitCheck += c.Suit + 1
 			bC[i] = c.packCard()
 			i++
 		}

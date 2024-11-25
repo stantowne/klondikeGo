@@ -15,6 +15,7 @@ import (
 type variablesSpecificToPlayAll struct {
 	priorBoards map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
 	TD          struct {       // TD = This Deck
+		boardCodeOfDeck  [65]byte // The boardCode of the deck read
 		mvsTried         int
 		stratNum         int // stratNum starts at 0
 		stratTried       int // This Deck Strategies TRIED = stratNum + 1
@@ -99,7 +100,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		//deal Deck onto board
 		//temp		AllMvStratNum := 0
 		var b = dealDeck(d)
-
+		vPA.TD.boardCodeOfDeck = b.boardCode(deckNum)
 		// This statement is executed once per deck and transfers program execution.
 		// When this statement returns the deck has been played.
 		result1, _ := playAllMoves(b, 0, deckNum, cfg, &vPA)
