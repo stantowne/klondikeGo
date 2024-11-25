@@ -16,11 +16,15 @@ func playAllMoves(bIn board,
 	vPA *variablesSpecificToPlayAll,
 ) (string, int) {
 
-	// if cfg.PlayAll.PrintMoveDetails {}
 	/* Return Codes: NMA = Strategy Loss: No Moves Available
+
+	   A "Strategy" is any unique set of moves on a path leading back to move 0 aka a "Branch"
+	   Note: When available moves = 1 a new "Strategy"/"Branch" is NOT created
+	         When available moves > 1 a new "Strategy"/"Branch" IS     created
+
 	   RB     = Strategy Loss: Repetitive Board
 	   MajSE  = Major Strategy Loss: all possible moves Exhausted
-	   MinSE  = Minor Strategy Loss: all possible moves Exhausted
+	   MinSE  = Minor Strategy Loss: all possible moves Exhausted Not Really Considered a strategy!
 	   GLE    = Strategy Loss: GameLength Limit Exceeded
 	   EL     = Strategy Loss: Early Loss
 	   SW     = Strategy Win
@@ -177,10 +181,12 @@ func playAllMoves(bIn board,
 		}
 	}
 
-	if len(aMoves) == 1 {
-		vPA.TD.stratLossesMinSE++
-	} else {
-		vPA.TD.stratLossesMajSE++
+	if moveNum != 0 { // The initial call to playAllMoves from playALL (when MoveNum = 0) is only there to display the initial board
+		if len(aMoves) == 1 { // and does not represent a move tried - Therefore returning from the initial call is not either a Maj or MinSE
+			vPA.TD.stratLossesMinSE++
+		} else {
+			vPA.TD.stratLossesMajSE++
+		}
 	}
 	cmt := "  MajSE   Major Strategy loss: all possible moves Exhausted%v%v"
 	if recurReturnNum == 0 {
