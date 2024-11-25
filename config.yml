@@ -1,0 +1,52 @@
+#config.yml
+
+general:
+  deck file name: decks-made-2022-01-15_count_10000-dict.csv
+  decks: consecutive                               # consecutive or list or shuffle
+  first deck number: 46                            # non-negative integer less than 10,000
+  number of decks to be played: 4                  # positive integer no more than 10,000 minus first deck number
+  list:                                            # not implemented
+  type of play: playAll                            # playAll or playOrig    NOTE: playAll executes code in function playNew
+  verbose: 0                                       # non-negative integer
+  outputTo: console                                # console OR filename (if file exists a sequence number will be added before the extension) not yet implemented
+
+play original:
+  length of initial override strategy: 8           # non-negative integer
+  game length limit in moves made: 150             # non-negative integer
+
+
+
+play all moves:
+    game length limit in million moves tried: 300  # IN MILLIONS non-negative integer
+
+    find all winning strategies?: false            # true or false   true not yet implemented
+
+    reporting:                                     # only one true or no trues permitted   non yaml     cfg.PlayNew.ReportingType.NoReporting set in code
+      deck by deck: true                           # true or false                                 =     cfg.PlayNew.ReportingType.DeckByDeck
+      move by move: false                          # true or false                                    || cfg.PlayNew.ReportingType.MoveByMove
+      tree: false                                  # true or false                                    || cfg.PlayNew.ReportingType.Tree
+                                                   #                                                NOTE: || == OR (looks like forward slash due to italics)
+    deck by deck reporting options:
+        type: regular                              # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.DeckByDeck == false
+
+    move by move reporting options:
+        type: regular                              # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.MoveByMove == false
+
+    tree reporting options:
+        type: regular                              # regular, narrow, very narrow   All 3 Ignored if cfg.PlayAll.ReportingType.Tree == false
+        sleep between moves: 0                     # non-negative integer, in tenths of seconds   Slow down so humans can follow
+        sleep between strategies: 0                # non-negative integer, in tenths of seconds   Slow down so humans can follow
+
+    restrict reporting to:
+      starting deck number: 0                      # 0 means no restriction
+      continue for how many decks: 0               # 0 means no restriction
+      starting move number: 0                      # 0 means no restriction
+      continue for how many moves: 0               # 0 means no restriction
+
+    print winning moves: true                      # true or false
+    progress counter in millions: 3
+
+    print final deck by deck W/L record: true      # true or false
+
+    save results to SQL: false                     # true or false
+    sql connection string: "test"

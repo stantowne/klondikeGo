@@ -1,0 +1,97 @@
+This is what play.go produced before creation of playBestOrIOS.
+
+Development of playBestOrIOS is not complete until it produces identical output (minor time differences are ok).
+
+    Number of Decks Played is 100.
+    Length of Initial Override Strategies is 8.
+    Number of Initial Override Strategies Per Deck is 256.
+    Number of Possible Attempts is 25,600.
+    Elapsed Time is 749.719ms.
+    Total Decks Won is 33 of which 33 were Early Wins
+    Total Decks Lost is 67
+    Losses at Game Length Limit is 0
+    Losses at No Moves Available is 107
+    Regular Losses is 17,957
+    Number of Attempts Avoided ia 7,536
+    Percentage of Possible Attempts Avoided is 29.4375
+    Average Elapsed Time per Deck is 7.490000ms.
+
+    Process finished with the exit code 0
+
+CONFIRMATION OF NEXT STEPS at #1:
+
+    Number of Decks Played is 100.
+    Length of Initial Override Strategies is 8.
+    Number of Initial Override Strategies Per Deck is 256.
+    Number of Possible Attempts is 25,600.
+    Elapsed Time is 777.57ms.
+    Total Decks Won is 33 of which 33 were Early Wins
+    Total Decks Lost is 67
+    Losses at Game Length Limit is 0
+    Losses at No Moves Available is 107
+    Regular Losses is 17,957
+    Number of Attempts Avoided ia 7,536
+    Percentage of Possible Attempts Avoided is 29.4375
+    Average Elapsed Time per Deck is 7.770000ms.
+
+    Process finished with the exit code 0
+
+CONFIRMATION OF NEXT STEPS at #4:
+
+Number of Decks Played is 100.
+Length of Initial Override Strategies is 8.
+Number of Initial Override Strategies Per Deck is 256.
+Number of Possible Attempts is 25,600.
+Elapsed Time is 752.3657ms.
+Total Decks Won is 33 of which 33 were Early Wins
+Total Decks Lost is 67
+Losses at Game Length Limit is 0
+Losses at No Moves Available is 107
+Regular Losses is 17,957
+Number of Attempts Avoided ia 7,536
+Percentage of Possible Attempts Avoided is 29.4375
+Average Elapsed Time per Deck is 7.520000ms.
+
+Process finished with the exit code 0
+
+
+GOROOT=C:\Users\dan\Dropbox\00 DropBox DAP\Go Language\go1.23.1 #gosetup
+GOPATH=C:\Users\dan\go #gosetup
+"C:\Users\dan\Dropbox\00 DropBox DAP\Go Language\go1.23.1\bin\go.exe" build -o C:\Users\dan\AppData\Local\JetBrains\GoLand2024.2\tmp\GoLand\___5go_build_github_com_stantowne_klondikeGo.exe . #gosetup
+C:\Users\dan\AppData\Local\JetBrains\GoLand2024.2\tmp\GoLand\___5go_build_github_com_stantowne_klondikeGo.exe 0 100 8 0/WL/DBD/SUITxxSYMBOL/RANKxxSYMBOL F BB,0,0,1460,0,C #gosetup
+
+Calling Program: C:\USERS\DAN\APPDATA\LOCAL\JETBRAINS\GOLAND2024.2\TMP\GOLAND\___5GO_BUILD_GITHUB_COM_STANTOWNE_KLONDIKEGO.EXE
+
+Command Line Arguments:
+            Number Of Decks To Be Played: 100
+                      Starting with deck: 0
+
+ Style: Original IOS (Initial Override Strategies)
+
+                     IOS strategy length: 8
+      Max IOS startegy attempts per deck: 256
+       Total strategy attempts all decks: 25600
+
+                           Verbose level: 0
+                   Verbose special codes: /WL/DBD/SUITXXSYMBOL/RANKXXSYMBOL
+
+                         GameLengthLimit: 150
+
+
+
+Date & Time Completed is 2024-10-31 20:37:42.639299 -0500 CDT m=+0.769689001
+Number of Decks Played is 100, starting with Deck 0.
+Length of Initial Override Strategies is 8.
+Number of Initial Override Strategies Per Deck is 256.
+Number of Possible Attempts is 25,600.
+Elapsed Time is 769.182ms.
+Total Decks Won is 33 of which 33 were Early Wins
+Total Decks Lost is 67
+Losses at Game Length Limit is 0
+Losses at No Moves Available is 107
+Regular Losses is 17,957
+Number of Attempts Avoided ia 7,536
+Percentage of Possible Attempts Avoided is 29.4375
+Average Elapsed Time per Deck is 7.69ms.
+
+Process finished with the exit code 0

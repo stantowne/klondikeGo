@@ -1,6 +1,6 @@
 package main
 
-func detectFlipStockToWaste(b board, mc int, _ bool) []move {
+func detectFlipStockToWaste(b board, mc int) []move {
 	var moves []move
 	if mc < 0 {
 		return moves
@@ -16,7 +16,7 @@ func detectFlipStockToWaste(b board, mc int, _ bool) []move {
 	return moves
 }
 
-func detectFlipWasteToStock(b board, mc int, _ bool) []move {
+func detectFlipWasteToStock(b board, mc int) []move {
 	var moves []move
 	if mc < 0 {
 		return moves

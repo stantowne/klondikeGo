@@ -14,37 +14,26 @@ import (
 	"time"
 )
 
-func play(args []string) {
-	firstDeckNum, _ := strconv.Atoi(args[1])
-	numberOfDecksToBePlayed, _ := strconv.Atoi(args[2])
-	length, _ := strconv.Atoi(args[3])  //length of each strategy (which also determines the # of strategies - 2^n)
-	verbose, _ := strconv.Atoi(args[4]) //the greater the number the more verbose
-	offset, _ := strconv.Atoi(args[5])  // delay the application of the strategy by the offset
-
-	const gameLengthLimit = 150 //increasing to 200 does not increase win rate
-	inputFileName := "decks-made-2022-01-15_count_10000-dict.csv"
-	file, err := os.Open(inputFileName)
-	if err != nil {
-		log.Println("Cannot open inputFileName:", err)
-	}
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			println("could not close file:", err)
+// because aMoves sometimes includes moves with priority badMove, which would sort to the very end
+// this function is needed to ensure that, when iOS needs NOT to call the best move
+// it instead calls a flip, rather than a bad move.
+// oddly, although this function would seem to be necessary, introducing it had no effect on the win rate
+func findFlip(moves []move) move {
+	for i := 0; i < len(moves); i++ {
+		if moves[i].name == "flipStockToWaste" {
+			return moves[i]
 		}
-	}(file)
-	reader := csv.NewReader(file)
-
-	// used this loop because could not find integer exponentiation operation.
-	numberOfStrategies := 1 //number of initial strategies
-	for i := 0; i < length; i++ {
-		numberOfStrategies = numberOfStrategies * 2
+		if moves[i].name == "flipWasteToStock" {
+			return moves[i]
+		}
 	}
+	fmt.Println("This line from findFlip should never execute")
+	return moves[len(moves)-1]
+}
 
-	var singleGame = true
-	if numberOfDecksToBePlayed > 1 {
-		singleGame = false
-	}
+func playOrig(reader csv.Reader, cfg *Configuration) {
+
+	numberOfStrategies := 1 << cfg.PlayOrig.Length //number of initial strategies
 
 	startTime := time.Now()
 	winCounter := 0
@@ -53,8 +42,16 @@ func play(args []string) {
 	lossesAtGLL := 0
 	lossesAtNoMoves := 0
 	regularLosses := 0
+	var losses [][]string
+	firstDeckNum := cfg.General.FirstDeckNum
+	numberOfDecksToBePlayed := cfg.General.NumberOfDecksToBePlayed
+	length := cfg.PlayOrig.Length
+	verbose := cfg.General.Verbose
 newDeck:
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
+		if deckNum%1000 == 0 {
+			fmt.Printf("\nStarting Deck Number %v at %v", deckNum, time.Now())
+		}
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {
 			break
@@ -63,7 +60,7 @@ newDeck:
 			log.Println("Cannot read from inputFileName:", err)
 		}
 
-		if verbose > 1 {
+		if cfg.General.Verbose > 1 {
 			fmt.Printf("\nDeck #%d:\n", deckNum)
 		}
 		var d Deck
@@ -85,15 +82,15 @@ newDeck:
 			//deal Deck onto board
 			var b = dealDeck(d)
 			var priorBoardNullWaste board //used in Loss Detector
-			if verbose > 1 {
+			if cfg.General.Verbose > 1 {
 				fmt.Printf("Start play of Deck %v using initial override strategy %v.\n", deckNum, iOS)
 			}
 
-			//make this slice of int with length = 0 and capacity = gameLengthLimit
-			aMovesNumberOf := make([]int, 0, gameLengthLimit) //number of available Moves
+			//make this slice of int with length = 0 and capacity = gameLengthLimitOrig
+			aMovesNumberOf := make([]int, 0, cfg.PlayOrig.GameLengthLimit) //number of available Moves
 
-			for moveCounter := 1; moveCounter < gameLengthLimit+2; moveCounter++ { //start with 1 to line up with Python version
-				aMoves := detectAvailableMoves(b, moveCounter, singleGame)
+			for moveCounter := 1; moveCounter < cfg.PlayOrig.GameLengthLimit+2; moveCounter++ { //start with 1 to line up with Python version
+				aMoves := detectAvailableMoves(b, moveCounter, cfg.General.NumberOfDecksToBePlayed == 1)
 
 				//detects Loss
 				if len(aMoves) == 0 { //No available moves; game lost.
@@ -106,6 +103,10 @@ newDeck:
 						fmt.Printf("GameLost: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
 					lossesAtNoMoves++
+					if iOS == numberOfStrategies-1 {
+						loss := []string{strconv.Itoa(deckNum), "lossAtNoMoves"}
+						losses = append(losses, loss)
+					}
 					continue newInitialOverrideStrategy
 				}
 
@@ -120,14 +121,21 @@ newDeck:
 
 				//Initial Override Strategy logic
 				mC := moveCounter - 1 // for this part of the program a zero-based move counter is needed
-				if mC > offset-1 && mC < length+offset {
+				//below:  example -> if length is 8, then this IF is satisfied for mc = 0, 1, 2, 3, 4, 5, 6 & 7
+				if mC > -1 && mC < length {
+					// below: & is bitwise AND which means look, bit by bit, at each operand result is 0 unless both bits are 1
+					// below: first operand is the strategy number which also expresses the strategy
+					// below: second operand is all zeros except the mC bit from the right.
+					// below: so result is 0 unless mC(th) bit of the strategy, from right, is 1
 					if iOS&(1<<mC) != 0 {
-						selectedMove = aMoves[len(aMoves)-1]
+						selectedMove = findFlip(aMoves)
+						//selectedMove = aMoves[len(aMoves)-1]  //see explanation of findFlip for why this line has been replaced
 					}
 				}
 
 				b = moveMaker(b, selectedMove) //***Main Program Statement
-				// quickTestBoardCodeDeCode(b, deckNum, length, iOS, moveCounter)
+
+				//quickTestBoardCodeDeCode(b, deckNum, length, iOS, moveCounter)
 
 				//Detect Early Win
 				if detectWinEarly(b) {
@@ -172,6 +180,10 @@ newDeck:
 							fmt.Printf("*****Loss detected after %v moves\n", moveCounter)
 						}
 						regularLosses++
+						if iOS == numberOfStrategies-1 {
+							loss := []string{strconv.Itoa(deckNum), "regularLoss"}
+							losses = append(losses, loss)
+						}
 						continue newInitialOverrideStrategy
 					} else {
 						priorBoardNullWaste = b
@@ -179,6 +191,9 @@ newDeck:
 				}
 			}
 			lossesAtGLL++
+			loss := []string{strconv.Itoa(deckNum), "lossAtGameLengthLimit"}
+			losses = append(losses, loss)
+
 			if verbose > 0 {
 				fmt.Printf("Deck %v, played using Initial Override Strategy %v: Game not won\n", deckNum, iOS)
 			}
@@ -189,13 +204,37 @@ newDeck:
 		}
 
 	}
+	fileName := "playOrigLosses-firstDeck-" +
+		strconv.Itoa(firstDeckNum) +
+		"-strategyLength-" +
+		strconv.Itoa(length) +
+		"-numberOfDecks-" +
+		strconv.Itoa(numberOfDecksToBePlayed) +
+		".csv"
+	file, err := os.Create(fileName)
+	if err != nil {
+		log.Println("Cannot create csv file:", err)
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			println("cannot close file")
+			os.Exit(1)
+		}
+	}(file)
+	writer := csv.NewWriter(file)
+	err = writer.WriteAll(losses)
+	if err != nil {
+		log.Println("Cannot write csv file:", err)
+	}
 	possibleAttempts := numberOfStrategies * numberOfDecksToBePlayed
 	lossCounter := numberOfDecksToBePlayed - winCounter
 	endTime := time.Now()
 	elapsedTime := endTime.Sub(startTime)
 	percentageAttemptsAvoided := 100.0 * float64(attemptsAvoidedCounter) / float64(possibleAttempts)
 	var p = message.NewPrinter(language.English)
-	_, err = p.Printf("\nNumber of Decks Played is %d.\n", numberOfDecksToBePlayed)
+	fmt.Printf("\nDate & Time Completed is %v\n", endTime)
+	_, err = p.Printf("Number of Decks Played is %d, starting with Deck %d.\n", numberOfDecksToBePlayed, firstDeckNum)
 	if err != nil {
 		fmt.Println("Number of Decks Played cannot print")
 	}
@@ -235,6 +274,6 @@ newDeck:
 	if err != nil {
 		fmt.Println("Percentage of Possible Attempts Avoided cannot print")
 	}
-	fmt.Printf("Average Elapsed Time per Deck is %fms.\n", averageElapsedTimePerDeck)
+	fmt.Printf("Average Elapsed Time per Deck is %vms.\n", averageElapsedTimePerDeck)
 
 }

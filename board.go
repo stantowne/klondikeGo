@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"reflect"
-	"strconv"
 )
 
 type column []Card
@@ -21,7 +19,26 @@ type (
 	// note array index of course goes from 0 to 64
 )
 
-func (b board) boardCode() bCode {
+func (bIn board) copyBoard() board {
+
+	bOut := board{}
+	for i := range bIn.columns {
+		bOut.columns[i] = make([]Card, len(bIn.columns[i]))
+		copy(bOut.columns[i], bIn.columns[i])
+	}
+	for i := range bIn.piles {
+		bOut.piles[i] = make([]Card, len(bIn.piles[i]))
+		copy(bOut.piles[i], bIn.piles[i])
+	}
+	bOut.stock = make([]Card, len(bIn.stock))
+	copy(bOut.stock, bIn.stock)
+	bOut.waste = make([]Card, len(bIn.waste))
+	copy(bOut.waste, bIn.waste)
+
+	return bOut
+}
+
+func (b board) boardCode(dN int) bCode { // add filename of deck source file after added to cfg then include it in error msgs
 	//
 	// This method takes a struct of type board which contains four fields:
 	//		columns:	an array of 7 column (each column being a slice of Card)
@@ -80,10 +97,13 @@ func (b board) boardCode() bCode {
 
 	bC := bCode{}
 	i := 0
-
+	TotalRankCheck := 0
+	TotalSuitCheck := 0
 	bC[i] = 0b_10000000
 	i++
 	for _, c := range b.stock {
+		TotalRankCheck += c.Rank + 1
+		TotalSuitCheck += c.Suit + 1
 		bC[i] = c.packCard()
 		i++
 	}
@@ -91,6 +111,8 @@ func (b board) boardCode() bCode {
 	bC[i] = 0b_10000001
 	i++
 	for _, c := range b.waste {
+		TotalRankCheck += c.Rank + 1
+		TotalSuitCheck += c.Suit + 1
 		bC[i] = c.packCard()
 		i++
 	}
@@ -100,6 +122,8 @@ func (b board) boardCode() bCode {
 		bC[i] = 0b_10000010 + p
 		i++
 		for _, c := range b.piles[p] {
+			TotalRankCheck += c.Rank + 1
+			TotalSuitCheck += c.Suit + 1
 			bC[i] = c.packCard()
 			i++
 		}
@@ -109,11 +133,31 @@ func (b board) boardCode() bCode {
 		bC[i] = 0b_10000110 + col
 		i++
 		for _, c := range b.columns[col] {
+			TotalRankCheck += c.Rank + 1
+			TotalSuitCheck += c.Suit + 1
+			for i >= 65 {
+				fmt.Printf("\n\nMore Than 65 cards on board %v os.exit(65):\n", dN)
+				printBoard(b)
+				fmt.Printf("\nMore Than 65 cards on board %v os.exit(65)   TotalRankCheck: %v   TotalSuitCheck: %v \n", dN, TotalRankCheck, TotalSuitCheck)
+				os.Exit(65)
+			}
 			bC[i] = c.packCard()
 			i++
 		}
 	}
-
+	//NOTE: Plus 1 used for rank and suit to ensure that a zero card [0,0,false] is detected
+	if TotalRankCheck != 416 { // 416 = sum(2+3+4+5+6+...14)*4
+		fmt.Printf("\n\n!!!!!!!!!!!!!!\nOn deck %v Card ranks (plus 1) total: %v != 416 on board os.exit(364):\n", TotalRankCheck, dN)
+		printBoard(b)
+		fmt.Printf("\n\n!!!!!!!!!!!!!!\nOn deck %v Card ranks (plus 1) total: %v != 416 on board os.exit(364):\n", TotalRankCheck, dN)
+		os.Exit(416)
+	}
+	if TotalSuitCheck != 130 { // 40 = sum(1+2+3+4)*13
+		fmt.Printf("\n\n!!!!!!!!!!!!!!\nOn deck %v Card suits (plus 1) total: %v != 40 on board os.exit(364):\n", TotalSuitCheck, dN)
+		printBoard(b)
+		fmt.Printf("\n\n!!!!!!!!!!!!!!\nOn deck %v Card suits (plus 1) total: %v != 40 on board os.exit(364):\n", TotalSuitCheck, dN)
+		os.Exit(130)
+	}
 	return bC
 }
 
@@ -163,7 +207,7 @@ func (bC bCode) boardDeCode() board {
 	return b
 }
 
-func testBoardCodeDeCode(args []string) {
+/*func testBoardCodeDeCode(args []string) {
 
 	firstDeckNum, _ := strconv.Atoi(args[1])
 	numberOfDecksToBePlayed, _ := strconv.Atoi(args[2])
@@ -180,27 +224,38 @@ func testBoardCodeDeCode(args []string) {
 		fmt.Println("Original Board")
 		printBoard(b)
 
-		var bC = b.boardCode()
+		var bC = b.boardCode(deckNum)
 		fmt.Printf("%v \t    %08b \n\n", deckNum, bC)
 
 		var bRoundTrip = bC.boardDeCode()
 		fmt.Println("RoundTrip Board")
 		printBoard(bRoundTrip) //TempTest end
 	}
-}
+}*/
 
-func quickTestBoardCodeDeCode(b board, deckNum int, length int, iOS int, mC int) {
-	bCode := b.boardCode()
+/*func quickTestBoardCodeDeCode(b board, deckNum int, length int, iOS int, mC int) {
+	bCode := b.boardCode(deckNum)
 	roundTripResult := bCode.boardDeCode()
+	rTrbCode := roundTripResult.boardCode(deckNum)
 	if !reflect.DeepEqual(b, roundTripResult) {
 		fmt.Println("quickTestBoardCodeDeCode() failed")
 		fmt.Println("deckNum: ", deckNum)
 		fmt.Println("length: ", length)
 		fmt.Println("iOS: ", iOS)
 		fmt.Println("moveCounter: ", mC)
+		fmt.Println("\n\nb original\n")
 		printBoard(b)
-		fmt.Printf("\t   %08b \n\n", bCode)
+		fmt.Println("\n\n roundTripResult\n")
 		printBoard(roundTripResult)
+		fmt.Printf("\n\n              b = %v", b)
+		fmt.Printf("\nroundTripResult = %v\n", roundTripResult)
+		if !reflect.DeepEqual(bCode, rTrbCode) {
+			fmt.Println("\n\nbCodes not equal either")
+		} else {
+			fmt.Println("\n\nbCodes are equal")
+		}
+		fmt.Printf("\n          bCode = %08b \n\n", b)
+		fmt.Printf("\nroundTripResult = %08b \n\n", roundTripResult)
 		os.Exit(1)
 	}
-}
+}*/

@@ -1,6 +1,12 @@
 package main
 
 func detectWinEarly(b board) bool {
+	// If stock and waste are empty and the top card (i.e. closest to the table) in all of the columns is face up,
+	//    that implies that the rest of the column is face up and in-order, ready to be moved up to the piles
+	// Then since we already determined that stock and waste are empty all cards not in the columns must be neatly
+	//    stacked in the piles
+	// Therefore we WIN
+
 	if len(b.waste) != 0 {
 		return false
 	}

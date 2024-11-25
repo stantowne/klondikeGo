@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
 )
 
@@ -32,14 +31,6 @@ func (c Card) packCard() byte {
 	if c.FaceUp {
 		fU = 1
 	}
-
-	/*var fU int
-	switch c.FaceUp {
-	case true:
-		fU = 1
-	default:
-		fU = 0
-	}*/
 
 	// Use bitwise OR to overlay s (Suit) and FaceUp on the shifted r (which is an integer)
 	r = r | s | fU
@@ -90,6 +81,8 @@ func (c *Card) suitSymbol() rune {
 		symbol = '\u2660'
 	case 3: //hearts
 		symbol = '\u2665'
+
+		return symbol
 	}
 	return symbol
 }
@@ -133,31 +126,18 @@ func (c *Card) pStr() string {
 	} else {
 		sFace = c.faceSymbol()
 	}
-
 	return c.rankSymbol() + sSuit + sFace + " "
 }
 
-func quickTestCardPackUnPack(c Card) bool {
-	return unPackByte2Card(c.packCard()) == c
-}
+func (c *Card) suitSymbolColored() string {
+	var sSuit string
+	var Reset = "\033[m" //These are ANSI escape codes for colors
+	var Red = "\033[31m"
+	if c.Suit == 0 || c.Suit == 2 {
+		sSuit = string(c.suitSymbol())
+	} else {
+		sSuit = Red + string(c.suitSymbol()) + Reset
+	}
 
-func testCardPackUnPack(args []string) {
-	var testCard, rebuiltCard Card
-	r, err := strconv.Atoi(args[1])
-	if err != nil {
-		fmt.Println("bad input -- first argument")
-	}
-	s, err := strconv.Atoi(args[2])
-	if err != nil {
-		fmt.Println("bad input -- second argument")
-	}
-	testCard.Rank = r
-	testCard.Suit = s
-	testCard.FaceUp = true
-	fmt.Printf("TestCard: %+v\n", testCard)
-	packed := testCard.packCard()
-	fmt.Printf("PackCard: %08b\n", packed)
-	rebuiltCard = unPackByte2Card(packed)
-	fmt.Printf("RebuiltCard: %+v\n", rebuiltCard)
-	fmt.Printf("Does the round trip work: %v\n", testCard == rebuiltCard)
+	return sSuit
 }
