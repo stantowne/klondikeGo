@@ -4,7 +4,8 @@ import "time"
 
 type Configuration struct {
 	RunStartTime time.Time
-	GitVersion   string // Stan we need to figure out how to get this
+	GitVersion   string // Stan I figured out how to do this and will write it tomorrow
+	GitSystem    string // The machine this was run on - the version number will likely only exist on this machine
 	General      struct {
 		DeckFileName            string `yaml:"deck file name"`
 		Decks                   string `yaml:"decks"`                        // must be "consecutive" or "list"
@@ -59,7 +60,8 @@ type Configuration struct {
 
 type ConfigurationSubsetForSQLWriting struct { // STAN not sure we even need to create this it is simply here for me to communicatewhat needs to be written
 	RunStartTime time.Time
-	GitVersion   string // Stan we need to figure out how to get this
+	GitVersion   string // Stan I figured out how to do this and will write it tomorrow
+	GitSystem    string // The machine this was run on - the version number will likely only exist on this machine
 	General      struct {
 		Verbose  int    `yaml:"verbose"`
 		OutputTo string `yaml:"outputTo"`
