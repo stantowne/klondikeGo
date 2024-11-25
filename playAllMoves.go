@@ -125,6 +125,7 @@ func playAllMoves(bIn board,
 		//Detect Win (formerly Early Win)
 		if detectWinEarly(bIn) {
 			vPA.TD.stratWins++
+			/*  delete
 			cmt := "  SW   Strategy Win: %v%v"
 			if cfg.PlayAll.FindAllWinStrats {
 				cmt += "  Will Continue to look for additional winning strategies for this deck"
@@ -132,6 +133,7 @@ func playAllMoves(bIn board,
 				cmt += "  Go to Next Deck (if any)"
 			}
 			prntMDet(bIn, aMoves, i, deckNum, moveNum, "DbDorMbM", 2, cmt, "", "", cfg, vPA)
+			*/
 
 			prntMDetTreeReturnComment(" ==> DECK WON", deckNum, recurReturnNum, cfg, vPA)
 			vPA.TD.moveNumAtWin = moveNum
@@ -167,9 +169,7 @@ func playAllMoves(bIn board,
 
 		if recurReturnV1 == "SW" {
 			// save winning moves into a slice in reverse
-			if cfg.PlayAll.SaveResultsToSQL || cfg.PlayAll.PrintWinningMoves {
-				vPA.TD.winningMoves = append(vPA.TD.winningMoves, aMoves[i])
-			}
+			vPA.TD.winningMoves = append(vPA.TD.winningMoves, aMoves[i])
 			return recurReturnV1, recurReturnNum + 1 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
 		}
 		if recurReturnV1 == "GLE" {

@@ -6,7 +6,7 @@ general:
   first deck number: 7625                          # non-negative integer less than 10,000
   number of decks to be played: 3                  # positive integer no more than 10,000 minus first deck number
   list:                                            # not implemented
-  type of play: playOrig                           # playAll or playOrig    NOTE: playAll executes code in function playNew
+  type of play: playAll                           # playAll or playOrig    NOTE: playAll executes code in function playNew
   verbose: 0                                       # non-negative integer
   outputTo: console                                # console OR filename (if file exists a sequence number will be added before the extension) not yet implemented
   progress counter in millions: 50
