@@ -168,9 +168,9 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		// This If Block is Print Only for DbD_R  ????
 		if cfg.PlayAll.ReportingType.DeckByDeck && cfg.PlayAll.DeckByDeckReportingOptions.Type == "regular" { // Deck-by-deck Statistics
 			if vPA.TD.stratWins > 0 {
-				_, _ = pfmt.Printf("\n\n*************************\n\nDeck: %d  WON    Result Codes: %v", deckNum, result1)
+				_, _ = pfmt.Printf(" \n*************************\n\nDeck: %d  WON    Result Codes: %v", deckNum, result1)
 			} else {
-				_, _ = pfmt.Printf("\n\n*************************\n\nDeck: %d  LOST   Result Codes: %v", deckNum, result1)
+				_, _ = pfmt.Printf(" \n*************************\n\nDeck: %d  LOST   Result Codes: %v", deckNum, result1)
 			}
 			if vPA.TD.elapsedTime == 0 {
 				fmt.Printf("\nElapsed Time: <.5ms    (Windows Minimum Resolution)")
@@ -227,6 +227,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			if vPA.TD.mvsTried != vPA.TD.stratLossesNMA+vPA.TD.stratLossesRB+vPA.TD.stratLossesMajSE+vPA.TD.stratLossesMinSE+vPA.TD.stratLossesEL+vPA.TD.stratLossesGLE+vPA.TD.stratLossesGLEAb+vPA.TD.winningMovesCnt {
 				fmt.Printf("\n        ************* Moves Tried != vPA.TD.mvsTried != vPA.TD.stratLossesNMA+vPA.TD.stratLossesRB+vPA.TD.stratLossesMajSE+vPA.TD.stratLossesMinSE+vPA.TD.stratLossesEL+vPA.TD.stratLossesGLE+vPA.TD.winningMovesCnt")
 			}
+			fmt.Printf("\n")
 		}
 
 		// This If Block is Print Only for DbD_S or DbD_VS
