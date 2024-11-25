@@ -10,11 +10,54 @@ import (
 	"time"
 )
 
-// type cumulativeByDeckVariables map[string] int v, ???????????????
+type ThisDeck struct {
+	boardCodeOfDeck  [65]byte // The boardCode of the deck read
+	mvsTried         int
+	stratNum         int // stratNum starts at 0
+	stratTried       int // This Deck Strategies TRIED = stratNum + 1
+	stratWins        int
+	stratLosses      int
+	stratLossesGLE   int // Strategy Game Length Exceeded
+	stratLossesGLEAb int // Strategy Game Length Exceeded Aborted moves
+	stratLossesNMA   int // Strategy No Moves Available
+	stratLossesRB    int // Strategy Repetitive Board
+	stratLossesMajSE int // Strategy Exhausted Major
+	stratLossesMinSE int // Strategy Exhausted Minor
+	stratLossesEL    int // Strategy Early Loss
+	unqBoards        int
+	moveNumAtWin     int
+	moveNumMax       int
+	elapsedTime      time.Duration
+	winningMoves     []move
+	winningMovesCnt  int // = length of winning moves
+}
+
+type AllDecks struct {
+	decksPlayed int
+	mvsTried    int // NOTE: Removed various min and max versions of variables here in AD struct as they would only pertain to the specific decks included in this run
+	//                      if info across any set of decks is wanted it should be derived from the saved deck history to be found in SQL
+	stratTried       int
+	stratWins        int
+	stratLosses      int
+	stratLossesGLE   int // Strategy Game Length Exceeded
+	stratLossesGLEAb int // Strategy Game Length Exceeded Aborted moves
+	stratLossesNMA   int // Strategy No Moves Available
+	stratLossesRB    int // Strategy Repetitive Board
+	stratLossesMajSE int // Strategy Exhausted
+	stratLossesMinSE int // Strategy Exhausted Minor
+	stratLossesEL    int // Strategy Early Loss
+	unqBoards        int
+	startTime        time.Time
+	deckWins         int
+	deckLosses       int
+	winningMovesCnt  int // = length of winning moves
+}
 
 type variablesSpecificToPlayAll struct {
 	priorBoards map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
-	TD          struct {       // TD = This Deck
+	TD          ThisDeck
+	AD          AllDecks
+	/*TD          struct {       // TD = This Deck
 		boardCodeOfDeck  [65]byte // The boardCode of the deck read
 		mvsTried         int
 		stratNum         int // stratNum starts at 0
@@ -34,12 +77,12 @@ type variablesSpecificToPlayAll struct {
 		elapsedTime      time.Duration
 		winningMoves     []move
 		winningMovesCnt  int // = length of winning moves
-	}
+	}*/
 	TDother struct { // Variables NOT needed in SQL output
 		startTime     time.Time
 		treePrevMoves string // Used to retain values between calls to prntMDetTree for a single deck - Needed for when the strategy "Backs Uo"
 	}
-	AD struct { // AD = All Decks This run
+	/*AD struct { // AD = All Decks This run
 		decksPlayed int
 		mvsTried    int // NOTE: Removed various min and max versions of variables here in AD struct as they would only pertain to the specific decks included in this run
 		//                      if info across any set of decks is wanted it should be derived from the saved deck history to be found in SQL
@@ -58,7 +101,7 @@ type variablesSpecificToPlayAll struct {
 		deckWins         int
 		deckLosses       int
 		winningMovesCnt  int // = length of winning moves
-	}
+	}*/
 }
 
 func playAll(reader csv.Reader, cfg *Configuration) {
