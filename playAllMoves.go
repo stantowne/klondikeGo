@@ -93,7 +93,6 @@ func playAllMoves(bIn board,
 		//       This had to be done after possible increment to vPA.TD.stratNum so that each time a board is reprinted it shows the NEW strategy number
 		//       Before when it was above the possible increment the board was printing out with the stratNum of the last failed strategy
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_ANY", 1, "", "", "", cfg, vPA)
-		prntMDetTree(bIn, aMoves, i, deckNum, moveNum, cfg, vPA)
 
 		if i == 0 {
 			// Check for repetitive board
@@ -144,6 +143,7 @@ func playAllMoves(bIn board,
 		// let's print out the list of available moves and make the next available move
 		// The board state was already printed above
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_R", 3, "", "", "", cfg, vPA) // Print Available Moves
+		prntMDetTree(bIn, aMoves, i, deckNum, moveNum, cfg, vPA)
 
 		bNew := bIn.copyBoard() // Critical Must use copyBoard!!!
 
