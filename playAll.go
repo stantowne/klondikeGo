@@ -22,6 +22,7 @@ type variablesSpecificToPlayAll struct {
 		stratWins        int
 		stratLosses      int
 		stratLossesGLE   int // Strategy Game Length Exceeded
+		stratLossesGLEAb int // Strategy Game Length Exceeded Aborted moves
 		stratLossesNMA   int // Strategy No Moves Available
 		stratLossesRB    int // Strategy Repetitive Board
 		stratLossesMajSE int // Strategy Exhausted Major
@@ -46,6 +47,7 @@ type variablesSpecificToPlayAll struct {
 		stratWins        int
 		stratLosses      int
 		stratLossesGLE   int // Strategy Game Length Exceeded
+		stratLossesGLEAb int // Strategy Game Length Exceeded Aborted moves
 		stratLossesNMA   int // Strategy No Moves Available
 		stratLossesRB    int // Strategy Repetitive Board
 		stratLossesMajSE int // Strategy Exhausted
@@ -103,7 +105,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		vPA.TD.boardCodeOfDeck = b.boardCode(deckNum)
 		// This statement is executed once per deck and transfers program execution.
 		// When this statement returns the deck has been played.
-		result1, _ := playAllMoves(b, 0, deckNum, cfg, &vPA)
+		result1, result2 := playAllMoves(b, 0, deckNum, cfg, &vPA)
 
 		vPA.TD.elapsedTime = time.Since(vPA.TDother.startTime)
 		vPA.TD.winningMovesCnt = len(vPA.TD.winningMoves)
@@ -134,9 +136,12 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			}
 			fmt.Printf("\n\nStrategies:")
 			_, _ = pfmt.Printf("\n Tried: %13d", vPA.TD.stratTried)
-			fmt.Printf("\n\n Tried Detail:   (Must sum to Tried)")
+			fmt.Printf("\n\n Tried Detail:   (Must sum to Strategies Tried)")
 			if vPA.TD.stratWins != 0 {
 				_, _ = pfmt.Printf("\n     Won: %13d", vPA.TD.stratWins)
+			}
+			if vPA.TD.stratLossesNMA != 0 {
+				_, _ = pfmt.Printf("\n     NMA: %13d   (No Moves Available)", vPA.TD.stratLossesRB)
 			}
 			if vPA.TD.stratLossesRB != 0 {
 				_, _ = pfmt.Printf("\n      RB: %13d   (Repetitive Board)", vPA.TD.stratLossesRB)
@@ -147,12 +152,12 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			if vPA.TD.stratLossesGLE != 0 {
 				_, _ = pfmt.Printf("\n     GLE: %13d   (Game Length Exceeded)", vPA.TD.stratLossesGLE)
 			}
-			if vPA.TD.stratTried != vPA.TD.stratWins+vPA.TD.stratLossesRB+vPA.TD.stratLossesEL+vPA.TD.stratLossesGLE {
-				fmt.Printf("\n        ************* Strategies Tried != vPA.TD.stratWins+vPA.TD.stratLossesRB+vPA.TD.stratLossesEL+vPA.TD.stratLossesGLE")
+			if vPA.TD.stratTried != vPA.TD.stratWins+vPA.TD.stratLossesNMA+vPA.TD.stratLossesRB+vPA.TD.stratLossesEL+vPA.TD.stratLossesGLE {
+				fmt.Printf("\n        ************* Strategies Tried != vPA.TD.stratWins+vPA.TD.stratLossesNMA+vPA.TD.stratLossesRB+vPA.TD.stratLossesEL+vPA.TD.stratLossesGLE")
 			}
 			fmt.Printf("\n\nMoves:")
 			_, _ = pfmt.Printf("\n Tried: %13d", vPA.TD.mvsTried)
-			fmt.Printf("\n Tried Detail:   (Must Sum to Tried)")
+			fmt.Printf("\n Tried Detail:   (Must Sum to Moves Tried)")
 			if vPA.TD.stratLossesNMA != 0 {
 				_, _ = pfmt.Printf("\n     NMA: %13d   (No Moves Available)", vPA.TD.stratLossesNMA)
 			}
@@ -169,12 +174,14 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 				_, _ = pfmt.Printf("\n      EL: %13d   (Early Loss)", vPA.TD.stratLossesEL)
 			}
 			if vPA.TD.stratLossesGLE != 0 {
+				vPA.TD.stratLossesGLEAb = result2 - 2
 				_, _ = pfmt.Printf("\n     GLE: %13d   (Game Length Exceeded)", vPA.TD.stratLossesGLE)
+				_, _ = pfmt.Printf("\n   GLEAb: %13d   (Game Length Exceeded Aborted moves)", vPA.TD.stratLossesGLEAb)
 			}
 			if vPA.TD.winningMovesCnt != 0 {
 				_, _ = pfmt.Printf("\n   WMCnt: %13d   (Winning Moves Count)", vPA.TD.winningMovesCnt)
 			}
-			if vPA.TD.mvsTried != vPA.TD.stratLossesNMA+vPA.TD.stratLossesRB+vPA.TD.stratLossesMajSE+vPA.TD.stratLossesMinSE+vPA.TD.stratLossesEL+vPA.TD.stratLossesGLE+vPA.TD.winningMovesCnt {
+			if vPA.TD.mvsTried != vPA.TD.stratLossesNMA+vPA.TD.stratLossesRB+vPA.TD.stratLossesMajSE+vPA.TD.stratLossesMinSE+vPA.TD.stratLossesEL+vPA.TD.stratLossesGLE+vPA.TD.stratLossesGLEAb+vPA.TD.winningMovesCnt {
 				fmt.Printf("\n        ************* Moves Tried != vPA.TD.mvsTried != vPA.TD.stratLossesNMA+vPA.TD.stratLossesRB+vPA.TD.stratLossesMajSE+vPA.TD.stratLossesMinSE+vPA.TD.stratLossesEL+vPA.TD.stratLossesGLE+vPA.TD.winningMovesCnt")
 			}
 		}
@@ -224,6 +231,8 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		vPA.TD.stratLosses = 0
 		vPA.AD.stratLossesGLE += vPA.TD.stratLossesGLE
 		vPA.TD.stratLossesGLE = 0
+		vPA.AD.stratLossesGLEAb += vPA.TD.stratLossesGLEAb
+		vPA.TD.stratLossesGLEAb = 0
 		vPA.AD.stratLossesNMA += vPA.TD.stratLossesNMA
 		vPA.TD.stratLossesNMA = 0
 		vPA.AD.stratLossesRB += vPA.TD.stratLossesRB

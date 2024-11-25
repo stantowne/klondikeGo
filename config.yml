@@ -13,12 +13,12 @@ general:
 
 play original:
   length of initial override strategy: 8           # non-negative integer
-  game length limit in million moves tried: 10     # non-negative integer
+  game length limit in moves made: 150             # non-negative integer
 
 
 
 play all moves:
-    game length limit in moves tried: 50           # IN MILLIONS non-negative integer
+    game length limit in million moves tried: 3    # IN MILLIONS non-negative integer
 
     find all winning strategies?: false            # true or false   true not yet implemented
 
@@ -45,7 +45,7 @@ play all moves:
       continue for how many moves: 0               # 0 means no restriction
 
     print winning moves: false                     # true or false
-    progress counter in millions: 50
+    progress counter in millions: 1
 
     print final deck by deck W/L record: true      # true or false
 

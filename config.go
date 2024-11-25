@@ -21,7 +21,7 @@ type Configuration struct {
 		GameLengthLimit int `yaml:"game length limit in moves made"`
 	} `yaml:"play original"`
 	PlayAll struct {
-		GameLengthLimit  int  `yaml:"game length limit in moves tried"`
+		GameLengthLimit  int  `yaml:"game length limit in million moves tried"`
 		FindAllWinStrats bool `yaml:"find all winning strategies?"`
 		ReportingType    struct {
 			DeckByDeck  bool `yaml:"deck by deck"` // referred to as "DbD_R", "DbD_S" or "DbD_VS", in calls to prntMDet and calls thereto
