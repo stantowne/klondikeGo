@@ -17,7 +17,7 @@ play original:
 
 
 play all moves:
-    game length limit in million moves tried: 300  # IN MILLIONS non-negative integer
+    game length limit in million moves tried: 400  # IN MILLIONS non-negative integer
 
     find all winning strategies?: false            # true or false   true not yet implemented
 

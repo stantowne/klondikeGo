@@ -179,7 +179,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			}
 			fmt.Printf("\n\nStrategies:")
 			_, _ = pfmt.Printf("\n Tried: %13d", vPA.TD.stratTried)
-			fmt.Printf("\n\n Tried Detail:   (Must sum to Strategies Tried)")
+			fmt.Printf("\n Tried Detail:   (Must sum to Strategies Tried)")
 			if vPA.TD.stratWins != 0 {
 				_, _ = pfmt.Printf("\n     Won: %13d", vPA.TD.stratWins)
 			}
@@ -187,7 +187,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 				_, _ = pfmt.Printf("\n     NMA: %13d   (No Moves Available)", vPA.TD.stratLossesRB)
 			}
 			if vPA.TD.stratLossesRB != 0 {
-				_, _ = pfmt.Printf("\n      RB: %13d   (Repetitive Board)", vPA.TD.stratLossesRB)
+				_, _ = pfmt.Printf("\n      RB: %13d   (Repetitive Board)", vPA.TD.stratLossesNMA)
 			}
 			if vPA.TD.stratLossesEL != 0 {
 				_, _ = pfmt.Printf("\n      EL: %13d   (Early Loss)", vPA.TD.stratLossesEL)
