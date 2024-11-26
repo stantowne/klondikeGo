@@ -1,9 +1,9 @@
 #config.yml
 
 general:
-  deck file name: decks-made-2022-01-15_count_10000-dict.csv
+  deck file name: DeckFiles/decks-0-1009999.csv
   decks: consecutive                               # consecutive or list or shuffle
-  first deck number: 46                            # non-negative integer less than 10,000
+  first deck number: 1000000                       # non-negative integer less than 10,000
   number of decks to be played: 4                  # positive integer no more than 10,000 minus first deck number
   list:                                            # not implemented
   type of play: playAll                            # playAll or playOrig    NOTE: playAll executes code in function playNew
