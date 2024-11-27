@@ -141,7 +141,7 @@ newDeck:
 				if detectWinEarly(b) {
 					vPO.earlyWinCounter++
 					vPO.winCounter++
-					vPO.attemptsAvoidedCounter = vPO.attemptsAvoidedCounter + vPO.attemptsAvoidedCounter - iOS
+					vPO.attemptsAvoidedCounter = vPO.attemptsAvoidedCounter + vPO.numberOfStrategies - iOS
 
 					if cfg.General.Verbose > 0 {
 						fmt.Printf("Deck %v, played using initialOverrideStrategy %v: Game won early after %v moves. \n", deckNum, iOS, mC)
