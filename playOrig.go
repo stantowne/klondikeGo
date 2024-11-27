@@ -204,29 +204,30 @@ newDeck:
 		}
 
 	}
-
-	fileName := "./playOrigLossesOutput/playOrigLosses-firstDeck-" +
-		strconv.Itoa(cfg.General.FirstDeckNum) +
-		"-strategyLength-" +
-		strconv.Itoa(cfg.PlayOrig.Length) +
-		"-numberOfDecks-" +
-		strconv.Itoa(cfg.General.NumberOfDecksToBePlayed) +
-		".csv"
-	file, err := os.Create(fileName)
-	if err != nil {
-		log.Println("Cannot create csv file:", err)
-	}
-	defer func(file *os.File) {
-		err := file.Close()
+	if cfg.General.Verbose > 2 {
+		fileName := "./playOrigLossesOutput/playOrigLosses-firstDeck-" +
+			strconv.Itoa(cfg.General.FirstDeckNum) +
+			"-strategyLength-" +
+			strconv.Itoa(cfg.PlayOrig.Length) +
+			"-numberOfDecks-" +
+			strconv.Itoa(cfg.General.NumberOfDecksToBePlayed) +
+			".csv"
+		file, err := os.Create(fileName)
 		if err != nil {
-			println("cannot close file")
-			os.Exit(1)
+			log.Println("Cannot create csv file:", err)
 		}
-	}(file)
-	writer := csv.NewWriter(file)
-	err = writer.WriteAll(vPO.losses)
-	if err != nil {
-		log.Println("Cannot write csv file:", err)
+		defer func(file *os.File) {
+			err := file.Close()
+			if err != nil {
+				println("cannot close file")
+				os.Exit(1)
+			}
+		}(file)
+		writer := csv.NewWriter(file)
+		err = writer.WriteAll(vPO.losses)
+		if err != nil {
+			log.Println("Cannot write csv file:", err)
+		}
 	}
 	vPO.endTime = time.Now()
 	playOrigReport(vPO, cfg)
