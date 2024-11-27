@@ -204,8 +204,7 @@ newDeck:
 		}
 
 	}
-	fileName := "playOrigLosses-firstDeck-" +
-		strconv.Itoa(cfg.General.FirstDeckNum) +
+
 	fileName := "./playOrigLossesOutput/playOrigLosses-firstDeck-" +
 		strconv.Itoa(cfg.General.FirstDeckNum) +
 		"-strategyLength-" +
