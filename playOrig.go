@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
 	"io"
 	"log"
 	"os"
@@ -31,24 +29,26 @@ func findFlip(moves []move) move {
 	return moves[len(moves)-1]
 }
 
+type variablesSpecificToPlayOrig struct {
+	numberOfStrategies     int
+	startTime              time.Time
+	endTime                time.Time
+	winCounter             int
+	earlyWinCounter        int
+	attemptsAvoidedCounter int
+	lossesAtGLL            int
+	lossesAtNoMoves        int
+	regularLosses          int
+	losses                 [][]string
+}
+
 func playOrig(reader csv.Reader, cfg *Configuration) {
+	var vPO variablesSpecificToPlayOrig
+	vPO.numberOfStrategies = 1 << cfg.PlayOrig.Length //number of initial strategies
+	vPO.startTime = time.Now()
 
-	numberOfStrategies := 1 << cfg.PlayOrig.Length //number of initial strategies
-
-	startTime := time.Now()
-	winCounter := 0
-	earlyWinCounter := 0
-	attemptsAvoidedCounter := 0
-	lossesAtGLL := 0
-	lossesAtNoMoves := 0
-	regularLosses := 0
-	var losses [][]string
-	firstDeckNum := cfg.General.FirstDeckNum
-	numberOfDecksToBePlayed := cfg.General.NumberOfDecksToBePlayed
-	length := cfg.PlayOrig.Length
-	verbose := cfg.General.Verbose
 newDeck:
-	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
+	for deckNum := cfg.General.FirstDeckNum; deckNum < (cfg.General.FirstDeckNum + cfg.General.NumberOfDecksToBePlayed); deckNum++ {
 		if deckNum%1000 == 0 {
 			fmt.Printf("\nStarting Deck Number %v at %v", deckNum, time.Now())
 		}
@@ -78,7 +78,7 @@ newDeck:
 		}
 
 	newInitialOverrideStrategy:
-		for iOS := 0; iOS < numberOfStrategies; iOS++ {
+		for iOS := 0; iOS < vPO.numberOfStrategies; iOS++ {
 			//deal Deck onto board
 			var b = dealDeck(d)
 			var priorBoardNullWaste board //used in Loss Detector
@@ -94,18 +94,18 @@ newDeck:
 
 				//detects Loss
 				if len(aMoves) == 0 { //No available moves; game lost.
-					if verbose > 1 {
+					if cfg.General.Verbose > 1 {
 						fmt.Printf("Initial Override Strategy: %v\n", iOS)
 						fmt.Printf("****Deck %v: XXXXGame lost after %v moves\n", deckNum, moveCounter)
 					}
-					if verbose > 2 {
+					if cfg.General.Verbose > 2 {
 						fmt.Printf("GameLost: Frequency of each moveType:\n%v\n", moveTypes)
 						fmt.Printf("GameLost: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
-					lossesAtNoMoves++
-					if iOS == numberOfStrategies-1 {
+					vPO.lossesAtNoMoves++
+					if iOS == vPO.numberOfStrategies-1 {
 						loss := []string{strconv.Itoa(deckNum), "lossAtNoMoves"}
-						losses = append(losses, loss)
+						vPO.losses = append(vPO.losses, loss)
 					}
 					continue newInitialOverrideStrategy
 				}
@@ -122,7 +122,7 @@ newDeck:
 				//Initial Override Strategy logic
 				mC := moveCounter - 1 // for this part of the program a zero-based move counter is needed
 				//below:  example -> if length is 8, then this IF is satisfied for mc = 0, 1, 2, 3, 4, 5, 6 & 7
-				if mC > -1 && mC < length {
+				if mC > -1 && mC < cfg.PlayOrig.Length {
 					// below: & is bitwise AND which means look, bit by bit, at each operand result is 0 unless both bits are 1
 					// below: first operand is the strategy number which also expresses the strategy
 					// below: second operand is all zeros except the mC bit from the right.
@@ -135,21 +135,21 @@ newDeck:
 
 				b = moveMaker(b, selectedMove) //***Main Program Statement
 
-				//quickTestBoardCodeDeCode(b, deckNum, length, iOS, moveCounter)
+				//quickTestBoardCodeDeCode(b, deckNum, cfg.PlayOrig.Length, iOS, moveCounter)
 
 				//Detect Early Win
 				if detectWinEarly(b) {
-					earlyWinCounter++
-					winCounter++
-					attemptsAvoidedCounter = attemptsAvoidedCounter + numberOfStrategies - iOS
+					vPO.earlyWinCounter++
+					vPO.winCounter++
+					vPO.attemptsAvoidedCounter = vPO.attemptsAvoidedCounter + vPO.attemptsAvoidedCounter - iOS
 
-					if verbose > 0 {
+					if cfg.General.Verbose > 0 {
 						fmt.Printf("Deck %v, played using initialOverrideStrategy %v: Game won early after %v moves. \n", deckNum, iOS, mC)
 					}
-					if verbose > 1 {
+					if cfg.General.Verbose > 1 {
 						fmt.Printf("GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
-					if verbose > 1 {
+					if cfg.General.Verbose > 1 {
 						fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
 					}
 					continue newDeck
@@ -157,16 +157,16 @@ newDeck:
 
 				//Detects Win
 				if len(b.piles[0])+len(b.piles[1])+len(b.piles[2])+len(b.piles[3]) == 52 {
-					winCounter++
-					attemptsAvoidedCounter = attemptsAvoidedCounter + numberOfStrategies - iOS
+					vPO.winCounter++
+					vPO.attemptsAvoidedCounter = vPO.attemptsAvoidedCounter + vPO.numberOfStrategies - iOS
 
-					if verbose > 0 {
+					if cfg.General.Verbose > 0 {
 						fmt.Printf("Deck %v, played using initialOverrideStrategy %v: Game won after %v moves. \n", deckNum, iOS, mC)
 					}
-					if verbose > 1 {
+					if cfg.General.Verbose > 1 {
 						fmt.Printf("GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
-					if verbose > 1 {
+					if cfg.General.Verbose > 1 {
 						fmt.Printf("GameWon: Frequency of each moveType:\n%v\n", moveTypes)
 					}
 					continue newDeck
@@ -176,13 +176,13 @@ newDeck:
 					if moveCounter < 20 { // changed from < 20
 						priorBoardNullWaste = b
 					} else if reflect.DeepEqual(b, priorBoardNullWaste) {
-						if verbose > 1 {
+						if cfg.General.Verbose > 1 {
 							fmt.Printf("*****Loss detected after %v moves\n", moveCounter)
 						}
-						regularLosses++
-						if iOS == numberOfStrategies-1 {
+						vPO.regularLosses++
+						if iOS == vPO.numberOfStrategies-1 {
 							loss := []string{strconv.Itoa(deckNum), "regularLoss"}
-							losses = append(losses, loss)
+							vPO.losses = append(vPO.losses, loss)
 						}
 						continue newInitialOverrideStrategy
 					} else {
@@ -190,26 +190,28 @@ newDeck:
 					}
 				}
 			}
-			lossesAtGLL++
+			vPO.lossesAtGLL++
 			loss := []string{strconv.Itoa(deckNum), "lossAtGameLengthLimit"}
-			losses = append(losses, loss)
+			vPO.losses = append(vPO.losses, loss)
 
-			if verbose > 0 {
+			if cfg.General.Verbose > 0 {
 				fmt.Printf("Deck %v, played using Initial Override Strategy %v: Game not won\n", deckNum, iOS)
 			}
-			if verbose > 1 {
+			if cfg.General.Verbose > 1 {
 				fmt.Printf("Game Not Won:  Frequency of each moveType:\n%v\n", moveTypes)
 				fmt.Printf("Game Not Won: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 			}
 		}
 
 	}
+	fileName := "playOrigLosses-firstDeck-" +
+		strconv.Itoa(cfg.General.FirstDeckNum) +
 	fileName := "./playOrigLossesOutput/playOrigLosses-firstDeck-" +
-		strconv.Itoa(firstDeckNum) +
+		strconv.Itoa(cfg.General.FirstDeckNum) +
 		"-strategyLength-" +
-		strconv.Itoa(length) +
+		strconv.Itoa(cfg.PlayOrig.Length) +
 		"-numberOfDecks-" +
-		strconv.Itoa(numberOfDecksToBePlayed) +
+		strconv.Itoa(cfg.General.NumberOfDecksToBePlayed) +
 		".csv"
 	file, err := os.Create(fileName)
 	if err != nil {
@@ -223,57 +225,10 @@ newDeck:
 		}
 	}(file)
 	writer := csv.NewWriter(file)
-	err = writer.WriteAll(losses)
+	err = writer.WriteAll(vPO.losses)
 	if err != nil {
 		log.Println("Cannot write csv file:", err)
 	}
-	possibleAttempts := numberOfStrategies * numberOfDecksToBePlayed
-	lossCounter := numberOfDecksToBePlayed - winCounter
-	endTime := time.Now()
-	elapsedTime := endTime.Sub(startTime)
-	percentageAttemptsAvoided := 100.0 * float64(attemptsAvoidedCounter) / float64(possibleAttempts)
-	var p = message.NewPrinter(language.English)
-	fmt.Printf("\nDate & Time Completed is %v\n", endTime)
-	_, err = p.Printf("Number of Decks Played is %d, starting with Deck %d.\n", numberOfDecksToBePlayed, firstDeckNum)
-	if err != nil {
-		fmt.Println("Number of Decks Played cannot print")
-	}
-	fmt.Printf("Length of Initial Override Strategies is %d.\n", length)
-	fmt.Printf("Number of Initial Override Strategies Per Deck is %d.\n", numberOfStrategies)
-	_, err = p.Printf("Number of Possible Attempts is %d.\n", possibleAttempts)
-	if err != nil {
-		fmt.Println("Number of Possible Attempts cannot print")
-	}
-	averageElapsedTimePerDeck := float64(elapsedTime.Milliseconds()) / float64(numberOfDecksToBePlayed)
-	fmt.Printf("Elapsed Time is %v.\n", elapsedTime)
-	_, err = p.Printf("Total Decks Won is %d of which %d were Early Wins\n", winCounter, earlyWinCounter)
-	if err != nil {
-		fmt.Println("Total Decks Won cannot print")
-	}
-	_, err = p.Printf("Total Decks Lost is %d\n", lossCounter)
-	if err != nil {
-		fmt.Println("Total Decks Lost cannot print")
-	}
-	_, err = p.Printf("Losses at Game Length Limit is %d\n", lossesAtGLL)
-	if err != nil {
-		fmt.Println("Losses at Game Length Limit cannot print")
-	}
-	_, err = p.Printf("Losses at No Moves Available is %d\n", lossesAtNoMoves)
-	if err != nil {
-		fmt.Println("Losses at No Moves Available cannot print")
-	}
-	_, err = p.Printf("Regular Losses is %d\n", regularLosses)
-	if err != nil {
-		fmt.Println("Regular Losses cannot print")
-	}
-	_, err = p.Printf("Number of Attempts Avoided ia %d\n", attemptsAvoidedCounter)
-	if err != nil {
-		fmt.Println("Number of Attempts Avoided cannot print")
-	}
-	_, err = p.Printf("Percentage of Possible Attempts Avoided is %v\n", percentageAttemptsAvoided)
-	if err != nil {
-		fmt.Println("Percentage of Possible Attempts Avoided cannot print")
-	}
-	fmt.Printf("Average Elapsed Time per Deck is %vms.\n", averageElapsedTimePerDeck)
-
+	vPO.endTime = time.Now()
+	playOrigReport(vPO, cfg)
 }
