@@ -4,9 +4,9 @@ general:
   deck file name: DeckFiles/decks-0-1009999.csv
   decks: consecutive                               # consecutive or list or shuffle
   first deck number: 10                            # non-negative integer less than 10,000
-  number of decks to be played: 100                # positive integer no more than 10,000 minus first deck number
+  number of decks to be played: 1                  # positive integer no more than 10,000 minus first deck number
   list:                                            # not implemented
-  type of play: playOrig                           # playAll or playOrig    NOTE: playAll executes code in function playNew
+  type of play: playOrig                            # playAll or playOrig    NOTE: playAll executes code in function playNew
   verbose: 0                                       # non-negative integer
   outputTo: console                                # console OR filename (if file exists a sequence number will be added before the extension) not yet implemented
 
@@ -22,9 +22,9 @@ play all moves:
     find all winning strategies?: false            # true or false   true not yet implemented
 
     reporting:                                     # only one true or no trues permitted   non yaml     cfg.PlayNew.ReportingType.NoReporting set in code
-      deck by deck: true                           # true or false                                 =     cfg.PlayNew.ReportingType.DeckByDeck
+      deck by deck: false                          # true or false                                 =     cfg.PlayNew.ReportingType.DeckByDeck
       move by move: false                          # true or false                                    || cfg.PlayNew.ReportingType.MoveByMove
-      tree: false                                  # true or false                                    || cfg.PlayNew.ReportingType.Tree
+      tree: true                                   # true or false                                    || cfg.PlayNew.ReportingType.Tree
                                                    #                                                NOTE: || == OR (looks like forward slash due to italics)
     deck by deck reporting options:
         type: regular                              # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.DeckByDeck == false
@@ -33,13 +33,13 @@ play all moves:
         type: regular                              # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.MoveByMove == false
 
     tree reporting options:
-        type: regular                              # regular, narrow, very narrow   All 3 Ignored if cfg.PlayAll.ReportingType.Tree == false
+        type: narrow                              # regular, narrow, very narrow   All 3 Ignored if cfg.PlayAll.ReportingType.Tree == false
         sleep between moves: 0                     # non-negative integer, in tenths of seconds   Slow down so humans can follow
         sleep between strategies: 0                # non-negative integer, in tenths of seconds   Slow down so humans can follow
 
     restrict reporting to:
-      starting deck number: 0                      # 0 means no restriction
-      continue for how many decks: 0               # 0 means no restriction
+      starting deck number: 5                      # 0 means no restriction
+      continue for how many decks: 1               # 0 means no restriction
       starting move number: 0                      # 0 means no restriction
       continue for how many moves: 0               # 0 means no restriction
 

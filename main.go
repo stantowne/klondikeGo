@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"reflect"
 	"time"
 )
 
@@ -46,7 +47,18 @@ func main() {
 		cfg.PlayAll.RestrictReportingTo.MovesTriedContinueFor != 0 {
 		cfg.PlayAll.RestrictReporting = true
 	}
-	configPrint(cfg)
+	// print the program configuration
+
+	fields := reflect.TypeOf(cfg)
+	values := reflect.ValueOf(cfg)
+	num := fields.NumField()
+	for i := 0; i < num; i++ {
+		field := fields.Field(i)
+		value := values.Field(i)
+		fmt.Println(field.Name, value.Kind(), value.Interface())
+	}
+	// configPrint(cfg)
+
 	cfg.PlayAll.ProgressCounter *= 1_000_000
 	cfg.PlayAll.ProgressCounterLastPrintTime = time.Now()
 	fmt.Printf("\nCalling Program: %v\n\n", os.Args[0])

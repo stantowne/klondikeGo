@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"reflect"
+)
+
 func configPrint(c Configuration) {
 	_, _ = pfmt.Printf("General:\n"+
 		"            Number Of Decks To Be Played: %v\n"+
@@ -22,21 +27,20 @@ func configPrint(c Configuration) {
 			nOfS,
 			nOfS*c.General.NumberOfDecksToBePlayed,
 			c.PlayOrig.GameLengthLimit)
-	} else {
+	}
+
+	if c.General.TypeOfPlay == "playAll" {
 		if c.PlayAll.ReportingType.NoReporting {
 			_, _ = pfmt.Printf("No Deck-by-Deck, Move-by-Move or Tree Reporting\n")
 		} else {
 			if c.PlayAll.ReportingType.DeckByDeck {
 				_, _ = pfmt.Printf("Deck By Deck Reporting: \n"+
-					"                                           Type: %v\n",
+					"                                Type pe: %v\n",
 					c.PlayAll.DeckByDeckReportingOptions.Type)
-				if c.PlayAll.ProgressCounter != 0 {
-					_, _ = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", c.PlayAll.ProgressCounter)
-				}
 			}
 			if c.PlayAll.ReportingType.MoveByMove {
 				_, _ = pfmt.Printf("Move By Move Reporting: \n"+
-					"                                           Type: %v\n",
+					"                        Type: %v\n",
 					c.PlayAll.MoveByMoveReportingOptions.Type)
 				if c.PlayAll.ProgressCounter != 0 {
 					_, _ = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", c.PlayAll.ProgressCounter)
@@ -71,6 +75,22 @@ func configPrint(c Configuration) {
 	if c.General.TypeOfPlay == "playAll" {
 		_, _ = pfmt.Printf("\nGame Length Limit, in millions: %v\n",
 			c.PlayAll.GameLengthLimit)
+	}
+
+}
+
+func cprint(s struct{}) {
+	fields := reflect.TypeOf(s)
+	values := reflect.ValueOf(s)
+	num := fields.NumField()
+	for i := 0; i < num; i++ {
+		field := fields.Field(i)
+		value := values.Field(i)
+		if reflect.ValueOf(field).Field(i).Kind() == reflect.Struct {
+			cprint(reflect.ValueOf(field).Field(i).Kind())
+		} else {
+			fmt.Println(field.Name, value.Kind(), value.Interface())
+		}
 	}
 
 }
