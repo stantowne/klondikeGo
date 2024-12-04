@@ -16,6 +16,9 @@ import (
 // Setup pfmt to print thousands with commas
 var pfmt = message.NewPrinter(language.English)
 
+// Create the Short named package variable "oW" for cfg.General.outWriter
+var oW *os.File
+
 func main() {
 	// unmarshal YAML file
 	cfg := Configuration{}
@@ -65,10 +68,28 @@ func main() {
 		cfg.PlayAll.RestrictReportingTo.MovesTriedContinueFor != 0 {
 		cfg.PlayAll.RestrictReporting = true
 	}
-	configPrint(cfg)
+	configPrint(cfg) // Print FIRST time to stout
+
+	if cfg.General.OutputTo == "console" {
+		cfg.General.outWriter = os.Stdout
+	} else {
+		// create file
+		cfg.General.outWriter, err = os.Create(cfg.General.OutputTo + cfg.General.RunStartTime.Format("__2006.01.02_15.04.05_-0700") + ".txt")
+		if err != nil {
+			log.Fatal(err)
+		}
+		// remember to close the file
+		defer cfg.General.outWriter.Close()
+		configPrint(cfg) // Print SECOND time to file
+	}
+	// Fill the Short named package variable "oW" for cfg.General.outWriter
+	oW = cfg.General.outWriter
+
 	cfg.PlayAll.ProgressCounter *= 1_000_000
 	cfg.PlayAll.ProgressCounterLastPrintTime = time.Now()
-	fmt.Printf("\nCalling Program: %v\n\n", os.Args[0])
+
+	// Stan pls include these two statements into configPrint
+	fmt.Fprintf(oW, "\nCalling Program: %v\n\n", os.Args[0])
 	fmt.Printf("\nRun Start Time: %15s\n\n", cfg.General.RunStartTime.Format("2006.01.02  3:04:05 pm"))
 
 	inputFileName := cfg.General.DeckFileName

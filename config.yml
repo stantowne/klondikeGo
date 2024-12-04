@@ -3,13 +3,14 @@
 general:
   deck file name: ./DeckFiles/decks-0-409999.csv   # Note: forward slash /
   decks: consecutive                               # consecutive or list or shuffle
-  first deck number: 0                             # non-negative integer less than 410,000
-  number of decks to be played: 1000               # positive integer no more than 410,000 minus first deck number
+  first deck number: 5000                          # non-negative integer less than 410,000
+  number of decks to be played: 2000               # positive integer no more than 410,000 minus first deck number
   list:                                            # not implemented
   type of play: playAll                            # playAll or playOrig    NOTE: playAll executes code in function playNew
   verbose: 0                                       # non-negative integer
-  outputTo: console                                # console OR filename WITHOUT extension; ".txt" will be appended
-                                                   # See further comments at the end of this file.
+  outputTo: ./playAllPrintOutput/test              # console OR filename WITHOUT extension;
+                                                   # filename will be appended with a datetime stamp and extension ".txt"
+                                                   # ./playOrigLossesOutput/filename or ./playAllPrintOutput/filename is suggested
                                                    # NOT YET IMPLEMENTED
 
 play original:
@@ -56,7 +57,7 @@ play all moves:
 
   # Further comments regarding the outputTo filename:
 
-      # If filename does not start with a forward slash / then playOrig/ or playAll/ will be prepended
+      # filename will be appended with a datetime stamp and extension ".txt"
       #   a sequence number of the form _0000 will be appended (before the .txt)
       #   the 0000 will be incremented to the next available number for which no filename exists
       #   (i.e. if filename_0123 exists as the only filename with an ending of the form _0000

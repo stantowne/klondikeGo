@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"os"
+	"time"
+)
 
 type Configuration struct {
 	General struct {
@@ -15,7 +18,7 @@ type Configuration struct {
 		TypeOfPlay              string `yaml:"type of play"` // must be "playOrig" or "playAll"
 		Verbose                 int    `yaml:"verbose"`
 		OutputTo                string `yaml:"outputTo"`
-		OutputToFullFileName    string
+		outWriter               *os.File
 	} `yaml:"general"`
 	PlayOrig struct {
 		Length          int `yaml:"length of initial override strategy"`
