@@ -27,13 +27,15 @@ var moveBasePriorityOrig = map[string]int{
 	"moveDeuceUp":       200,
 	"move3PlusUp":       800,
 	"badMove":           1200, // a legal move which is worse than a mere flip
-	"flipSt->W Max-0":   9999, //flip MAX - 0 * 3 i.e. Up to 21 cards
-	"flipSt->W Max-1":   9999, //flip MAX - 0 * 3 i.e. Up to 18 cards
-	"flipSt->W Max-2":   9999, //flip MAX - 0 * 3 i.e. Up to 15 cards
-	"flipSt->W Max-3":   9999, //flip MAX - 0 * 3 i.e. Up to 12 cards
-	"flipSt->W Max-4":   9999, //flip MAX - 0 * 3 i.e. Up to  9 cards
-	"flipSt->W Max-5":   9999, //flip MAX - 0 * 3 i.e. Up to  6 cards
-	"flipSt->W Max-6":   9999, //flip MAX - 0 * 3 i.e. Up to  3 cards
+	"flipSt->W Max-0":   9990, //flip MAX - (0 * 3)    i.e. Up to 24 cards    where MAX = len(stock) + len(waste)   Suggest flip waste=>stock then flip cards
+	"flipSt->W Max-1":   9991, //flip MAX - (1 * 3)    i.e. Up to 21 cards
+	"flipSt->W Max-2":   9992, //flip MAX - (2 * 3)    i.e. Up to 18 cards    where 999 > priority of any moves that are beteen columns
+	"flipSt->W Max-3":   9993, //flip MAX - (3 * 3)    i.e. Up to 15 cards                ????or that expose a new column card ????
+	"flipSt->W Max-4":   9994, //flip MAX - (4 * 3)    i.e. Up to 12 cards              < priority of moves not in >
+	"flipSt->W Max-5":   9995, //flip MAX - (5 * 3)    i.e. Up to  9 cards    ONLY When mod(len(stock)) == 0
+	"flipSt->W Max-6":   9996, //flip MAX - (6 * 3)    i.e. Up to  6 cards
+	"flipSt->W Max-7":   9997, //flip MAX - (7 * 3)    i.e. Up to  3 cards
+
 }
 
 var moveBasePriorityAll = map[string]int{
@@ -49,13 +51,15 @@ var moveBasePriorityAll = map[string]int{
 	"moveDeuceUp":       200,
 	"move3PlusUp":       800,
 	"badMove":           1200, // a legal move which is worse than a mere flip
-	"flipSt->W Max-0":   9999, //flip MAX - 0 * 3 i.e. Up to 21 cards
-	"flipSt->W Max-1":   9999, //flip MAX - 0 * 3 i.e. Up to 18 cards
-	"flipSt->W Max-2":   9999, //flip MAX - 0 * 3 i.e. Up to 15 cards
-	"flipSt->W Max-3":   9999, //flip MAX - 0 * 3 i.e. Up to 12 cards
-	"flipSt->W Max-4":   9999, //flip MAX - 0 * 3 i.e. Up to  9 cards
-	"flipSt->W Max-5":   9999, //flip MAX - 0 * 3 i.e. Up to  6 cards
-	"flipSt->W Max-6":   9999, //flip MAX - 0 * 3 i.e. Up to  3 cards
+	"flipSt->W Max-0":   9990, //flip MAX - (0 * 3)    i.e. Up to 24 cards    where MAX = len(stock) + len(waste)   Suggest flip waste=>stock then flip cards
+	"flipSt->W Max-1":   9991, //flip MAX - (1 * 3)    i.e. Up to 21 cards
+	"flipSt->W Max-2":   9992, //flip MAX - (2 * 3)    i.e. Up to 18 cards    where 999 > priority of any moves that are beteen columns
+	"flipSt->W Max-3":   9993, //flip MAX - (3 * 3)    i.e. Up to 15 cards                ????or that expose a new column card ????
+	"flipSt->W Max-4":   9994, //flip MAX - (4 * 3)    i.e. Up to 12 cards              < priority of moves not in >
+	"flipSt->W Max-5":   9995, //flip MAX - (5 * 3)    i.e. Up to  9 cards    ONLY When mod(len(stock)) == 0
+	"flipSt->W Max-6":   9996, //flip MAX - (6 * 3)    i.e. Up to  6 cards
+	"flipSt->W Max-7":   9997, //flip MAX - (7 * 3)    i.e. Up to  3 cards
+
 }
 
 // ANY CHANGES IN THESE MUST BE MADE IN moveShortName8 BELOW!!!!!!!!!!!!!
@@ -72,13 +76,14 @@ var moveShortName = map[string]string{
 	"moveDeuceUp":       " 2 Up ",
 	"move3PlusUp":       " 3+Up ",
 	"badMove":           "badMve", // a legal move which is worse than a mere flip
-	"flipSt->W Max-0":   "S>W M0", //flip MAX - 0 * 3 i.e. Up to 21 cards
-	"flipSt->W Max-1":   "S>W M1", //flip MAX - 0 * 3 i.e. Up to 18 cards
-	"flipSt->W Max-2":   "S>W M2", //flip MAX - 0 * 3 i.e. Up to 15 cards
-	"flipSt->W Max-3":   "S>W M3", //flip MAX - 0 * 3 i.e. Up to 12 cards
-	"flipSt->W Max-4":   "S>W M4", //flip MAX - 0 * 3 i.e. Up to  9 cards
-	"flipSt->W Max-5":   "S>W M5", //flip MAX - 0 * 3 i.e. Up to  6 cards
-	"flipSt->W Max-6":   "S>W M6", //flip MAX - 0 * 3 i.e. Up to  3 cards
+	"flipSt->W Max-0":   "S>W M0",
+	"flipSt->W Max-1":   "S>W M1",
+	"flipSt->W Max-2":   "S>W M2",
+	"flipSt->W Max-3":   "S>W M3",
+	"flipSt->W Max-4":   "S>W M4",
+	"flipSt->W Max-5":   "S>W M5",
+	"flipSt->W Max-6":   "S>W M6",
+	"flipSt->W Max-7":   "S>W M7",
 }
 
 // ANY CHANGES IN THESE MUST BE MADE IN moveShortName ABOVE!!!!!!!!!!!!
@@ -97,13 +102,14 @@ var moveShortName8 = map[string]string{
 	"moveDeuceUp":       "  2 Up  ",
 	"move3PlusUp":       "  3+Up  ",
 	"badMove":           " badMve ", // a legal move which is worse than a mere flip
-	"flipSt->W Max-0":   " S>W M0 ", //flip MAX - 0 * 3 i.e. Up to 21 cards
-	"flipSt->W Max-1":   " S>W M1 ", //flip MAX - 0 * 3 i.e. Up to 18 cards
-	"flipSt->W Max-2":   " S>W M2 ", //flip MAX - 0 * 3 i.e. Up to 15 cards
-	"flipSt->W Max-3":   " S>W M3 ", //flip MAX - 0 * 3 i.e. Up to 12 cards
-	"flipSt->W Max-4":   " S>W M4 ", //flip MAX - 0 * 3 i.e. Up to  9 cards
-	"flipSt->W Max-5":   " S>W M5 ", //flip MAX - 0 * 3 i.e. Up to  6 cards
-	"flipSt->W Max-6":   " S>W M6 ", //flip MAX - 0 * 3 i.e. Up to  3 cards
+	"flipSt->W Max-0":   " S>W M0 ",
+	"flipSt->W Max-1":   " S>W M1 ",
+	"flipSt->W Max-2":   " S>W M2 ",
+	"flipSt->W Max-3":   " S>W M3 ",
+	"flipSt->W Max-4":   " S>W M4 ",
+	"flipSt->W Max-5":   " S>W M5 ",
+	"flipSt->W Max-6":   " S>W M6 ",
+	"flipSt->W Max-7":   " S>W M7 ",
 }
 
 // Used to record how many of each move type is executed during an attempt.
@@ -127,4 +133,4 @@ var moveTypes = map[string]int{
 	"flipSt->W Max-4":   0,
 	"flipSt->W Max-5":   0,
 	"flipSt->W Max-6":   0,
-}
+	"flipSt->W Max-7":   0}
