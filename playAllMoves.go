@@ -160,7 +160,7 @@ func playAllMoves(bIn board,
 		if cfg.PlayAll.ProgressCounter > 0 && math.Mod(float64(vPA.TD.mvsTried+vPA.AD.mvsTried), float64(cfg.PlayAll.ProgressCounter)) <= 0.1 {
 			//avgRepTime := time.Since(vPA.ADother.startTime) / time.Duration((vPA.TD.mvsTried+vPA.AD.mvsTried)/cfg.PlayAll.ProgressCounter)
 			estMaxRemTimeTD := time.Since(vPA.ADother.startTime) * time.Duration((cfg.PlayAll.GameLengthLimit*1_000_000 - vPA.TD.mvsTried)) / time.Duration(vPA.TD.mvsTried+vPA.AD.mvsTried)
-			estMaxRemTimeAD := time.Since(vPA.ADother.startTime) * time.Duration(float64(cfg.General.NumberOfDecksToBePlayed)-(float64(deckNum-cfg.General.FirstDeckNum)+.5)) / time.Duration(float64(deckNum-cfg.General.FirstDeckNum)+.5)
+			estMaxRemTimeAD := time.Since(vPA.ADother.startTime) * time.Duration(cfg.General.NumberOfDecksToBePlayed-(deckNum-cfg.General.FirstDeckNum+1)) / time.Duration(deckNum-cfg.General.FirstDeckNum+1)
 			_, _ = pfmt.Printf("\rDk: %5d   ____   MvsTriedAD: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s" /* + "  SinceLast: %6s  AvgBtwProgress: %6s"*/ +"   estRemTD: %7s  estRemAD: %7s\r", deckNum, vPA.TD.mvsTried+vPA.AD.mvsTried, moveNum, vPA.TDotherSQL.moveNumMax, vPA.TD.stratNum, len(vPA.TDother.priorBoards), time.Since(vPA.TDother.startTime).Truncate(100*time.Millisecond).String() /*time.Since(vPA.TDother.lastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), */, estMaxRemTimeTD.Truncate(100*time.Millisecond), estMaxRemTimeAD.Truncate(100*time.Millisecond))
 			vPA.TDother.lastPrintTime = time.Now()
 		}

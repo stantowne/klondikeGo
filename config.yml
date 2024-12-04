@@ -4,7 +4,7 @@ general:
   deck file name: ./DeckFiles/decks-0-409999.csv   # Note: forward slash /
   decks: consecutive                               # consecutive or list or shuffle
   first deck number: 0                             # non-negative integer less than 410,000
-  number of decks to be played: 5000               # positive integer no more than 410,000 minus first deck number
+  number of decks to be played: 1000               # positive integer no more than 410,000 minus first deck number
   list:                                            # not implemented
   type of play: playAll                            # playAll or playOrig    NOTE: playAll executes code in function playNew
   verbose: 0                                       # non-negative integer
@@ -46,7 +46,7 @@ play all moves:
       continue for how many moves: 0               # 0 means no restriction
 
     print winning moves: false                     # true or false
-    progress counter in millions: 3
+    progress counter in millions: 1
 
     print final deck by deck W/L record: true      # true or false
 
