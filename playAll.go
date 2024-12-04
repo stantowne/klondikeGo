@@ -242,7 +242,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	_, _ = pfmt.Printf("\n          Decks Played: %6d", vPA.ADother.decksPlayed)
 	_, _ = pfmt.Printf("\n             Decks Won: %6d   %4v%%", vPA.ADother.decksWon, roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed, 1))
 	_, _ = pfmt.Printf("\n            Decks Lost: %6d   %4v%%", vPA.ADother.decksLost, roundFloatIntDiv(vPA.ADother.decksLost*100, vPA.ADother.decksPlayed, 1))
-	_, _ = pfmt.Printf("\n         Decks LostGLE: %6d   %4v%%", vPA.ADother.decksLostGLE, roundFloatIntDiv(vPA.ADother.decksLost*100, vPA.ADother.decksPlayed, 1))
+	_, _ = pfmt.Printf("\n         Decks LostGLE: %6d   %4v%%", vPA.ADother.decksLostGLE, roundFloatIntDiv(vPA.ADother.decksLostGLE*100, vPA.ADother.decksPlayed, 1))
 	_, _ = pfmt.Printf("\n  Decks Lost + LostGLE: %6d   %4v%%", vPA.ADother.decksLostGLE, roundFloatIntDiv((vPA.ADother.decksLost+vPA.ADother.decksLostGLE)*100, vPA.ADother.decksPlayed, 1))
 
 	statisticsPrint(&vPA.AD, "AD")
