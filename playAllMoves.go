@@ -36,8 +36,8 @@ func playAllMoves(bIn board,
 	var recurReturnV1 string
 	var recurReturnNum int
 
-	if moveNum > vPA.TD.moveNumMax {
-		vPA.TD.moveNumMax = moveNum
+	if moveNum > vPA.TDotherSQL.moveNumMax {
+		vPA.TDotherSQL.moveNumMax = moveNum
 	}
 
 	// Check to see if the gameLengthLimit has been exceeded.
@@ -48,9 +48,9 @@ func playAllMoves(bIn board,
 			0,
 			deckNum,
 			moveNum,
-			"MbM_R",
+			"MbM_ANY",
 			2,
-			"\n  GLE: Game Length of: %v exceeds limit: %v\n",
+			"GLE: Game Length of: %v exceeds limit: %v\n",
 			strconv.Itoa(vPA.TD.mvsTried),
 			strconv.Itoa(cfg.PlayAll.GameLengthLimit*1_000_000),
 			cfg,
@@ -87,8 +87,7 @@ func playAllMoves(bIn board,
 		// Possible increment to vPA.TD.stratNum
 		if i != 0 {
 			// Started at 0 in playAll for each deck.  Increment each time a second through nth move is made
-			//     That way strategy 0 is the "All Best Moves" strategy.  It is also why in playNew aMStratTriedAllDecks
-			//     is incremented by vPA.TD.stratNum + 1 after each deck.
+			//     That way strategy 0 is the "All Best Moves" strategy.
 			vPA.TD.stratNum++
 			vPA.TD.stratTried++
 		}
@@ -104,23 +103,22 @@ func playAllMoves(bIn board,
 			//   the board will already have been checked (when i == 0 {past tense})
 			bNewBcode := bIn.boardCode(deckNum) //  Just use the array itself
 			// Have we seen this board before?
-			if vPA.priorBoards[bNewBcode] {
+			if vPA.TDother.priorBoards[bNewBcode] {
 				// OK we did see it before so return to try next available move (if any) in aMoves[] aka strategy
 				vPA.TD.stratLossesRB++
-				prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_R", 2, "\n  RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.\n", "", "", cfg, vPA)
-				prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_SorMBM_VS", 2, "   RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.", "", "", cfg, vPA)
+				prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_ANY", 2, "RB: Repetitive Board - \"Next Move\" yielded a repeat of a board.", "", "", cfg, vPA)
 				prntMDetTreeReturnComment(" ==> RB", deckNum, recurReturnNum, cfg, vPA)
 				return "RB", recurReturnNum + 1 // Repetitive Board
 			} else {
-				// Remember the board state by putting it into the map "vPA.priorBoards"
-				vPA.priorBoards[bNewBcode] = true
+				// Remember the board state by putting it into the map "vPA.TDother.priorBoards"
+				vPA.TDother.priorBoards[bNewBcode] = true
 			}
 		}
 
 		// Check if No Moves Available
 		if i == 0 && aMoves[0].name == "No Moves Available" {
 			vPA.TD.stratLossesNMA++
-			prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_R", 2, "  NMA: No Moves Available: Strategy Lost %v%v\n", "", "", cfg, vPA)
+			prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_ANY", 2, "NMA: No Moves Available: Strategy Lost %v%v\n", "", "", cfg, vPA)
 			prntMDetTreeReturnComment(" ==> NMA", deckNum, recurReturnNum, cfg, vPA)
 			return "NMA", recurReturnNum + 1
 		}
@@ -139,7 +137,7 @@ func playAllMoves(bIn board,
 			*/
 
 			prntMDetTreeReturnComment(" ==> DECK WON", deckNum, recurReturnNum, cfg, vPA)
-			vPA.TD.moveNumAtWin = moveNum
+			vPA.TDotherSQL.moveNumAtWin = moveNum
 			return "SW", recurReturnNum + 1 //  Strategy Win
 		}
 
@@ -160,10 +158,11 @@ func playAllMoves(bIn board,
 		prntMDet(bNew, aMoves, i, deckNum, moveNum, "MbM_S", 2, "     bNew: %v", "", "", cfg, vPA)
 
 		if cfg.PlayAll.ProgressCounter > 0 && math.Mod(float64(vPA.TD.mvsTried+vPA.AD.mvsTried), float64(cfg.PlayAll.ProgressCounter)) <= 0.1 {
-			avgRepTime := time.Since(vPA.TDother.startTime) / time.Duration(vPA.TD.mvsTried+vPA.AD.mvsTried/cfg.PlayAll.ProgressCounter)
-			estMaxRemTimeTD := time.Since(vPA.TDother.startTime) * time.Duration((cfg.PlayAll.GameLengthLimit*1_000_000-vPA.TD.mvsTried+vPA.AD.mvsTried)/vPA.TD.mvsTried+vPA.AD.mvsTried)
-			_, _ = pfmt.Printf("\rDk: %5d   ____   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s  SinceLast: %6s  Avg: %6s  estMaxRem: %7s\r", deckNum, vPA.TD.mvsTried+vPA.AD.mvsTried, moveNum, vPA.TD.moveNumMax, vPA.TD.stratNum, len(vPA.priorBoards), time.Since(vPA.TDother.startTime).Truncate(100*time.Millisecond).String(), time.Since(vPA.TDother.startTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), estMaxRemTimeTD.Truncate(1*time.Minute))
-			//lastPrintTime := time.Now()   ???????????
+			//avgRepTime := time.Since(vPA.ADother.startTime) / time.Duration((vPA.TD.mvsTried+vPA.AD.mvsTried)/cfg.PlayAll.ProgressCounter)
+			estMaxRemTimeTD := time.Since(vPA.ADother.startTime) * time.Duration((cfg.PlayAll.GameLengthLimit*1_000_000 - vPA.TD.mvsTried)) / time.Duration(vPA.TD.mvsTried+vPA.AD.mvsTried)
+			estMaxRemTimeAD := time.Since(vPA.ADother.startTime) * time.Duration(float64(cfg.General.NumberOfDecksToBePlayed)-(float64(deckNum-cfg.General.FirstDeckNum)+.5)) / time.Duration(float64(deckNum-cfg.General.FirstDeckNum)+.5)
+			_, _ = pfmt.Printf("\rDk: %5d   ____   MvsTriedAD: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s" /* + "  SinceLast: %6s  AvgBtwProgress: %6s"*/ +"   estRemTD: %7s  estRemAD: %7s\r", deckNum, vPA.TD.mvsTried+vPA.AD.mvsTried, moveNum, vPA.TDotherSQL.moveNumMax, vPA.TD.stratNum, len(vPA.TDother.priorBoards), time.Since(vPA.TDother.startTime).Truncate(100*time.Millisecond).String() /*time.Since(vPA.TDother.lastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), */, estMaxRemTimeTD.Truncate(100*time.Millisecond), estMaxRemTimeAD.Truncate(100*time.Millisecond))
+			vPA.TDother.lastPrintTime = time.Now()
 		}
 
 		// ********** 2nd of the 2 MOST IMPORTANT statements in this function:  ******************************
@@ -173,7 +172,7 @@ func playAllMoves(bIn board,
 
 		if recurReturnV1 == "SW" {
 			// save winning moves into a slice in reverse
-			vPA.TD.winningMoves = append(vPA.TD.winningMoves, aMoves[i])
+			vPA.TDother.winningMoves = append(vPA.TDother.winningMoves, aMoves[i])
 			return recurReturnV1, recurReturnNum + 1 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
 		}
 		if recurReturnV1 == "GLE" {
@@ -220,6 +219,18 @@ func prntMDetTestRange(deckNum int, cfg *Configuration, vPA *variablesSpecificTo
 	}
 }
 
+func prntMDetTestDeckRange(deckNum int, cfg *Configuration) bool {
+	deckRangeOK := false
+	if cfg.PlayAll.RestrictReportingTo.DeckStartVal == 0 && cfg.PlayAll.RestrictReportingTo.DeckContinueFor == 0 {
+		deckRangeOK = true
+	} else {
+		if deckNum >= cfg.PlayAll.RestrictReportingTo.DeckStartVal && (cfg.PlayAll.RestrictReportingTo.DeckContinueFor == 0 || deckNum < cfg.PlayAll.RestrictReportingTo.DeckStartVal+cfg.PlayAll.RestrictReportingTo.DeckContinueFor) {
+			deckRangeOK = true
+		}
+	}
+	return deckRangeOK
+}
+
 func prntMDet(b board,
 	aMoves []move,
 	nextMove int,
@@ -240,24 +251,34 @@ func prntMDet(b board,
 	if !cfg.PlayAll.RestrictReporting || prntMDetTestRange(dN, cfg, vPA) {
 		switch {
 		case pTypeIn == "MbM_ANY" && cfg.PlayAll.ReportingType.MoveByMove && variant == 1: // for "MbM_R", "MbM_S", "MbM_VS"
-			if cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular" {
+			if cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular" && !(mN == 0 && nextMove == 0) {
 				fmt.Printf("\n****************************************\n")
 			}
-			_, _ = pfmt.Printf("\nDeck: %v   Move: %v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v   Elapsed ADs: %v",
+			_, _ = pfmt.Printf("\nDeck: %v   Move: %3v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v",
 				dN,
 				mN,
 				vPA.TD.stratNum,
 				vPA.TD.mvsTried,
-				len(vPA.priorBoards),
-				time.Since(vPA.AD.startTime),
-				time.Since(vPA.TDother.startTime))
-			if cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular" {
+				len(vPA.TDother.priorBoards),
+				time.Since(vPA.TDother.startTime),
+			)
+			if cfg.PlayAll.MoveByMoveReportingOptions.Type != "regular" {
+				pM1, pM2 := printMove(aMoves[nextMove], true)
+				fmt.Printf("    Next Move: %s   %s", pM1, strings.TrimSpace(pM2))
+			}
+			if cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular" || (mN == 0 && nextMove == 0) {
 				fmt.Printf("\n")
 				printBoard(b)
 			}
-		case pTypeIn == "MbM_R" && cfg.PlayAll.ReportingType.MoveByMove && cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular" && variant == 2: // for "MbM_R"
+		case pTypeIn == "MbM_R" && cfg.PlayAll.ReportingType.MoveByMove && variant == 2 && cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular": // for "MbM_R"
+			_, _ = pfmt.Printf("\n   "+comment, s1, s2)
+		case pTypeIn == "MbM_SorMBM_VS" && cfg.PlayAll.ReportingType.MoveByMove && variant == 2: // for "MbM_R", "MbM_S", "MbM_VS"
 			// comment must have 2 %v in it
-			_, _ = pfmt.Printf(comment, s1, s2)
+			if cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular" {
+				fmt.Printf("\n")
+			}
+			_, _ = pfmt.Printf("   "+comment, s1, s2)
+
 		case pTypeIn == "MbM_SorMBM_VS" && cfg.PlayAll.ReportingType.MoveByMove && cfg.PlayAll.MoveByMoveReportingOptions.Type != "regular" && variant == 2: // for "MbM_R"
 			// comment must have 2 %v in it
 			_, _ = pfmt.Printf(comment, s1, s2)
@@ -276,23 +297,37 @@ func prntMDet(b board,
 					fmt.Printf(pad + "<- Next Move")
 				}
 				if len(pM2) > 0 {
-					fmt.Printf("%s", pM2)
+					fmt.Printf("\n                           %s", pM2)
 				}
 
 				fmt.Printf("\n")
 			}
 		/*case cfg.PlayAll.ReportingType.MoveByMove && pTypeIn == "MbM_SorMBM_VS" && (cfg.PlayAll.MoveByMoveReportingOptions.Type == "short" || cfg.PlayAll.MoveByMoveReportingOptions.Type == "very short") && variant == 1: // for "MbM_S" or "MbM_VS"
-		_, _ = pfmt.Printf(comment, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.priorBoards), time.Since(vPA.AD.startTime), time.Since(vPA.TDother.startTime))
-		_, _ = pfmt.Printf(comment, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.priorBoards), time.Since(vPA.AD.startTime), time.Since(vPA.TDother.startTime))
+		_, _ = pfmt.Printf(comment, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.TDother.priorBoards), time.Since(vPA.ADother.startTime), time.Since(vPA.TDother.startTime))
+		_, _ = pfmt.Printf(comment, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.TDother.priorBoards), time.Since(vPA.ADother.startTime), time.Since(vPA.TDother.startTime))
 		*/
 		case cfg.PlayAll.ReportingType.MoveByMove && pTypeIn == "MbM_S" && cfg.PlayAll.MoveByMoveReportingOptions.Type == "short" && variant == 2:
 			_, _ = pfmt.Printf(comment, b)
-		case pTypeIn == "DbDorMbM" && (cfg.PlayAll.ReportingType.MoveByMove || cfg.PlayAll.ReportingType.DeckByDeck) && variant == 1: //   formerly "NOTX"
-			_, _ = pfmt.Printf(comment, s1, s2, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.priorBoards), time.Since(vPA.AD.startTime), time.Since(vPA.TDother.startTime))
+		//case pTypeIn == "DbDorMbM" && (cfg.PlayAll.ReportingType.MoveByMove || cfg.PlayAll.ReportingType.DeckByDeck) && variant == 1: //   formerly "NOTX"
+		//	_, _ = pfmt.Printf(comment, s1, s2, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.TDother.priorBoards), time.Since(vPA.ADother.startTime), time.Since(vPA.TDother.startTime))
 		case pTypeIn == "DbDorMbM" && (cfg.PlayAll.ReportingType.MoveByMove || cfg.PlayAll.ReportingType.DeckByDeck) && variant == 2: //   formerly "NOTX"
 			_, _ = pfmt.Printf(comment, s1, s2)
 		}
 	}
+	// End of Deck Reporting Restrictions only on Deck Number
+	if pTypeIn == "ANY" && prntMDetTestDeckRange(dN, cfg) && !cfg.PlayAll.ReportingType.NoReporting {
+		if cfg.PlayAll.ReportingType.DeckByDeck && cfg.PlayAll.DeckByDeckReportingOptions.Type == "regular" ||
+			cfg.PlayAll.ReportingType.MoveByMove && cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular" ||
+			cfg.PlayAll.ReportingType.Tree && cfg.PlayAll.TreeReportingOptions.Type == "regular" {
+			_, _ = pfmt.Printf(" \n\nDECK: %v%s    Result Codes: %v", dN, s1, s2) // !!! Initial Blank Required in case ProgressCounter last printed
+			statisticsPrint(&vPA.TD, "")
+			TDotherSQLPrint(&vPA.TDotherSQL)
+		} else {
+			statisticsPrintOneLine(vPA, dN, s1, cfg.General.FirstDeckNum, cfg.General.NumberOfDecksToBePlayed)
+		}
+
+	}
+
 }
 
 func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg *Configuration, vPA *variablesSpecificToPlayAll) {
@@ -311,7 +346,7 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg *Con
 
 	if cfg.PlayAll.ReportingType.Tree && (!cfg.PlayAll.RestrictReporting || prntMDetTestRange(dN, cfg, vPA)) {
 		if mN == 0 && nextMove == 0 {
-			_, _ = pfmt.Printf("\n\n Deck: %v\n\n", dN)
+			_, _ = pfmt.Printf("\n\n Deck: %v\n", dN)
 			printBoard(b)
 			if cfg.PlayAll.TreeReportingOptions.Type == "regular" {
 				fmt.Printf("\n       Move # ==>")

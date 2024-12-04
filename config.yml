@@ -1,14 +1,16 @@
 #config.yml
 
 general:
-  deck file name: DeckFiles/decks-0-1009999.csv
+  deck file name: ./DeckFiles/decks-0-409999.csv   # Note: forward slash /
   decks: consecutive                               # consecutive or list or shuffle
-  first deck number: 10                            # non-negative integer less than 10,000
-  number of decks to be played: 100                # positive integer no more than 10,000 minus first deck number
+  first deck number: 400490                        # non-negative integer less than 410,000
+  number of decks to be played: 2                  # positive integer no more than 410,000 minus first deck number
   list:                                            # not implemented
-  type of play: playOrig                           # playAll or playOrig    NOTE: playAll executes code in function playNew
+  type of play: playAll                            # playAll or playOrig    NOTE: playAll executes code in function playNew
   verbose: 0                                       # non-negative integer
-  outputTo: console                                # console OR filename (if file exists a sequence number will be added before the extension) not yet implemented
+  outputTo: console                                # console OR filename WITHOUT extension; ".txt" will be appended
+                                                   # See further comments at the end of this file.
+                                                   # NOT YET IMPLEMENTED
 
 play original:
   length of initial override strategy: 8           # non-negative integer
@@ -17,15 +19,15 @@ play original:
 
 
 play all moves:
-    game length limit in million moves tried: 400  # IN MILLIONS non-negative integer
+    game length limit in million moves tried: 1    # IN MILLIONS non-negative integer
 
     find all winning strategies?: false            # true or false   true not yet implemented
 
-    reporting:                                     # only one true or no trues permitted   non yaml     cfg.PlayNew.ReportingType.NoReporting set in code
-      deck by deck: true                           # true or false                                 =     cfg.PlayNew.ReportingType.DeckByDeck
-      move by move: false                          # true or false                                    || cfg.PlayNew.ReportingType.MoveByMove
-      tree: false                                  # true or false                                    || cfg.PlayNew.ReportingType.Tree
-                                                   #                                                NOTE: || == OR (looks like forward slash due to italics)
+    reporting:                                     # only one true or no trues permitted   non yaml       cfg.PlayNew.ReportingType.NoReporting set in code
+      deck by deck: false                          # true or false                                   =    cfg.PlayNew.ReportingType.DeckByDeck
+      move by move: true                           # true or false                                     || cfg.PlayNew.ReportingType.MoveByMove
+      tree: false                                  # true or false                                     || cfg.PlayNew.ReportingType.Tree
+                                                   #                                             NOTE: || == OR (looks like forward slash due to italics)
     deck by deck reporting options:
         type: regular                              # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.DeckByDeck == false
 
@@ -43,10 +45,19 @@ play all moves:
       starting move number: 0                      # 0 means no restriction
       continue for how many moves: 0               # 0 means no restriction
 
-    print winning moves: true                      # true or false
+    print winning moves: false                     # true or false
     progress counter in millions: 3
 
     print final deck by deck W/L record: true      # true or false
 
     save results to SQL: false                     # true or false
     sql connection string: "test"
+
+
+  # Further comments regarding the outputTo filename:
+
+      # If filename does not start with a forward slash / then playOrig/ or playAll/ will be prepended
+      #   a sequence number of the form _0000 will be appended (before the .txt)
+      #   the 0000 will be incremented to the next available number for which no filename exists
+      #   (i.e. if filename_0123 exists as the only filename with an ending of the form _0000
+      #   then filename 0124 will be used (NOT filename_0000)

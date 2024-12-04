@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"runtime/debug"
 	"time"
 )
 
@@ -18,8 +19,8 @@ var pfmt = message.NewPrinter(language.English)
 func main() {
 	// unmarshal YAML file
 	cfg := Configuration{}
-	cfg.RunStartTime = time.Now()
-	cfg.GitVersion = "" // Stan we need to figure out how to get this
+	cfg.General.RunStartTime = time.Now()
+	cfg.General.GitVersion = "" // Stan we need to figure out how to get this
 	data, err := os.ReadFile("./config.yml")
 	if err != nil {
 		panic(err)
@@ -28,6 +29,24 @@ func main() {
 		panic(err)
 	}
 	//I need to confirm that, by virtue of no error being returned, we know that all bools have valid values.
+
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for _, setting := range info.Settings {
+			if setting.Key == "vcs.revision" {
+				//fmt.Println("Commit Hash:", setting.Value)
+				cfg.General.GitVersion = setting.Value // Stan we need to figure out how to get this
+				break
+			}
+		}
+	}
+	hostname, err := os.Hostname()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	//fmt.Printf("Hostname: %s", hostname)
+	cfg.General.GitSystem = hostname
+
 	cfg.PlayAll.ReportingType.NoReporting =
 		!(cfg.PlayAll.ReportingType.DeckByDeck ||
 			cfg.PlayAll.ReportingType.MoveByMove ||
@@ -50,7 +69,7 @@ func main() {
 	cfg.PlayAll.ProgressCounter *= 1_000_000
 	cfg.PlayAll.ProgressCounterLastPrintTime = time.Now()
 	fmt.Printf("\nCalling Program: %v\n\n", os.Args[0])
-	fmt.Printf("\nRun Start Time: %15s\n\n", cfg.RunStartTime.Format("2006.01.02  3:04:05 pm"))
+	fmt.Printf("\nRun Start Time: %15s\n\n", cfg.General.RunStartTime.Format("2006.01.02  3:04:05 pm"))
 
 	inputFileName := cfg.General.DeckFileName
 	file, err := os.Open(inputFileName)

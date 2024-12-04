@@ -6,3 +6,5 @@ require (
 	golang.org/x/text v0.17.0
 	gopkg.in/yaml.v3 v3.0.1
 )
+
+require github.com/floscodes/golang-thousands v0.0.0-20240704072358-5a49076b1878 // indirect

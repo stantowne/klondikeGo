@@ -205,7 +205,7 @@ newDeck:
 
 	}
 	if cfg.General.Verbose > 2 {
-		fileName := "./playOrigLossesOutput/playOrigLosses-firstDeck-" +
+		fileName := "../playOrigLossesOutput/playOrigLosses-firstDeck-" +
 			strconv.Itoa(cfg.General.FirstDeckNum) +
 			"-strategyLength-" +
 			strconv.Itoa(cfg.PlayOrig.Length) +

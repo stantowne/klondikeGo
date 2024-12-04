@@ -3,18 +3,19 @@ package main
 import "time"
 
 type Configuration struct {
-	RunStartTime time.Time
-	GitVersion   string // Stan I figured out how to do this and will write it tomorrow
-	GitSystem    string // The machine this was run on - the version number will likely only exist on this machine
-	General      struct {
+	General struct {
+		RunStartTime            time.Time
+		GitVersion              string // Hash of latest commit
+		GitSystem               string // The machine this was run on - the version number will likely only exist on this machine
 		DeckFileName            string `yaml:"deck file name"`
 		Decks                   string `yaml:"decks"`                        // must be "consecutive" or "list"
 		FirstDeckNum            int    `yaml:"first deck number"`            // must be non-negative integer
 		NumberOfDecksToBePlayed int    `yaml:"number of decks to be played"` //must be non-negative integer
-		List                    []int
+		List                    []int  // `yaml:"list"`
 		TypeOfPlay              string `yaml:"type of play"` // must be "playOrig" or "playAll"
 		Verbose                 int    `yaml:"verbose"`
 		OutputTo                string `yaml:"outputTo"`
+		OutputToFullFileName    string
 	} `yaml:"general"`
 	PlayOrig struct {
 		Length          int `yaml:"length of initial override strategy"`

@@ -1,3 +1,5 @@
+github.com/floscodes/golang-thousands v0.0.0-20240704072358-5a49076b1878 h1:OT8ILy7nqVSUGU5NtaX1494iHKV5+w0gJue/RgAJV04=
+github.com/floscodes/golang-thousands v0.0.0-20240704072358-5a49076b1878/go.mod h1:pucKZ1dSTOcg/FjqrlevSJCvrzbqJgmu9SPVSUWJWjA=
 golang.org/x/text v0.17.0 h1:XtiM5bkSOt+ewxlOE/aE/AKEHibwj/6gvWMl9Rsh0Qc=
 golang.org/x/text v0.17.0/go.mod h1:BuEKDfySbSR4drPmRPG/7iBdf8hvFMuRexcpahXilzY=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
