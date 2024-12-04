@@ -161,7 +161,8 @@ func playAllMoves(bIn board,
 			//avgRepTime := time.Since(vPA.ADother.startTime) / time.Duration((vPA.TD.mvsTried+vPA.AD.mvsTried)/cfg.PlayAll.ProgressCounter)
 			estMaxRemTimeTD := time.Since(vPA.ADother.startTime) * time.Duration((cfg.PlayAll.GameLengthLimit*1_000_000 - vPA.TD.mvsTried)) / time.Duration(vPA.TD.mvsTried+vPA.AD.mvsTried)
 			estMaxRemTimeAD := time.Since(vPA.ADother.startTime) * time.Duration(cfg.General.NumberOfDecksToBePlayed-(deckNum-cfg.General.FirstDeckNum+1)) / time.Duration(deckNum-cfg.General.FirstDeckNum+1)
-			_, _ = pfmt.Printf("\rDk: %5d   ____   MvsTriedAD: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v  - %7s" /* + "  SinceLast: %6s  AvgBtwProgress: %6s"*/ +"   estRemTD: %7s  estRemAD: %7s\r", deckNum, vPA.TD.mvsTried+vPA.AD.mvsTried, moveNum, vPA.TDotherSQL.moveNumMax, vPA.TD.stratNum, len(vPA.TDother.priorBoards), time.Since(vPA.TDother.startTime).Truncate(100*time.Millisecond).String() /*time.Since(vPA.TDother.lastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), */, estMaxRemTimeTD.Truncate(100*time.Millisecond), estMaxRemTimeAD.Truncate(100*time.Millisecond))
+			// NOTE THE FOLLOWING PRINT STATEMENT NEVER GOES TO FILE - ALWAYS TO CONSOLE
+			_, _ = pfmt.Printf("\rDk: %5d   MvsTriedAD: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v   Elapsed: %7s" /* + "  SinceLast: %6s  AvgBtwProgress: %6s"*/ +"   estRemTD: %7s  estRemAD: %7s\r", deckNum, vPA.TD.mvsTried+vPA.AD.mvsTried, moveNum, vPA.TDotherSQL.moveNumMax, vPA.TD.stratNum, len(vPA.TDother.priorBoards), time.Since(vPA.TDother.startTime).Truncate(100*time.Millisecond).String() /*time.Since(vPA.TDother.lastPrintTime).Truncate(100*time.Millisecond).String(), avgRepTime.Truncate(100*time.Millisecond).String(), */, estMaxRemTimeTD.Truncate(100*time.Millisecond), estMaxRemTimeAD.Truncate(100*time.Millisecond))
 			vPA.TDother.lastPrintTime = time.Now()
 		}
 
@@ -252,9 +253,9 @@ func prntMDet(b board,
 		switch {
 		case pTypeIn == "MbM_ANY" && cfg.PlayAll.ReportingType.MoveByMove && variant == 1: // for "MbM_R", "MbM_S", "MbM_VS"
 			if cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular" && !(mN == 0 && nextMove == 0) {
-				fmt.Printf("\n****************************************\n")
+				fmt.Fprintf(oW, "\n****************************************\n")
 			}
-			_, _ = pfmt.Printf("\nDeck: %v   Move: %3v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v",
+			_, _ = pfmt.Fprintf(oW, "\nDeck: %v   Move: %3v   Strategy #: %v  Moves Tried: %v   Unique Boards: %v   Elapsed TD: %v",
 				dN,
 				mN,
 				vPA.TD.stratNum,
@@ -264,54 +265,54 @@ func prntMDet(b board,
 			)
 			if cfg.PlayAll.MoveByMoveReportingOptions.Type != "regular" {
 				pM1, pM2 := printMove(aMoves[nextMove], true)
-				fmt.Printf("    Next Move: %s   %s", pM1, strings.TrimSpace(pM2))
+				fmt.Fprintf(oW, "    Next Move: %s   %s", pM1, strings.TrimSpace(pM2))
 			}
 			if cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular" || (mN == 0 && nextMove == 0) {
-				fmt.Printf("\n")
+				fmt.Fprintf(oW, "\n")
 				printBoard(b)
 			}
 		case pTypeIn == "MbM_R" && cfg.PlayAll.ReportingType.MoveByMove && variant == 2 && cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular": // for "MbM_R"
-			_, _ = pfmt.Printf("\n   "+comment, s1, s2)
+			_, _ = pfmt.Fprintf(oW, "\n   "+comment, s1, s2)
 		case pTypeIn == "MbM_SorMBM_VS" && cfg.PlayAll.ReportingType.MoveByMove && variant == 2: // for "MbM_R", "MbM_S", "MbM_VS"
 			// comment must have 2 %v in it
 			if cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular" {
-				fmt.Printf("\n")
+				fmt.Fprintf(oW, "\n")
 			}
-			_, _ = pfmt.Printf("   "+comment, s1, s2)
+			_, _ = pfmt.Fprintf(oW, "   "+comment, s1, s2)
 
 		case pTypeIn == "MbM_SorMBM_VS" && cfg.PlayAll.ReportingType.MoveByMove && cfg.PlayAll.MoveByMoveReportingOptions.Type != "regular" && variant == 2: // for "MbM_R"
 			// comment must have 2 %v in it
-			_, _ = pfmt.Printf(comment, s1, s2)
+			_, _ = pfmt.Fprintf(oW, comment, s1, s2)
 		case pTypeIn == "MbM_R" && cfg.PlayAll.ReportingType.MoveByMove && cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular" && variant == 3:
-			fmt.Printf("\n All Possible Moves: \n")
+			fmt.Fprintf(oW, "\n All Possible Moves: \n")
 			for j := range aMoves {
 				pM1, pM2 := printMove(aMoves[j], false)
 				if nextMove == j {
-					fmt.Printf("     Next Move ->  ")
+					fmt.Fprintf(oW, "     Next Move ->  ")
 				} else {
-					fmt.Printf("                   ")
+					fmt.Fprintf(oW, "                   ")
 				}
-				fmt.Printf("%s", pM1)
+				fmt.Fprintf(oW, "%s", pM1)
 				if nextMove == j {
 					pad := strings.Repeat(" ", 110-printableLength(pM1))
-					fmt.Printf(pad + "<- Next Move")
+					fmt.Fprintf(oW, pad+"<- Next Move")
 				}
 				if len(pM2) > 0 {
-					fmt.Printf("\n                           %s", pM2)
+					fmt.Fprintf(oW, "\n                           %s", pM2)
 				}
 
-				fmt.Printf("\n")
+				fmt.Fprintf(oW, "\n")
 			}
 		/*case cfg.PlayAll.ReportingType.MoveByMove && pTypeIn == "MbM_SorMBM_VS" && (cfg.PlayAll.MoveByMoveReportingOptions.Type == "short" || cfg.PlayAll.MoveByMoveReportingOptions.Type == "very short") && variant == 1: // for "MbM_S" or "MbM_VS"
-		_, _ = pfmt.Printf(comment, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.TDother.priorBoards), time.Since(vPA.ADother.startTime), time.Since(vPA.TDother.startTime))
-		_, _ = pfmt.Printf(comment, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.TDother.priorBoards), time.Since(vPA.ADother.startTime), time.Since(vPA.TDother.startTime))
+		_, _ = pfmt.Fprintf( oW,comment, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.TDother.priorBoards), time.Since(vPA.ADother.startTime), time.Since(vPA.TDother.startTime))
+		_, _ = pfmt.Fprintf( oW,comment, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.TDother.priorBoards), time.Since(vPA.ADother.startTime), time.Since(vPA.TDother.startTime))
 		*/
 		case cfg.PlayAll.ReportingType.MoveByMove && pTypeIn == "MbM_S" && cfg.PlayAll.MoveByMoveReportingOptions.Type == "short" && variant == 2:
-			_, _ = pfmt.Printf(comment, b)
+			_, _ = pfmt.Fprintf(oW, comment, b)
 		//case pTypeIn == "DbDorMbM" && (cfg.PlayAll.ReportingType.MoveByMove || cfg.PlayAll.ReportingType.DeckByDeck) && variant == 1: //   formerly "NOTX"
-		//	_, _ = pfmt.Printf(comment, s1, s2, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.TDother.priorBoards), time.Since(vPA.ADother.startTime), time.Since(vPA.TDother.startTime))
+		//	_, _ = pfmt.Fprintf( oW,comment, s1, s2, dN, mN, vPA.TD.stratNum, vPA.TD.mvsTried, len(vPA.TDother.priorBoards), time.Since(vPA.ADother.startTime), time.Since(vPA.TDother.startTime))
 		case pTypeIn == "DbDorMbM" && (cfg.PlayAll.ReportingType.MoveByMove || cfg.PlayAll.ReportingType.DeckByDeck) && variant == 2: //   formerly "NOTX"
-			_, _ = pfmt.Printf(comment, s1, s2)
+			_, _ = pfmt.Fprintf(oW, comment, s1, s2)
 		}
 	}
 	// End of Deck Reporting Restrictions only on Deck Number
@@ -319,7 +320,7 @@ func prntMDet(b board,
 		if cfg.PlayAll.ReportingType.DeckByDeck && cfg.PlayAll.DeckByDeckReportingOptions.Type == "regular" ||
 			cfg.PlayAll.ReportingType.MoveByMove && cfg.PlayAll.MoveByMoveReportingOptions.Type == "regular" ||
 			cfg.PlayAll.ReportingType.Tree && cfg.PlayAll.TreeReportingOptions.Type == "regular" {
-			_, _ = pfmt.Printf(" \n\nDECK: %v%s    Result Codes: %v", dN, s1, s2) // !!! Initial Blank Required in case ProgressCounter last printed
+			_, _ = pfmt.Fprintf(oW, " \n\nDECK: %v%s    Result Codes: %v", dN, s1, s2) // !!! Initial Blank Required in case ProgressCounter last printed
 			statisticsPrint(&vPA.TD, "")
 			TDotherSQLPrint(&vPA.TDotherSQL)
 		} else {
@@ -346,20 +347,20 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg *Con
 
 	if cfg.PlayAll.ReportingType.Tree && (!cfg.PlayAll.RestrictReporting || prntMDetTestRange(dN, cfg, vPA)) {
 		if mN == 0 && nextMove == 0 {
-			_, _ = pfmt.Printf("\n\n Deck: %v\n", dN)
+			_, _ = pfmt.Fprintf(oW, "\n\n Deck: %v\n", dN)
 			printBoard(b)
 			if cfg.PlayAll.TreeReportingOptions.Type == "regular" {
-				fmt.Printf("\n       Move # ==>")
+				fmt.Fprintf(oW, "\n       Move # ==>")
 				for i := 1; i <= 150; i++ {
 					if i == 1 {
-						fmt.Printf("%4s", strconv.Itoa(i)+"  ")
+						fmt.Fprintf(oW, "%4s", strconv.Itoa(i)+"  ")
 					} else {
-						fmt.Printf("%8s", strconv.Itoa(i)+"  ")
+						fmt.Fprintf(oW, "%8s", strconv.Itoa(i)+"  ")
 					}
 				}
 			}
-			fmt.Printf("\n   Strategy # ")
-			fmt.Printf("\n            0  ")
+			fmt.Fprintf(oW, "\n   Strategy # ")
+			fmt.Fprintf(oW, "\n            0  ")
 		}
 		switch {
 		case len(aMoves) == 1:
@@ -397,7 +398,7 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg *Con
 			if cfg.General.OutputTo == "console" { // No need to sleep if not printing to console where
 				time.Sleep(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMovesDur) // someone would be watching in real time
 			}
-			fmt.Printf("%s", treeThisMove)
+			fmt.Fprintf(oW, "%s", treeThisMove)
 		} else {
 			if cfg.General.OutputTo == "console" { // No need to sleep if not printing to console where
 				time.Sleep(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategiesDur) // someone would be watching in real time
@@ -405,7 +406,7 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg *Con
 			x := []rune(vPA.TDother.treePrevMoves)
 			x = x[0 : mN*treeMoveWidth]
 			vPA.TDother.treePrevMoves = string(x)
-			_, _ = pfmt.Printf("\n%13s  %s%s", strconv.Itoa(vPA.TD.stratNum), vPA.TDother.treePrevMoves, treeThisMove)
+			_, _ = pfmt.Fprintf(oW, "\n%13s  %s%s", strconv.Itoa(vPA.TD.stratNum), vPA.TDother.treePrevMoves, treeThisMove)
 		}
 		vPA.TDother.treePrevMoves += treeAddToPrev
 	}
@@ -413,7 +414,7 @@ func prntMDetTree(b board, aMoves []move, nextMove int, dN int, mN int, cfg *Con
 
 func prntMDetTreeReturnComment(c string, dN int, recurReturnNum int, cfg *Configuration, vPA *variablesSpecificToPlayAll) {
 	if cfg.PlayAll.ReportingType.Tree && recurReturnNum == 0 && prntMDetTestRange(dN, cfg, vPA) {
-		fmt.Printf(c)
+		fmt.Fprintf(oW, c)
 	}
 }
 func printableLength(s string) int {

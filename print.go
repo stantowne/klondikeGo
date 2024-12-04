@@ -7,13 +7,13 @@ import (
 
 func printBoardSum(b board) {
 	for i := 0; i < 7; i++ {
-		fmt.Printf("length of column %v is %v\n", i, len(b.columns[i]))
+		fmt.Fprintf(oW, "length of column %v is %v\n", i, len(b.columns[i]))
 	}
 	for i := 0; i < 4; i++ {
-		fmt.Printf("length of pile %v is %v\n", i, len(b.piles[i]))
+		fmt.Fprintf(oW, "length of pile %v is %v\n", i, len(b.piles[i]))
 	}
-	fmt.Printf("length of stock is %v\n", len(b.stock))
-	fmt.Printf("length of waste is %v\n", len(b.waste))
+	fmt.Fprintf(oW, "length of stock is %v\n", len(b.stock))
+	fmt.Fprintf(oW, "length of waste is %v\n", len(b.waste))
 }
 func printBoard(b board) {
 
@@ -21,24 +21,24 @@ func printBoard(b board) {
 	for j := 0; j < len(b.stock); j++ {
 		sStock = sStock + b.stock[j].pStr()
 	}
-	fmt.Printf("\n%v\n", sStock) //print stock
+	fmt.Fprintf(oW, "\n%v\n", sStock) //print stock
 
 	sWaste := "waste(" + strconv.Itoa(len(b.waste)) + "):"
 	for j := 0; j < len(b.waste); j++ {
 		sWaste = sWaste + b.waste[j].pStr()
 	}
-	fmt.Printf("%v\n\n", sWaste) //print waste
+	fmt.Fprintf(oW, "%v\n\n", sWaste) //print waste
 
 	for i := 0; i < 4; i++ {
 		s := "pile " + strconv.Itoa(i) + ": "
 		for j := 0; j < len(b.piles[i]); j++ {
 			s = s + b.piles[i][j].pStr()
 		}
-		fmt.Printf("%v\n", s) //print the piles
+		fmt.Fprintf(oW, "%v\n", s) //print the piles
 
 	}
 
-	fmt.Println("\nColumns:")
+	fmt.Fprintln(oW, "\nColumns:")
 	cardWidth := "      " //6 spaces
 	spacer := "    "      //4 space
 	//determine how many rows must be shown
@@ -48,7 +48,7 @@ func printBoard(b board) {
 			numberOfRows = len(b.columns[cc])
 		}
 	}
-	fmt.Printf("  0         1         2         3         4         5         6\n")
+	fmt.Fprintf(oW, "  0         1         2         3         4         5         6\n")
 	for r := 0; r < numberOfRows; r++ {
 		s := ""
 		for ccc := 0; ccc < 7; ccc++ {
@@ -58,7 +58,7 @@ func printBoard(b board) {
 				s = s + b.columns[ccc][r].pStr() + spacer
 			}
 		}
-		fmt.Printf("%v\n", s)
+		fmt.Fprintf(oW, "%v\n", s)
 	}
 
 }

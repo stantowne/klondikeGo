@@ -7,7 +7,6 @@ import (
 	"golang.org/x/text/message"
 	"gopkg.in/yaml.v3"
 	"io"
-	"log"
 	"os"
 	"runtime/debug"
 	"time"
@@ -36,7 +35,6 @@ func main() {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, setting := range info.Settings {
 			if setting.Key == "vcs.revision" {
-				//fmt.Println("Commit Hash:", setting.Value)
 				cfg.General.GitVersion = setting.Value // Stan we need to figure out how to get this
 				break
 			}
@@ -44,10 +42,9 @@ func main() {
 	}
 	hostname, err := os.Hostname()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("Error: %v getting Hostname", err)
 		os.Exit(1)
 	}
-	//fmt.Printf("Hostname: %s", hostname)
 	cfg.General.GitSystem = hostname
 
 	cfg.PlayAll.ReportingType.NoReporting =
@@ -76,7 +73,8 @@ func main() {
 		// create file
 		cfg.General.outWriter, err = os.Create(cfg.General.OutputTo + cfg.General.RunStartTime.Format("__2006.01.02_15.04.05_-0700") + ".txt")
 		if err != nil {
-			log.Fatal(err)
+			fmt.Printf("Error: %v  Error creating output file: %s", err, cfg.General.OutputTo+cfg.General.RunStartTime.Format("__2006.01.02_15.04.05_-0700")+".txt")
+			os.Exit(1)
 		}
 		// remember to close the file
 		defer cfg.General.outWriter.Close()
@@ -88,14 +86,10 @@ func main() {
 	cfg.PlayAll.ProgressCounter *= 1_000_000
 	cfg.PlayAll.ProgressCounterLastPrintTime = time.Now()
 
-	// Stan pls include these two statements into configPrint
-	fmt.Fprintf(oW, "\nCalling Program: %v\n\n", os.Args[0])
-	fmt.Printf("\nRun Start Time: %15s\n\n", cfg.General.RunStartTime.Format("2006.01.02  3:04:05 pm"))
-
 	inputFileName := cfg.General.DeckFileName
 	file, err := os.Open(inputFileName)
 	if err != nil {
-		log.Println("Cannot open inputFileName:", err)
+		fmt.Println("Error: %v  Cannot open Deck inputFileName: %s", err, cfg.General.DeckFileName)
 	}
 	defer func(file *os.File) {
 		err := file.Close()
@@ -112,13 +106,13 @@ func main() {
 				break
 			}
 			if err != nil {
-				log.Println("Cannot read from inputFileName", err)
+				fmt.Println("Error: %v  Cannot read from Deck inputFileName: %s", err, cfg.General.DeckFileName)
 			}
 		}
 	}
 
 	if cfg.General.TypeOfPlay == "playAll" {
-		moveBasePriority = moveBasePriorityNew
+		moveBasePriority = moveBasePriorityAll
 		playAll(*reader, &cfg)
 	}
 	if cfg.General.TypeOfPlay == "playOrig" {

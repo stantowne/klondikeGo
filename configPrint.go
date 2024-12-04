@@ -1,7 +1,16 @@
 package main
 
+import (
+	"fmt"
+	"os"
+)
+
 func configPrint(c Configuration) {
-	_, _ = pfmt.Printf("General:\n"+
+
+	fmt.Fprintf(oW, "\nCalling Program: %v\n\n", os.Args[0])
+	fmt.Fprintf(oW, "\nRun Start Time: %15s\n\n", c.General.RunStartTime.Format("2006.01.02  3:04:05 pm"))
+
+	_, _ = pfmt.Fprintf(oW, "General:\n"+
 		"            Number Of Decks To Be Played: %v\n"+
 		"                      Starting with deck: %v\n"+
 		"                            Type of Play: %v\n"+
@@ -13,7 +22,7 @@ func configPrint(c Configuration) {
 
 	if c.General.TypeOfPlay == "playOrig" {
 		nOfS := 1 << c.PlayOrig.Length //number of initial strategies
-		_, _ = pfmt.Printf(" Style: Original iOS (Initial Override Strategies)\n\n"+
+		_, _ = pfmt.Fprintf(oW, " Style: Original iOS (Initial Override Strategies)\n\n"+
 			"                     iOS strategy length: %v\n"+
 			"          Max possible attempts per deck: %v\n"+
 			"       Total possible attempts all decks: %v\n"+
@@ -24,26 +33,26 @@ func configPrint(c Configuration) {
 			c.PlayOrig.GameLengthLimit)
 	} else {
 		if c.PlayAll.ReportingType.NoReporting {
-			_, _ = pfmt.Printf("No Deck-by-Deck, Move-by-Move or Tree Reporting\n")
+			_, _ = pfmt.Fprintf(oW, "No Deck-by-Deck, Move-by-Move or Tree Reporting\n")
 		} else {
 			if c.PlayAll.ReportingType.DeckByDeck {
-				_, _ = pfmt.Printf("Deck By Deck Reporting: \n"+
+				_, _ = pfmt.Fprintf(oW, "Deck By Deck Reporting: \n"+
 					"                                           Type: %v\n",
 					c.PlayAll.DeckByDeckReportingOptions.Type)
 				if c.PlayAll.ProgressCounter != 0 {
-					_, _ = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", c.PlayAll.ProgressCounter)
+					_, _ = pfmt.Fprintf(oW, "    Move Progress Reporting Cycles, in Millions: %v\n", c.PlayAll.ProgressCounter)
 				}
 			}
 			if c.PlayAll.ReportingType.MoveByMove {
-				_, _ = pfmt.Printf("Move By Move Reporting: \n"+
+				_, _ = pfmt.Fprintf(oW, "Move By Move Reporting: \n"+
 					"                                           Type: %v\n",
 					c.PlayAll.MoveByMoveReportingOptions.Type)
 				if c.PlayAll.ProgressCounter != 0 {
-					_, _ = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", c.PlayAll.ProgressCounter)
+					_, _ = pfmt.Fprintf(oW, "    Move Progress Reporting Cycles, in Millions: %v\n", c.PlayAll.ProgressCounter)
 				}
 			}
 			if c.PlayAll.ReportingType.Tree {
-				_, _ = pfmt.Printf("Tree Reporting: \n"+
+				_, _ = pfmt.Fprintf(oW, "Tree Reporting: \n"+
 					"                        Type: %v\n"+
 					"         TreeSleepBetwnMoves: %v\n"+
 					"    TreeSleepBetwnStrategies: %v\n",
@@ -52,11 +61,11 @@ func configPrint(c Configuration) {
 					c.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves,
 					c.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategies)
 				if c.PlayAll.ProgressCounter != 0 {
-					_, _ = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", c.PlayAll.ProgressCounter)
+					_, _ = pfmt.Fprintf(oW, "    Move Progress Reporting Cycles, in Millions: %v\n", c.PlayAll.ProgressCounter)
 				}
 			}
 			if c.PlayAll.RestrictReporting {
-				_, _ = pfmt.Printf("\nReporting Restricted To\n"+
+				_, _ = pfmt.Fprintf(oW, "\nReporting Restricted To\n"+
 					"                       Staring with Deck: %v\n"+
 					"                            Continue for: %v decks (0 = all the rest)\n"+
 					"             Starting with Moves Tried #: %v\n"+
@@ -66,11 +75,11 @@ func configPrint(c Configuration) {
 					c.PlayAll.RestrictReportingTo.MovesTriedStartVal,
 					c.PlayAll.RestrictReportingTo.MovesTriedContinueFor)
 			}
+			_, _ = pfmt.Fprintf(oW, "\nGame Length Limit, in millions: %v\n",
+				c.PlayAll.GameLengthLimit)
+
+			//_, _ = pfmt.Fprintf(oW, "\nMove Priority Settings:\n")
 		}
-	}
-	if c.General.TypeOfPlay == "playAll" {
-		_, _ = pfmt.Printf("\nGame Length Limit, in millions: %v\n",
-			c.PlayAll.GameLengthLimit)
 	}
 
 }
