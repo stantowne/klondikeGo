@@ -45,7 +45,7 @@ func configPrint(c Configuration) {
 			return moveBasePriorityAll[moveTypes[i]] < moveBasePriorityAll[moveTypes[j]]
 		})
 		for i, moveType := range moveTypes {
-			_, _ = pfmt.Fprintf(oW, "   %2v   %s: %5v\n", i, moveTypes[i], moveBasePriorityAll[moveType])
+			_, _ = pfmt.Fprintf(oW, "   %2v   %17s: %5v\n", i, moveTypes[i], moveBasePriorityAll[moveType])
 		}
 		_, _ = pfmt.Fprintf(oW, "\n\n")
 	} else {
@@ -107,7 +107,7 @@ func configPrint(c Configuration) {
 				return moveBasePriorityAll[moveTypes[i]] < moveBasePriorityAll[moveTypes[j]]
 			})
 			for i, moveType := range moveTypes {
-				_, _ = pfmt.Fprintf(oW, "   %2v   %s: %5v\n", i, moveTypes[i], moveBasePriorityAll[moveType])
+				_, _ = pfmt.Fprintf(oW, "   %2v   %17s: %5v\n", i, moveTypes[i], moveBasePriorityAll[moveType])
 			}
 			_, _ = pfmt.Fprintf(oW, "\n\n")
 		}
