@@ -50,7 +50,7 @@ func playOrig(reader csv.Reader, cfg *Configuration) {
 newDeck:
 	for deckNum := cfg.General.FirstDeckNum; deckNum < (cfg.General.FirstDeckNum + cfg.General.NumberOfDecksToBePlayed); deckNum++ {
 		if deckNum%1000 == 0 {
-			fmt.Fprintf(oW, "\nStarting Deck Number %v at %v", deckNum, time.Now())
+			_, _ = fmt.Fprintf(oW, "\nStarting Deck Number %v at %v", deckNum, time.Now())
 		}
 		protoDeck, err := reader.Read() // protoDeck is a slice of strings: rank, suit, rank, suit, etc.
 		if err == io.EOF {
@@ -61,7 +61,7 @@ newDeck:
 		}
 
 		if cfg.General.Verbose > 1 {
-			fmt.Fprintf(oW, "\nDeck #%d:\n", deckNum)
+			_, _ = fmt.Fprintf(oW, "\nDeck #%d:\n", deckNum)
 		}
 		var d Deck
 
@@ -83,7 +83,7 @@ newDeck:
 			var b = dealDeck(d)
 			var priorBoardNullWaste board //used in Loss Detector
 			if cfg.General.Verbose > 1 {
-				fmt.Fprintf(oW, "Start play of Deck %v using initial override strategy %v.\n", deckNum, iOS)
+				_, _ = fmt.Fprintf(oW, "Start play of Deck %v using initial override strategy %v.\n", deckNum, iOS)
 			}
 
 			//make this slice of int with length = 0 and capacity = gameLengthLimitOrig
@@ -95,12 +95,12 @@ newDeck:
 				//detects Loss
 				if len(aMoves) == 0 { //No available moves; game lost.
 					if cfg.General.Verbose > 1 {
-						fmt.Fprintf(oW, "Initial Override Strategy: %v\n", iOS)
-						fmt.Fprintf(oW, "****Deck %v: XXXXGame lost after %v moves\n", deckNum, moveCounter)
+						_, _ = fmt.Fprintf(oW, "Initial Override Strategy: %v\n", iOS)
+						_, _ = fmt.Fprintf(oW, "****Deck %v: XXXXGame lost after %v moves\n", deckNum, moveCounter)
 					}
 					if cfg.General.Verbose > 2 {
-						fmt.Fprintf(oW, "GameLost: Frequency of each moveType:\n%v\n", moveTypes)
-						fmt.Fprintf(oW, "GameLost: aMovesNumberOf:\n%v\n", aMovesNumberOf)
+						_, _ = fmt.Fprintf(oW, "GameLost: Frequency of each moveType:\n%v\n", moveTypes)
+						_, _ = fmt.Fprintf(oW, "GameLost: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
 					vPO.lossesAtNoMoves++
 					if iOS == vPO.numberOfStrategies-1 {
@@ -144,13 +144,13 @@ newDeck:
 					vPO.attemptsAvoidedCounter = vPO.attemptsAvoidedCounter + vPO.numberOfStrategies - iOS
 
 					if cfg.General.Verbose > 0 {
-						fmt.Fprintf(oW, "Deck %v, played using initialOverrideStrategy %v: Game won early after %v moves. \n", deckNum, iOS, mC)
+						_, _ = fmt.Fprintf(oW, "Deck %v, played using initialOverrideStrategy %v: Game won early after %v moves. \n", deckNum, iOS, mC)
 					}
 					if cfg.General.Verbose > 1 {
-						fmt.Fprintf(oW, "GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
+						_, _ = fmt.Fprintf(oW, "GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
 					if cfg.General.Verbose > 1 {
-						fmt.Fprintf(oW, "GameWon: Frequency of each moveType:\n%v\n", moveTypes)
+						_, _ = fmt.Fprintf(oW, "GameWon: Frequency of each moveType:\n%v\n", moveTypes)
 					}
 					continue newDeck
 				}
@@ -161,13 +161,13 @@ newDeck:
 					vPO.attemptsAvoidedCounter = vPO.attemptsAvoidedCounter + vPO.numberOfStrategies - iOS
 
 					if cfg.General.Verbose > 0 {
-						fmt.Fprintf(oW, "Deck %v, played using initialOverrideStrategy %v: Game won after %v moves. \n", deckNum, iOS, mC)
+						_, _ = fmt.Fprintf(oW, "Deck %v, played using initialOverrideStrategy %v: Game won after %v moves. \n", deckNum, iOS, mC)
 					}
 					if cfg.General.Verbose > 1 {
-						fmt.Fprintf(oW, "GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
+						_, _ = fmt.Fprintf(oW, "GameWon: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 					}
 					if cfg.General.Verbose > 1 {
-						fmt.Fprintf(oW, "GameWon: Frequency of each moveType:\n%v\n", moveTypes)
+						_, _ = fmt.Fprintf(oW, "GameWon: Frequency of each moveType:\n%v\n", moveTypes)
 					}
 					continue newDeck
 				}
@@ -177,7 +177,7 @@ newDeck:
 						priorBoardNullWaste = b
 					} else if reflect.DeepEqual(b, priorBoardNullWaste) {
 						if cfg.General.Verbose > 1 {
-							fmt.Fprintf(oW, "*****Loss detected after %v moves\n", moveCounter)
+							_, _ = fmt.Fprintf(oW, "*****Loss detected after %v moves\n", moveCounter)
 						}
 						vPO.regularLosses++
 						if iOS == vPO.numberOfStrategies-1 {
@@ -195,11 +195,11 @@ newDeck:
 			vPO.losses = append(vPO.losses, loss)
 
 			if cfg.General.Verbose > 0 {
-				fmt.Fprintf(oW, "Deck %v, played using Initial Override Strategy %v: Game not won\n", deckNum, iOS)
+				_, _ = fmt.Fprintf(oW, "Deck %v, played using Initial Override Strategy %v: Game not won\n", deckNum, iOS)
 			}
 			if cfg.General.Verbose > 1 {
-				fmt.Fprintf(oW, "Game Not Won:  Frequency of each moveType:\n%v\n", moveTypes)
-				fmt.Fprintf(oW, "Game Not Won: aMovesNumberOf:\n%v\n", aMovesNumberOf)
+				_, _ = fmt.Fprintf(oW, "Game Not Won:  Frequency of each moveType:\n%v\n", moveTypes)
+				_, _ = fmt.Fprintf(oW, "Game Not Won: aMovesNumberOf:\n%v\n", aMovesNumberOf)
 			}
 		}
 

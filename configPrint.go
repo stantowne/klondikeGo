@@ -8,8 +8,8 @@ import (
 
 func configPrint(c Configuration) {
 
-	fmt.Fprintf(oW, "\nCalling Program: %v\n", os.Args[0])
-	fmt.Fprintf(oW, "\nRun Start Time: %15s\n\n", c.General.RunStartTime.Format("2006.01.02  3:04:05 pm"))
+	_, _ = fmt.Fprintf(oW, "\nCalling Program: %v\n", os.Args[0])
+	_, _ = fmt.Fprintf(oW, "\nRun Start Time: %15s\n\n", c.General.RunStartTime.Format("2006.01.02  3:04:05 pm"))
 
 	_, _ = pfmt.Fprintf(oW, "General:\n"+
 		"            Number Of Decks To Be Played: %v\n"+
