@@ -8,7 +8,7 @@ import (
 
 func configPrint(c Configuration) {
 
-	fmt.Fprintf(oW, "\nCalling Program: %v\n\n", os.Args[0])
+	fmt.Fprintf(oW, "\nCalling Program: %v\n", os.Args[0])
 	fmt.Fprintf(oW, "\nRun Start Time: %15s\n\n", c.General.RunStartTime.Format("2006.01.02  3:04:05 pm"))
 
 	_, _ = pfmt.Fprintf(oW, "General:\n"+
@@ -47,7 +47,7 @@ func configPrint(c Configuration) {
 		for i, moveType := range moveTypes {
 			_, _ = pfmt.Fprintf(oW, "   %2v   %s: %5v\n", i, moveTypes[i], moveBasePriorityAll[moveType])
 		}
-
+		_, _ = pfmt.Fprintf(oW, "\n\n")
 	} else {
 		if c.PlayAll.ReportingType.NoReporting {
 			_, _ = pfmt.Fprintf(oW, "No Deck-by-Deck, Move-by-Move or Tree Reporting\n")
@@ -109,6 +109,7 @@ func configPrint(c Configuration) {
 			for i, moveType := range moveTypes {
 				_, _ = pfmt.Fprintf(oW, "   %2v   %s: %5v\n", i, moveTypes[i], moveBasePriorityAll[moveType])
 			}
+			_, _ = pfmt.Fprintf(oW, "\n\n")
 		}
 	}
 

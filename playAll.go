@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"math"
+	"os"
 	"strconv"
 	"time"
 )
@@ -234,19 +235,11 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 
 	// At this point, all decks to be played have been played.  Time to report aggregate won loss.
 	// From this point on, the program only prints.
-	//printSummaryStats(&vPA)
-	fmt.Fprintf(oW, "\n\n******************   Summary Statistics   ******************\n")
-	averageElapsedTimePerDeck := time.Duration(float64(time.Since(vPA.ADother.startTime)) / float64(numberOfDecksToBePlayed))
-	fmt.Fprintf(oW, "\n     Elapsed Time: %v", time.Since(vPA.ADother.startTime).Truncate(100*time.Millisecond).String())
-	fmt.Fprintf(oW, "\nAvg Time per Deck: %v\n", averageElapsedTimePerDeck.Truncate(100*time.Millisecond).String())
-	_, _ = pfmt.Fprintf(oW, "\n          Decks Played: %6d", vPA.ADother.decksPlayed)
-	_, _ = pfmt.Fprintf(oW, "\n             Decks Won: %6d   %4v%%", vPA.ADother.decksWon, roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed, 1))
-	_, _ = pfmt.Fprintf(oW, "\n            Decks Lost: %6d   %4v%%", vPA.ADother.decksLost, roundFloatIntDiv(vPA.ADother.decksLost*100, vPA.ADother.decksPlayed, 1))
-	_, _ = pfmt.Fprintf(oW, "\n         Decks LostGLE: %6d   %4v%%", vPA.ADother.decksLostGLE, roundFloatIntDiv(vPA.ADother.decksLostGLE*100, vPA.ADother.decksPlayed, 1))
-	_, _ = pfmt.Fprintf(oW, "\n  Decks Lost + LostGLE: %6d   %4v%%", vPA.ADother.decksLostGLE, roundFloatIntDiv((vPA.ADother.decksLost+vPA.ADother.decksLostGLE)*100, vPA.ADother.decksPlayed, 1))
-
-	statisticsPrint(&vPA.AD, "AD")
-	ADotherSQLPrint(&vPA)
+	printSummaryStats(cfg, &vPA)
+	if cfg.General.OutputTo != "console" { // Print End of Run Stuff again to the console
+		oW = os.Stdout
+		printSummaryStats(cfg, &vPA)
+	}
 
 	if cfg.PlayAll.WinLossReport { // Deck Win Loss Summary Statistics
 		// Close sql/csv file for writing and open it for reading and report it here
@@ -369,4 +362,19 @@ func ADotherSQLPrint(vPA *variablesSpecificToPlayAll) {
 		_, _ = pfmt.Fprintf(oW, "\nMaxMNWin: %13d   (Maximum Move Number at Win)\n\n\n", vPA.ADother.moveNumAtWinMax)
 	}
 	fmt.Fprintf(oW, "\n\n\n")
+}
+
+func printSummaryStats(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
+	fmt.Fprintf(oW, "\n\n******************   Summary Statistics   ******************\n")
+	averageElapsedTimePerDeck := time.Duration(float64(time.Since(vPA.ADother.startTime)) / float64(cfg.General.NumberOfDecksToBePlayed))
+	fmt.Fprintf(oW, "\n     Elapsed Time: %v", time.Since(vPA.ADother.startTime).Truncate(100*time.Millisecond).String())
+	fmt.Fprintf(oW, "\nAvg Time per Deck: %v\n", averageElapsedTimePerDeck.Truncate(100*time.Millisecond).String())
+	_, _ = pfmt.Fprintf(oW, "\n          Decks Played: %6d", vPA.ADother.decksPlayed)
+	_, _ = pfmt.Fprintf(oW, "\n             Decks Won: %6d   %4v%%", vPA.ADother.decksWon, roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed, 1))
+	_, _ = pfmt.Fprintf(oW, "\n            Decks Lost: %6d   %4v%%", vPA.ADother.decksLost, roundFloatIntDiv(vPA.ADother.decksLost*100, vPA.ADother.decksPlayed, 1))
+	_, _ = pfmt.Fprintf(oW, "\n         Decks LostGLE: %6d   %4v%%", vPA.ADother.decksLostGLE, roundFloatIntDiv(vPA.ADother.decksLostGLE*100, vPA.ADother.decksPlayed, 1))
+	_, _ = pfmt.Fprintf(oW, "\n  Decks Lost + LostGLE: %6d   %4v%%", vPA.ADother.decksLostGLE, roundFloatIntDiv((vPA.ADother.decksLost+vPA.ADother.decksLostGLE)*100, vPA.ADother.decksPlayed, 1))
+
+	statisticsPrint(&vPA.AD, "AD")
+	ADotherSQLPrint(vPA)
 }
