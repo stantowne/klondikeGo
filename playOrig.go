@@ -230,5 +230,10 @@ newDeck:
 		}
 	}
 	vPO.endTime = time.Now()
-	playOrigReport(vPO, cfg)
+
+	playOrigReport(vPO, cfg)               // Print End of Run Stuff to either file or console
+	if cfg.General.OutputTo != "console" { // Print End of Run Stuff again forcing to the console
+		oW = os.Stdout
+		playOrigReport(vPO, cfg)
+	}
 }

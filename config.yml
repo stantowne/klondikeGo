@@ -7,8 +7,8 @@ general:
   number of decks to be played: 27                 # positive integer no more than 410,000 minus first deck number
   list:                                            # not implemented
   type of play: playOrig                           # playAll or playOrig    NOTE: playAll executes code in function playNew
-  verbose: 0                                       # non-negative integer
-  outputTo: console                                # console OR filename WITHOUT extension;
+  verbose: 2                                       # non-negative integer
+  outputTo: ./playOrigLossesOutput/test        # console OR filename WITHOUT extension;
                                                    # filename will be appended with a datetime stamp and extension ".txt"
                                                    # ./playOrigLossesOutput/filename or ./playAllPrintOutput/filename is suggested
                                                    # NOT YET IMPLEMENTED

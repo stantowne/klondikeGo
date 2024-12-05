@@ -235,8 +235,9 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 
 	// At this point, all decks to be played have been played.  Time to report aggregate won loss.
 	// From this point on, the program only prints.
-	printSummaryStats(cfg, &vPA)
-	if cfg.General.OutputTo != "console" { // Print End of Run Stuff again to the console
+
+	printSummaryStats(cfg, &vPA)           // Print End of Run Stuff to either file or console
+	if cfg.General.OutputTo != "console" { // Print End of Run Stuff again forcing to the console
 		oW = os.Stdout
 		printSummaryStats(cfg, &vPA)
 	}
