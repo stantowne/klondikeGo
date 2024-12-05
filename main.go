@@ -67,6 +67,7 @@ func main() {
 	}
 
 	cfg.General.outWriter = os.Stdout
+	// Fill the Short named package variable "oW" for cfg.General.outWriter
 	oW = cfg.General.outWriter
 	configPrint(cfg) // Print FIRST time to stout
 
@@ -77,12 +78,12 @@ func main() {
 			fmt.Printf("Error: %v  Error creating output file: %s", err, cfg.General.OutputTo+"__"+cfg.General.RunStartTime.Format("__2006.01.02_15.04.05_-0700")+".txt")
 			os.Exit(1)
 		}
+		// Fill the Short named package variable "oW" for cfg.General.outWriter
 		oW = cfg.General.outWriter
 		// remember to close the file
 		defer cfg.General.outWriter.Close()
 		configPrint(cfg) // Print SECOND time to file
 	}
-	// Fill the Short named package variable "oW" for cfg.General.outWriter
 
 	cfg.PlayAll.ProgressCounter *= 1_000_000
 	cfg.PlayAll.ProgressCounterLastPrintTime = time.Now()
