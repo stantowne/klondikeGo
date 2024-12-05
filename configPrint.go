@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"sort"
 )
 
 func configPrint(c Configuration) {
@@ -31,6 +32,22 @@ func configPrint(c Configuration) {
 			nOfS,
 			nOfS*c.General.NumberOfDecksToBePlayed,
 			c.PlayOrig.GameLengthLimit)
+
+		_, _ = pfmt.Fprintf(oW, "\nMove Priority Settings:\n\n")
+		moveTypes := make([]string, 0, len(moveBasePriorityOrig))
+
+		for priority := range moveBasePriorityOrig {
+			moveTypes = append(moveTypes, priority)
+		}
+
+		// sort by priority before printing
+		sort.SliceStable(moveTypes, func(i, j int) bool {
+			return moveBasePriorityAll[moveTypes[i]] < moveBasePriorityAll[moveTypes[j]]
+		})
+		for i, moveType := range moveTypes {
+			_, _ = pfmt.Fprintf(oW, "   %2v   %s: %5v\n", i, moveTypes[i], moveBasePriorityAll[moveType])
+		}
+
 	} else {
 		if c.PlayAll.ReportingType.NoReporting {
 			_, _ = pfmt.Fprintf(oW, "No Deck-by-Deck, Move-by-Move or Tree Reporting\n")
@@ -78,7 +95,20 @@ func configPrint(c Configuration) {
 			_, _ = pfmt.Fprintf(oW, "\nGame Length Limit, in millions: %v\n",
 				c.PlayAll.GameLengthLimit)
 
-			//_, _ = pfmt.Fprintf(oW, "\nMove Priority Settings:\n")
+			_, _ = pfmt.Fprintf(oW, "\nMove Priority Settings:\n\n")
+			moveTypes := make([]string, 0, len(moveBasePriorityAll))
+
+			for priority := range moveBasePriorityAll {
+				moveTypes = append(moveTypes, priority)
+			}
+
+			// sort by priority before printing
+			sort.SliceStable(moveTypes, func(i, j int) bool {
+				return moveBasePriorityAll[moveTypes[i]] < moveBasePriorityAll[moveTypes[j]]
+			})
+			for i, moveType := range moveTypes {
+				_, _ = pfmt.Fprintf(oW, "   %2v   %s: %5v\n", i, moveTypes[i], moveBasePriorityAll[moveType])
+			}
 		}
 	}
 

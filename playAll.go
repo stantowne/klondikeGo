@@ -234,7 +234,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 
 	// At this point, all decks to be played have been played.  Time to report aggregate won loss.
 	// From this point on, the program only prints.
-
+	//printSummaryStats(&vPA)
 	fmt.Fprintf(oW, "\n\n******************   Summary Statistics   ******************\n")
 	averageElapsedTimePerDeck := time.Duration(float64(time.Since(vPA.ADother.startTime)) / float64(numberOfDecksToBePlayed))
 	fmt.Fprintf(oW, "\n     Elapsed Time: %v", time.Since(vPA.ADother.startTime).Truncate(100*time.Millisecond).String())
