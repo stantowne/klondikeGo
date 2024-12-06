@@ -3,15 +3,15 @@
 general:
   deck file name: ./DeckFiles/decks-0-409999.csv   # Note: forward slash /
   decks: consecutive                               # consecutive or list or shuffle
-  first deck number: 3500                          # non-negative integer less than 410,000
+  first deck number: 3500                          # non-negative integer less than 410,000   NOTE: 2h21m per 1000 decks avg
   number of decks to be played: 10000              # positive integer no more than 410,000 minus first deck number
   list:                                            # not implemented
-  type of play: playAll                            # playAll or playOrig    NOTE: playAll executes code in function playNew
+  type of play: playAll                            # playAll or playOrig
   verbose: 0                                       # non-negative integer
   outputTo: ./playAllPrintOutput/Decks_3500-13499  # console OR filename WITHOUT extension;
                                                    # filename will be appended with a datetime stamp and extension ".txt"
-                                                   # ./playOrigLossesOutput/filename or ./playAllPrintOutput/filename is suggested
-                                                   # NOT YET IMPLEMENTED
+                                                   # ./playOrigLossesOutput/filename or ./playAllPrintOutput/filename are suggested
+
 
 play original:
   length of initial override strategy: 8           # non-negative integer
