@@ -32,7 +32,7 @@ func playOrigReport(vPO variablesSpecificToPlayOrig, cfg *Configuration) {
 
 	_, _ = fmt.Fprintf(oW, "Elapsed Time is %v.\n", elapsedTime)
 	// stan I suggest you change above to this
-	_, _ = fmt.Fprintf(oW, "Elapsed Time is %v.\n", elapsedTime.Truncate(100*time.Millisecond).String())
+	_, _ = fmt.Fprintf(oW, "Elapsed Time is %v.\n", elapsedTime.Round(100*time.Millisecond).String())
 
 	_, err = pfmt.Fprintf(oW, "Total Decks Won is %d of which %d were Early Wins\n", vPO.winCounter, vPO.earlyWinCounter)
 	if err != nil {
@@ -72,7 +72,7 @@ func playOrigReport(vPO variablesSpecificToPlayOrig, cfg *Configuration) {
 	_, _ = fmt.Fprintf(oW, "Average Elapsed Time per Deck is %vms.\n", averageElapsedTimePerDeck)
 	// stan I suggest you change above to this
 	avgElapsedTimePerDeck := time.Duration(float64(elapsedTime) / float64(cfg.General.NumberOfDecksToBePlayed))
-	_, _ = fmt.Fprintf(oW, "Average Elapsed Time per Deck is %s\n", (avgElapsedTimePerDeck).Truncate(1*time.Millisecond).String())
+	_, _ = fmt.Fprintf(oW, "Average Elapsed Time per Deck is %s\n", (avgElapsedTimePerDeck).Round(1*time.Millisecond).String())
 	// or this
-	_, _ = fmt.Fprintf(oW, "Average Elapsed Time per Deck is %s\n", (avgElapsedTimePerDeck).Truncate(100*time.Microsecond).String())
+	_, _ = fmt.Fprintf(oW, "Average Elapsed Time per Deck is %s\n", (avgElapsedTimePerDeck).Round(100*time.Microsecond).String())
 }

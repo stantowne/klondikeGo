@@ -173,11 +173,11 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 				} else {
 					wL = "LOST"
 				}
-				elTimeSinceStartTimeADFormatted := time.Since(vPA.ADother.startTime).Truncate(100 * time.Millisecond).String()
+				elTimeSinceStartTimeADFormatted := time.Since(vPA.ADother.startTime).Round(100 * time.Millisecond).String()
 				if time.Since(vPA.ADother.startTime) > time.Duration(5*time.Minute) {
-					elTimeSinceStartTimeADFormatted = time.Since(vPA.ADother.startTime).Truncate(time.Second).String()
+					elTimeSinceStartTimeADFormatted = time.Since(vPA.ADother.startTime).Round(time.Second).String()
 				}
-				_, _ = pfmt.Fprintf( oW,"Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, vPA.TD.mvsTried, vPA.TDotherSQL.moveNumAtWin, vPA.TDotherSQL.moveNumMax, vPA.TD.stratNum, vPA.TD.unqBoards, vPA.ADother.decksWon, vPA.ADother.decksLost, vPA.AD.stratLossesGLE, roundFloatIntDiv(vPA.ADother.decksWon*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.ADother.decksLost*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.stratLossesGLE*100, deckNum+1-firstDeckNum, 1), vPA.TD.elapsedTime.Truncate(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Truncate(time.Second).String(), result1, "", time.Now().Format(" 3:04 pm"))
+				_, _ = pfmt.Fprintf( oW,"Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, vPA.TD.mvsTried, vPA.TDotherSQL.moveNumAtWin, vPA.TDotherSQL.moveNumMax, vPA.TD.stratNum, vPA.TD.unqBoards, vPA.ADother.decksWon, vPA.ADother.decksLost, vPA.AD.stratLossesGLE, roundFloatIntDiv(vPA.ADother.decksWon*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.ADother.decksLost*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.stratLossesGLE*100, deckNum+1-firstDeckNum, 1), vPA.TD.elapsedTime.Round(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Round(time.Second).String(), result1, "", time.Now().Format(" 3:04 pm"))
 			}*/
 		vPA.AD.mvsTried += vPA.TD.mvsTried
 		vPA.TD.mvsTried = 0
@@ -323,9 +323,9 @@ func statisticsPrintOneLine(vPA *variablesSpecificToPlayAll, dN int, s1 string, 
 	var est time.Duration
 	//                      nanosecondsTD   / Decks Played So Far         * remaining decks [remaining decks = numbertobeplayed - decksplayed so far
 	est = time.Duration(float64(time.Since(vPA.ADother.startTime))/float64(dN+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(dN+1-firstDeckNum))) * time.Nanosecond
-	elTimeSinceStartTimeADFormatted := time.Since(vPA.ADother.startTime).Truncate(100 * time.Millisecond).String()
+	elTimeSinceStartTimeADFormatted := time.Since(vPA.ADother.startTime).Round(100 * time.Millisecond).String()
 	if time.Since(vPA.ADother.startTime) > time.Duration(5*time.Minute) {
-		elTimeSinceStartTimeADFormatted = time.Since(vPA.ADother.startTime).Truncate(time.Second).String()
+		elTimeSinceStartTimeADFormatted = time.Since(vPA.ADother.startTime).Round(time.Second).String()
 	}
 	_, _ = pfmt.Fprintf(oW, "Deck: %7v%9s   Strategy #: %11v  Moves Tried: %11v   Unique Boards: %10v   Elapsed TD: %10v"+
 		"   stratTried: %11v   stratWins: %1v    stratLossesNMA: %9v    stratLossesRB: %10v    stratLossesEL: %1v    stratLossesGLE: %5v"+
@@ -336,11 +336,11 @@ func statisticsPrintOneLine(vPA *variablesSpecificToPlayAll, dN int, s1 string, 
 		vPA.TD.stratNum,
 		vPA.TD.mvsTried,
 		vPA.TD.unqBoards,
-		vPA.TD.elapsedTime.Truncate(10*time.Millisecond).String(),
+		vPA.TD.elapsedTime.Round(10*time.Millisecond).String(),
 		vPA.TD.stratTried, vPA.TD.stratWins, vPA.TD.stratLossesNMA, vPA.TD.stratLossesRB, vPA.TD.stratLossesEL, vPA.TD.stratLossesGLE,
 		vPA.TD.stratLossesMajSE, vPA.TD.stratLossesMinSE, vPA.TD.stratLossesEL, vPA.TD.stratLossesGLEAb,
 		vPA.TD.winningMovesCnt, vPA.TDotherSQL.moveNumMax, vPA.TDotherSQL.moveNumAtWin,
-		elTimeSinceStartTimeADFormatted, est.Truncate(100*time.Millisecond).String(), time.Now().Format(" 3:04 pm"))
+		elTimeSinceStartTimeADFormatted, est.Round(100*time.Millisecond).String(), time.Now().Format(" 3:04 pm"))
 }
 
 func TDotherSQLPrint(x *TDotherSQL) {
@@ -368,8 +368,8 @@ func ADotherSQLPrint(vPA *variablesSpecificToPlayAll) {
 func printSummaryStats(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
 	_, _ = fmt.Fprintf(oW, "\n\n******************   Summary Statistics   ******************\n")
 	averageElapsedTimePerDeck := time.Duration(float64(time.Since(vPA.ADother.startTime)) / float64(cfg.General.NumberOfDecksToBePlayed))
-	_, _ = fmt.Fprintf(oW, "\n     Elapsed Time: %v", time.Since(vPA.ADother.startTime).Truncate(100*time.Millisecond).String())
-	_, _ = fmt.Fprintf(oW, "\nAvg Time per Deck: %v\n", averageElapsedTimePerDeck.Truncate(100*time.Millisecond).String())
+	_, _ = fmt.Fprintf(oW, "\n     Elapsed Time: %v", time.Since(vPA.ADother.startTime).Round(100*time.Millisecond).String())
+	_, _ = fmt.Fprintf(oW, "\nAvg Time per Deck: %v\n", averageElapsedTimePerDeck.Round(100*time.Millisecond).String())
 	_, _ = pfmt.Fprintf(oW, "\n          Decks Played: %6d", vPA.ADother.decksPlayed)
 	_, _ = pfmt.Fprintf(oW, "\n             Decks Won: %6d   %4v%%", vPA.ADother.decksWon, roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed, 1))
 	_, _ = pfmt.Fprintf(oW, "\n            Decks Lost: %6d   %4v%%", vPA.ADother.decksLost, roundFloatIntDiv(vPA.ADother.decksLost*100, vPA.ADother.decksPlayed, 1))
