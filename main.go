@@ -57,7 +57,7 @@ func main() {
 		value := values.Field(i)
 		fmt.Println(field.Name, value.Kind(), value.Interface())
 	}
-	// configPrint(cfg)
+	configPrint(cfg)
 
 	cfg.PlayAll.ProgressCounter *= 1_000_000
 	cfg.PlayAll.ProgressCounterLastPrintTime = time.Now()

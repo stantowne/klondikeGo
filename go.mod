@@ -3,6 +3,7 @@ module github.com/stantowne/klondikeGo
 go 1.21.1
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	golang.org/x/text v0.17.0
 	gopkg.in/yaml.v3 v3.0.1
 )

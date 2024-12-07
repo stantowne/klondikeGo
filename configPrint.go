@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"reflect"
+	"github.com/davecgh/go-spew/spew"
 )
 
 func configPrint(c Configuration) {
-	_, _ = pfmt.Printf("General:\n"+
+	_, _ = spew.Printf("General:\n"+
 		"            Number Of Decks To Be Played: %v\n"+
 		"                      Starting with deck: %v\n"+
 		"                            Type of Play: %v\n"+
@@ -18,7 +17,7 @@ func configPrint(c Configuration) {
 
 	if c.General.TypeOfPlay == "playOrig" {
 		nOfS := 1 << c.PlayOrig.Length //number of initial strategies
-		_, _ = pfmt.Printf(" Style: Original iOS (Initial Override Strategies)\n\n"+
+		_, _ = spew.Printf(" Style: Original iOS (Initial Override Strategies)\n\n"+
 			"                     iOS strategy length: %v\n"+
 			"          Max possible attempts per deck: %v\n"+
 			"       Total possible attempts all decks: %v\n"+
@@ -31,19 +30,19 @@ func configPrint(c Configuration) {
 
 	if c.General.TypeOfPlay == "playAll" {
 		if c.PlayAll.ReportingType.NoReporting {
-			_, _ = pfmt.Printf("No Deck-by-Deck, Move-by-Move or Tree Reporting\n")
+			_, _ = spew.Printf("No Deck-by-Deck, Move-by-Move or Tree Reporting\n")
 		} else {
 			if c.PlayAll.ReportingType.DeckByDeck {
-				_, _ = pfmt.Printf("Deck By Deck Reporting: \n"+
+				_, _ = spew.Printf("Deck By Deck Reporting: \n"+
 					"                                Type pe: %v\n",
 					c.PlayAll.DeckByDeckReportingOptions.Type)
 			}
 			if c.PlayAll.ReportingType.MoveByMove {
-				_, _ = pfmt.Printf("Move By Move Reporting: \n"+
+				_, _ = spew.Printf("Move By Move Reporting: \n"+
 					"                        Type: %v\n",
 					c.PlayAll.MoveByMoveReportingOptions.Type)
 				if c.PlayAll.ProgressCounter != 0 {
-					_, _ = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", c.PlayAll.ProgressCounter)
+					_, _ = spew.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", c.PlayAll.ProgressCounter)
 				}
 			}
 			if c.PlayAll.ReportingType.Tree {
@@ -56,7 +55,7 @@ func configPrint(c Configuration) {
 					c.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves,
 					c.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategies)
 				if c.PlayAll.ProgressCounter != 0 {
-					_, _ = pfmt.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", c.PlayAll.ProgressCounter)
+					_, _ = spew.Printf("    Move Progress Reporting Cycles, in Millions: %v\n", c.PlayAll.ProgressCounter)
 				}
 			}
 			if c.PlayAll.RestrictReporting {
@@ -79,7 +78,7 @@ func configPrint(c Configuration) {
 
 }
 
-func cprint(s struct{}) {
+/*func cprint(s struct{}) {
 	fields := reflect.TypeOf(s)
 	values := reflect.ValueOf(s)
 	num := fields.NumField()
@@ -93,4 +92,4 @@ func cprint(s struct{}) {
 		}
 	}
 
-}
+}*/
