@@ -179,6 +179,20 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 				}
 				_, _ = pfmt.Fprintf( oW,"Dk: %5d   "+wL+"   MvsTried: %13v   MoveNum: %3v   Max MoveNum: %3v   StratsTried: %12v   UnqBoards: %11v   Won: %5v   Lost: %5v   GLE: %5v   Won: %5.1f%%   Lost: %5.1f%%   GLE: %5.1f%%   ElTime TD: %9s   ElTime ADs: %9s  Rem Time: %11s   ResCodes: %2s %3s   Time Now: %8s\n", deckNum, vPA.TD.mvsTried, vPA.TDotherSQL.moveNumAtWin, vPA.TDotherSQL.moveNumMax, vPA.TD.stratNum, vPA.TD.unqBoards, vPA.ADother.decksWon, vPA.ADother.decksLost, vPA.AD.stratLossesGLE, roundFloatIntDiv(vPA.ADother.decksWon*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.ADother.decksLost*100, deckNum+1-firstDeckNum, 1), roundFloatIntDiv(vPA.AD.stratLossesGLE*100, deckNum+1-firstDeckNum, 1), vPA.TD.elapsedTime.Round(100*time.Millisecond).String(), elTimeSinceStartTimeADFormatted, est.Round(time.Second).String(), result1, "", time.Now().Format(" 3:04 pm"))
 			}*/
+
+		if vPA.ADother.moveNumMax == 0 || vPA.ADother.moveNumMax < vPA.TDotherSQL.moveNumMax {
+			vPA.ADother.moveNumMax = vPA.TDotherSQL.moveNumMax
+		}
+		if vPA.TD.stratWins > 0 && (vPA.ADother.moveNumAtWinMin == 0 || vPA.ADother.moveNumAtWinMin > vPA.TDotherSQL.moveNumAtWin) {
+			vPA.ADother.moveNumAtWinMin = vPA.TDotherSQL.moveNumAtWin
+		}
+		if vPA.TD.stratWins > 0 && (vPA.ADother.moveNumAtWinMax == 0 || vPA.ADother.moveNumAtWinMax < vPA.TDotherSQL.moveNumAtWin) {
+			vPA.ADother.moveNumAtWinMax = vPA.TDotherSQL.moveNumAtWin
+		}
+
+		vPA.TDotherSQL.moveNumAtWin = 0
+		vPA.TDotherSQL.moveNumMax = 0 //to keep track of length of the longest strategy so far
+
 		vPA.AD.mvsTried += vPA.TD.mvsTried
 		vPA.TD.mvsTried = 0
 		vPA.AD.stratNum += vPA.TD.stratNum
@@ -208,19 +222,6 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		vPA.AD.winningMovesCnt += vPA.TD.winningMovesCnt
 		vPA.TD.winningMovesCnt = 0
 		vPA.AD.elapsedTime += vPA.TD.elapsedTime
-
-		if vPA.ADother.moveNumMax == 0 || vPA.ADother.moveNumMax < vPA.TDotherSQL.moveNumMax {
-			vPA.ADother.moveNumMax = vPA.TDotherSQL.moveNumMax
-		}
-		if vPA.TD.stratWins > 0 && (vPA.ADother.moveNumAtWinMin == 0 || vPA.ADother.moveNumAtWinMin > vPA.TDotherSQL.moveNumAtWin) {
-			vPA.ADother.moveNumAtWinMin = vPA.TDotherSQL.moveNumAtWin
-		}
-		if vPA.TD.stratWins > 0 && (vPA.ADother.moveNumAtWinMax == 0 || vPA.ADother.moveNumAtWinMax < vPA.TDotherSQL.moveNumAtWin) {
-			vPA.ADother.moveNumAtWinMax = vPA.TDotherSQL.moveNumAtWin
-		}
-
-		vPA.TDotherSQL.moveNumAtWin = 0
-		vPA.TDotherSQL.moveNumMax = 0 //to keep track of length of the longest strategy so far
 
 		vPA.ADother.decksPlayed++
 		vPA.TDother.treePrevMoves = ""
@@ -284,7 +285,7 @@ func statisticsPrint(TDorAD *Statistics, which string) {
 	}
 	_, _ = fmt.Fprintf(oW, "\n\nMoves:")
 	_, _ = pfmt.Fprintf(oW, "\n   Tried: %-15d", TDorAD.mvsTried)
-	_, _ = fmt.Fprintf(oW, "   Tried Detail:                     (Must Sum to Moves Tried)")
+	_, _ = fmt.Fprintf(oW, "   Tried Detail:                   (Must Sum to Moves Tried)")
 	if TDorAD.stratLossesNMA != 0 {
 		_, _ = pfmt.Fprintf(oW, "\n                                     NMA: %15d   (No Moves Available)", TDorAD.stratLossesNMA)
 	}
@@ -371,8 +372,8 @@ func printSummaryStats(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
 	_, _ = fmt.Fprintf(oW, "\n     Elapsed Time: %5v", time.Since(vPA.ADother.startTime).Round(6*time.Second).String())
 	_, _ = fmt.Fprintf(oW, "\nAvg Time per Deck: %5v\n", averageElapsedTimePerDeck.Round(100*time.Millisecond).String())
 	_, _ = pfmt.Fprintf(oW, "\n          Decks Played: %-7d", vPA.ADother.decksPlayed)
-	_, _ = pfmt.Fprintf(oW, "\n             Decks Won: %-7d   %4v%%      Won %%, Ignoring GLE: %4v%%", vPA.ADother.decksWon, roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed, 1), roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed-vPA.ADother.decksLostGLE, 1))
-	_, _ = pfmt.Fprintf(oW, "\n            Decks Lost: %-7d   %4v%%     Lost %%, Ignoring GLE: %4v%%", vPA.ADother.decksLost, roundFloatIntDiv(vPA.ADother.decksLost*100, vPA.ADother.decksPlayed, 1), roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed-vPA.ADother.decksLostGLE, 1))
+	_, _ = pfmt.Fprintf(oW, "\n             Decks Won: %-7d   %4v%%     Ignoring GLE: %4v%%", vPA.ADother.decksWon, roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed, 1), roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed-vPA.ADother.decksLostGLE, 1))
+	_, _ = pfmt.Fprintf(oW, "\n            Decks Lost: %-7d   %4v%%     Ignoring GLE: %4v%%", vPA.ADother.decksLost, roundFloatIntDiv(vPA.ADother.decksLost*100, vPA.ADother.decksPlayed, 1), roundFloatIntDiv(vPA.ADother.decksLost*100, vPA.ADother.decksPlayed-vPA.ADother.decksLostGLE, 1))
 	_, _ = pfmt.Fprintf(oW, "\n         Decks LostGLE: %-7d   %4v%%", vPA.ADother.decksLostGLE, roundFloatIntDiv(vPA.ADother.decksLostGLE*100, vPA.ADother.decksPlayed, 1))
 	_, _ = pfmt.Fprintf(oW, "\n  Decks Lost + LostGLE: %-7d   %4v%%", vPA.ADother.decksLostGLE, roundFloatIntDiv((vPA.ADother.decksLost+vPA.ADother.decksLostGLE)*100, vPA.ADother.decksPlayed, 1))
 

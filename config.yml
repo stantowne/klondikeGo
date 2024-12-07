@@ -1,57 +1,57 @@
 #config.yml
 
 general:
-  deck file name: ./DeckFiles/decks-0-409999.csv   # Note: forward slash /
-  decks: consecutive                               # consecutive or list or shuffle
-  first deck number: 13500                         # non-negative integer less than 410,000   NOTE: 2h21m per 1000 decks avg
-  number of decks to be played: 7       #7500        # positive integer no more than 410,000 minus first deck number
-  list:                                            # not implemented
-  type of play: playAll                            # playAll or playOrig
-  verbose: 0                                       # non-negative integer
-  outputTo: ./playAllPrintOutput/Decks_13500-21999  # console OR filename WITHOUT extension;
-                                                   # filename will be appended with a datetime stamp and extension ".txt"
-                                                   # ./playOrigLossesOutput/filename or ./playAllPrintOutput/filename are suggested
+  deck file name: ./DeckFiles/decks-0-409999.csv      # Note: forward slash /
+  decks: consecutive                                  # consecutive or list or shuffle
+  first deck number: 13500                            # non-negative integer less than 410,000   NOTE: 2h21m per 1000 decks avg
+  number of decks to be played: 2500                  # positive integer no more than 410,000 minus first deck number
+  list:                                               # not implemented
+  type of play: playAll                               # playAll or playOrig
+  verbose: 0                                          # non-negative integer
+  outputTo: ./playAllPrintOutput/Decks_13500-15999    # console OR filename WITHOUT extension;
+                                                      # filename will be appended with a datetime stamp and extension ".txt"
+                                                      # ./playOrigLossesOutput/filename or ./playAllPrintOutput/filename are suggested
 
 
 play original:
-  length of initial override strategy: 8           # non-negative integer
-  game length limit in moves made: 150             # non-negative integer
+  length of initial override strategy: 8              # non-negative integer
+  game length limit in moves made: 150                # non-negative integer
 
 
 
 play all moves:
-    game length limit in million moves tried: 50   # IN MILLIONS non-negative integer
+    game length limit in million moves tried: 50      # IN MILLIONS non-negative integer
 
-    find all winning strategies?: false            # true or false   true not yet implemented
+    find all winning strategies?: false               # true or false   true not yet implemented
 
-    reporting:                                     # only one true or no trues permitted   non yaml       cfg.PlayNew.ReportingType.NoReporting set in code
-      deck by deck: true                           # true or false                                   =    cfg.PlayNew.ReportingType.DeckByDeck
-      move by move: false                          # true or false                                     || cfg.PlayNew.ReportingType.MoveByMove
-      tree: false                                  # true or false                                     || cfg.PlayNew.ReportingType.Tree
-                                                   #                                             NOTE: || == OR (looks like forward slash due to italics)
+    reporting:                                        # only one true or no trues permitted   non yaml       cfg.PlayNew.ReportingType.NoReporting set in code
+      deck by deck: true                              # true or false                                   =    cfg.PlayNew.ReportingType.DeckByDeck
+      move by move: false                             # true or false                                     || cfg.PlayNew.ReportingType.MoveByMove
+      tree: false                                     # true or false                                     || cfg.PlayNew.ReportingType.Tree
+                                                      #                                             NOTE: || == OR (looks like forward slash due to italics)
     deck by deck reporting options:
-        type: regular                                # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.DeckByDeck == false
+        type: regular                                   # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.DeckByDeck == false
 
     move by move reporting options:
-        type: regular                              # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.MoveByMove == false
+        type: regular                                 # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.MoveByMove == false
 
     tree reporting options:
-        type: regular                              # regular, narrow, very narrow   All 3 Ignored if cfg.PlayAll.ReportingType.Tree == false
-        sleep between moves: 0                     # non-negative integer, in tenths of seconds   Slow down so humans can follow
-        sleep between strategies: 0                # non-negative integer, in tenths of seconds   Slow down so humans can follow
+        type: regular                                 # regular, narrow, very narrow   All 3 Ignored if cfg.PlayAll.ReportingType.Tree == false
+        sleep between moves: 0                        # non-negative integer, in tenths of seconds   Slow down so humans can follow
+        sleep between strategies: 0                   # non-negative integer, in tenths of seconds   Slow down so humans can follow
 
     restrict reporting to:
-      starting deck number: 0                      # 0 means no restriction
-      continue for how many decks: 0               # 0 means no restriction
-      starting move number: 0                      # 0 means no restriction
-      continue for how many moves: 0               # 0 means no restriction
+      starting deck number: 0                         # 0 means no restriction
+      continue for how many decks: 0                  # 0 means no restriction
+      starting move number: 0                         # 0 means no restriction
+      continue for how many moves: 0                  # 0 means no restriction
 
-    print winning moves: false                     # true or false
-    progress counter in millions: 3
-
-    print final deck by deck W/L record: true      # true or false
-
-    save results to SQL: false                     # true or false
+    print winning moves: false                        # true or false
+    progress counter in millions: 3                   # Applicable All reporting when OutputTo != "console"
+                                                      # and only to Deck-by-Deck reporting when OutputTo == "console"
+    print final deck by deck W/L record: true         # true or false  #Applies only if cfg.PlayAll.ReportingType.MoveByMove == true
+                                                      #                              or cfg.PlayAll.ReportingType.Tree       == true
+    save results to SQL: false                        # true or false
     sql connection string: "test"
 
 
