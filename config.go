@@ -9,7 +9,7 @@ type Configuration struct {
 	General struct {
 		RunStartTime            time.Time
 		GitVersion              string // Hash of latest commit
-		GitSystem               string // The machine this was run on - the version number will likely only exist on this machine
+		HostName                string // The machine this was run on - the version number will likely only exist on this machine
 		DeckFileName            string `yaml:"deck file name"`
 		Decks                   string `yaml:"decks"`                        // must be "consecutive" or "list"
 		FirstDeckNum            int    `yaml:"first deck number"`            // must be non-negative integer

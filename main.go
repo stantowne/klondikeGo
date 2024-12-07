@@ -17,6 +17,7 @@ var pfmt = message.NewPrinter(language.English)
 
 // Create the Short named package variable "oW" for cfg.General.outWriter
 var oW *os.File
+var outWriterFileName string
 
 func main() {
 	// unmarshal YAML file
@@ -45,7 +46,7 @@ func main() {
 		fmt.Printf("Error: %v getting Hostname", err)
 		os.Exit(1)
 	}
-	cfg.General.GitSystem = hostname
+	cfg.General.HostName = hostname
 
 	cfg.PlayAll.ReportingType.NoReporting =
 		!(cfg.PlayAll.ReportingType.DeckByDeck ||
@@ -68,14 +69,14 @@ func main() {
 
 	cfg.General.outWriter = os.Stdout
 	// Fill the Short named package variable "oW" for cfg.General.outWriter
-	oW = cfg.General.outWriter
+	oW = os.Stdout
 	configPrint(cfg) // Print FIRST time to stout
-
 	if cfg.General.OutputTo != "console" {
+		outWriterFileName = cfg.General.OutputTo + "__" + cfg.General.RunStartTime.Format("2006.01.02_15.04.05_-0700") + ".txt"
 		// create file
-		cfg.General.outWriter, err = os.Create(cfg.General.OutputTo + "__" + cfg.General.RunStartTime.Format("2006.01.02_15.04.05_-0700") + ".txt")
+		cfg.General.outWriter, err = os.Create(outWriterFileName)
 		if err != nil {
-			fmt.Printf("Error: %v  Error creating output file: %s", err, cfg.General.OutputTo+"__"+cfg.General.RunStartTime.Format("__2006.01.02_15.04.05_-0700")+".txt")
+			fmt.Printf("Error: %v  Error creating output file: %s", err, outWriterFileName)
 			os.Exit(1)
 		}
 		// Fill the Short named package variable "oW" for cfg.General.outWriter

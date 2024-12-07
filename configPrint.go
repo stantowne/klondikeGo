@@ -12,15 +12,29 @@ func configPrint(c Configuration) {
 	_, _ = fmt.Fprintf(oW, "\nRun Start Time: %15s\n\n", c.General.RunStartTime.Format("2006.01.02  3:04:05 pm"))
 
 	_, _ = pfmt.Fprintf(oW, "General:\n"+
+		"                          Run Start Time: %15s: %v\n"+
+		"                             Git Version: %v\n"+
+		"                           Git Host Name: %v\n"+
+		"                          Deck File Name: %v\n\n"+
 		"            Number Of Decks To Be Played: %v\n"+
 		"                      Starting with deck: %v\n"+
 		"                            Type of Play: %v\n"+
-		"                                 Verbose: %v\n\n",
+		"                                 Verbose: %v\n\n"+
+		"                               Output To: %v",
+		c.General.RunStartTime.Format("2006.01.02  3:04:05 pm"),
+		c.General.GitVersion,
+		c.General.HostName,
+		c.General.DeckFileName,
 		c.General.NumberOfDecksToBePlayed,
 		c.General.FirstDeckNum,
 		c.General.TypeOfPlay,
-		c.General.Verbose)
-
+		c.General.Verbose,
+		c.General.OutputTo)
+	if c.General.OutputTo == "console" {
+		_, _ = fmt.Fprintf(oW, "\n")
+	} else {
+		_, _ = pfmt.Fprintf(oW, "   Full File Name: %v\n", outWriterFileName)
+	}
 	if c.General.TypeOfPlay == "playOrig" {
 		nOfS := 1 << c.PlayOrig.Length //number of initial strategies
 		_, _ = pfmt.Fprintf(oW, " Style: Original iOS (Initial Override Strategies)\n\n"+
