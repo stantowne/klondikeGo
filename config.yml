@@ -3,12 +3,12 @@
 general:
   deck file name: ./DeckFiles/decks-0-409999.csv      # Note: forward slash /
   decks: consecutive                                  # consecutive or list or shuffle
-  first deck number: 16000    #13500   #18500                     # non-negative integer less than 410,000   NOTE: 2h21m per 1000 decks avg
-  number of decks to be played: 2500 #2500 #5500                # positive integer no more than 410,000 minus first deck number
+  first deck number: 13500   #18500                     # non-negative integer less than 410,000   NOTE: 2h21m per 1000 decks avg
+  number of decks to be played: 2500 #5500                # positive integer no more than 410,000 minus first deck number
   list:                                               # not implemented
   type of play: playAll                               # playAll or playOrig
   verbose: 0                                          # non-negative integer
-  outputTo: ./playAllPrintOutput/Decks_16000-18499  #13500-15999   #18500-24999   # console OR filename WITHOUT extension;
+  outputTo: ./playAllPrintOutput/Decks_13500-15999   #18500-24999   # console OR filename WITHOUT extension;
                                                       # filename will be appended with a datetime stamp and extension ".txt"
                                                       # ./playOrigLossesOutput/filename or ./playAllPrintOutput/filename are suggested
 

@@ -164,7 +164,7 @@ func playAllMoves(bIn board,
 			decksCompleted := float64(vPA.ADother.decksWon + vPA.ADother.decksLost + vPA.ADother.decksLostGLE)
 			estRemTimeAD := time.Duration(float64(time.Since(vPA.ADother.startTime)) * (float64(cfg.General.NumberOfDecksToBePlayed) - decksPlayed) / decksPlayed)
 			// NOTE THE FOLLOWING PRINT STATEMENT NEVER GOES TO FILE - ALWAYS TO CONSOLE
-			_, _ = pfmt.Printf("\rDk: %d   Mvs: %vmm   Strats: %vmm   UnqBoards: %vmm   MaxMoveNum: %v   Elapsed: %s   estRem: %s   W/L/GLE: %v/%v/%v  W/L/GLE %%: %3.1f/%3.1f/%3.1f\r",
+			_, _ = pfmt.Printf("\rDk: %d  Mvs: %vmm  Strats: %vmm  UnqBoards: %vmm  MaxMoveNum: %v  Elapsed: %s  estRem: %s  W/L/GLE: %v/%v/%v  W/L/GLE %%: %3.1f/%3.1f/%3.1f\r",
 				deckNum, (vPA.TD.mvsTried+vPA.AD.mvsTried)/1000000, vPA.AD.stratNum/1000000, vPA.AD.unqBoards/1000000, vPA.ADother.moveNumMax, time.Since(vPA.ADother.startTime).Round(6*time.Second).String(), estRemTimeAD.Round(6*time.Second), vPA.ADother.decksWon, vPA.ADother.decksLost, vPA.ADother.decksLostGLE, float64(vPA.ADother.decksWon)/decksCompleted*100.0, float64(vPA.ADother.decksLost)/decksCompleted*100.0, float64(vPA.ADother.decksLostGLE)/decksCompleted*100.0)
 			//_, _ = pfmt.Printf("%v %v %v\r", vPA.ADother.decksWon, decksCompleted, float64(vPA.ADother.decksWon)/decksCompleted*100.0)
 			vPA.TDother.lastPrintTime = time.Now()

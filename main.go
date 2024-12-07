@@ -70,9 +70,11 @@ func main() {
 	cfg.General.outWriter = os.Stdout
 	// Fill the Short named package variable "oW" for cfg.General.outWriter
 	oW = os.Stdout
-	configPrint(cfg) // Print FIRST time to stout
 	if cfg.General.OutputTo != "console" {
 		outWriterFileName = cfg.General.OutputTo + "__" + cfg.General.RunStartTime.Format("2006.01.02_15.04.05_-0700") + ".txt"
+	}
+	configPrint(cfg) // Print FIRST time to stout
+	if cfg.General.OutputTo != "console" {
 		// create file
 		cfg.General.outWriter, err = os.Create(outWriterFileName)
 		if err != nil {
