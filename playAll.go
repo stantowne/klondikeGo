@@ -262,52 +262,52 @@ func statisticsPrint(TDorAD *Statistics, which string) {
 		}
 	}
 	_, _ = fmt.Fprintf(oW, "\n\nStrategies:")
-	_, _ = pfmt.Fprintf(oW, "\n   Tried: %13d", TDorAD.stratTried)
-	_, _ = fmt.Fprintf(oW, "   Tried Detail:                 (Must sum to Strategies Tried)")
+	_, _ = pfmt.Fprintf(oW, "\n   Tried: %-15d", TDorAD.stratTried)
+	_, _ = fmt.Fprintf(oW, "   Tried Detail:                   (Must sum to Strategies Tried)")
 	if TDorAD.stratWins != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n                                   Won: %13d", TDorAD.stratWins)
+		_, _ = pfmt.Fprintf(oW, "\n                                     Won: %15d", TDorAD.stratWins)
 	}
 	if TDorAD.stratLossesNMA != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n                                   NMA: %13d   (No Moves Available)", TDorAD.stratLossesNMA)
+		_, _ = pfmt.Fprintf(oW, "\n                                     NMA: %15d   (No Moves Available)", TDorAD.stratLossesNMA)
 	}
 	if TDorAD.stratLossesRB != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n                                    RB: %13d   (Repetitive Board)", TDorAD.stratLossesRB)
+		_, _ = pfmt.Fprintf(oW, "\n                                      RB: %15d   (Repetitive Board)", TDorAD.stratLossesRB)
 	}
 	if TDorAD.stratLossesEL != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n                                   EL: %13d   (Early Loss)", TDorAD.stratLossesEL)
+		_, _ = pfmt.Fprintf(oW, "\n                                      EL: %15d   (Early Loss)", TDorAD.stratLossesEL)
 	}
 	if TDorAD.stratLossesGLE != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n                                   GLE: %13d   (Game Length Exceeded)", TDorAD.stratLossesGLE)
+		_, _ = pfmt.Fprintf(oW, "\n                                     GLE: %15d   (Game Length Exceeded)", TDorAD.stratLossesGLE)
 	}
 	if TDorAD.stratTried != TDorAD.stratWins+TDorAD.stratLossesNMA+TDorAD.stratLossesRB+TDorAD.stratLossesEL+TDorAD.stratLossesGLE {
 		_, _ = fmt.Fprintf(oW, "\n        ************* Strategies Tried != TDorAD.stratWins+TDorAD.stratLossesNMA+TDorAD.stratLossesRB+TDorAD.stratLossesEL+TDorAD.stratLossesGLE")
 	}
 	_, _ = fmt.Fprintf(oW, "\n\nMoves:")
-	_, _ = pfmt.Fprintf(oW, "\n   Tried: %13d", TDorAD.mvsTried)
-	_, _ = fmt.Fprintf(oW, "   Tried Detail:                 (Must Sum to Moves Tried)")
+	_, _ = pfmt.Fprintf(oW, "\n   Tried: %-15d", TDorAD.mvsTried)
+	_, _ = fmt.Fprintf(oW, "   Tried Detail:                     (Must Sum to Moves Tried)")
 	if TDorAD.stratLossesNMA != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n                                   NMA: %13d   (No Moves Available)", TDorAD.stratLossesNMA)
+		_, _ = pfmt.Fprintf(oW, "\n                                     NMA: %15d   (No Moves Available)", TDorAD.stratLossesNMA)
 	}
 	if TDorAD.stratLossesRB != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n                                    RB: %13d   (Repetitive Board)", TDorAD.stratLossesRB)
+		_, _ = pfmt.Fprintf(oW, "\n                                      RB: %15d   (Repetitive Board)", TDorAD.stratLossesRB)
 	}
 	if TDorAD.stratLossesMajSE != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n                                 MajSE: %13d   (Major Exhausted)", TDorAD.stratLossesMajSE)
+		_, _ = pfmt.Fprintf(oW, "\n                                   MajSE: %15d   (Major Exhausted)", TDorAD.stratLossesMajSE)
 	}
 	if TDorAD.stratLossesMinSE != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n                                 MinSE: %13d   (Minor Exhausted)", TDorAD.stratLossesMinSE)
+		_, _ = pfmt.Fprintf(oW, "\n                                   MinSE: %15d   (Minor Exhausted)", TDorAD.stratLossesMinSE)
 	}
 	if TDorAD.stratLossesEL != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n                                    EL: %13d   (Early Loss)", TDorAD.stratLossesEL)
+		_, _ = pfmt.Fprintf(oW, "\n                                      EL: %15d   (Early Loss)", TDorAD.stratLossesEL)
 	}
 	if TDorAD.stratLossesGLE != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n                                   GLE: %13d   (Game Length Exceeded)", TDorAD.stratLossesGLE)
+		_, _ = pfmt.Fprintf(oW, "\n                                     GLE: %15d   (Game Length Exceeded)", TDorAD.stratLossesGLE)
 	}
 	if TDorAD.stratLossesGLEAb != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n                                 GLEAb: %13d   (Game Length Exceeded Aborted moves)", TDorAD.stratLossesGLEAb)
+		_, _ = pfmt.Fprintf(oW, "\n                                   GLEAb: %15d   (Game Length Exceeded Aborted moves)", TDorAD.stratLossesGLEAb)
 	}
 	if TDorAD.winningMovesCnt != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n                                 WMCnt: %13d   (Winning Moves Count)", TDorAD.winningMovesCnt)
+		_, _ = pfmt.Fprintf(oW, "\n                                   WMCnt: %15d   (Winning Moves Count)", TDorAD.winningMovesCnt)
 	}
 	x := TDorAD.stratLossesNMA + TDorAD.stratLossesRB + TDorAD.stratLossesMajSE + TDorAD.stratLossesMinSE + TDorAD.stratLossesEL + TDorAD.stratLossesGLE + TDorAD.stratLossesGLEAb + TDorAD.winningMovesCnt
 	if TDorAD.mvsTried != x {
@@ -315,7 +315,7 @@ func statisticsPrint(TDorAD *Statistics, which string) {
 	}
 	_, _ = fmt.Fprintf(oW, "\n")
 	if TDorAD.unqBoards != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n  UnqBds: %13d   (Unique Boards)", TDorAD.unqBoards)
+		_, _ = pfmt.Fprintf(oW, "\n  UnqBds: %15d   (Unique Boards)", TDorAD.unqBoards)
 	}
 }
 
@@ -345,22 +345,22 @@ func statisticsPrintOneLine(vPA *variablesSpecificToPlayAll, dN int, s1 string, 
 
 func TDotherSQLPrint(x *TDotherSQL) {
 	if x.moveNumMax != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n   MNMax: %13d   (Move Number Max)", x.moveNumMax)
+		_, _ = pfmt.Fprintf(oW, "\n   MNMax: %15d   (Move Number Max)", x.moveNumMax)
 	}
 	if x.moveNumAtWin != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n   MNWin: %13d   (Move Number at Win)", x.moveNumAtWin)
+		_, _ = pfmt.Fprintf(oW, "\n   MNWin: %15d   (Move Number at Win)", x.moveNumAtWin)
 	}
 }
 
 func ADotherSQLPrint(vPA *variablesSpecificToPlayAll) {
 	if vPA.ADother.moveNumMax != 0 {
-		_, _ = pfmt.Fprintf(oW, "\n   MNMax: %13d   (Move Number Max)", vPA.ADother.moveNumMax)
+		_, _ = pfmt.Fprintf(oW, "\n   MNMax: %15d   (Move Number Max)", vPA.ADother.moveNumMax)
 	}
 	if vPA.ADother.moveNumAtWinMin != 0 {
-		_, _ = pfmt.Fprintf(oW, "\nMinMNWin: %13d   (Minimum Move Number at Win)", vPA.ADother.moveNumAtWinMin)
+		_, _ = pfmt.Fprintf(oW, "\nMinMNWin: %15d   (Minimum Move Number at Win)", vPA.ADother.moveNumAtWinMin)
 	}
 	if vPA.ADother.moveNumAtWinMax != 0 {
-		_, _ = pfmt.Fprintf(oW, "\nMaxMNWin: %13d   (Maximum Move Number at Win)\n\n\n", vPA.ADother.moveNumAtWinMax)
+		_, _ = pfmt.Fprintf(oW, "\nMaxMNWin: %15d   (Maximum Move Number at Win)\n\n\n", vPA.ADother.moveNumAtWinMax)
 	}
 	_, _ = fmt.Fprintf(oW, "\n\n\n")
 }
@@ -368,13 +368,13 @@ func ADotherSQLPrint(vPA *variablesSpecificToPlayAll) {
 func printSummaryStats(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
 	_, _ = fmt.Fprintf(oW, "\n\n******************   Summary Statistics   ******************\n")
 	averageElapsedTimePerDeck := time.Duration(float64(time.Since(vPA.ADother.startTime)) / float64(cfg.General.NumberOfDecksToBePlayed))
-	_, _ = fmt.Fprintf(oW, "\n     Elapsed Time: %v", time.Since(vPA.ADother.startTime).Round(100*time.Millisecond).String())
-	_, _ = fmt.Fprintf(oW, "\nAvg Time per Deck: %v\n", averageElapsedTimePerDeck.Round(100*time.Millisecond).String())
-	_, _ = pfmt.Fprintf(oW, "\n          Decks Played: %6d", vPA.ADother.decksPlayed)
-	_, _ = pfmt.Fprintf(oW, "\n             Decks Won: %6d   %4v%%      Won %, Ignoring GLE: %4v%%", vPA.ADother.decksWon, roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed, 1), roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed-vPA.ADother.decksLostGLE, 1))
-	_, _ = pfmt.Fprintf(oW, "\n            Decks Lost: %6d   %4v%%     Lost %, Ignoring GLE: %4v%%", vPA.ADother.decksLost, roundFloatIntDiv(vPA.ADother.decksLost*100, vPA.ADother.decksPlayed, 1), roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed-vPA.ADother.decksLostGLE, 1))
-	_, _ = pfmt.Fprintf(oW, "\n         Decks LostGLE: %6d   %4v%%", vPA.ADother.decksLostGLE, roundFloatIntDiv(vPA.ADother.decksLostGLE*100, vPA.ADother.decksPlayed, 1))
-	_, _ = pfmt.Fprintf(oW, "\n  Decks Lost + LostGLE: %6d   %4v%%", vPA.ADother.decksLostGLE, roundFloatIntDiv((vPA.ADother.decksLost+vPA.ADother.decksLostGLE)*100, vPA.ADother.decksPlayed, 1))
+	_, _ = fmt.Fprintf(oW, "\n     Elapsed Time: %5v", time.Since(vPA.ADother.startTime).Round(6*time.Second).String())
+	_, _ = fmt.Fprintf(oW, "\nAvg Time per Deck: %5v\n", averageElapsedTimePerDeck.Round(100*time.Millisecond).String())
+	_, _ = pfmt.Fprintf(oW, "\n          Decks Played: %-7d", vPA.ADother.decksPlayed)
+	_, _ = pfmt.Fprintf(oW, "\n             Decks Won: %-7d   %4v%%      Won %%, Ignoring GLE: %4v%%", vPA.ADother.decksWon, roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed, 1), roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed-vPA.ADother.decksLostGLE, 1))
+	_, _ = pfmt.Fprintf(oW, "\n            Decks Lost: %-7d   %4v%%     Lost %%, Ignoring GLE: %4v%%", vPA.ADother.decksLost, roundFloatIntDiv(vPA.ADother.decksLost*100, vPA.ADother.decksPlayed, 1), roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed-vPA.ADother.decksLostGLE, 1))
+	_, _ = pfmt.Fprintf(oW, "\n         Decks LostGLE: %-7d   %4v%%", vPA.ADother.decksLostGLE, roundFloatIntDiv(vPA.ADother.decksLostGLE*100, vPA.ADother.decksPlayed, 1))
+	_, _ = pfmt.Fprintf(oW, "\n  Decks Lost + LostGLE: %-7d   %4v%%", vPA.ADother.decksLostGLE, roundFloatIntDiv((vPA.ADother.decksLost+vPA.ADother.decksLostGLE)*100, vPA.ADother.decksPlayed, 1))
 
 	statisticsPrint(&vPA.AD, "AD")
 	ADotherSQLPrint(vPA)
