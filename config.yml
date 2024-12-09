@@ -59,5 +59,6 @@ play all moves:
 
       # filename will be appended with a datetime stamp and extension ".txt"
       #
+
   # NOTE: 2h21m per 1000 decks avg with GLE=50
-  # NOTE:   72m per 1000 decks avg with GLE=20
+  # NOTE:   74m per 1000 decks avg with GLE=20
