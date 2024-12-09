@@ -3,12 +3,12 @@
 general:
   deck file name: ./DeckFiles/decks-0-409999.csv      # Note: forward slash /
   decks: consecutive                                  # consecutive or list or shuffle
-  first deck number: 13500   #18500                     # non-negative integer less than 410,000   NOTE: 2h21m per 1000 decks avg
-  number of decks to be played: 2500 #5500                # positive integer no more than 410,000 minus first deck number
+  first deck number: 25000                            # non-negative integer less than 410,000
+  number of decks to be played: 5000                  # positive integer no more than 410,000 minus first deck number
   list:                                               # not implemented
   type of play: playAll                               # playAll or playOrig
   verbose: 0                                          # non-negative integer
-  outputTo: ./playAllPrintOutput/Decks_13500-15999   #18500-24999   # console OR filename WITHOUT extension;
+  outputTo: ./playAllPrintOutput/Decks_25000-29999    # console OR filename WITHOUT extension;
                                                       # filename will be appended with a datetime stamp and extension ".txt"
                                                       # ./playOrigLossesOutput/filename or ./playAllPrintOutput/filename are suggested
 
@@ -20,7 +20,7 @@ play original:
 
 
 play all moves:
-    game length limit in million moves tried: 50      # IN MILLIONS non-negative integer
+    game length limit in million moves tried: 20      # IN MILLIONS non-negative integer
 
     find all winning strategies?: false               # true or false   true not yet implemented
 
@@ -30,7 +30,7 @@ play all moves:
       tree: false                                     # true or false                                     || cfg.PlayNew.ReportingType.Tree
                                                       #                                             NOTE: || == OR (looks like forward slash due to italics)
     deck by deck reporting options:
-        type: regular                                   # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.DeckByDeck == false
+        type: short                                   # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.DeckByDeck == false
 
     move by move reporting options:
         type: regular                                 # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.MoveByMove == false
@@ -58,7 +58,6 @@ play all moves:
   # Further comments regarding the outputTo filename:
 
       # filename will be appended with a datetime stamp and extension ".txt"
-      #   a sequence number of the form _0000 will be appended (before the .txt)
-      #   the 0000 will be incremented to the next available number for which no filename exists
-      #   (i.e. if filename_0123 exists as the only filename with an ending of the form _0000
-      #   then filename 0124 will be used (NOT filename_0000)
+      #
+  # NOTE: 2h21m per 1000 decks avg with GLE=50
+  # NOTE:   72m per 1000 decks avg with GLE=20

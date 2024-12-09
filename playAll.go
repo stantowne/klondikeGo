@@ -328,10 +328,10 @@ func statisticsPrintOneLine(vPA *variablesSpecificToPlayAll, dN int, s1 string, 
 	if time.Since(vPA.ADother.startTime) > time.Duration(5*time.Minute) {
 		elTimeSinceStartTimeADFormatted = time.Since(vPA.ADother.startTime).Round(time.Second).String()
 	}
-	_, _ = pfmt.Fprintf(oW, "Deck: %7v%9s   Strategy #: %11v  Moves Tried: %11v   Unique Boards: %10v   Elapsed TD: %10v"+
-		"   stratTried: %11v   stratWins: %1v    stratLossesNMA: %9v    stratLossesRB: %10v    stratLossesEL: %1v    stratLossesGLE: %5v"+
-		"   stratLossesMajSE: %11v    stratLossesMinSE: %11v    stratLossesEL: %7v    stratLossesGLEAb: %3v"+
-		"   winningMovesCnt: %3v    moveNumMax: %3v    moveNumAtWin:%3v   Elapsed AD: %10s   Est Rem: %10s   Now: %8s\n",
+	_, _ = pfmt.Fprintf(oW, "Deck: %7v%9s   Strategy #: %11v   Moves Tried: %11v   Unique Boards: %10v   Elapsed TD: %10v"+
+		"   stratTried: %11v   stratWins: %1v   stratLossesNMA: %9v   stratLossesRB: %10v   stratLossesEL: %1v   stratLossesGLE: %5v"+
+		"   stratLossesMajSE: %11v   stratLossesMinSE: %11v   stratLossesEL: %7v   stratLossesGLEAb: %3v"+
+		"   winningMovesCnt: %3v   moveNumMax: %3v   moveNumAtWin:%3v   Elapsed AD: %10s   Est Rem: %10s   Now: %8s\n",
 		dN,
 		s1,
 		vPA.TD.stratNum,
