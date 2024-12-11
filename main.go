@@ -101,7 +101,6 @@ func main() {
 	}
 
 	cfg.PlayAll.ProgressCounter *= 1_000_000
-	cfg.PlayAll.ProgressCounterLastPrintTime = time.Now()
 
 	//inputFileName := cfg.General.DeckFileName
 	file, err := os.Open(cfg.General.DeckFileName)
