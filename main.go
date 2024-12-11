@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"runtime/debug"
+	"strconv"
 	"time"
 )
 
@@ -76,7 +77,16 @@ func main() {
 	// Fill the Short named package variable "oW" for cfg.General.outWriter
 	oW = os.Stdout
 	if cfg.General.OutputTo != "console" {
-		outWriterFileName = cfg.General.OutputTo + "__" + cfg.General.RunStartTime.Format("2006.01.02_15.04.05_-0700") + ".txt"
+		outWriterFileName = cfg.General.OutputTo
+		if cfg.General.Decks != "list" {
+			outWriterFileName += "_" + strconv.Itoa(cfg.General.FirstDeckNum) + "-" + strconv.Itoa(cfg.General.FirstDeckNum+cfg.General.NumberOfDecksToBePlayed-1)
+		}
+		if cfg.General.TypeOfPlay == "playAll" {
+			outWriterFileName += "_GLE" + strconv.Itoa(cfg.PlayAll.GameLengthLimit)
+		} else {
+			outWriterFileName += "_GLE" + strconv.Itoa(cfg.PlayOrig.GameLengthLimit)
+		}
+		outWriterFileName += "__" + cfg.General.RunStartTime.Format("2006.01.02_15.04.05_-0700") + ".txt"
 	}
 	configPrint(cfg) // Print FIRST time to stout
 	if cfg.General.OutputTo != "console" {

@@ -14,7 +14,7 @@ type Configuration struct {
 		Decks                   string `yaml:"decks"`                        // must be "consecutive" or "list"
 		FirstDeckNum            int    `yaml:"first deck number"`            // must be non-negative integer
 		NumberOfDecksToBePlayed int    `yaml:"number of decks to be played"` //must be non-negative integer
-		List                    []int  // `yaml:"list"`
+		List                    []int  `yaml:"list"`
 		TypeOfPlay              string `yaml:"type of play"` // must be "playOrig" or "playAll"
 		Verbose                 int    `yaml:"verbose"`
 		OutputTo                string `yaml:"outputTo"`
