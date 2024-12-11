@@ -29,7 +29,7 @@ var moveBasePriorityOrig = map[string]int{
 	"badMove":           1200, // a legal move which is worse than a mere flip
 	"flipSt->W Max-0":   9990, //flip MAX - (0 * 3)    i.e. Up to 24 cards    where MAX = len(stock) + len(waste)   Suggest flip waste=>stock then flip cards
 	"flipSt->W Max-1":   9991, //flip MAX - (1 * 3)    i.e. Up to 21 cards
-	"flipSt->W Max-2":   9992, //flip MAX - (2 * 3)    i.e. Up to 18 cards    where 999 > priority of any moves that are beteen columns
+	"flipSt->W Max-2":   9992, //flip MAX - (2 * 3)    i.e. Up to 18 cards    where 999 > priority of any moves that are between columns
 	"flipSt->W Max-3":   9993, //flip MAX - (3 * 3)    i.e. Up to 15 cards                ????or that expose a new column card ????
 	"flipSt->W Max-4":   9994, //flip MAX - (4 * 3)    i.e. Up to 12 cards              < priority of moves not in >
 	"flipSt->W Max-5":   9995, //flip MAX - (5 * 3)    i.e. Up to  9 cards    ONLY When mod(len(stock)) == 0
