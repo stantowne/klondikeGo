@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"reflect"
 	"sort"
 )
 
@@ -128,6 +127,7 @@ func configPrint(c Configuration) {
 
 }
 
+/*// Attempt to use reflection
 func configPrint2(c interface{}, level int, prefix string) {
 	v := reflect.ValueOf(c)
 
@@ -146,3 +146,4 @@ func configPrint2(c interface{}, level int, prefix string) {
 	}
 	//fmt.Println(2)
 }
+*/

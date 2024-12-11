@@ -23,7 +23,7 @@ func flipStockToWaste(b board) board {
 	return b
 }
 
-func flipStockToWasteV(b board, v int) board {
+/*func flipStockToWasteV(b board, v int) board {
 	l := len(b.stock)
 	if l <= 0 {
 		fmt.Printf("Error: attempted to flip from empty stock")
@@ -36,3 +36,4 @@ func flipStockToWasteV(b board, v int) board {
 	}
 	return b
 }
+*/

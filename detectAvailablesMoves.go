@@ -86,7 +86,7 @@ var moveShortName = map[string]string{
 	"flipSt->W Max-7":   "S>W M7",
 }
 
-// ANY CHANGES IN THESE MUST BE MADE IN moveShortName ABOVE!!!!!!!!!!!!
+/*// ANY CHANGES IN THESE MUST BE MADE IN moveShortName ABOVE!!!!!!!!!!!!
 //
 //	These are used in playAllMoves func pmd when printing Board-byBoard detail in "TW" format (see arg[6] in main)
 var moveShortName8 = map[string]string{
@@ -110,7 +110,7 @@ var moveShortName8 = map[string]string{
 	"flipSt->W Max-5":   " S>W M5 ",
 	"flipSt->W Max-6":   " S>W M6 ",
 	"flipSt->W Max-7":   " S>W M7 ",
-}
+}*/
 
 // Used to record how many of each move type is executed during an attempt.
 var moveTypes = map[string]int{

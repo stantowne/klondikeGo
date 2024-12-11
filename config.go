@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type ConfigurationOrig struct {
+type Configuration struct {
 	General struct {
 		RunStartTime            time.Time
 		GitVersion              string // Hash of latest commit
@@ -25,9 +25,9 @@ type ConfigurationOrig struct {
 		GameLengthLimit int `yaml:"game length limit in moves made"`
 	} `yaml:"play original"`
 	PlayAll struct {
-		GameLengthLimit  int  `yaml:"game length limit in million moves tried"`
-		FindAllWinStrats bool `yaml:"find all winning strategies?"`
-		ReportingType    struct {
+		GameLengthLimit int `yaml:"game length limit in million moves tried"`
+		//FindAllWinStrats bool `yaml:"find all winning strategies?"`
+		ReportingType struct {
 			DeckByDeck  bool `yaml:"deck by deck"` // referred to as "DbD_R", "DbD_S" or "DbD_VS", in calls to prntMDet and calls thereto
 			MoveByMove  bool `yaml:"move by move"` // referred to as "MbM_R", "MbM_S" or "MbM_VS", in calls to prntMDet and calls thereto
 			Tree        bool `yaml:"tree"`         // referred to as "Tree_R", "Tree_N" or "Tree_VN", in calls to prntMDet and calls thereto
@@ -62,7 +62,7 @@ type ConfigurationOrig struct {
 	} `yaml:"play all moves"`
 }
 
-type Configuration struct {
+/*type Configuration2 struct {
 	General  General  `yaml:"general"`
 	PlayOrig PlayOrig `yaml:"play original"`
 	PlayAll  PlayAll  `yaml:"play all moves"`
@@ -173,3 +173,4 @@ type ConfigurationSubsetForSQLWriting struct { // STAN not sure we even need to 
 		ProgressCounter   int  `yaml:"progress counter in millions"`
 	} `yaml:"play all moves"`
 }
+*/
