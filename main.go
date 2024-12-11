@@ -33,6 +33,11 @@ func main() {
 	}
 	//I need to confirm that, by virtue of no error being returned, we know that all bools have valid values.
 
+	/*
+		spew.Dump(cfg)
+		fmt.Printf("\nqqqqqq%T \n\n\nzzzzzzzzz\n", cfg.PlayAll.MoveByMoveReportingOptions.Type)
+	*/
+
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, setting := range info.Settings {
 			if setting.Key == "vcs.revision" {

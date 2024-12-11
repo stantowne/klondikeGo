@@ -3,10 +3,13 @@ package main
 import (
 	"fmt"
 	"os"
+	"reflect"
 	"sort"
 )
 
 func configPrint(c Configuration) {
+
+	//	configPrint2(c, 0, "")
 
 	_, _ = fmt.Fprintf(oW, "\nCalling Program: %v\n", os.Args[0])
 	_, _ = fmt.Fprintf(oW, "\nRun Start Time: %15s\n\n", c.General.RunStartTime.Format("2006.01.02  3:04:05 pm"))
@@ -123,4 +126,23 @@ func configPrint(c Configuration) {
 		_, _ = pfmt.Fprintf(oW, "\n\n")
 	}
 
+}
+
+func configPrint2(c interface{}, level int, prefix string) {
+	v := reflect.ValueOf(c)
+
+	typeOfS := v.Type()
+	n := v.NumField()
+	fmt.Printf("\nreflect.ValueOf(c): %v\ntypeOfS: %v\nNumfield: %v\nt: %v", v, typeOfS, n, n)
+	for i := 0; i < v.NumField(); i++ {
+		n := typeOfS.Field(i).Name
+		fmt.Printf("\nField: %s\tKind: %s\tValue: %v\nn: %v", v.Type().Name(), v.Field(i).Kind(), v, n)
+		if v.Field(i).Kind() == reflect.Struct {
+			fmt.Printf("\n%v %v", 0, level+1)
+			configPrint2(v.Field(i), level+1, prefix+"."+typeOfS.Field(i).Name)
+		}
+		fmt.Printf("\nField: %s\tValue: %v\n", typeOfS.Field(i).Name, v.Field(i).Interface())
+		//fmt.Println(1)
+	}
+	//fmt.Println(2)
 }

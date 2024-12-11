@@ -3,12 +3,12 @@
 general:
   deck file name: ./DeckFiles/decks-0-409999.csv      # Note: forward slash /
   decks: consecutive                                  # consecutive or list or shuffle
-  first deck number: 25000                            # non-negative integer less than 410,000
-  number of decks to be played: 5000                  # positive integer no more than 410,000 minus first deck number
+  first deck number: 0                                # non-negative integer less than 410,000
+  number of decks to be played: 10000                 # positive integer no more than 410,000 minus first deck number
   list:                                               # not implemented
   type of play: playAll                               # playAll or playOrig
   verbose: 0                                          # non-negative integer
-  outputTo: ./playAllPrintOutput/Decks_25000-29999    # console OR filename WITHOUT extension;
+  outputTo: ./playAllPrintOutput/Decks_0-9999_GLE_10  # console OR filename WITHOUT extension;
                                                       # filename will be appended with a datetime stamp and extension ".txt"
                                                       # ./playOrigLossesOutput/filename or ./playAllPrintOutput/filename are suggested
 
@@ -20,7 +20,7 @@ play original:
 
 
 play all moves:
-    game length limit in million moves tried: 20      # IN MILLIONS non-negative integer
+    game length limit in million moves tried: 10      # IN MILLIONS non-negative integer
 
     find all winning strategies?: false               # true or false   true not yet implemented
 
@@ -47,7 +47,7 @@ play all moves:
       continue for how many moves: 0                  # 0 means no restriction
 
     print winning moves: false                        # true or false
-    progress counter in millions: 3                   # Applicable All reporting when OutputTo != "console"
+    progress counter in millions: 5                   # Applicable All reporting when OutputTo != "console"
                                                       # and only to Deck-by-Deck reporting when OutputTo == "console"
     print final deck by deck W/L record: true         # true or false  #Applies only if cfg.PlayAll.ReportingType.MoveByMove == true
                                                       #                              or cfg.PlayAll.ReportingType.Tree       == true
@@ -60,5 +60,6 @@ play all moves:
       # filename will be appended with a datetime stamp and extension ".txt"
       #
 
-  # NOTE: 2h21m per 1000 decks avg with GLE=50
+  # NOTE:  141m per 1000 decks avg with GLE=50
   # NOTE:   74m per 1000 decks avg with GLE=20
+  # NOTE:   47m per 1000 decks avg with GLE=10

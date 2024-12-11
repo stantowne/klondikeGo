@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Configuration struct {
+type ConfigurationOrig struct {
 	General struct {
 		RunStartTime            time.Time
 		GitVersion              string // Hash of latest commit
@@ -62,7 +62,7 @@ type Configuration struct {
 	} `yaml:"play all moves"`
 }
 
-type Configuration2 struct {
+type Configuration struct {
 	General  General  `yaml:"general"`
 	PlayOrig PlayOrig `yaml:"play original"`
 	PlayAll  PlayAll  `yaml:"play all moves"`
@@ -78,7 +78,7 @@ type ReportingType struct {
 type General struct {
 	RunStartTime            time.Time
 	GitVersion              string // Hash of latest commit
-	GitSystem               string // The machine this was run on - the version number will likely only exist on this machine
+	HostName                string // The machine this was run on - the version number will likely only exist on this machine
 	DeckFileName            string `yaml:"deck file name"`
 	Decks                   string `yaml:"decks"`                        // must be "consecutive" or "list"
 	FirstDeckNum            int    `yaml:"first deck number"`            // must be non-negative integer
