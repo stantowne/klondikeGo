@@ -89,26 +89,34 @@ func main() {
 		// Fill the Short named package variable "oW" for cfg.General.outWriter
 		oW = cfg.General.outWriter
 		// remember to close the file
-		defer cfg.General.outWriter.Close()
+		defer func(oW *os.File) {
+			err := oW.Close()
+			if err != nil {
+				fmt.Printf("Error: %v  Error closing output file: %s msg: %v", err, outWriterFileName, err.Error())
+				os.Exit(1)
+			}
+		}(oW)
+
 		configPrint(cfg) // Print SECOND time to file
 	}
 
 	cfg.PlayAll.ProgressCounter *= 1_000_000
 	cfg.PlayAll.ProgressCounterLastPrintTime = time.Now()
 
-	inputFileName := cfg.General.DeckFileName
-	file, err := os.Open(inputFileName)
+	//inputFileName := cfg.General.DeckFileName
+	file, err := os.Open(cfg.General.DeckFileName)
 	if err != nil {
-		fmt.Println("Error: %v  Cannot open Deck inputFileName: %s", err, cfg.General.DeckFileName)
+		fmt.Printf("Error: %v  Cannot open Deck inputFileName: %s", err, cfg.General.DeckFileName)
 	}
 	defer func(file *os.File) {
 		err := file.Close()
 		if err != nil {
-			println("could not close file:", err)
+			println("could not close file: %v  err: %v  errmsg: %v", err)
 		}
 	}(file)
 	reader := csv.NewReader(file)
 
+	// skip forward to the first deck to be played
 	if cfg.General.FirstDeckNum > 0 {
 		for i := 0; i < cfg.General.FirstDeckNum; i++ {
 			_, err = reader.Read()
