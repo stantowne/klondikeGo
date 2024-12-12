@@ -3,8 +3,8 @@
 general:
   deck file name: ./DeckFiles/decks-0-409999.csv      # Note: forward slash /
   decks: consecutive                                  # consecutive or list or shuffle
-  first deck number: 0                                # non-negative integer less than 410,000
-  number of decks to be played: 1000                  # positive integer no more than 410,000 minus first deck number
+  first deck number: 1000                             # non-negative integer less than 410,000
+  number of decks to be played: 9000                  # positive integer no more than 410,000 minus first deck number
   list:                                               # not implemented
   type of play: playAll                               # playAll or playOrig
   verbose: 0                                          # non-negative integer

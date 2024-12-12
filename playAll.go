@@ -10,61 +10,12 @@ import (
 	"time"
 )
 
-type Statistics struct {
-	mvsTried         int
-	stratNum         int // stratNum starts at 0             Both are not really needed but it was written that way and not worth changing
-	stratTried       int // Strategies TRIED = stratNum + 1  Both are not really needed but it was written that way and not worth changing
-	stratWins        int
-	stratLosses      int
-	stratLossesGLE   int // Strategy Game Length Exceeded
-	stratLossesGLEAb int // Strategy Game Length Exceeded Aborted moves
-	stratLossesNMA   int // Strategy No Moves Available
-	stratLossesRB    int // Strategy Repetitive Board
-	stratLossesMajSE int // Strategy Exhausted Major
-	stratLossesMinSE int // Strategy Exhausted Minor
-	stratLossesEL    int // Strategy Early Loss
-	winningMovesCnt  int // = length of winning moves
-	unqBoards        int
-	elapsedTime      time.Duration
-}
-
-type TDotherSQL struct { // Variables in addition to TD that should be output to SQL
-	moveNumMax   int
-	moveNumAtWin int
-}
-
-type variablesSpecificToPlayAll struct {
-	TD         Statistics
-	TDotherSQL TDotherSQL
-	TDother    struct { // Variables NOT common to TD and AD
-		startTime     time.Time
-		lastPrintTime time.Time
-		treePrevMoves string // Used to retain values between calls to prntMDetTree for a single deck - Needed for when the strategy "Backs Uo"
-		winningMoves  []move
-		priorBoards   map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
-	}
-	AD      Statistics
-	ADother struct {
-		startTime       time.Time
-		moveNumMax      int
-		moveNumAtWinMin int
-		moveNumAtWinMax int
-		decksPlayed     int
-		decksWon        int
-		decksLost       int
-		decksLostGLE    int
-	}
-}
-
 func playAll(reader csv.Reader, cfg *Configuration) {
 	firstDeckNum := cfg.General.FirstDeckNum                       // Shorthand name but really is a copy - OK since never changed (but would Pointer or address be better?)
 	numberOfDecksToBePlayed := cfg.General.NumberOfDecksToBePlayed // Shorthand name but really is a copy - OK since never changed (but would Pointer or address be better?)
 	var vPA variablesSpecificToPlayAll
-	vPA.TDother.priorBoards = map[bCode]bool{}
-	vPA.TDother.treePrevMoves = ""
 	vPA.TD.stratTried = 1
 	vPA.TDother.startTime = time.Now()
-	vPA.TDother.lastPrintTime = time.Now()
 	vPA.ADother.startTime = time.Now()
 
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
@@ -205,7 +156,6 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		vPA.TDother.treePrevMoves = ""
 		vPA.TDother.winningMoves = nil
 		vPA.TDother.startTime = time.Now()
-		vPA.TDother.lastPrintTime = time.Now()
 		clear(vPA.TDother.priorBoards)
 		vPA.TD.stratNum = 0
 		vPA.TD.stratTried = 1 // NOTE: Starts at 1 not 0

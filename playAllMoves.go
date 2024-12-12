@@ -7,12 +7,7 @@ import (
 	"time"
 )
 
-func playAllMoves(bIn board,
-	moveNum int,
-	deckNum int,
-	cfg *Configuration,
-	vPA *variablesSpecificToPlayAll,
-) (string, int) {
+func playAllMoves(bIn board, moveNum int, deckNum int, cfg *Configuration, vPA *variablesSpecificToPlayAll) (string, int) {
 
 	/* Return Codes: NMA = Strategy Loss: No Moves Available
 
@@ -41,18 +36,7 @@ func playAllMoves(bIn board,
 	// Check to see if the gameLengthLimit has been exceeded.
 	//If, treats this as a loss and returns with loss codes.
 	if vPA.TD.mvsTried >= cfg.PlayAll.GameLengthLimit*1_000_000 {
-		prntMDet(bIn,
-			aMoves,
-			0,
-			deckNum,
-			moveNum,
-			"MbM_ANY",
-			2,
-			"GLE: Game Length of: %v exceeds limit: %v\n",
-			strconv.Itoa(vPA.TD.mvsTried),
-			strconv.Itoa(cfg.PlayAll.GameLengthLimit*1_000_000),
-			cfg,
-			vPA)
+		prntMDet(bIn, aMoves, 0, deckNum, moveNum, "MbM_ANY", 2, "GLE: Game Length of: %v exceeds limit: %v\n", strconv.Itoa(vPA.TD.mvsTried), strconv.Itoa(cfg.PlayAll.GameLengthLimit*1_000_000), cfg, vPA)
 		vPA.TD.stratLossesGLE++
 		prntMDetTreeReturnComment(" ==> GLE", deckNum, recurReturnNum, cfg, vPA)
 		return "GLE", recurReturnNum + 1
@@ -147,22 +131,16 @@ func playAllMoves(bIn board,
 		prntMDet(bNew, aMoves, i, deckNum, moveNum, "MbM_S", 2, "     bNew: %v", "", "", cfg, vPA)
 
 		if cfg.PlayAll.ProgressCounter > 0 && math.Mod(float64(vPA.TD.mvsTried+vPA.AD.mvsTried), float64(cfg.PlayAll.ProgressCounter)) <= 0.1 {
-			//avgRepTime := time.Since(vPA.ADother.startTime) / time.Duration((vPA.TD.mvsTried+vPA.AD.mvsTried)/cfg.PlayAll.ProgressCounter)
-			//estMaxRemTimeTD := time.Since(vPA.ADother.startTime) * time.Duration((cfg.PlayAll.GameLengthLimit*1_000_000 - vPA.TD.mvsTried)) / time.Duration(vPA.TD.mvsTried+vPA.AD.mvsTried)
 			decksPlayed := float64(deckNum-cfg.General.FirstDeckNum) + .5
 			decksCompleted := float64(vPA.ADother.decksWon + vPA.ADother.decksLost + vPA.ADother.decksLostGLE)
 			estRemTimeAD := time.Duration(float64(time.Since(vPA.ADother.startTime)) * (float64(cfg.General.NumberOfDecksToBePlayed) - decksPlayed) / decksPlayed)
 			// NOTE THE FOLLOWING PRINT STATEMENT NEVER GOES TO FILE - ALWAYS TO CONSOLE
 			_, _ = pfmt.Printf("\rDk: %d  Mvs: %vmm  Strats: %vmm  UnqBoards: %vmm  MaxMoveNum: %v  Elapsed: %s  estRem: %s  W/L/GLE: %v/%v/%v  W/L/GLE %%: %3.1f/%3.1f/%3.1f\r",
 				deckNum, (vPA.TD.mvsTried+vPA.AD.mvsTried)/1000000, vPA.AD.stratNum/1000000, vPA.AD.unqBoards/1000000, vPA.ADother.moveNumMax, time.Since(vPA.ADother.startTime).Round(6*time.Second).String(), estRemTimeAD.Round(6*time.Second), vPA.ADother.decksWon, vPA.ADother.decksLost, vPA.ADother.decksLostGLE, float64(vPA.ADother.decksWon)/decksCompleted*100.0, float64(vPA.ADother.decksLost)/decksCompleted*100.0, float64(vPA.ADother.decksLostGLE)/decksCompleted*100.0)
-			//_, _ = pfmt.Printf("%v %v %v\r", vPA.ADother.decksWon, decksCompleted, float64(vPA.ADother.decksWon)/decksCompleted*100.0)
-			vPA.TDother.lastPrintTime = time.Now()
 		}
 
 		// ********** 2nd of the 2 MOST IMPORTANT statements in this function:  ******************************
 		recurReturnV1, recurReturnNum = playAllMoves(bNew, moveNum+1, deckNum, cfg, vPA)
-
-		// CONSIDER DELETING prntMDet(bIn, aMoves, i, deckNum, moveNum, "DbDorMbM", 1, "  Returned: %v - %v After Call at deckNum: %v  moveNum: %v   vPA.TD.stratNum: %v   vPA.TD.mvsTried: %v   UnqBds: %v   ElTimTD: %v   ElTimADs: %v\n", recurReturnV1, recurReturnV2, cfg, vPA)
 
 		if recurReturnV1 == "SW" {
 			// save winning moves into a slice in reverse
