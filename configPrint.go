@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"reflect"
 	"sort"
 )
 
@@ -127,7 +128,7 @@ func configPrint(c Configuration) {
 
 }
 
-/*// Attempt to use reflection
+// Attempt to use reflection
 func configPrint2(c interface{}, level int, prefix string) {
 	fmt.Printf("\n\n\nc interface{}   level: %v   prefix: %v", level, prefix)
 	fmt.Printf("\n      typeof cfg: %v", reflect.TypeOf(c))
@@ -156,4 +157,3 @@ func configPrint2(c interface{}, level int, prefix string) {
 	}
 	//fmt.Println(2)
 }
-*/
