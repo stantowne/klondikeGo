@@ -129,17 +129,27 @@ func configPrint(c Configuration) {
 
 /*// Attempt to use reflection
 func configPrint2(c interface{}, level int, prefix string) {
-	v := reflect.ValueOf(c)
+	fmt.Printf("\n\n\nc interface{}   level: %v   prefix: %v", level, prefix)
+	fmt.Printf("\n      typeof cfg: %v", reflect.TypeOf(c))
+	fmt.Printf("\n     valueof cfg: %v", reflect.ValueOf(c))
+	fmt.Printf("\n      nameof cfg: %v", reflect.TypeOf(c).Name())
+	fmt.Printf("\n typeof.kind cfg: %v", reflect.TypeOf(c).Kind())
+	fmt.Printf("\nvalueof.kind cfg: %v", reflect.ValueOf(c).Kind())
+	fmt.Printf("\nvalueof.kind==cfg: %v", reflect.ValueOf(c).Kind() == reflect.Struct)
+	fmt.Printf("\nvalueof.kind==cfg: %v", reflect.TypeOf(c).Kind() == reflect.Struct)
+	fmt.Printf("\nzerof cfg: %v", reflect.Zero(reflect.TypeOf(c)))
+	//fmt.Printf("nameof cfg: %v", reflect.TypeOf(c).Name())
 
+	v := reflect.ValueOf(c)
 	typeOfS := v.Type()
 	n := v.NumField()
 	fmt.Printf("\nreflect.ValueOf(c): %v\ntypeOfS: %v\nNumfield: %v\nt: %v", v, typeOfS, n, n)
 	for i := 0; i < v.NumField(); i++ {
 		n := typeOfS.Field(i).Name
 		fmt.Printf("\nField: %s\tKind: %s\tValue: %v\nn: %v", v.Type().Name(), v.Field(i).Kind(), v, n)
-		if v.Field(i).Kind() == reflect.Struct {
+		if v.Field(i).Kind() == reflect.Struct { //panic
 			fmt.Printf("\n%v %v", 0, level+1)
-			configPrint2(v.Field(i), level+1, prefix+"."+typeOfS.Field(i).Name)
+			configPrint2(typeOfS.Field(i).Name, level+1, typeOfS.Field(i).Name)
 		}
 		fmt.Printf("\nField: %s\tValue: %v\n", typeOfS.Field(i).Name, v.Field(i).Interface())
 		//fmt.Println(1)

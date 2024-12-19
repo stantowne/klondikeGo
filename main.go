@@ -23,6 +23,7 @@ var outWriterFileName string
 func main() {
 	// unmarshal YAML file
 	cfg := Configuration{}
+
 	cfg.General.RunStartTime = time.Now()
 	cfg.General.GitVersion = "" // Stan we need to figure out how to get this
 	data, err := os.ReadFile("./config.yml")
@@ -34,10 +35,7 @@ func main() {
 	}
 	//I need to confirm that, by virtue of no error being returned, we know that all bools have valid values.
 
-	/*
-		spew.Dump(cfg)
-		fmt.Printf("\nqqqqqq%T \n\n\nzzzzzzzzz\n", cfg.PlayAll.MoveByMoveReportingOptions.Type)
-	*/
+	//	configPrint2(cfg, 0, "cfg")
 
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, setting := range info.Settings {
