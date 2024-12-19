@@ -14,6 +14,8 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	firstDeckNum := cfg.General.FirstDeckNum                       // Shorthand name but really is a copy - OK since never changed (but would Pointer or address be better?)
 	numberOfDecksToBePlayed := cfg.General.NumberOfDecksToBePlayed // Shorthand name but really is a copy - OK since never changed (but would Pointer or address be better?)
 	var vPA variablesSpecificToPlayAll
+	vPA.TDother.priorBoards = map[bCode]bool{}
+	vPA.TDother.treePrevMoves = ""
 	vPA.TD.stratTried = 1
 	vPA.TDother.startTime = time.Now()
 	vPA.ADother.startTime = time.Now()
