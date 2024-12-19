@@ -2,7 +2,7 @@
 
 general:
   deck file name: ./DeckFiles/decks-0-409999.csv      # Note: forward slash /
-  decks: consecutive                                  # consecutive or list or shuffle
+  decks: consecutive                                  # consecutive or list or sqlQuery(...)
   first deck number: 1000                             # non-negative integer less than 410,000
   number of decks to be played: 9000                  # positive integer no more than 410,000 minus first deck number
   list:                                               # not implemented

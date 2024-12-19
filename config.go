@@ -19,6 +19,7 @@ type Configuration struct {
 		Verbose                 int    `yaml:"verbose"`
 		OutputTo                string `yaml:"outputTo"`
 		outWriter               *os.File
+		outWriterFileName       string
 	} `yaml:"general"`
 	PlayOrig struct {
 		Length          int `yaml:"length of initial override strategy"`
@@ -53,9 +54,9 @@ type Configuration struct {
 			MovesTriedStartVal    int `yaml:"starting move number"`
 			MovesTriedContinueFor int `yaml:"continue for how many moves"`
 		} `yaml:"restrict reporting to"`
-		PrintWinningMoves   bool   `yaml:"print winning moves"`
-		ProgressCounter     int    `yaml:"progress counter in millions"`
-		WinLossReport       bool   `yaml:"print final deck by deck win loss record"`
+		PrintWinningMoves bool `yaml:"print winning moves"`
+		ProgressCounter   int  `yaml:"progress counter in millions"`
+		//		WinLossReport       bool   `yaml:"print final deck by deck win loss record"`
 		SaveResultsToSQL    bool   `yaml:"save results to SQL"`
 		SQLConnectionString string `yaml:"sql connection string"`
 	} `yaml:"play all moves"`

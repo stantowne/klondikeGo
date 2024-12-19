@@ -35,7 +35,7 @@ func configPrint(c Configuration) {
 	if c.General.OutputTo == "console" {
 		_, _ = fmt.Fprintf(oW, "\n")
 	} else {
-		_, _ = pfmt.Fprintf(oW, "   Full File Name: %v\n", outWriterFileName)
+		_, _ = pfmt.Fprintf(oW, "   Full File Name: %v\n", c.General.outWriterFileName)
 	}
 	if c.General.TypeOfPlay == "playOrig" {
 		nOfS := 1 << c.PlayOrig.Length //number of initial strategies
@@ -103,7 +103,7 @@ func configPrint(c Configuration) {
 		}
 		_, _ = pfmt.Fprintf(oW, "\nPrint Winning Moves: %v\n", c.PlayAll.PrintWinningMoves)
 		_, _ = pfmt.Fprintf(oW, "Move Progress Reporting Cycles, in Millions: %-5v\n", c.PlayAll.ProgressCounter)
-		_, _ = pfmt.Fprintf(oW, "Print final DbD W/L record: %v\n", c.PlayAll.WinLossReport)
+		_, _ = pfmt.Fprintf(oW, "Print final DbD W/L record: %v\n", "")
 		_, _ = pfmt.Fprintf(oW, "Save results to SQL: %v\n", c.PlayAll.SaveResultsToSQL)
 		if c.PlayAll.SaveResultsToSQL {
 			_, _ = pfmt.Fprintf(oW, "   SQL connection string: %v\n", c.PlayAll.SQLConnectionString)

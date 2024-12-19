@@ -18,7 +18,6 @@ var pfmt = message.NewPrinter(language.English)
 
 // Create the Short named package variable "oW" for cfg.General.outWriter
 var oW *os.File
-var outWriterFileName string
 
 func main() {
 	// unmarshal YAML file
@@ -40,7 +39,7 @@ func main() {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, setting := range info.Settings {
 			if setting.Key == "vcs.revision" {
-				cfg.General.GitVersion = setting.Value // Stan we need to figure out how to get this
+				cfg.General.GitVersion = setting.Value
 				break
 			}
 		}
@@ -75,23 +74,29 @@ func main() {
 	// Fill the Short named package variable "oW" for cfg.General.outWriter
 	oW = os.Stdout
 	if cfg.General.OutputTo != "console" {
-		outWriterFileName = cfg.General.OutputTo
-		if cfg.General.Decks != "list" {
-			outWriterFileName += "_" + strconv.Itoa(cfg.General.FirstDeckNum) + "-" + strconv.Itoa(cfg.General.FirstDeckNum+cfg.General.NumberOfDecksToBePlayed-1)
+		cfg.General.outWriterFileName = cfg.General.OutputTo
+		cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves = 0
+		cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMovesDur = 0
+		cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategies = 0
+		cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategiesDur = 0
+		if cfg.General.Decks == "consecutive" {
+			cfg.General.outWriterFileName += "_" + strconv.Itoa(cfg.General.FirstDeckNum) + "-" + strconv.Itoa(cfg.General.FirstDeckNum+cfg.General.NumberOfDecksToBePlayed-1)
+		} else {
+			cfg.General.outWriterFileName += "_List"
 		}
 		if cfg.General.TypeOfPlay == "playAll" {
-			outWriterFileName += "_GLE" + strconv.Itoa(cfg.PlayAll.GameLengthLimit)
+			cfg.General.outWriterFileName += "_GLE" + strconv.Itoa(cfg.PlayAll.GameLengthLimit)
 		} else {
-			outWriterFileName += "_GLE" + strconv.Itoa(cfg.PlayOrig.GameLengthLimit)
+			cfg.General.outWriterFileName += "_GLE" + strconv.Itoa(cfg.PlayOrig.GameLengthLimit)
 		}
-		outWriterFileName += "__" + cfg.General.RunStartTime.Format("2006.01.02_15.04.05_-0700") + ".txt"
+		cfg.General.outWriterFileName += "__" + cfg.General.RunStartTime.Format("2006.01.02_15.04.05_-0700") + ".txt"
 	}
 	configPrint(cfg) // Print FIRST time to stout
 	if cfg.General.OutputTo != "console" {
 		// create file
-		cfg.General.outWriter, err = os.Create(outWriterFileName)
+		cfg.General.outWriter, err = os.Create(cfg.General.outWriterFileName)
 		if err != nil {
-			fmt.Printf("Error: %v  Error creating output file: %s", err, outWriterFileName)
+			fmt.Printf("Error: %v  Error creating output file: %s", err, cfg.General.outWriterFileName)
 			os.Exit(1)
 		}
 		// Fill the Short named package variable "oW" for cfg.General.outWriter
@@ -100,7 +105,7 @@ func main() {
 		defer func(oW *os.File) {
 			err := oW.Close()
 			if err != nil {
-				fmt.Printf("Error: %v  Error closing output file: %s msg: %v", err, outWriterFileName, err.Error())
+				fmt.Printf("Error: %v  Error closing output file: %s msg: %v", err, cfg.General.outWriterFileName, err.Error())
 				os.Exit(1)
 			}
 		}(oW)

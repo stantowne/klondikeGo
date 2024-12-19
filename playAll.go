@@ -170,7 +170,4 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		printSummaryStats(cfg, &vPA)
 	}
 
-	if cfg.PlayAll.WinLossReport { // Deck Win Loss Summary Statistics
-		// Close sql/csv file for writing and open it for reading and report it here
-	}
 }
