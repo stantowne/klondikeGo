@@ -135,16 +135,20 @@ func printSummaryStats(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
 	ADotherSQLPrint(vPA)
 }
 
-func PrintWinningMoves(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
+func printWinningMoves(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
 	// First Reverse the slice (which were collected in reverse as we backed up the call chain)
-	for i := 0; i < len(vPA.TDother.winningMoves)/2; i++ {
-		vPA.TDother.winningMoves[i], vPA.TDother.winningMoves[len(vPA.TDother.winningMoves)-i-1] = vPA.TDother.winningMoves[len(vPA.TDother.winningMoves)-i-1], vPA.TDother.winningMoves[i]
+	for i := 0; i < len(vPA.TDotherSQL.winningMoves)/2; i++ {
+		vPA.TDotherSQL.winningMoves[i], vPA.TDotherSQL.winningMoves[len(vPA.TDotherSQL.winningMoves)-i-1] = vPA.TDotherSQL.winningMoves[len(vPA.TDotherSQL.winningMoves)-i-1], vPA.TDotherSQL.winningMoves[i]
+	}
+	// Build SHA256 of the winning moves
+	for i := 0; i < len(vPA.TDotherSQL.winningMoves)/2; i++ {
+		// !!!!!!!!!!!!!!!!!!!!
 	}
 	// Now print them
 	if cfg.PlayAll.PrintWinningMoves {
 		_, _ = fmt.Fprintf(oW, "\n\n     Winning Moves:\n")
-		for mN := range vPA.TDother.winningMoves {
-			m1, m2 := printMove(vPA.TDother.winningMoves[mN], true)
+		for mN := range vPA.TDotherSQL.winningMoves {
+			m1, m2 := printMove(vPA.TDotherSQL.winningMoves[mN], true)
 			_, _ = fmt.Fprintf(oW, "        %3v.  %s\n", mN+1, m1)
 			if len(m2) != 0 {
 				_, _ = fmt.Fprintf(oW, "          %s\n", m2)

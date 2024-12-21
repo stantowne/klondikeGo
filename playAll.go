@@ -74,7 +74,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			vPA.TD.stratLossesGLEAb = result2 - 2
 		}
 		vPA.TD.elapsedTime = time.Since(vPA.TDother.startTime)
-		vPA.TD.winningMovesCnt = len(vPA.TDother.winningMoves)
+		vPA.TD.winningMovesCnt = len(vPA.TDotherSQL.winningMoves)
 		var dummy []move
 
 		vPA.TD.unqBoards = len(vPA.TDother.priorBoards)
@@ -102,7 +102,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 
 		// Reverse the collected winning moves and print them if needed
 		if (cfg.PlayAll.SaveResultsToSQL || cfg.PlayAll.PrintWinningMoves) && vPA.TD.winningMovesCnt != 0 {
-			PrintWinningMoves(cfg, &vPA)
+			printWinningMoves(cfg, &vPA)
 		}
 
 		if cfg.PlayAll.SaveResultsToSQL {
@@ -156,7 +156,8 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 
 		vPA.ADother.decksPlayed++
 		vPA.TDother.treePrevMoves = ""
-		vPA.TDother.winningMoves = nil
+		vPA.TDotherSQL.winningMoves = nil
+		vPA.TDotherSQL.winningMoves_SHA256 = nil
 		vPA.TDother.startTime = time.Now()
 		clear(vPA.TDother.priorBoards)
 		vPA.TD.stratNum = 0

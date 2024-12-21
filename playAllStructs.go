@@ -21,8 +21,10 @@ type Statistics struct {
 }
 
 type TDotherSQL struct { // Variables in addition to TD that should be output to SQL
-	moveNumMax   int
-	moveNumAtWin int
+	moveNumMax          int
+	moveNumAtWin        int
+	winningMoves        []move
+	winningMoves_SHA256 []byte
 }
 
 type variablesSpecificToPlayAll struct {
@@ -30,8 +32,7 @@ type variablesSpecificToPlayAll struct {
 	TDotherSQL TDotherSQL
 	TDother    struct { // Variables NOT common to TD and AD
 		startTime     time.Time
-		treePrevMoves string // Used to retain values between calls to prntMDetTree for a single deck - Needed for when the strategy "Backs Uo"
-		winningMoves  []move
+		treePrevMoves string         // Used to retain values between calls to prntMDetTree for a single deck - Needed for when the strategy "Backs Uo"
 		priorBoards   map[bCode]bool // NOTE: bcode is an array of 65 ints as defined in board.go
 	}
 	AD      Statistics
