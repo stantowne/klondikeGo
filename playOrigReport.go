@@ -59,7 +59,7 @@ func playOrigReport(vPO variablesSpecificToPlayOrig, cfg *Configuration) {
 		fmt.Println("Regular Losses cannot print")
 	}
 
-	_, err = pfmt.Fprintf(oW, "Number of Attempts Avoided ia %d\n", vPO.attemptsAvoidedCounter)
+	_, err = pfmt.Fprintf(oW, "Number of Attempts Avoided is %d\n", vPO.attemptsAvoidedCounter)
 	if err != nil {
 		fmt.Println("Number of Attempts Avoided cannot print")
 	}
