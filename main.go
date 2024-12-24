@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/csv"
 	"fmt"
 	"golang.org/x/text/language"
@@ -19,22 +20,9 @@ var pfmt = message.NewPrinter(language.English)
 // Create the Short named package variable "oW" for cfg.General.outWriter
 var oW *os.File
 
+var db *sql.DB
+
 func main() {
-	config, err := LoadConfig()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	// Connect to the database
-	db, err := Connect(config)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer db.Close()
-
-	fmt.Println("Successfully connected to SQL Server database.")
 
 	//***************************************************************
 	// unmarshal YAML file

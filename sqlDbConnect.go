@@ -17,7 +17,7 @@ type DBConfig struct {
 }
 
 func LoadConfig() (*DBConfig, error) {
-	err := godotenv.Load()
+	err := godotenv.Load("sqlDbConnect.env")
 	if err != nil {
 		return nil, fmt.Errorf("error loading .env file: %w", err)
 	}

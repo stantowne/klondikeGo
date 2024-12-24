@@ -52,8 +52,11 @@ play all moves:
   print final deck by deck W/L record: true         # true or false  #Applies only if cfg.PlayAll.ReportingType.MoveByMove == true
                                                     #                              or cfg.PlayAll.ReportingType.Tree       == true
   save results to SQL: true                         # true or false
-  sql connection string: "use db.go"                # actual connection string or "use db.go" which uses .env file
-
+  sql connection string: "use sqlDbConnect.go"
+                                                    # actual connection string or "use sqlDbConnect.go" which uses sqlDbConnect.env file
+                                                    # example: server=DANACER\\SQLEXPRESS;port=1433;user id=@DANACER\\dan@;password=@password@;database=Klondike
+                                                    #		// NOTE Double BackSlashes !!!!!!!!!!!
+                                                    #		// Replace @...@ with actual
 
     # Further comments regarding the outputTo filename:
 
