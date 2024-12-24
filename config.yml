@@ -48,11 +48,11 @@ play all moves:
 
   print winning moves: false                        # true or false
   progress counter in millions: 5                   # Applicable All reporting when OutputTo != "console"
-  # and only to Deck-by-Deck reporting when OutputTo == "console"
+                                                    # and only to Deck-by-Deck reporting when OutputTo == "console"
   print final deck by deck W/L record: true         # true or false  #Applies only if cfg.PlayAll.ReportingType.MoveByMove == true
-  #                              or cfg.PlayAll.ReportingType.Tree       == true
-  save results to SQL: false                        # true or false
-  sql connection string: "test"
+                                                    #                              or cfg.PlayAll.ReportingType.Tree       == true
+  save results to SQL: true                         # true or false
+  sql connection string: "use db.go"                # actual connection string or "use db.go" which uses .env file
 
 
     # Further comments regarding the outputTo filename:

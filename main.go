@@ -20,11 +20,28 @@ var pfmt = message.NewPrinter(language.English)
 var oW *os.File
 
 func main() {
+	config, err := LoadConfig()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Connect to the database
+	db, err := Connect(config)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer db.Close()
+
+	fmt.Println("Successfully connected to SQL Server database.")
+
+	//***************************************************************
 	// unmarshal YAML file
 	cfg := Configuration{}
 
 	cfg.General.RunStartTime = time.Now()
-	cfg.General.GitVersion = "" // Stan we need to figure out how to get this
+	cfg.General.GitVersion = ""
 	data, err := os.ReadFile("./config.yml")
 	if err != nil {
 		panic(err)

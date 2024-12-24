@@ -144,7 +144,7 @@ func playAllMoves(bIn board, moveNum int, deckNum int, cfg *Configuration, vPA *
 
 		if recurReturnV1 == "SW" {
 			// save winning moves into a slice in reverse
-			vPA.TDother.winningMoves = append(vPA.TDother.winningMoves, aMoves[i])
+			vPA.TDotherSQL.winningMoves = append(vPA.TDotherSQL.winningMoves, aMoves[i])
 			return recurReturnV1, recurReturnNum + 1 // return up the call stack to end strategies search  if findAllWinStrats false, and we had a win
 		}
 		if recurReturnV1 == "GLE" {
