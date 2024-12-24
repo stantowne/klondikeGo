@@ -101,12 +101,12 @@ func configPrint(c Configuration) {
 					c.PlayAll.RestrictReportingTo.MovesTriedContinueFor)
 			}
 		}
-		_, _ = pfmt.Fprintf(oW, "\nPrint Winning Moves: %v\n", c.PlayAll.PrintWinningMoves)
+		_, _ = pfmt.Fprintf(oW, "\n                        Print Winning Moves: %v\n", c.PlayAll.PrintWinningMoves)
 		_, _ = pfmt.Fprintf(oW, "Move Progress Reporting Cycles, in Millions: %-5v\n", c.PlayAll.ProgressCounter)
-		_, _ = pfmt.Fprintf(oW, "Print final DbD W/L record: %v\n", "")
-		_, _ = pfmt.Fprintf(oW, "Save results to SQL: %v\n", c.PlayAll.SaveResultsToSQL)
+		//_, _ = pfmt.Fprintf(oW, "                  Print final DbD W/L record: %v\n", "")
+		_, _ = pfmt.Fprintf(oW, "                        Save results to SQL: %v\n", c.PlayAll.SaveResultsToSQL)
 		if c.PlayAll.SaveResultsToSQL {
-			_, _ = pfmt.Fprintf(oW, "   SQL connection string: %v\n", c.PlayAll.SQLConnectionString)
+			_, _ = pfmt.Fprintf(oW, "                  SQL connection string: %v\n", c.PlayAll.SQLConnectionString)
 		}
 
 		_, _ = pfmt.Fprintf(oW, "\n\nMove Priority Settings:\n\n")
