@@ -24,7 +24,7 @@ type TDotherSQL struct { // Variables in addition to TD that should be output to
 	moveNumMax         int
 	moveNumAtWin       int
 	winningMoves       []move
-	winningMovesSHA256 [64]byte
+	winningMovesSHA256 [32]byte
 }
 
 type variablesSpecificToPlayAll struct {

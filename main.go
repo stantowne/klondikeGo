@@ -150,7 +150,7 @@ func main() {
 		moveBasePriority = moveBasePriorityAll
 		if cfg.PlayAll.SaveResultsToSQL {
 			// Create row in sql file RunCfg and get back the Run_ID that was created on the insert and assign it to cfg.General.runID !!
-
+			sqlExec("Insert", "RunCfg", &cfg, nil, nil)
 			// Check if a row Priority_SHA256 == cfg.General.prioritySHA256 exists if not Create it !!
 			// Create row in sql file Cfg_PlayAll
 		}

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/binary"
 	"fmt"
 	"math"
 	"strconv"
@@ -141,9 +143,32 @@ func printWinningMoves(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
 		vPA.TDotherSQL.winningMoves[i], vPA.TDotherSQL.winningMoves[len(vPA.TDotherSQL.winningMoves)-i-1] = vPA.TDotherSQL.winningMoves[len(vPA.TDotherSQL.winningMoves)-i-1], vPA.TDotherSQL.winningMoves[i]
 	}
 	// Build SHA256 of the winning moves
-	for i := 0; i < len(vPA.TDotherSQL.winningMoves)/2; i++ {
-		// !!!!!!!!!!!!!!!!!!!!
+	var winningMovesAsBytes []byte
+	var faceUp byte
+	var colCardFlip byte
+	for i := 0; i < len(vPA.TDotherSQL.winningMoves); i++ {
+		winningMovesAsBytes = append(winningMovesAsBytes, []byte(vPA.TDotherSQL.winningMoves[i].name)...)
+		winningMovesAsBytes = append(winningMovesAsBytes, i32ToBytes(vPA.TDotherSQL.winningMoves[i].priority)...)
+		winningMovesAsBytes = append(winningMovesAsBytes, i32ToBytes(vPA.TDotherSQL.winningMoves[i].toPile)...)
+		winningMovesAsBytes = append(winningMovesAsBytes, i32ToBytes(vPA.TDotherSQL.winningMoves[i].toCol)...)
+		winningMovesAsBytes = append(winningMovesAsBytes, i32ToBytes(vPA.TDotherSQL.winningMoves[i].fromCol)...)
+		winningMovesAsBytes = append(winningMovesAsBytes, i32ToBytes(vPA.TDotherSQL.winningMoves[i].MovePortionStartIdx)...)
+		winningMovesAsBytes = append(winningMovesAsBytes, i32ToBytes(vPA.TDotherSQL.winningMoves[i].cardToMove.Rank)...)
+		winningMovesAsBytes = append(winningMovesAsBytes, i32ToBytes(vPA.TDotherSQL.winningMoves[i].cardToMove.Suit)...)
+		if vPA.TDotherSQL.winningMoves[i].cardToMove.FaceUp {
+			faceUp = 0x00000001
+		} else {
+			faceUp = 0x00000000
+		}
+		winningMovesAsBytes = append(winningMovesAsBytes, faceUp)
+		if vPA.TDotherSQL.winningMoves[i].colCardFlip {
+			colCardFlip = 0x00000001
+		} else {
+			colCardFlip = 0x00000000
+		}
+		winningMovesAsBytes = append(winningMovesAsBytes, colCardFlip)
 	}
+	vPA.TDotherSQL.winningMovesSHA256 = sha256.Sum256(winningMovesAsBytes)
 	// Now print them
 	if cfg.PlayAll.PrintWinningMoves {
 		_, _ = fmt.Fprintf(oW, "\n\n     Winning Moves:\n")
@@ -401,4 +426,10 @@ func printableLength(s string) int {
 		}
 	}
 	return runeCount
+}
+
+func i32ToBytes(i int) []byte {
+	b := make([]byte, 8)
+	binary.LittleEndian.PutUint64(b, uint64(int64(i)))
+	return b
 }
