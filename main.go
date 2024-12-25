@@ -148,6 +148,12 @@ func main() {
 
 	if cfg.General.TypeOfPlay == "playAll" {
 		moveBasePriority = moveBasePriorityAll
+		if cfg.PlayAll.SaveResultsToSQL {
+			// Create row in sql file RunCfg and get back the Run_ID that was created on the insert and assign it to cfg.General.runID !!
+
+			// Check if a row Priority_SHA256 == cfg.General.prioritySHA256 exists if not Create it !!
+			// Create row in sql file Cfg_PlayAll
+		}
 		playAll(*reader, &cfg)
 	}
 	if cfg.General.TypeOfPlay == "playOrig" {

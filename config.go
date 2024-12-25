@@ -7,7 +7,9 @@ import (
 
 type Configuration struct {
 	General struct {
+		RunID                   int64 // Set in sqlStatements after successful Insert into Run_Cfg
 		RunStartTime            time.Time
+		PrioritySHA256          [64]byte
 		GitVersion              string // Hash of latest commit
 		HostName                string // The machine this was run on - the version number will likely only exist on this machine
 		DeckFileName            string `yaml:"deck file name"`
