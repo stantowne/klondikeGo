@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha256"
 	"database/sql"
 	"encoding/csv"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"io"
 	"os"
 	"runtime/debug"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -148,10 +150,15 @@ func main() {
 
 	if cfg.General.TypeOfPlay == "playAll" {
 		moveBasePriority = moveBasePriorityAll
+		cfg.General.PrioritySHA256 = sha256ofMap(moveBasePriority)
 		if cfg.PlayAll.SaveResultsToSQL {
+			// Calculate and set cfg.General.prioritySHA256 of moveBasePriority
+			// Check if a row Priority_SHA256 == cfg.General.prioritySHA256 exists if not Create it !!!!
+			sqlExec("Insert", "Priority", &cfg, nil, nil)
 			// Create row in sql file RunCfg and get back the Run_ID that was created on the insert and assign it to cfg.General.runID !!
 			sqlExec("Insert", "RunCfg", &cfg, nil, nil)
 			// Check if a row Priority_SHA256 == cfg.General.prioritySHA256 exists if not Create it !!
+			//sqlExec("Insert", "Priority", &cfg, nil, nil)
 			// Create row in sql file Cfg_PlayAll
 		}
 		playAll(*reader, &cfg)
@@ -160,4 +167,18 @@ func main() {
 		moveBasePriority = moveBasePriorityOrig
 		playOrig(*reader, &cfg)
 	}
+}
+
+func sha256ofMap(m map[string]int) [32]byte {
+	var bytesOfSortedMap []byte
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		bytesOfSortedMap = append(bytesOfSortedMap, []byte(k)...) //fmt.Println(k, m[k])
+		bytesOfSortedMap = append(bytesOfSortedMap, i32ToBytes(m[k])...)
+	}
+	return sha256.Sum256(bytesOfSortedMap)
 }
