@@ -21,6 +21,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	vPA.ADother.startTime = time.Now()
 
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
+		vPA.TDotherSQL.deckNum = deckNum
 		if !cfg.PlayAll.ReportingType.NoReporting && !(cfg.PlayAll.ReportingType.DeckByDeck && cfg.PlayAll.DeckByDeckReportingOptions.Type != "regular") {
 			_, _ = fmt.Fprintf(oW, "\n\n******************************************************************************************************\n")
 		}
@@ -48,6 +49,12 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		//deal Deck onto board
 		//temp		AllMvStratNum := 0
 		var b = dealDeck(d)
+		var bc bCode
+		if cfg.PlayAll.SaveResultsToSQL {
+			// Create the boardCode of the starting board (directly from the deck) and convert it to a string to write it to sql below
+			bc = b.boardCode(deckNum)
+			vPA.TDotherSQL.boardCodeOfDeckAsString = string(bc[:])
+		}
 
 		/* *************************************************************************************
 

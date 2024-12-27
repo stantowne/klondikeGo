@@ -3,20 +3,25 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"os"
 )
 
-var runID int64
-
-func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecificToPlayAll, vPO *variablesSpecificToPlayOrig) int64 {
+func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecificToPlayAll, vPO *variablesSpecificToPlayOrig) {
 	//var result sql.Result
 	var err error
-	//var err2 error
 	var stmt *sql.Stmt
+	var rows sql.Rows
 	switch verb {
 	case "Insert":
 		switch table {
 		case "Priority":
+			/*			q = "INSERT INTO "
+						q += " ([Priority_SHA256], [moveAceAcross], [moveDeuceAcross], [move3PlusAcross], [moveDown], [moveEntireColumn], [flipWasteToStock], [flipStockToWaste], [movePartialColumn], [moveAceUp], [moveDeuceUp], [move3PlusUp], [badMove], [flipSt->W Max-0], [flipSt->W Max-1], [flipSt->W Max-2], [flipSt->W Max-3], [flipSt->W Max-4], [flipSt->W Max-5], [flipSt->W Max-6], [flipSt->W Max-7])"
+						q += " VALUES "
+						q += " (@Priority_SHA256,  @moveAceAcross,  @moveDeuceAcross,  @move3PlusAcross,  @moveDown,  @moveEntireColumn,  @flipWasteToStock,  @flipStockToWaste,  @movePartialColumn,  @moveAceUp,  @moveDeuceUp,  @move3PlusUp,  @badMove,  @flipStToW_Max_0,  @flipStToW_Max_1,  @flipStToW_Max_2,  @flipStToW_Max_3,  @flipStToW_Max_4,  @flipStToW_Max_5,  @flipStToW_Max_6,  @flipStToW_Max_7);"
+			*/
 			stmt, err = db.Prepare("INSERT INTO [dbo].[Priority] ([Priority_SHA256], [moveAceAcross], [moveDeuceAcross], [move3PlusAcross], [moveDown], [moveEntireColumn], [flipWasteToStock], [flipStockToWaste], [movePartialColumn], [moveAceUp], [moveDeuceUp], [move3PlusUp], [badMove], [flipSt->W Max-0], [flipSt->W Max-1], [flipSt->W Max-2], [flipSt->W Max-3], [flipSt->W Max-4], [flipSt->W Max-5], [flipSt->W Max-6], [flipSt->W Max-7]) VALUES (@Priority_SHA256, @moveAceAcross, @moveDeuceAcross, @move3PlusAcross, @moveDown, @moveEntireColumn, @flipWasteToStock, @flipStockToWaste, @movePartialColumn, @moveAceUp, @moveDeuceUp, @move3PlusUp, @badMove, @flipStToW_Max_0, @flipStToW_Max_1, @flipStToW_Max_2, @flipStToW_Max_3, @flipStToW_Max_4, @flipStToW_Max_5, @flipStToW_Max_6, @flipStToW_Max_7); ")
+			//stmt, err = db.Prepare(q)
 			defer stmt.Close()
 			// Execute the prepared statement
 			_, err = stmt.Exec(
@@ -43,15 +48,15 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("flipStToW_Max_7", moveBasePriority["flipSt->W Max-7"]),
 			)
 			if err != nil {
-				return 0
+				fmt.Printf("Table: %v   Verb: %v   Error: %v getting Hostname", table, verb, err)
+				os.Exit(1)
 			}
-			//result, err = db.Exec("INSERT INTO [dbo].[Priority] ([Priority_SHA256], [moveAceAcross], [moveDeuceAcross], [move3PlusAcross], [moveDown], [moveEntireColumn], [flipWasteToStock], [flipStockToWaste], [movePartialColumn], [moveAceUp], [moveDeuceUp], [move3PlusUp], [badMove], [flipSt->W Max-0], [flipSt->W Max-1], [flipSt->W Max-2], [flipSt->W Max-3], [flipSt->W Max-4], [flipSt->W Max-5], [flipSt->W Max-6], [flipSt->W Max-7])  VALUES ($1,  $2,  $3,  $4,  $5,  $6,  $7,  $8,  $9,  $10,  $11,  $12,  $13,  $14,  $15,  $16,  $17,  $18,  $19,  $20,  $21 ) ", string(cfg.General.PrioritySHA256[:]), moveBasePriority["moveAceAcross"], moveBasePriority["moveDeuceAcross"], moveBasePriority["move3PlusAcross"], moveBasePriority["moveDown"], moveBasePriority["moveEntireColumn"], moveBasePriority["flipWasteToStock"], moveBasePriority["flipStockToWaste"], moveBasePriority["movePartialColumn"], moveBasePriority["moveAceUp"], moveBasePriority["moveDeuceUp"], moveBasePriority["move3PlusUp"], moveBasePriority["badMove"], moveBasePriority["flipSt->W Max-0"], moveBasePriority["flipSt->W Max-1"], moveBasePriority["flipSt->W Max-2"], moveBasePriority["flipSt->W Max-3"], moveBasePriority["flipSt->W Max-4"], moveBasePriority["flipSt->W Max-5"], moveBasePriority["flipSt->W Max-6"], moveBasePriority["flipSt->W Max-7"])
 		case "RunCfg":
 			//fmt.Printf("PrioritySha256: %v\n", string(cfg.General.PrioritySHA256[:]))
 			stmt, err = db.Prepare("INSERT INTO [dbo].[RunCfg] ([Priority_SHA256], [RunStartTime], [GitVersion], [HostName], [DeckFileName], [Decks], [FirstDeckNum], [NumberOfDecksToBePlayed], [List], [TypeOfPlay], [Verbose], [OutputTo], [outWriterFileName]) OUTPUT inserted.Run_ID VALUES (@Priority_SHA256, @RunStartTime, @GitVersion, @HostName, @DeckFileName, @Decks, @FirstDeckNum, @NumberOfDecksToBePlayed, @List, @TypeOfPlay, @Verbose, @OutputTo, @outWriterFileName);")
 			defer stmt.Close()
 			// Execute the prepared statement
-			rows, err := stmt.Query(
+			rows, err = stmt.Query(
 				sql.Named("Priority_SHA256", string(cfg.General.PrioritySHA256[:])),
 				sql.Named("RunStartTime", cfg.General.RunStartTime),
 				sql.Named("GitVersion", cfg.General.GitVersion),
@@ -67,26 +72,18 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("outWriterFileName", cfg.General.outWriterFileName),
 			)
 			if err != nil {
-				return 0
+				fmt.Printf("Table: %v   Verb: %v   Error: %v getting Hostname", table, verb, err)
+				os.Exit(1)
 			}
 			for rows.Next() {
-				err = rows.Scan(&runID)
+				err = rows.Scan(&cfg.General.RunID)
 				if err != nil {
-					return 0
+					fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v getting Hostname", table, verb, err)
+					os.Exit(1)
 				}
 			}
-			return runID
-			//result, err = db.Exec("INSERT INTO [dbo].[RunCfg] ([Priority_SHA256], [RunStartTime], [GitVersion], [HostName], [DeckFileName], [Decks], [FirstDeckNum], [NumberOfDecksToBePlayed], [List], [TypeOfPlay], [Verbose], [OutputTo], [outWriterFileName]) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)", "xxx", cfg.General.RunStartTime, cfg.General.GitVersion, cfg.General.HostName, cfg.General.DeckFileName, cfg.General.Decks, cfg.General.FirstDeckNum, cfg.General.NumberOfDecksToBePlayed, cfg.General.List, cfg.General.TypeOfPlay, cfg.General.Verbose, cfg.General.OutputTo, cfg.General.outWriterFileName)
-			/*if err == nil {
-				var id int64
-				id, err2 = result.LastInsertId()
-				if err2 != nil {
-					fmt.Printf("SQL Error LastInsertID %v %v: %v", verb, table, err)
-					panic(fmt.Sprintf("SQL Error LastInsertID %v %v: %v", verb, table, err))
-				}
-				cfg.General.RunID = id
-			}
-			return ""*/
+			return
+
 		case "Cfg_PlayAll":
 		case "Cfg_PlayOrig":
 		case "PlayAllStatistics":
@@ -99,5 +96,5 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			panic(fmt.Sprintf("SQL Error %v %v: %v", verb, table, err))
 		}
 	}
-	return 0
+	return
 }
