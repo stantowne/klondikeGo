@@ -10,7 +10,8 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 	//var result sql.Result
 	var err error
 	var stmt *sql.Stmt
-	var rows sql.Rows
+	var rows *sql.Rows
+	var q string
 	switch verb {
 	case "Insert":
 		switch table {
@@ -48,7 +49,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("flipStToW_Max_7", moveBasePriority["flipSt->W Max-7"]),
 			)
 			if err != nil {
-				fmt.Printf("Table: %v   Verb: %v   Error: %v getting Hostname", table, verb, err)
+				fmt.Printf("Table: %v   Verb: %v   Error: %v ", table, verb, err)
 				os.Exit(1)
 			}
 		case "RunCfg":
@@ -72,13 +73,13 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("outWriterFileName", cfg.General.outWriterFileName),
 			)
 			if err != nil {
-				fmt.Printf("Table: %v   Verb: %v   Error: %v getting Hostname", table, verb, err)
+				fmt.Printf("Table: %v   Verb: %v   Error: %v ", table, verb, err)
 				os.Exit(1)
 			}
 			for rows.Next() {
 				err = rows.Scan(&cfg.General.RunID)
 				if err != nil {
-					fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v getting Hostname", table, verb, err)
+					fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v ", table, verb, err)
 					os.Exit(1)
 				}
 			}
