@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/binary"
+	"encoding/hex"
 	"fmt"
 	"math"
 	"strconv"
@@ -144,6 +145,7 @@ func printWinningMoves(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
 	}
 	// Build SHA256 of the winning moves
 	var winningMovesAsBytes []byte
+	var winningMovesSHA256array [32]byte
 	var faceUp byte
 	var colCardFlip byte
 	for i := 0; i < len(vPA.TDotherSQL.winningMoves); i++ {
@@ -168,7 +170,8 @@ func printWinningMoves(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
 		}
 		winningMovesAsBytes = append(winningMovesAsBytes, colCardFlip)
 	}
-	vPA.TDotherSQL.winningMovesSHA256 = sha256.Sum256(winningMovesAsBytes)
+	winningMovesSHA256array = sha256.Sum256(winningMovesAsBytes)
+	vPA.TDotherSQL.winningMovesSHA256 = hex.EncodeToString(winningMovesSHA256array[:])
 	// Now print them
 	if cfg.PlayAll.PrintWinningMoves {
 		_, _ = fmt.Fprintf(oW, "\n\n     Winning Moves:\n")

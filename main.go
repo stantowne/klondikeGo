@@ -157,14 +157,29 @@ func main() {
 			sqlExec("Insert", "Priority", &cfg, nil, nil)
 			// Create row in sql file RunCfg and get back the Run_ID that was created on the insert and assign it to cfg.General.runID !!
 			sqlExec("Insert", "RunCfg", &cfg, nil, nil)
-			// Check if a row Priority_SHA256 == cfg.General.prioritySHA256 exists if not Create it !!
-			//sqlExec("Insert", "Priority", &cfg, nil, nil)
 			// Create row in sql file Cfg_PlayAll
+			sqlExec("Insert", "Cfg_PlayAll", &cfg, nil, nil)
 		}
 		playAll(*reader, &cfg)
 	}
 	if cfg.General.TypeOfPlay == "playOrig" {
 		moveBasePriority = moveBasePriorityOrig
+		/*
+		   THIS COMMENTED OUT CODE IS INCLUDED HERE IN CASE IT IS DECIDED TO MOVE ADD SAVE RESULTS TO SQL OPTION TO INCLUDE PLAYoRIG
+		   in that case the variables cfg.PlayAll.SaveResultsToSQL and cfg.PlayAll.SQLConnectionString should be moved into cfg.General
+
+		   		cfg.General.PrioritySHA256 = sha256ofMap(moveBasePriority)
+		   		if cfg.PlayAllxxx.SaveResultsToSQL {
+		   			// Calculate and set cfg.General.prioritySHA256 of moveBasePriority
+		   			// Check if a row Priority_SHA256 == cfg.General.prioritySHA256 exists if not Create it !!!!
+		   			sqlExec("Insert", "Priority", &cfg, nil, nil)
+		   			// Create row in sql file RunCfg and get back the Run_ID that was created on the insert and assign it to cfg.General.runID !!
+		   			sqlExec("Insert", "RunCfg", &cfg, nil, nil)
+		   			// Create row in sql file Cfg_PlayAll
+		   			sqlExec("Insert", "Cfg_Orig", &cfg, nil, nil)
+		   		}
+
+		*/
 		playOrig(*reader, &cfg)
 	}
 }

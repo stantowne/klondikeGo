@@ -22,11 +22,11 @@ type Statistics struct {
 
 type TDotherSQL struct { // Variables in addition to TD that should be output to SQL
 	deckNum                 int
-	boardCodeOfDeckAsString string
+	boardCodeOfDeckAsString string // [32]byte
 	moveNumMax              int
 	moveNumAtWin            int
 	winningMoves            []move
-	winningMovesSHA256      [32]byte
+	winningMovesSHA256      string // [32]byte
 }
 
 type variablesSpecificToPlayAll struct {

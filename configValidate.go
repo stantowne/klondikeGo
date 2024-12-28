@@ -99,7 +99,7 @@ func configValidate(c Configuration) {
 			defer os.Exit(1)
 		}
 		if c.PlayAll.SaveResultsToSQL {
-			if c.PlayAll.SQLConnectionString == "use sqlDbConnect.go" {
+			if c.PlayAll.SQLConnectionString == "sqlDbConnect.go" {
 				config, err := LoadConfig()
 				if err != nil {
 					fmt.Printf("Unable to connect to SQL using sqlDbConnect.go   err: %v\n", err)

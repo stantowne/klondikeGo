@@ -4,7 +4,7 @@ general:
   deck file name: ./DeckFiles/decks-0-409999.csv      # Note: forward slash /
   decks: consecutive                                  # consecutive or list or sqlQuery(...)
   first deck number: 0                                # non-negative integer less than 410,000
-  number of decks to be played: 9                     # positive integer no more than 410,000 minus first deck number
+  number of decks to be played: 999                   # positive integer no more than 410,000 minus first deck number
   list:                                               # not implemented
   type of play: playAll                               # playAll or playOrig
   verbose: 0                                          # non-negative integer
@@ -52,8 +52,8 @@ play all moves:
   print final deck by deck W/L record: true         # true or false  #Applies only if cfg.PlayAll.ReportingType.MoveByMove == true
                                                     #                              or cfg.PlayAll.ReportingType.Tree       == true
   save results to SQL: true                         # true or false
-  sql connection string: "use sqlDbConnect.go"
-                                                    # actual connection string or "use sqlDbConnect.go" which uses sqlDbConnect.env file
+  sql connection string: "sqlDbConnect.go"
+                                                    # actual connection string or "sqlDbConnect.go" which uses sqlDbConnect.env file
                                                     # example: server=DANACER\\SQLEXPRESS;port=1433;user id=@DANACER\\dan@;password=@password@;database=Klondike
                                                     #		// NOTE Double BackSlashes !!!!!!!!!!!
                                                     #		// Replace @...@ with actual

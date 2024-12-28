@@ -9,21 +9,23 @@ import (
 func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecificToPlayAll, vPO *variablesSpecificToPlayOrig) {
 	//var result sql.Result
 	var err error
+	var err2 error
 	var stmt *sql.Stmt
 	var rows *sql.Rows
-	var q string
+	//var q string
 	switch verb {
 	case "Insert":
 		switch table {
 		case "Priority":
-			/*			q = "INSERT INTO "
-						q += " ([Priority_SHA256], [moveAceAcross], [moveDeuceAcross], [move3PlusAcross], [moveDown], [moveEntireColumn], [flipWasteToStock], [flipStockToWaste], [movePartialColumn], [moveAceUp], [moveDeuceUp], [move3PlusUp], [badMove], [flipSt->W Max-0], [flipSt->W Max-1], [flipSt->W Max-2], [flipSt->W Max-3], [flipSt->W Max-4], [flipSt->W Max-5], [flipSt->W Max-6], [flipSt->W Max-7])"
-						q += " VALUES "
-						q += " (@Priority_SHA256,  @moveAceAcross,  @moveDeuceAcross,  @move3PlusAcross,  @moveDown,  @moveEntireColumn,  @flipWasteToStock,  @flipStockToWaste,  @movePartialColumn,  @moveAceUp,  @moveDeuceUp,  @move3PlusUp,  @badMove,  @flipStToW_Max_0,  @flipStToW_Max_1,  @flipStToW_Max_2,  @flipStToW_Max_3,  @flipStToW_Max_4,  @flipStToW_Max_5,  @flipStToW_Max_6,  @flipStToW_Max_7);"
-			*/
 			stmt, err = db.Prepare("INSERT INTO [dbo].[Priority] ([Priority_SHA256], [moveAceAcross], [moveDeuceAcross], [move3PlusAcross], [moveDown], [moveEntireColumn], [flipWasteToStock], [flipStockToWaste], [movePartialColumn], [moveAceUp], [moveDeuceUp], [move3PlusUp], [badMove], [flipSt->W Max-0], [flipSt->W Max-1], [flipSt->W Max-2], [flipSt->W Max-3], [flipSt->W Max-4], [flipSt->W Max-5], [flipSt->W Max-6], [flipSt->W Max-7]) VALUES (@Priority_SHA256, @moveAceAcross, @moveDeuceAcross, @move3PlusAcross, @moveDown, @moveEntireColumn, @flipWasteToStock, @flipStockToWaste, @movePartialColumn, @moveAceUp, @moveDeuceUp, @move3PlusUp, @badMove, @flipStToW_Max_0, @flipStToW_Max_1, @flipStToW_Max_2, @flipStToW_Max_3, @flipStToW_Max_4, @flipStToW_Max_5, @flipStToW_Max_6, @flipStToW_Max_7); ")
-			//stmt, err = db.Prepare(q)
 			defer stmt.Close()
+			if err != nil {
+				if cfg.General.OutputTo != "console" { // Print End of Run Stuff again forcing to the console
+					oW = os.Stdout
+				}
+				fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v ", table, verb, err)
+				os.Exit(1)
+			}
 			// Execute the prepared statement
 			_, err = stmt.Exec(
 				sql.Named("Priority_SHA256", string(cfg.General.PrioritySHA256[:])),
@@ -48,14 +50,17 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("flipStToW_Max_6", moveBasePriority["flipSt->W Max-6"]),
 				sql.Named("flipStToW_Max_7", moveBasePriority["flipSt->W Max-7"]),
 			)
-			if err != nil {
-				fmt.Printf("Table: %v   Verb: %v   Error: %v ", table, verb, err)
-				os.Exit(1)
-			}
 		case "RunCfg":
 			//fmt.Printf("PrioritySha256: %v\n", string(cfg.General.PrioritySHA256[:]))
 			stmt, err = db.Prepare("INSERT INTO [dbo].[RunCfg] ([Priority_SHA256], [RunStartTime], [GitVersion], [HostName], [DeckFileName], [Decks], [FirstDeckNum], [NumberOfDecksToBePlayed], [List], [TypeOfPlay], [Verbose], [OutputTo], [outWriterFileName]) OUTPUT inserted.Run_ID VALUES (@Priority_SHA256, @RunStartTime, @GitVersion, @HostName, @DeckFileName, @Decks, @FirstDeckNum, @NumberOfDecksToBePlayed, @List, @TypeOfPlay, @Verbose, @OutputTo, @outWriterFileName);")
 			defer stmt.Close()
+			if err != nil {
+				if cfg.General.OutputTo != "console" { // Print End of Run Stuff again forcing to the console
+					oW = os.Stdout
+				}
+				fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v ", table, verb, err)
+				os.Exit(1)
+			}
 			// Execute the prepared statement
 			rows, err = stmt.Query(
 				sql.Named("Priority_SHA256", string(cfg.General.PrioritySHA256[:])),
@@ -72,30 +77,159 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("OutputTo", cfg.General.OutputTo),
 				sql.Named("outWriterFileName", cfg.General.outWriterFileName),
 			)
-			if err != nil {
-				fmt.Printf("Table: %v   Verb: %v   Error: %v ", table, verb, err)
-				os.Exit(1)
-			}
 			for rows.Next() {
-				err = rows.Scan(&cfg.General.RunID)
-				if err != nil {
+				err2 = rows.Scan(&cfg.General.RunID)
+				if err2 != nil {
+					if cfg.General.OutputTo != "console" { // Print End of Run Stuff again forcing to the console
+						oW = os.Stdout
+					}
 					fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v ", table, verb, err)
 					os.Exit(1)
 				}
 			}
-			return
-
 		case "Cfg_PlayAll":
+			stmt, err = db.Prepare("INSERT INTO [dbo].[Cfg_PlayAll] (Run_ID, GameLengthLimit, DeckByDeck, MoveByMove, Tree, NoReporting, DbD_Type, MbM_Type, Tree_Type, TreeSleepBetwnMoves, TreeSleepBetwnMovesDur, TreeSleepBetwnStrategies, TreeSleepBetwnStrategiesDur, RestrictReporting, RestrictRept_DeckStartVal, RestrictRept_DeckContinueFor, RestrictRept_MovesTriedStartVal, RestrictRept_MovesTriedContinueFor, ProgressCounter, SaveResultsToSQL, SQLConnectionString) VALUES (@Run_ID, @GameLengthLimit, @DeckByDeck, @MoveByMove, @Tree, @NoReporting, @DbD_Type, @MbM_Type, @Tree_Type, @TreeSleepBetwnMoves, @TreeSleepBetwnMovesDur, @TreeSleepBetwnStrategies, @TreeSleepBetwnStrategiesDur, @RestrictReporting, @RestrictRept_DeckStartVal, @RestrictRept_DeckContinueFor, @RestrictRept_MovesTriedStartVal, @RestrictRept_MovesTriedContinueFor, @ProgressCounter, @SaveResultsToSQL, @SQLConnectionString); ")
+			defer stmt.Close()
+			if err != nil {
+				if cfg.General.OutputTo != "console" { // Print End of Run Stuff again forcing to the console
+					oW = os.Stdout
+				}
+				fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v ", table, verb, err)
+				os.Exit(1)
+			}
+			// Execute the prepared statement
+			_, err = stmt.Exec(
+				sql.Named("Run_ID", cfg.General.RunID),
+				sql.Named("GameLengthLimit", cfg.PlayAll.GameLengthLimit),
+				sql.Named("DeckByDeck", cfg.PlayAll.ReportingType.DeckByDeck),
+				sql.Named("MoveByMove", cfg.PlayAll.ReportingType.MoveByMove),
+				sql.Named("Tree", cfg.PlayAll.ReportingType.Tree),
+				sql.Named("NoReporting", cfg.PlayAll.ReportingType.NoReporting),
+				sql.Named("DbD_Type", cfg.PlayAll.DeckByDeckReportingOptions.Type),
+				sql.Named("MbM_Type", cfg.PlayAll.MoveByMoveReportingOptions.Type),
+				sql.Named("Tree_Type", cfg.PlayAll.TreeReportingOptions.Type),
+				sql.Named("TreeSleepBetwnMoves", cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves),
+				sql.Named("TreeSleepBetwnMovesDur", cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMovesDur),
+				sql.Named("TreeSleepBetwnStrategies", cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategies),
+				sql.Named("TreeSleepBetwnStrategiesDur", cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnStrategiesDur),
+				sql.Named("RestrictReporting", cfg.PlayAll.RestrictReporting),
+				sql.Named("RestrictRept_DeckStartVal", cfg.PlayAll.RestrictReportingTo.DeckStartVal),
+				sql.Named("RestrictRept_DeckContinueFor", cfg.PlayAll.RestrictReportingTo.DeckContinueFor),
+				sql.Named("RestrictRept_MovesTriedStartVal", cfg.PlayAll.RestrictReportingTo.MovesTriedStartVal),
+				sql.Named("RestrictRept_MovesTriedContinueFor", cfg.PlayAll.RestrictReportingTo.MovesTriedContinueFor),
+				sql.Named("ProgressCounter", cfg.PlayAll.ProgressCounter),
+				sql.Named("SaveResultsToSQL", cfg.PlayAll.SaveResultsToSQL),
+				sql.Named("SQLConnectionString", cfg.PlayAll.SQLConnectionString),
+			)
 		case "Cfg_PlayOrig":
-		case "PlayAllStatistics":
+			if vPO != nil { // Added to eliminate error about unused variable vPO
+				stmt, err = db.Prepare("INSERT INTO [dbo].[Cfg_PlayOrig] (Run_ID, Length, GameLengthLimit) VALUES (@Run_ID, @Length, @GameLengthLimit); ")
+				defer stmt.Close()
+				if err != nil {
+					if cfg.General.OutputTo != "console" { // Print End of Run Stuff again forcing to the console
+						oW = os.Stdout
+					}
+					fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v ", table, verb, err)
+					os.Exit(1)
+				}
+				// Execute the prepared statement
+				_, err = stmt.Exec(
+					sql.Named("Run_ID", cfg.General.RunID),
+					sql.Named("Length", cfg.PlayOrig.Length),
+					sql.Named("GameLengthLimit", cfg.PlayOrig.GameLengthLimit),
+				)
+			}
+		case "PlayAll_Statistics":
+			stmt, err = db.Prepare("INSERT INTO [dbo].[PlayAll_Statistics] (boardCode_str, Run_ID, mvsTried, stratNum, stratTried, stratWins, stratLosses, stratLossesGLE, stratLossesGLEAb, stratLossesNMA, stratLossesRB, stratLossesMajSE, stratLossesMinSE, stratLossesEL, winningMovesCnt, unqBoards, elapsedTime, moveNumMax, moveNumAtWin) VALUES (@boardCode_str, @Run_ID, @mvsTried, @stratNum, @stratTried, @stratWins, @stratLosses, @stratLossesGLE, @stratLossesGLEAb, @stratLossesNMA, @stratLossesRB, @stratLossesMajSE, @stratLossesMinSE, @stratLossesEL, @winningMovesCnt, @unqBoards, @elapsedTime, @moveNumMax, @moveNumAtWin); ")
+			defer stmt.Close()
+			if err != nil {
+				if cfg.General.OutputTo != "console" { // Print End of Run Stuff again forcing to the console
+					oW = os.Stdout
+				}
+				fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v ", table, verb, err)
+				os.Exit(1)
+			}
+			// Execute the prepared statement
+			_, err = stmt.Exec(
+				sql.Named("boardCode_str", vPA.TDotherSQL.boardCodeOfDeckAsString),
+				sql.Named("Run_ID", cfg.General.RunID),
+				sql.Named("mvsTried", vPA.TD.mvsTried),
+				sql.Named("stratNum", vPA.TD.stratNum),
+				sql.Named("stratTried", vPA.TD.stratTried),
+				sql.Named("stratWins", vPA.TD.stratWins),
+				sql.Named("stratLosses", vPA.TD.stratLosses),
+				sql.Named("stratLossesGLE", vPA.TD.stratLossesGLE),
+				sql.Named("stratLossesGLEAb", vPA.TD.stratLossesGLEAb),
+				sql.Named("stratLossesNMA", vPA.TD.stratLossesNMA),
+				sql.Named("stratLossesRB", vPA.TD.stratLossesRB),
+				sql.Named("stratLossesMajSE", vPA.TD.stratLossesMajSE),
+				sql.Named("stratLossesMinSE", vPA.TD.stratLossesMinSE),
+				sql.Named("stratLossesEL", vPA.TD.stratLossesEL),
+				sql.Named("winningMovesCnt", vPA.TD.winningMovesCnt),
+				sql.Named("unqBoards", vPA.TD.unqBoards),
+				sql.Named("elapsedTime", vPA.TD.elapsedTime),
+				sql.Named("moveNumMax", vPA.TDotherSQL.moveNumMax),
+				sql.Named("moveNumAtWin", vPA.TDotherSQL.moveNumAtWin),
+			)
 		case "WinningMoves":
+			stmt, err = db.Prepare("INSERT INTO [dbo].[WinningMoves] (WinningMoves_SHA256, boardCode_str) VALUES (@WinningMoves_SHA256, @boardCode_str); ")
+			defer stmt.Close()
+			if err != nil {
+				if cfg.General.OutputTo != "console" { // Print End of Run Stuff again forcing to the console
+					oW = os.Stdout
+				}
+				fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v ", table, verb, err)
+				os.Exit(1)
+			}
+			// Execute the prepared statement
+			_, err = stmt.Exec(
+				sql.Named("WinningMoves_SHA256", vPA.TDotherSQL.winningMovesSHA256),
+				sql.Named("boardCode_str", vPA.TDotherSQL.boardCodeOfDeckAsString),
+			)
 		case "WinningMoves_Detail":
+			for k := range vPA.TDotherSQL.winningMoves {
+				stmt, err = db.Prepare("INSERT INTO [dbo].[WinningMoves_Detail] (boardCode_str, WinningMoves_SHA256, MoveNum, name, priority, toPile, toCol, fromCol, MovePortionStartIdx, cardToMoveRank, cardToMoveSuit, cardToMoveFaceUp, colCardFlip) VALUES (@boardCode_str, @WinningMoves_SHA256, @MoveNum, @name, @priority, @toPile, @toCol, @fromCol, @MovePortionStartIdx, @cardToMoveRank, @cardToMoveSuit, @cardToMoveFaceUp, @colCardFlip); ")
+				defer stmt.Close()
+				// Execute the prepared statement
+				_, err = stmt.Exec(
+					sql.Named("boardCode_str", vPA.TDotherSQL.boardCodeOfDeckAsString),
+					sql.Named("WinningMoves_SHA256", vPA.TDotherSQL.winningMovesSHA256),
+					sql.Named("MoveNum", k),
+					sql.Named("name", vPA.TDotherSQL.winningMoves[k].name),
+					sql.Named("priority", vPA.TDotherSQL.winningMoves[k].priority),
+					sql.Named("toPile", vPA.TDotherSQL.winningMoves[k].toPile),
+					sql.Named("toCol", vPA.TDotherSQL.winningMoves[k].toCol),
+					sql.Named("fromCol", vPA.TDotherSQL.winningMoves[k].fromCol),
+					sql.Named("MovePortionStartIdx", vPA.TDotherSQL.winningMoves[k].MovePortionStartIdx),
+					sql.Named("cardToMoveRank", vPA.TDotherSQL.winningMoves[k].cardToMove.Rank),
+					sql.Named("cardToMoveSuit", vPA.TDotherSQL.winningMoves[k].cardToMove.Suit),
+					sql.Named("cardToMoveFaceUp", vPA.TDotherSQL.winningMoves[k].cardToMove.FaceUp),
+					sql.Named("colCardFlip", vPA.TDotherSQL.winningMoves[k].colCardFlip),
+				)
+			}
 		case "boardCode":
+			stmt, err = db.Prepare("INSERT INTO [dbo].[boardCode] (boardCode_str, Deck_ID) VALUES (@boardCode_str, @Deck_ID); ")
+			defer stmt.Close()
+			if err != nil {
+				if cfg.General.OutputTo != "console" { // Print End of Run Stuff again forcing to the console
+					oW = os.Stdout
+				}
+				fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v ", table, verb, err)
+				os.Exit(1)
+			}
+			// Execute the prepared statement
+			_, err = stmt.Exec(
+				sql.Named("boardCode_str", vPA.TDotherSQL.boardCodeOfDeckAsString),
+				sql.Named("Deck_ID", vPA.TDotherSQL.deckNum),
+			)
 		}
-		if err != nil {
-			fmt.Printf("SQL Error %v %v: %v", verb, table, err)
-			panic(fmt.Sprintf("SQL Error %v %v: %v", verb, table, err))
+	}
+	if err != nil {
+		if cfg.General.OutputTo != "console" { // Print End of Run Stuff again forcing to the console
+			oW = os.Stdout
 		}
+		fmt.Printf("SQL Error %v %v: %v", verb, table, err)
+		panic(fmt.Sprintf("SQL Error %v %v: %v", verb, table, err))
 	}
 	return
 }
