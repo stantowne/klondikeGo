@@ -113,6 +113,9 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		}
 
 		if cfg.PlayAll.SaveResultsToSQL {
+
+			SQL_Start_Time = time.Now()
+
 			// Create row in sql file boardCode if this is the first time this boardCode is seen for this deck
 			// If two decks are identical (unlikely due to the random nature of the shuffle program that created the decks - there are 52! possible decks)
 			sqlExec("Insert", "boardCode", cfg, &vPA, nil)
@@ -122,6 +125,8 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			sqlExec("Insert", "WinningMoves_Detail", cfg, &vPA, nil)
 			// Create rows in sql file PlayAll_Statistics every time this boardCode (i.e. Deck) is played - differing by the Run_ID
 			sqlExec("Insert", "PlayAll_Statistics", cfg, &vPA, nil)
+
+			SQL_Time_elapsed += time.Since(SQL_Start_Time)
 
 		}
 

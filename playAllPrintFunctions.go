@@ -126,8 +126,13 @@ func ADotherSQLPrint(vPA *variablesSpecificToPlayAll) {
 func printSummaryStats(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
 	_, _ = fmt.Fprintf(oW, "\n\n******************   Summary Statistics   ******************\n")
 	averageElapsedTimePerDeck := time.Duration(float64(time.Since(vPA.ADother.startTime)) / float64(cfg.General.NumberOfDecksToBePlayed))
-	_, _ = fmt.Fprintf(oW, "\n     Elapsed Time: %5v", time.Since(vPA.ADother.startTime).Round(6*time.Second).String())
-	_, _ = fmt.Fprintf(oW, "\nAvg Time per Deck: %5v\n", averageElapsedTimePerDeck.Round(100*time.Millisecond).String())
+	_, _ = fmt.Fprintf(oW, "\n         Elapsed Time: %5v", time.Since(vPA.ADother.startTime).Round(6*time.Second).String())
+	_, _ = fmt.Fprintf(oW, "\n    Avg Time per Deck: %5v\n", averageElapsedTimePerDeck.Round(100*time.Millisecond).String())
+	if cfg.PlayAll.SaveResultsToSQL {
+		_, _ = fmt.Fprintf(oW, "\n     SQL Elapsed Time: %5v", SQL_Time_elapsed.Round(100*time.Microsecond).String())
+		averageSQLElapsedTimePerDeck := time.Duration(float64(SQL_Time_elapsed) / float64(cfg.General.NumberOfDecksToBePlayed))
+		_, _ = fmt.Fprintf(oW, "\nAvg SQL Time per Deck: %5v\n", averageSQLElapsedTimePerDeck.Round(100*time.Microsecond).String())
+	}
 	_, _ = pfmt.Fprintf(oW, "\n          Decks Played: %-7d", vPA.ADother.decksPlayed)
 	_, _ = pfmt.Fprintf(oW, "\n             Decks Won: %-7d   %4v%%     Ignoring GLE: %4v%%", vPA.ADother.decksWon, roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed, 1), roundFloatIntDiv(vPA.ADother.decksWon*100, vPA.ADother.decksPlayed-vPA.ADother.decksLostGLE, 1))
 	_, _ = pfmt.Fprintf(oW, "\n            Decks Lost: %-7d   %4v%%     Ignoring GLE: %4v%%", vPA.ADother.decksLost, roundFloatIntDiv(vPA.ADother.decksLost*100, vPA.ADother.decksPlayed, 1), roundFloatIntDiv(vPA.ADother.decksLost*100, vPA.ADother.decksPlayed-vPA.ADother.decksLostGLE, 1))

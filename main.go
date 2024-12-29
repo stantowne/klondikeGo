@@ -24,6 +24,9 @@ var oW *os.File
 
 var db *sql.DB
 
+var SQL_Time_elapsed time.Duration
+var SQL_Start_Time time.Time
+
 func main() {
 
 	//***************************************************************
@@ -152,6 +155,9 @@ func main() {
 		moveBasePriority = moveBasePriorityAll
 		cfg.General.PrioritySHA256 = sha256ofMap(moveBasePriority)
 		if cfg.PlayAll.SaveResultsToSQL {
+
+			SQL_Start_Time = time.Now()
+
 			// Calculate and set cfg.General.prioritySHA256 of moveBasePriority
 			// Check if a row Priority_SHA256 == cfg.General.prioritySHA256 exists if not Create it !!!!
 			sqlExec("Insert", "Priority", &cfg, nil, nil)
@@ -159,6 +165,9 @@ func main() {
 			sqlExec("Insert", "RunCfg", &cfg, nil, nil)
 			// Create row in sql file Cfg_PlayAll
 			sqlExec("Insert", "Cfg_PlayAll", &cfg, nil, nil)
+
+			SQL_Time_elapsed += time.Since(SQL_Start_Time)
+
 		}
 		playAll(*reader, &cfg)
 	}
