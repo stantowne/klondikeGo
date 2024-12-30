@@ -119,10 +119,12 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 			// Create row in sql file boardCode if this is the first time this boardCode is seen for this deck
 			// If two decks are identical (unlikely due to the random nature of the shuffle program that created the decks - there are 52! possible decks)
 			sqlExec("Insert", "boardCode", cfg, &vPA, nil)
-			// Create row in sql file WinningMoves if this is the first time this set of winning moves have been seen for this boardCode
-			sqlExec("Insert", "WinningMoves", cfg, &vPA, nil)
-			// Create rows in sql file WinningMoves if this is the first time this set of winning moves have been seen for this boardCode
-			sqlExec("Insert", "WinningMoves_Detail", cfg, &vPA, nil)
+			if vPA.TD.stratWins > 0 {
+				// Create row in sql file WinningMoves if this is the first time this set of winning moves have been seen
+				sqlExec("Insert", "WinningMoves", cfg, &vPA, nil)
+				// Create rows in sql file WinningMoves_Detail - NOW CALLED WITHIN sqlExec("Insert", "WinningMoves")
+				// sqlExec("Insert", "WinningMoves_Detail", cfg, &vPA, nil)
+			}
 			// Create rows in sql file PlayAll_Statistics every time this boardCode (i.e. Deck) is played - differing by the Run_ID
 			sqlExec("Insert", "PlayAll_Statistics", cfg, &vPA, nil)
 

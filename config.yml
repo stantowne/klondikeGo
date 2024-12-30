@@ -1,10 +1,10 @@
 #config.yml
 
-general:
+general:              # Repeat below with GL 10 then 30 then 50 then  next Start at 999 and go for 1001 next time change GML to 50
   deck file name: ./DeckFiles/decks-0-410019_with_20_duplicateDecksAtEnd.csv      # Note: forward slash /
   decks: consecutive                                  # consecutive or list or sqlQuery(...)
-  first deck number: 999                              # non-negative integer less than 410,000
-  number of decks to be played: 4001                  # positive integer no more than 410,000 minus first deck number
+  first deck number: 410000                                # non-negative integer less than 410,000
+  number of decks to be played: 20                   # positive integer no more than 410,000 minus first deck number
   list:                                               # not implemented
   type of play: playAll                               # playAll or playOrig
   verbose: 0                                          # non-negative integer
@@ -20,7 +20,7 @@ play original:
 
 
 play all moves:
-  game length limit in million moves tried: 50      # IN MILLIONS non-negative integer
+  game length limit in million moves tried: 5       # IN MILLIONS non-negative integer
 
   find all winning strategies?: false               # true or false   true not yet implemented
 
