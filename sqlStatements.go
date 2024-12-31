@@ -6,8 +6,9 @@ import (
 	"os"
 )
 
+var WinningMoves_ID_inserted int64
+
 func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecificToPlayAll, vPO *variablesSpecificToPlayOrig) {
-	var WinningMoves_ID_inserted int64
 	var err error
 	var err2 error
 	var stmt *sql.Stmt
@@ -51,7 +52,6 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("flipStToW_Max_7", moveBasePriority["flipSt->W Max-7"]),
 			)
 		case "RunCfg":
-			//fmt.Printf("PrioritySha256: %v\n", string(cfg.General.PrioritySHA256[:]))
 			stmt, err = db.Prepare("INSERT INTO [dbo].[RunCfg] ([Priority_SHA256], [RunStartTime], [GitVersion], [HostName], [DeckFileName], [Decks], [FirstDeckNum], [NumberOfDecksToBePlayed], [List], [TypeOfPlay], [Verbose], [OutputTo], [outWriterFileName]) OUTPUT inserted.Run_ID VALUES (@Priority_SHA256, @RunStartTime, @GitVersion, @HostName, @DeckFileName, @Decks, @FirstDeckNum, @NumberOfDecksToBePlayed, @List, @TypeOfPlay, @Verbose, @OutputTo, @outWriterFileName);")
 			defer stmt.Close()
 			if err != nil {
@@ -140,7 +140,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				)
 			}
 		case "PlayAll_Statistics":
-			stmt, err = db.Prepare("INSERT INTO [dbo].[PlayAll_Statistics] (Deck_ID, Run_ID, mvsTried, stratNum, stratTried, stratWins, stratLosses, stratLossesGLE, stratLossesGLEAb, stratLossesNMA, stratLossesRB, stratLossesMajSE, stratLossesMinSE, stratLossesEL, winningMovesCnt, unqBoards, elapsedTime, moveNumMax, moveNumAtWin) VALUES (@Deck_ID, @Run_ID, @mvsTried, @stratNum, @stratTried, @stratWins, @stratLosses, @stratLossesGLE, @stratLossesGLEAb, @stratLossesNMA, @stratLossesRB, @stratLossesMajSE, @stratLossesMinSE, @stratLossesEL, @winningMovesCnt, @unqBoards, @elapsedTime, @moveNumMax, @moveNumAtWin); ")
+			stmt, err = db.Prepare("INSERT INTO [dbo].[PlayAll_Statistics] (Deck_ID, Run_ID, winning_MovesSHA256, mvsTried, stratNum, stratTried, stratWins, stratLosses, stratLossesGLE, stratLossesGLEAb, stratLossesNMA, stratLossesRB, stratLossesMajSE, stratLossesMinSE, stratLossesEL, winningMovesCnt, unqBoards, elapsedTime, moveNumMax, moveNumAtWin) VALUES (@Deck_ID, @Run_ID, @winningMoves_SHA256, @mvsTried, @stratNum, @stratTried, @stratWins, @stratLosses, @stratLossesGLE, @stratLossesGLEAb, @stratLossesNMA, @stratLossesRB, @stratLossesMajSE, @stratLossesMinSE, @stratLossesEL, @winningMovesCnt, @unqBoards, @elapsedTime, @moveNumMax, @moveNumAtWin); ")
 			defer stmt.Close()
 			if err != nil {
 				if cfg.General.OutputTo != "console" {
@@ -153,6 +153,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			_, err = stmt.Exec(
 				sql.Named("Deck_ID", vPA.TDotherSQL.deckNum),
 				sql.Named("Run_ID", cfg.General.RunID),
+				sql.Named("WinningMoves_SHA256", vPA.TDotherSQL.winningMovesSHA256),
 				sql.Named("mvsTried", vPA.TD.mvsTried),
 				sql.Named("stratNum", vPA.TD.stratNum),
 				sql.Named("stratTried", vPA.TD.stratTried),
@@ -172,7 +173,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("moveNumAtWin", vPA.TDotherSQL.moveNumAtWin),
 			)
 		case "WinningMoves":
-			stmt, err = db.Prepare("INSERT INTO [dbo].[WinningMoves] (WinningMoves_SHA256) OUTPUT inserted.WinningMoves_ID VALUES (@WinningMoves_SHA256); ")
+			stmt, err = db.Prepare("INSERT INTO [dbo].[WinningMoves] ([WinningMoves_SHA256]) OUTPUT inserted.WinningMoves_ID VALUES (@WinningMoves_SHA256); ")
 			defer stmt.Close()
 			if err != nil {
 				if cfg.General.OutputTo != "console" {
@@ -182,21 +183,25 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				os.Exit(1)
 			}
 			// Execute the prepared statement
-			_, err = stmt.Query(
+			WinningMoves_ID_inserted = -1
+			rows, err = stmt.Query(
 				sql.Named("WinningMoves_SHA256", vPA.TDotherSQL.winningMovesSHA256),
-				sql.Named("boardCode_str", vPA.TDotherSQL.boardCodeOfDeckAsString),
 			)
-			for rows.Next() {
-				err2 = rows.Scan(&WinningMoves_ID_inserted)
-				if err2 != nil {
-					if cfg.General.OutputTo != "console" {
-						oW = os.Stdout
+			if rows != nil {
+				for rows.Next() {
+					err2 = rows.Scan(&WinningMoves_ID_inserted)
+					if err2 != nil {
+						if cfg.General.OutputTo != "console" {
+							oW = os.Stdout
+						}
+						fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v ", table, verb, err)
+						os.Exit(1)
 					}
-					fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v ", table, verb, err)
-					os.Exit(1)
+				}
+				if WinningMoves_ID_inserted != -1 {
+					sqlExec("Insert", "WinningMoves_Detail", cfg, vPA, nil)
 				}
 			}
-			sqlExec("Insert", "WinningMoves_Detail", cfg, vPA, nil)
 		case "WinningMoves_Detail":
 			for k := range vPA.TDotherSQL.winningMoves {
 				stmt, err = db.Prepare("INSERT INTO [dbo].[WinningMoves_Detail] (WinningMoves_ID, MoveNum, name, priority, toPile, toCol, fromCol, MovePortionStartIdx, cardToMoveRank, cardToMoveSuit, cardToMoveFaceUp, colCardFlip) VALUES (@WinningMoves_ID, @MoveNum, @name, @priority, @toPile, @toCol, @fromCol, @MovePortionStartIdx, @cardToMoveRank, @cardToMoveSuit, @cardToMoveFaceUp, @colCardFlip); ")
