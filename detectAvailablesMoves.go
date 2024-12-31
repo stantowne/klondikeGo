@@ -51,7 +51,7 @@ var moveBasePriorityAll = map[string]int{
 	"moveDeuceUp":       200,
 	"move3PlusUp":       800,
 	"badMove":           1200, // a legal move which is worse than a mere flip
-	"flipSt->W Max-0":   9890, //flip MAX - (0 * 3)    i.e. Up to 24 cards    where MAX = len(stock) + len(waste)   Suggest flip waste=>stock then flip cards
+	"flipSt->W Max-0":   9990, //flip MAX - (0 * 3)    i.e. Up to 24 cards    where MAX = len(stock) + len(waste)   Suggest flip waste=>stock then flip cards
 	"flipSt->W Max-1":   9891, //flip MAX - (1 * 3)    i.e. Up to 21 cards
 	"flipSt->W Max-2":   9892, //flip MAX - (2 * 3)    i.e. Up to 18 cards    where 999 > priority of any moves that are between columns
 	"flipSt->W Max-3":   9893, //flip MAX - (3 * 3)    i.e. Up to 15 cards                ????or that expose a new column card ????
