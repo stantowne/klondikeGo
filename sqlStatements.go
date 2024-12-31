@@ -8,7 +8,8 @@ import (
 
 var WinningMoves_ID_inserted int64
 
-func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecificToPlayAll, vPO *variablesSpecificToPlayOrig) {
+func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecificToPlayAll, vPO *variablesSpecificToPlayOrig) string {
+	returnResult := ""
 	var err error
 	var err2 error
 	var stmt *sql.Stmt
@@ -173,32 +174,32 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("moveNumAtWin", vPA.TDotherSQL.moveNumAtWin),
 			)
 		case "WinningMoves":
-			stmt, err = db.Prepare("INSERT INTO [dbo].[WinningMoves] ([WinningMoves_SHA256]) OUTPUT inserted.WinningMoves_ID VALUES (@WinningMoves_SHA256); ")
-			defer stmt.Close()
-			if err != nil {
-				if cfg.General.OutputTo != "console" {
-					oW = os.Stdout
-				}
-				fmt.Printf("Table: %v   Verb: %v   Error preparing   Error: %v ", table, verb, err)
-				os.Exit(1)
-			}
-			// Execute the prepared statement
-			WinningMoves_ID_inserted = -1
-			rows, err = stmt.Query(
-				sql.Named("WinningMoves_SHA256", vPA.TDotherSQL.winningMovesSHA256),
-			)
-			if rows != nil {
-				for rows.Next() {
-					err2 = rows.Scan(&WinningMoves_ID_inserted)
-					if err2 != nil {
-						if cfg.General.OutputTo != "console" {
-							oW = os.Stdout
-						}
-						fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v ", table, verb, err)
-						os.Exit(1)
+			returnResult = sqlExec("Query", "WinningMoves", cfg, vPA, nil)
+			if returnResult == "New Set of Winning Moves" {
+				stmt, err = db.Prepare("INSERT INTO [dbo].[WinningMoves] ([WinningMoves_SHA256]) OUTPUT inserted.WinningMoves_ID VALUES (@WinningMoves_SHA256); ")
+				defer stmt.Close()
+				if err != nil {
+					if cfg.General.OutputTo != "console" {
+						oW = os.Stdout
 					}
+					fmt.Printf("Table: %v   Verb: %v   Error preparing   Error: %v ", table, verb, err)
+					os.Exit(1)
 				}
-				if WinningMoves_ID_inserted != -1 {
+				// Execute the prepared statement
+				rows, err = stmt.Query(
+					sql.Named("WinningMoves_SHA256", vPA.TDotherSQL.winningMovesSHA256),
+				)
+				if rows != nil {
+					for rows.Next() {
+						err2 = rows.Scan(&WinningMoves_ID_inserted)
+						if err2 != nil {
+							if cfg.General.OutputTo != "console" {
+								oW = os.Stdout
+							}
+							fmt.Printf("Table: %v   Verb: %v   Error getting Run_ID   Error: %v ", table, verb, err)
+							os.Exit(1)
+						}
+					}
 					sqlExec("Insert", "WinningMoves_Detail", cfg, vPA, nil)
 				}
 			}
@@ -239,6 +240,36 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("Deck_ID", vPA.TDotherSQL.deckNum),
 			)
 		}
+	case "Query":
+		switch table {
+		case "WinningMoves":
+			/*
+				stmt, err = db.Prepare("SELECT 'x' FROM [dbo].[WinningMoves] where WinningMoves_SHA256 = $1; ")
+				defer stmt.Close()
+				if err != nil {
+					if cfg.General.OutputTo != "console" {
+						oW = os.Stdout
+					}
+					fmt.Printf("Table: %v   Verb: %v   Error querying   Error: %v ", table, verb, err)
+					os.Exit(1)
+				}
+				// Execute the prepared statement
+				row = stmt.QueryRow(vPA.TDotherSQL.winningMovesSHA256)
+				if rows != nil {
+					returnResult = "Old Set of Winning Moves"
+				}
+			*/
+
+			var x string
+			var row *sql.Row
+			row = db.QueryRow("SELECT 'x' x FROM [dbo].[WinningMoves] WHERE WinningMoves_SHA256 = @w; ", sql.Named("w", vPA.TDotherSQL.winningMovesSHA256))
+			if row.Scan(&x) == sql.ErrNoRows {
+				return "New Set of Winning Moves"
+			} else {
+				return "Old Set of Winning Moves"
+			}
+
+		}
 	}
 	if err != nil {
 		if cfg.General.OutputTo != "console" {
@@ -247,5 +278,5 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 		fmt.Printf("SQL Error %v %v: %v", verb, table, err)
 		panic(fmt.Sprintf("SQL Error %v %v: %v", verb, table, err))
 	}
-	return
+	return returnResult
 }

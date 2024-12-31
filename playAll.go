@@ -180,9 +180,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 		vPA.ADother.decksPlayed++
 		vPA.TDother.treePrevMoves = ""
 		vPA.TDotherSQL.winningMoves = nil
-		//for i := range vPA.TDotherSQL.winningMovesSHA256 {
 		vPA.TDotherSQL.winningMovesSHA256 = ""
-		//}
 		vPA.TDother.startTime = time.Now()
 		clear(vPA.TDother.priorBoards)
 		vPA.TD.stratNum = 0
