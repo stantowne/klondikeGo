@@ -190,7 +190,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				}
 				// Execute the prepared statement
 				rows, err = stmt.Query(
-					sql.Named("WinningMoves_SHA256", vPA.TDotherSQL.winningMovesSHA256),
+					sql.Named("WinningMoves_SHA256", NewNullString(vPA.TDotherSQL.winningMovesSHA256)),
 				)
 				if rows != nil {
 					for rows.Next() {
@@ -213,7 +213,6 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				// Execute the prepared statement
 				_, err = stmt.Exec(
 					sql.Named("WinningMoves_ID", WinningMoves_ID_inserted),
-					sql.Named("WinningMoves_SHA256", vPA.TDotherSQL.winningMovesSHA256),
 					sql.Named("MoveNum", k),
 					sql.Named("name", vPA.TDotherSQL.winningMoves[k].name),
 					sql.Named("priority", vPA.TDotherSQL.winningMoves[k].priority),
@@ -282,4 +281,14 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 		panic(fmt.Sprintf("SQL Error %v %v: %v", verb, table, err))
 	}
 	return returnResult
+}
+
+func NewNullString(s string) sql.NullString {
+	if len(s) == 0 {
+		return sql.NullString{}
+	}
+	return sql.NullString{
+		String: s,
+		Valid:  true,
+	}
 }

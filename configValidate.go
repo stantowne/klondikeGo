@@ -28,10 +28,9 @@ func configValidate(c Configuration) {
 
 		for i, s := range listStringSlice {
 			c.General.ListIntSlice[i], _ = strconv.Atoi(s)
-			fmt.Printf("c.General.ListIntSlice: %v\n", c.General.ListIntSlice)
-			fmt.Printf("c.General.ListIntSlice: %v\n", c.General.ListIntSlice)
 		}
 	}
+
 	// parse deckfilename to get the number 410020!!!!!!!!!!!!!!!!
 
 	// this if statement and the next should be changed in the input file of decks contains greater or fewer than 10,000 decks
