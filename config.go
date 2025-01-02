@@ -7,21 +7,23 @@ import (
 
 type Configuration struct {
 	General struct {
-		RunID                   int64 // Set in sqlStatements after successful Insert into Run_Cfg
-		RunStartTime            time.Time
-		PrioritySHA256          [32]byte
-		GitVersion              string // Hash of latest commit
-		HostName                string // The machine this was run on - the version number will likely only exist on this machine
-		DeckFileName            string `yaml:"deck file name"`
-		Decks                   string `yaml:"decks"`                        // must be "consecutive" or "list"
+		RunID          int64 // Set in sqlStatements after successful Insert into Run_Cfg
+		RunStartTime   time.Time
+		PrioritySHA256 [32]byte
+		GitVersion     string // Hash of latest commit
+		HostName       string // The machine this was run on - the version number will likely only exist on this machine
+		DeckFileName   string `yaml:"deck file name"`
+		Decks          string `yaml:"decks"` // must be "consecutive" or "list" or "GLE" IF GLE then SaveResultsToSQL MUST = true
+		// and a valid sql connection string must exist
 		FirstDeckNum            int    `yaml:"first deck number"`            // must be non-negative integer
 		NumberOfDecksToBePlayed int    `yaml:"number of decks to be played"` //must be non-negative integer
-		List                    string `yaml:"list"`
-		TypeOfPlay              string `yaml:"type of play"` // must be "playOrig" or "playAll"
-		Verbose                 int    `yaml:"verbose"`
-		OutputTo                string `yaml:"outputTo"`
-		outWriter               *os.File
-		outWriterFileName       string
+		List                    string `yaml:"list"`                         // a sorted list separated by commas and surrounded by ""
+		// MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
+		TypeOfPlay        string `yaml:"type of play"` // must be "playOrig" or "playAll"
+		Verbose           int    `yaml:"verbose"`
+		OutputTo          string `yaml:"outputTo"`
+		outWriter         *os.File
+		outWriterFileName string
 	} `yaml:"general"`
 	PlayOrig struct {
 		Length          int `yaml:"length of initial override strategy"`

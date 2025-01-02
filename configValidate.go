@@ -11,8 +11,12 @@ import (
 func configValidate(c Configuration) {
 	//
 	//General section
-	if !(c.General.Decks == "consecutive" || c.General.Decks == "list") {
-		println("General.Decks invalid; must be either 'consecutive' or 'list'")
+	if !(c.General.Decks == "consecutive" || c.General.Decks == "list" || c.General.Decks == "GLE") {
+		println("General.Decks invalid; must be either 'consecutive' or 'list' or 'GLE'")
+		defer os.Exit(1)
+	}
+	if !(c.General.Decks == "GLE" && !c.PlayAll.SaveResultsToSQL) {
+		println("General.Decks invalid; If 'GLE' then PlayAll.SaveResultsToSQL MUST be TRUE")
 		defer os.Exit(1)
 	}
 
