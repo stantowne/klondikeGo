@@ -228,14 +228,14 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			}
 		case "boardcode":
 			stmt, err = db.Prepare("INSERT INTO [dbo].[boardCode] (boardCode_str, Deck_ID) VALUES (@boardCode_str, @Deck_ID); ")
-			defer stmt.Close()
 			if err != nil {
-				if cfg.General.OutputTo != "console" {
-					oW = os.Stdout
-				}
-				fmt.Printf("Table: %v   Verb: %v   Error preparing   Error: %v ", table, verb, err)
-				os.Exit(1)
+				errHandler(cfg.General.OutputTo, table, verb, "preparing", err) /*	if cfg.General.OutputTo != "console" {
+						oW = os.Stdout
+					}
+					fmt.Printf("Table: %v   Verb: %v   Error preparing   Error: %v ", table, verb, err)
+					os.Exit(1)*/
 			}
+			defer stmt.Close()
 			// Execute the prepared statement
 			_, err = stmt.Exec(
 				sql.Named("boardCode_str", vPA.TDotherSQL.boardCodeOfDeckAsString),
@@ -245,23 +245,6 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 	case "query":
 		switch table {
 		case "winningmoves":
-			/*
-				stmt, err = db.Prepare("SELECT 'x' FROM [dbo].[WinningMoves] where WinningMoves_SHA256 = $1; ")
-				defer stmt.Close()
-				if err != nil {
-					if cfg.General.OutputTo != "console" {
-						oW = os.Stdout
-					}
-					fmt.Printf("Table: %v   Verb: %v   Error querying   Error: %v ", table, verb, err)
-					os.Exit(1)
-				}
-				// Execute the prepared statement
-				row = stmt.QueryRow(vPA.TDotherSQL.winningMovesSHA256)
-				if rows != nil {
-					returnResult = "Old Set of Winning Moves"
-				}
-			*/
-
 			var x string
 			var row *sql.Row
 			row = db.QueryRow("SELECT 'x' x FROM [dbo].[WinningMoves] WHERE WinningMoves_SHA256 = @w; ", sql.Named("w", vPA.TDotherSQL.winningMovesSHA256))
@@ -270,15 +253,24 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			} else {
 				return "Old Set of Winning Moves"
 			}
-
+		case "playall_statistics_GLE":
+			var x string
+			var row *sql.Row
+			row = db.QueryRow("SELECT 'x' x FROM [dbo].[PlayAll_Statistics] WHERE Deck_ID = @Deck_ID AND [stratLossesGLE] > 0 AND NOT EXISTS (SELECT 'x' x FROM [dbo].[WinningMoves] WHERE Deck_ID = @Deck_ID AND ([stratWins] > 0 OR [stratLosses] > 0 )); ", sql.Named("Deck_ID", vPA.TDotherSQL.deckNum))
+			if row.Scan(&x) == sql.ErrNoRows {
+				return "Skip"
+			} else {
+				return "NoSkip"
+			}
 		}
 	}
 	if err != nil {
-		if cfg.General.OutputTo != "console" {
-			oW = os.Stdout
-		}
-		fmt.Printf("SQL Error %v %v: %v", verb, table, err)
-		panic(fmt.Sprintf("SQL Error %v %v: %v", verb, table, err))
+		errHandler(cfg.General.OutputTo, table, verb, "SQL Error", err)
+		/*		if cfg.General.OutputTo != "console" {
+					oW = os.Stdout
+				}
+				fmt.Printf("SQL Error %v %v: %v", verb, table, err)
+				panic(fmt.Sprintf("SQL Error %v %v: %v", verb, table, err))*/
 	}
 	return returnResult
 }
@@ -291,4 +283,12 @@ func NewNullString(s string) sql.NullString {
 		String: s,
 		Valid:  true,
 	}
+}
+
+func errHandler(OutputTo string, table string, verb string, doing string, err error) {
+	if OutputTo != "console" {
+		oW = os.Stdout
+	}
+	fmt.Printf("Table: %v   Verb: %v   Error %v   Error: %v ", table, verb, doing, err)
+	os.Exit(1)
 }
