@@ -5,7 +5,7 @@ general:              # Repeat below with GL 20, 40, 300  then  next Start at 0 
   decks: consecutive                                  # consecutive or list or GLE
   first deck number: 2000  #2100                           # non-negative integer less than 410,000
   number of decks to be played: 100 #1900                  # positive integer no more than 410,000 minus first deck number
-  list:                                               # // a SORTED list separated by commas and surrounded by "" MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
+  list: 3,4,5, 6                                              # // a SORTED list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
   type of play: playAll                               # playAll or playOrig
   verbose: 0                                          # non-negative integer
   outputTo: ./playAllPrintOutput/Decks                # console OR filename WITHOUT extension;

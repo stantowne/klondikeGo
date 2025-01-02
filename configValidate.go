@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 )
 
 // validate cfg struct
@@ -15,11 +17,21 @@ func configValidate(c Configuration) {
 		println("General.Decks invalid; must be either 'consecutive' or 'list' or 'GLE'")
 		defer os.Exit(1)
 	}
-	if !(c.General.Decks == "GLE" && !c.PlayAll.SaveResultsToSQL) {
+	if c.General.Decks == "GLE" && !c.PlayAll.SaveResultsToSQL {
 		println("General.Decks invalid; If 'GLE' then PlayAll.SaveResultsToSQL MUST be TRUE")
 		defer os.Exit(1)
 	}
+	if c.General.Decks == "list" {
+		listTrimmed := strings.Trim(c.General.List, " ")
+		listStringSlice := strings.Split(listTrimmed, ",")
+		c.General.ListIntSlice = make([]int, len(listStringSlice))
 
+		for i, s := range listStringSlice {
+			c.General.ListIntSlice[i], _ = strconv.Atoi(s)
+			fmt.Printf("c.General.ListIntSlice: %v\n", c.General.ListIntSlice)
+			fmt.Printf("c.General.ListIntSlice: %v\n", c.General.ListIntSlice)
+		}
+	}
 	// parse deckfilename to get the number 410020!!!!!!!!!!!!!!!!
 
 	// this if statement and the next should be changed in the input file of decks contains greater or fewer than 10,000 decks
