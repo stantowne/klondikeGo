@@ -13,7 +13,12 @@ type Configuration struct {
 		GitVersion     string // Hash of latest commit
 		HostName       string // The machine this was run on - the version number will likely only exist on this machine
 		DeckFileName   string `yaml:"deck file name"`
-		Decks          string `yaml:"decks"` // must be "consecutive" or "list" or "GLE" IF GLE then SaveResultsToSQL MUST = true
+		Decks          string `yaml:"decks"` // must be "consecutive" or "list" or "GLE"
+		// list will ONLY play decks that are in string General.List (below) and in the
+		//      FirstDeckNum to FirstDeckNum + NumberOfDecksToBePlayed range
+		// GLE will ONLY play decks that are GLE ( i.e. Have NOT Won or Lost) in the
+		//      FirstDeckNum to FirstDeckNum + NumberOfDecksToBePlayed range
+		//IF GLE then SaveResultsToSQL MUST = true
 		// and a valid sql connection string must exist
 		FirstDeckNum            int    `yaml:"first deck number"`            // must be non-negative integer
 		NumberOfDecksToBePlayed int    `yaml:"number of decks to be played"` //must be non-negative integer
