@@ -2,9 +2,9 @@
 
 general:              # Repeat below with GL 20, 40, 300  then  next Start at 0 and go for 1000 next time change GML to 50
   deck file name: ./DeckFiles/decks-0-410019_with_20_duplicateDecksAtEnd.csv      # Note: forward slash /
-  decks: consecutive                                  # consecutive or list or GLE (See config.go for more explanation of list and GLE)
-  first deck number: 2000                             # non-negative integer less than 410,000
-  number of decks to be played: 4000                  # positive integer no more than 410,000 minus first deck number
+  decks: GLE                                          # consecutive or list or GLE (See config.go for more explanation of list and GLE)
+  first deck number: 7988                             # non-negative integer less than 410,000
+  number of decks to be played: 20                    # positive integer no more than 410,000 minus first deck number
   list: 3,4,5, 6                                      # // a SORTED list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
   type of play: playAll                               # playAll or playOrig
   verbose: 0                                          # non-negative integer
@@ -20,12 +20,12 @@ play original:
 
 
 play all moves:
-  game length limit in million moves tried: 50     # IN MILLIONS non-negative integer
+  game length limit in million moves tried: 28        # IN MILLIONS non-negative integer
 
   find all winning strategies?: false               # true or false   true not yet implemented
 
   reporting:                                        # only one true or no trues permitted   non yaml       cfg.PlayNew.ReportingType.NoReporting set in code
-    deck by deck: false                             # true or false                                   =    cfg.PlayNew.ReportingType.DeckByDeck
+    deck by deck: true                              # true or false                                   =    cfg.PlayNew.ReportingType.DeckByDeck
     move by move: false                             # true or false                                     || cfg.PlayNew.ReportingType.MoveByMove
     tree: false                                     # true or false                                     || cfg.PlayNew.ReportingType.Tree
     #                                             NOTE: || == OR (looks like forward slash due to italics)

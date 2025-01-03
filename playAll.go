@@ -31,7 +31,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 				cfg.General.ListIntSlice = cfg.General.ListIntSlice[1:]
 			}
 		case "GLE":
-			if sqlExec("Query", "playall_statistics_GLE", cfg, &vPA, nil) == "Skip" {
+			if sqlExec("query", "playall_statistics_GLE", cfg, &vPA, nil) == "Skip" {
 				skip = true
 			} else {
 				skip = false
@@ -157,60 +157,60 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 				SQL_Time_elapsed += time.Since(SQL_Start_Time)
 
 			}
-		}
-		// Done printing and SQL writing for this deck
-		// collect statistics into all deck variables (AD) and clear this deck (TD) variables for the next deck
-		if vPA.ADother.moveNumMax == 0 || vPA.ADother.moveNumMax < vPA.TDotherSQL.moveNumMax {
-			vPA.ADother.moveNumMax = vPA.TDotherSQL.moveNumMax
-		}
-		if vPA.TD.stratWins > 0 && (vPA.ADother.moveNumAtWinMin == 0 || vPA.ADother.moveNumAtWinMin > vPA.TDotherSQL.moveNumAtWin) {
-			vPA.ADother.moveNumAtWinMin = vPA.TDotherSQL.moveNumAtWin
-		}
-		if vPA.TD.stratWins > 0 && (vPA.ADother.moveNumAtWinMax == 0 || vPA.ADother.moveNumAtWinMax < vPA.TDotherSQL.moveNumAtWin) {
-			vPA.ADother.moveNumAtWinMax = vPA.TDotherSQL.moveNumAtWin
-		}
+			// Done printing and SQL writing for this deck
+			// collect statistics into all deck variables (AD) and clear this deck (TD) variables for the next deck
+			if vPA.ADother.moveNumMax == 0 || vPA.ADother.moveNumMax < vPA.TDotherSQL.moveNumMax {
+				vPA.ADother.moveNumMax = vPA.TDotherSQL.moveNumMax
+			}
+			if vPA.TD.stratWins > 0 && (vPA.ADother.moveNumAtWinMin == 0 || vPA.ADother.moveNumAtWinMin > vPA.TDotherSQL.moveNumAtWin) {
+				vPA.ADother.moveNumAtWinMin = vPA.TDotherSQL.moveNumAtWin
+			}
+			if vPA.TD.stratWins > 0 && (vPA.ADother.moveNumAtWinMax == 0 || vPA.ADother.moveNumAtWinMax < vPA.TDotherSQL.moveNumAtWin) {
+				vPA.ADother.moveNumAtWinMax = vPA.TDotherSQL.moveNumAtWin
+			}
 
-		vPA.TDotherSQL.moveNumAtWin = 0
-		vPA.TDotherSQL.moveNumMax = 0 //to keep track of length of the longest strategy so far
+			vPA.TDotherSQL.moveNumAtWin = 0
+			vPA.TDotherSQL.moveNumMax = 0 //to keep track of length of the longest strategy so far
 
-		vPA.AD.mvsTried += vPA.TD.mvsTried
-		vPA.TD.mvsTried = 0
-		vPA.AD.stratNum += vPA.TD.stratNum
-		vPA.TD.stratNum = 0
-		vPA.AD.stratTried += vPA.TD.stratTried
-		vPA.TD.stratTried = 1 // NOTE: Starts at 1 not 0
-		vPA.AD.stratWins += vPA.TD.stratWins
-		vPA.TD.stratWins = 0
-		vPA.AD.stratLosses += vPA.TD.stratLosses
-		vPA.TD.stratLosses = 0
-		vPA.AD.stratLossesGLE += vPA.TD.stratLossesGLE
-		vPA.TD.stratLossesGLE = 0
-		vPA.AD.stratLossesGLEAb += vPA.TD.stratLossesGLEAb
-		vPA.TD.stratLossesGLEAb = 0
-		vPA.AD.stratLossesNMA += vPA.TD.stratLossesNMA
-		vPA.TD.stratLossesNMA = 0
-		vPA.AD.stratLossesRB += vPA.TD.stratLossesRB
-		vPA.TD.stratLossesRB = 0
-		vPA.AD.stratLossesMajSE += vPA.TD.stratLossesMajSE
-		vPA.TD.stratLossesMajSE = 0
-		vPA.AD.stratLossesMinSE += vPA.TD.stratLossesMinSE
-		vPA.TD.stratLossesMinSE = 0
-		vPA.AD.stratLossesEL += vPA.TD.stratLossesEL
-		vPA.TD.stratLossesEL = 0
-		vPA.AD.unqBoards += vPA.TD.unqBoards
-		vPA.TD.unqBoards = 0
-		vPA.AD.winningMovesCnt += vPA.TD.winningMovesCnt
-		vPA.TD.winningMovesCnt = 0
-		vPA.AD.elapsedTime += vPA.TD.elapsedTime
+			vPA.AD.mvsTried += vPA.TD.mvsTried
+			vPA.TD.mvsTried = 0
+			vPA.AD.stratNum += vPA.TD.stratNum
+			vPA.TD.stratNum = 0
+			vPA.AD.stratTried += vPA.TD.stratTried
+			vPA.TD.stratTried = 1 // NOTE: Starts at 1 not 0
+			vPA.AD.stratWins += vPA.TD.stratWins
+			vPA.TD.stratWins = 0
+			vPA.AD.stratLosses += vPA.TD.stratLosses
+			vPA.TD.stratLosses = 0
+			vPA.AD.stratLossesGLE += vPA.TD.stratLossesGLE
+			vPA.TD.stratLossesGLE = 0
+			vPA.AD.stratLossesGLEAb += vPA.TD.stratLossesGLEAb
+			vPA.TD.stratLossesGLEAb = 0
+			vPA.AD.stratLossesNMA += vPA.TD.stratLossesNMA
+			vPA.TD.stratLossesNMA = 0
+			vPA.AD.stratLossesRB += vPA.TD.stratLossesRB
+			vPA.TD.stratLossesRB = 0
+			vPA.AD.stratLossesMajSE += vPA.TD.stratLossesMajSE
+			vPA.TD.stratLossesMajSE = 0
+			vPA.AD.stratLossesMinSE += vPA.TD.stratLossesMinSE
+			vPA.TD.stratLossesMinSE = 0
+			vPA.AD.stratLossesEL += vPA.TD.stratLossesEL
+			vPA.TD.stratLossesEL = 0
+			vPA.AD.unqBoards += vPA.TD.unqBoards
+			vPA.TD.unqBoards = 0
+			vPA.AD.winningMovesCnt += vPA.TD.winningMovesCnt
+			vPA.TD.winningMovesCnt = 0
+			vPA.AD.elapsedTime += vPA.TD.elapsedTime
 
-		vPA.ADother.decksPlayed++
-		vPA.TDother.treePrevMoves = ""
-		vPA.TDotherSQL.winningMoves = nil
-		vPA.TDotherSQL.winningMovesSHA256 = ""
-		vPA.TDother.startTime = time.Now()
-		clear(vPA.TDother.priorBoards)
-		vPA.TD.stratNum = 0
-		vPA.TD.stratTried = 1 // NOTE: Starts at 1 not 0
+			vPA.ADother.decksPlayed++
+			vPA.TDother.treePrevMoves = ""
+			vPA.TDotherSQL.winningMoves = nil
+			vPA.TDotherSQL.winningMovesSHA256 = ""
+			vPA.TDother.startTime = time.Now()
+			clear(vPA.TDother.priorBoards)
+			vPA.TD.stratNum = 0
+			vPA.TD.stratTried = 1 // NOTE: Starts at 1 not 0
+		}
 	}
 
 	// At this point, all decks to be played have been played.  Time to report aggregate won loss.

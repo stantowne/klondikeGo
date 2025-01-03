@@ -157,7 +157,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			_, err = stmt.Exec(
 				sql.Named("Deck_ID", vPA.TDotherSQL.deckNum),
 				sql.Named("Run_ID", cfg.General.RunID),
-				sql.Named("WinningMoves_SHA256", vPA.TDotherSQL.winningMovesSHA256),
+				sql.Named("WinningMoves_SHA256", NewNullString(vPA.TDotherSQL.winningMovesSHA256)),
 				sql.Named("mvsTried", vPA.TD.mvsTried),
 				sql.Named("stratNum", vPA.TD.stratNum),
 				sql.Named("stratTried", vPA.TD.stratTried),
@@ -253,14 +253,22 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			} else {
 				return "Old Set of Winning Moves"
 			}
-		case "playall_statistics_GLE":
-			var x string
+		case "playall_statistics_gle":
+			var max_mvsTried int
 			var row *sql.Row
-			row = db.QueryRow("SELECT 'x' x FROM [dbo].[PlayAll_Statistics] WHERE Deck_ID = @Deck_ID AND [stratLossesGLE] > 0 AND NOT EXISTS (SELECT 'x' x FROM [dbo].[WinningMoves] WHERE Deck_ID = @Deck_ID AND ([stratWins] > 0 OR [stratLosses] > 0 )); ", sql.Named("Deck_ID", vPA.TDotherSQL.deckNum))
-			if row.Scan(&x) == sql.ErrNoRows {
+			row = db.QueryRow("SELECT MAX([mvsTried]) max_mvsTried FROM [dbo].[PlayAll_Statistics] WHERE Deck_ID = @Deck_ID AND [stratLossesGLE] > 0 AND NOT EXISTS (SELECT 'x' x FROM [dbo].[PlayAll_Statistics] WHERE Deck_ID = @Deck_ID AND ([stratWins] > 0 OR [stratLosses] > 0 )); ", sql.Named("Deck_ID", vPA.TDotherSQL.deckNum))
+			if row.Scan(&max_mvsTried) == sql.ErrNoRows || max_mvsTried == 0 {
 				return "Skip"
 			} else {
-				return "NoSkip"
+				if max_mvsTried > cfg.PlayAll.GameLengthLimit*1000000 {
+					_, _ = pfmt.Printf("\nDeck: %v is not yet solved.  However it will be skipped as GLL for this run is: %v < GLL of a previous run: %v\n", vPA.TDotherSQL.deckNum, cfg.PlayAll.GameLengthLimit*1000000, max_mvsTried)
+					if cfg.General.OutputTo != "console" {
+						_, _ = pfmt.Fprintf(oW, "Deck: %v is not yet solved.  However it will be skipped as GLL for this run is: %v < GLL of a previous run: %v\n", vPA.TDotherSQL.deckNum, cfg.PlayAll.GameLengthLimit, max_mvsTried)
+					}
+					return "Skip"
+				} else {
+					return "NoSkip"
+				}
 			}
 		}
 	}
