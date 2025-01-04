@@ -153,6 +153,10 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 				}
 				// Create rows in sql file PlayAll_Statistics every time this boardCode (i.e. Deck) is played - differing by the Run_ID
 				sqlExec("Insert", "PlayAll_Statistics", cfg, &vPA, nil)
+				// Update NumberOfDecksWerePlayed and LastDeckWasPlayed
+				cfg.General.NumberOfDecksWerePlayed += 1
+				cfg.General.LastDeckWasPlayed = deckNum
+				sqlExec("Update", "runcfg", cfg, nil, nil)
 
 				SQL_Time_elapsed += time.Since(SQL_Start_Time)
 

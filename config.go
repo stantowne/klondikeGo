@@ -20,9 +20,11 @@ type Configuration struct {
 		//      FirstDeckNum to FirstDeckNum + NumberOfDecksToBePlayed range
 		//IF GLE then SaveResultsToSQL MUST = true
 		// and a valid sql connection string must exist
-		FirstDeckNum            int    `yaml:"first deck number"`            // must be non-negative integer
-		NumberOfDecksToBePlayed int    `yaml:"number of decks to be played"` //must be non-negative integer
-		List                    string `yaml:"list"`                         // a sorted list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
+		FirstDeckNum            int `yaml:"first deck number"`            // must be non-negative integer
+		NumberOfDecksToBePlayed int `yaml:"number of decks to be played"` //must be non-negative integer
+		NumberOfDecksWerePlayed int
+		LastDeckWasPlayed       int
+		List                    string `yaml:"list"` // a sorted list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
 		ListIntSlice            []int
 		TypeOfPlay              string `yaml:"type of play"` // must be "playOrig" or "playAll"
 		Verbose                 int    `yaml:"verbose"`

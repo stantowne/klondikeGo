@@ -261,9 +261,9 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				return "Skip"
 			} else {
 				if max_mvsTried >= cfg.PlayAll.GameLengthLimit*1000000 {
-					_, _ = pfmt.Printf("\nDeck: %v is not yet solved.  However it will be skipped as GLL for this run is: %v < GLL of a previous run: %v\n", vPA.TDotherSQL.deckNum, cfg.PlayAll.GameLengthLimit*1000000, max_mvsTried)
+					_, _ = pfmt.Printf("\nDeck: %v is not yet solved.  However it will be skipped as GLL for this run is: %v <= GLL of a previous run: %v\n", vPA.TDotherSQL.deckNum, cfg.PlayAll.GameLengthLimit*1000000, max_mvsTried)
 					if cfg.General.OutputTo != "console" {
-						_, _ = pfmt.Fprintf(oW, "Deck: %v is not yet solved.  However it will be skipped as GLL for this run is: %v < GLL of a previous run: %v\n", vPA.TDotherSQL.deckNum, cfg.PlayAll.GameLengthLimit, max_mvsTried)
+						_, _ = pfmt.Fprintf(oW, "Deck: %v is not yet solved.  However it will be skipped as GLL for this run is: %v <= GLL of a previous run: %v\n", vPA.TDotherSQL.deckNum, cfg.PlayAll.GameLengthLimit, max_mvsTried)
 					}
 					return "Skip"
 				} else {

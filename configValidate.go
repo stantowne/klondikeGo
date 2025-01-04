@@ -21,6 +21,9 @@ func configValidate(c Configuration) {
 		println("General.Decks invalid; If 'GLE' then PlayAll.SaveResultsToSQL MUST be TRUE")
 		defer os.Exit(1)
 	}
+	// Initialize NumberOfDecksWerePlayed and LastDeckWasPlayed
+	c.General.NumberOfDecksWerePlayed = 0
+	c.General.LastDeckWasPlayed = -1
 	if c.General.Decks == "list" {
 		listTrimmed := strings.Trim(c.General.List, " ")
 		listStringSlice := strings.Split(listTrimmed, ",")
