@@ -31,15 +31,17 @@ func configValidate(c Configuration) {
 		}
 	}
 
-	// parse deckfilename to get the number 410020!!!!!!!!!!!!!!!!
+	// parse c.General.DeckFileName to get the number 410020!!!!!!!!!!!!!!!!
+	deckFileNameSlice := strings.Split(c.General.DeckFileName, "-")
+	deckNumMax, _ := strconv.Atoi(deckFileNameSlice[2])
 
 	// this if statement and the next should be changed in the input file of decks contains greater or fewer than 10,000 decks
-	if c.General.FirstDeckNum < 0 || c.General.FirstDeckNum > 410020 {
-		println("General.FirstDeckNum invalid; must be non-negative integer less than 410,020")
+	if c.General.FirstDeckNum < 0 || c.General.FirstDeckNum > deckNumMax {
+		println("General.FirstDeckNum invalid; must be non-negative integer less than deckFileNameMax + 1")
 		defer os.Exit(1)
 	}
-	if c.General.NumberOfDecksToBePlayed < 1 || c.General.NumberOfDecksToBePlayed > (410020-c.General.FirstDeckNum) {
-		println("General.numberOfDecksToBePlayed invalid; must be 1 or more, but not more than 410,020 minus firstDeckNum")
+	if c.General.NumberOfDecksToBePlayed < 1 || c.General.NumberOfDecksToBePlayed > (deckNumMax+1-c.General.FirstDeckNum) {
+		println("General.numberOfDecksToBePlayed invalid; must be 1 or more, but not more than deckFileNameMax + 1 minus firstDeckNum")
 		defer os.Exit(1)
 	}
 	if !(c.General.TypeOfPlay == "playOrig" || c.General.TypeOfPlay == "playAll") {
