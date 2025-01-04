@@ -23,13 +23,12 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 		switch table {
 		case "priority":
 			stmt, err = db.Prepare("INSERT INTO [dbo].[Priority] ([Priority_SHA256], [moveAceAcross], [moveDeuceAcross], [move3PlusAcross], [moveDown], [moveEntireColumn], [flipWasteToStock], [flipStockToWaste], [movePartialColumn], [moveAceUp], [moveDeuceUp], [move3PlusUp], [badMove], [flipSt->W Max-0], [flipSt->W Max-1], [flipSt->W Max-2], [flipSt->W Max-3], [flipSt->W Max-4], [flipSt->W Max-5], [flipSt->W Max-6], [flipSt->W Max-7]) VALUES (@Priority_SHA256, @moveAceAcross, @moveDeuceAcross, @move3PlusAcross, @moveDown, @moveEntireColumn, @flipWasteToStock, @flipStockToWaste, @movePartialColumn, @moveAceUp, @moveDeuceUp, @move3PlusUp, @badMove, @flipStToW_Max_0, @flipStToW_Max_1, @flipStToW_Max_2, @flipStToW_Max_3, @flipStToW_Max_4, @flipStToW_Max_5, @flipStToW_Max_6, @flipStToW_Max_7); ")
-			defer stmt.Close()
 			if err != nil {
-				if cfg.General.OutputTo != "console" {
-					oW = os.Stdout
-				}
-				fmt.Printf("Table: %v   Verb: %v   Error preparing   Error: %v ", table, verb, err)
-				os.Exit(1)
+				errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
+			}
+			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close")
+			if err != nil {
+				errHandler(cfg.General.OutputTo, table, verb, "Close", err)
 			}
 			// Execute the prepared statement
 			_, err = stmt.Exec(
@@ -56,14 +55,13 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("flipStToW_Max_7", moveBasePriority["flipSt->W Max-7"]),
 			)
 		case "runcfg":
-			stmt, err = db.Prepare("INSERT INTO [dbo].[RunCfg] ([Priority_SHA256], [RunStartTime], [GitVersion], [HostName], [DeckFileName], [Decks], [FirstDeckNum], [NumberOfDecksToBePlayed], [List], [TypeOfPlay], [Verbose], [OutputTo], [outWriterFileName]) OUTPUT inserted.Run_ID VALUES (@Priority_SHA256, @RunStartTime, @GitVersion, @HostName, @DeckFileName, @Decks, @FirstDeckNum, @NumberOfDecksToBePlayed, @List, @TypeOfPlay, @Verbose, @OutputTo, @outWriterFileName);")
+			stmt, err = db.Prepare("INSERT INTO [dbo].[RunCfg] ([Priority_SHA256], [RunStartTime], [GitVersion], [HostName], [DeckFileName], [Decks], [FirstDeckNum], [NumberOfDecksToBePlayed], [NumberOfDecksWerePlayed], [LastDeckWasPlayed], [List], [TypeOfPlay], [Verbose], [OutputTo], [outWriterFileName]) OUTPUT inserted.Run_ID VALUES (@Priority_SHA256, @RunStartTime, @GitVersion, @HostName, @DeckFileName, @Decks, @FirstDeckNum, @NumberOfDecksToBePlayed, @NumberOfDecksWerePlayed, @LastDeckWasPlayed, @List, @TypeOfPlay, @Verbose, @OutputTo, @outWriterFileName);")
+			if err != nil {
+				errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
+			}
 			defer stmt.Close()
 			if err != nil {
-				if cfg.General.OutputTo != "console" {
-					oW = os.Stdout
-				}
-				fmt.Printf("Table: %v   Verb: %v   Error preparing Error: %v ", table, verb, err)
-				os.Exit(1)
+				errHandler(cfg.General.OutputTo, table, verb, "Close", err)
 			}
 			// Execute the prepared statement
 			rows, err = stmt.Query(
@@ -75,6 +73,8 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("Decks", cfg.General.Decks),
 				sql.Named("FirstDeckNum", cfg.General.FirstDeckNum),
 				sql.Named("NumberOfDecksToBePlayed", cfg.General.NumberOfDecksToBePlayed),
+				sql.Named("NumberOfDecksWerePlayed", cfg.General.NumberOfDecksWerePlayed),
+				sql.Named("LastDeckWasPlayed", cfg.General.LastDeckWasPlayed),
 				sql.Named("List", cfg.General.List),
 				sql.Named("TypeOfPlay", cfg.General.TypeOfPlay),
 				sql.Named("Verbose", cfg.General.Verbose),
@@ -93,13 +93,12 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			}
 		case "cfg_playall":
 			stmt, err = db.Prepare("INSERT INTO [dbo].[Cfg_PlayAll] (Run_ID, GameLengthLimit, DeckByDeck, MoveByMove, Tree, NoReporting, DbD_Type, MbM_Type, Tree_Type, TreeSleepBetwnMoves, TreeSleepBetwnMovesDur, TreeSleepBetwnStrategies, TreeSleepBetwnStrategiesDur, RestrictReporting, RestrictRept_DeckStartVal, RestrictRept_DeckContinueFor, RestrictRept_MovesTriedStartVal, RestrictRept_MovesTriedContinueFor, ProgressCounter, SaveResultsToSQL, SQLConnectionString) VALUES (@Run_ID, @GameLengthLimit, @DeckByDeck, @MoveByMove, @Tree, @NoReporting, @DbD_Type, @MbM_Type, @Tree_Type, @TreeSleepBetwnMoves, @TreeSleepBetwnMovesDur, @TreeSleepBetwnStrategies, @TreeSleepBetwnStrategiesDur, @RestrictReporting, @RestrictRept_DeckStartVal, @RestrictRept_DeckContinueFor, @RestrictRept_MovesTriedStartVal, @RestrictRept_MovesTriedContinueFor, @ProgressCounter, @SaveResultsToSQL, @SQLConnectionString); ")
+			if err != nil {
+				errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
+			}
 			defer stmt.Close()
 			if err != nil {
-				if cfg.General.OutputTo != "console" {
-					oW = os.Stdout
-				}
-				fmt.Printf("Table: %v   Verb: %v   Error preparing   Error: %v ", table, verb, err)
-				os.Exit(1)
+				errHandler(cfg.General.OutputTo, table, verb, "Close", err)
 			}
 			// Execute the prepared statement
 			_, err = stmt.Exec(
@@ -128,13 +127,12 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 		case "cfg_playorig":
 			if vPO != nil { // Added to eliminate error about unused variable vPO
 				stmt, err = db.Prepare("INSERT INTO [dbo].[Cfg_PlayOrig] (Length, GameLengthLimit) VALUES (@Length, @GameLengthLimit); ")
+				if err != nil {
+					errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
+				}
 				defer stmt.Close()
 				if err != nil {
-					if cfg.General.OutputTo != "console" {
-						oW = os.Stdout
-					}
-					fmt.Printf("Table: %v   Verb: %v   Error preparing   Error: %v ", table, verb, err)
-					os.Exit(1)
+					errHandler(cfg.General.OutputTo, table, verb, "Close", err)
 				}
 				// Execute the prepared statement
 				_, err = stmt.Exec(
@@ -145,13 +143,12 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			}
 		case "playall_statistics":
 			stmt, err = db.Prepare("INSERT INTO [dbo].[PlayAll_Statistics] (Deck_ID, Run_ID, winning_MovesSHA256, mvsTried, stratNum, stratTried, stratWins, stratLosses, stratLossesGLE, stratLossesGLEAb, stratLossesNMA, stratLossesRB, stratLossesMajSE, stratLossesMinSE, stratLossesEL, winningMovesCnt, unqBoards, elapsedTime, moveNumMax, moveNumAtWin) VALUES (@Deck_ID, @Run_ID, @winningMoves_SHA256, @mvsTried, @stratNum, @stratTried, @stratWins, @stratLosses, @stratLossesGLE, @stratLossesGLEAb, @stratLossesNMA, @stratLossesRB, @stratLossesMajSE, @stratLossesMinSE, @stratLossesEL, @winningMovesCnt, @unqBoards, @elapsedTime, @moveNumMax, @moveNumAtWin); ")
+			if err != nil {
+				errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
+			}
 			defer stmt.Close()
 			if err != nil {
-				if cfg.General.OutputTo != "console" {
-					oW = os.Stdout
-				}
-				fmt.Printf("Table: %v   Verb: %v   Error preparing   Error: %v ", table, verb, err)
-				os.Exit(1)
+				errHandler(cfg.General.OutputTo, table, verb, "Close", err)
 			}
 			// Execute the prepared statement
 			_, err = stmt.Exec(
@@ -180,13 +177,12 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			returnResult = sqlExec("Query", "WinningMoves", cfg, vPA, nil)
 			if returnResult == "New Set of Winning Moves" {
 				stmt, err = db.Prepare("INSERT INTO [dbo].[WinningMoves] ([WinningMoves_SHA256]) OUTPUT inserted.WinningMoves_ID VALUES (@WinningMoves_SHA256); ")
+				if err != nil {
+					errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
+				}
 				defer stmt.Close()
 				if err != nil {
-					if cfg.General.OutputTo != "console" {
-						oW = os.Stdout
-					}
-					fmt.Printf("Table: %v   Verb: %v   Error preparing   Error: %v ", table, verb, err)
-					os.Exit(1)
+					errHandler(cfg.General.OutputTo, table, verb, "Close", err)
 				}
 				// Execute the prepared statement
 				rows, err = stmt.Query(
@@ -209,7 +205,10 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 		case "winningmoves_detail":
 			for k := range vPA.TDotherSQL.winningMoves {
 				stmt, err = db.Prepare("INSERT INTO [dbo].[WinningMoves_Detail] (WinningMoves_ID, MoveNum, name, priority, toPile, toCol, fromCol, MovePortionStartIdx, cardToMoveRank, cardToMoveSuit, cardToMoveFaceUp, colCardFlip) VALUES (@WinningMoves_ID, @MoveNum, @name, @priority, @toPile, @toCol, @fromCol, @MovePortionStartIdx, @cardToMoveRank, @cardToMoveSuit, @cardToMoveFaceUp, @colCardFlip); ")
-				defer stmt.Close()
+				if err != nil {
+					errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
+				}
+
 				// Execute the prepared statement
 				_, err = stmt.Exec(
 					sql.Named("WinningMoves_ID", WinningMoves_ID_inserted),
@@ -226,16 +225,19 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 					sql.Named("colCardFlip", vPA.TDotherSQL.winningMoves[k].colCardFlip),
 				)
 			}
+			defer stmt.Close()
+			if err != nil {
+				errHandler(cfg.General.OutputTo, table, verb, "Close", err)
+			}
 		case "boardcode":
 			stmt, err = db.Prepare("INSERT INTO [dbo].[boardCode] (boardCode_str, Deck_ID) VALUES (@boardCode_str, @Deck_ID); ")
 			if err != nil {
-				errHandler(cfg.General.OutputTo, table, verb, "preparing", err) /*	if cfg.General.OutputTo != "console" {
-						oW = os.Stdout
-					}
-					fmt.Printf("Table: %v   Verb: %v   Error preparing   Error: %v ", table, verb, err)
-					os.Exit(1)*/
+				errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
 			}
 			defer stmt.Close()
+			if err != nil {
+				errHandler(cfg.General.OutputTo, table, verb, "Close", err)
+			}
 			// Execute the prepared statement
 			_, err = stmt.Exec(
 				sql.Named("boardCode_str", vPA.TDotherSQL.boardCodeOfDeckAsString),
@@ -271,6 +273,24 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				}
 			}
 		}
+	case "update":
+		switch table {
+		case "runcfg":
+			_, err = db.Exec("UPDATE [dbo].[RunCfg] SET [NumberOfDecksWerePlayed] = ?, [LastDeckWasPlayed] = ? WHERE [Run_ID] = ?", cfg.General.NumberOfDecksWerePlayed, cfg.General.LastDeckWasPlayed, cfg.General.RunID)
+		}
+	case "transaction":
+		switch table {
+		case "begin":
+			tx, err = db.Begin()
+			if err != nil {
+				errHandler(cfg.General.OutputTo, table, verb, "Begin", err)
+			}
+			defer tx.Rollback()
+		case "commit":
+			if err = tx.Commit(); err != nil {
+				errHandler(cfg.General.OutputTo, table, verb, "Commit", err)
+			}
+		}
 	}
 	if err != nil {
 		errHandler(cfg.General.OutputTo, table, verb, "SQL Error", err)
@@ -299,4 +319,11 @@ func errHandler(OutputTo string, table string, verb string, doing string, err er
 	}
 	fmt.Printf("Table: %v   Verb: %v   Error %v   Error: %v ", table, verb, doing, err)
 	os.Exit(1)
+}
+
+func CloseStatement(stmt *sql.Stmt, OutputTo string, table string, verb string, doing string) {
+	err := stmt.Close()
+	if err != nil {
+		errHandler(OutputTo, table, verb, doing, err)
+	}
 }

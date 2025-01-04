@@ -26,6 +26,7 @@ var pfmt = message.NewPrinter(language.English)
 var oW *os.File
 
 var db *sql.DB
+var tx *sql.Tx
 
 var SQL_Time_elapsed time.Duration
 var SQL_Start_Time time.Time
@@ -167,13 +168,14 @@ func main() {
 
 			SQL_Start_Time = time.Now()
 
-			// Calculate and set cfg.General.prioritySHA256 of moveBasePriority
-			// Check if a row Priority_SHA256 == cfg.General.prioritySHA256 exists if not Create it !!!!
+			sqlExec("Transaction", "Begin", nil, nil, nil)
 			sqlExec("Insert", "Priority", &cfg, nil, nil)
 			// Create row in sql file RunCfg and get back the Run_ID that was created on the insert and assign it to cfg.General.runID !!
 			sqlExec("Insert", "RunCfg", &cfg, nil, nil)
+			sqlExec("Update", "RunCfg", &cfg, nil, nil)
 			// Create row in sql file Cfg_PlayAll
 			sqlExec("Insert", "Cfg_PlayAll", &cfg, nil, nil)
+			sqlExec("Transaction", "Commit", nil, nil, nil)
 
 			SQL_Time_elapsed += time.Since(SQL_Start_Time)
 

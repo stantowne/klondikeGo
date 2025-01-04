@@ -156,7 +156,7 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 				// Update NumberOfDecksWerePlayed and LastDeckWasPlayed
 				cfg.General.NumberOfDecksWerePlayed += 1
 				cfg.General.LastDeckWasPlayed = deckNum
-				sqlExec("Update", "runcfg", cfg, nil, nil)
+				sqlExec("Update", "RunCfg", cfg, nil, nil)
 
 				SQL_Time_elapsed += time.Since(SQL_Start_Time)
 
