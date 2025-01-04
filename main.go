@@ -142,7 +142,6 @@ func main() {
 	}
 	defer func(file *os.File) {
 		err := file.Close()
-
 		if err != nil {
 			println("could not close file: %v  err: %v  errmsg: %v", err)
 		}
