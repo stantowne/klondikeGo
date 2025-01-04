@@ -37,11 +37,11 @@ func configValidate(c Configuration) {
 
 	// this if statement and the next should be changed in the input file of decks contains greater or fewer than 10,000 decks
 	if c.General.FirstDeckNum < 0 || c.General.FirstDeckNum > deckNumMax {
-		println("General.FirstDeckNum invalid; must be non-negative integer less than deckFileNameMax + 1")
+		println("General.FirstDeckNum invalid; must be non-negative integer less than deckNumMax + 1")
 		defer os.Exit(1)
 	}
 	if c.General.NumberOfDecksToBePlayed < 1 || c.General.NumberOfDecksToBePlayed > (deckNumMax+1-c.General.FirstDeckNum) {
-		println("General.numberOfDecksToBePlayed invalid; must be 1 or more, but not more than deckFileNameMax + 1 minus firstDeckNum")
+		println("General.numberOfDecksToBePlayed invalid; must be 1 or more, but not more than deckNumMax + 1 minus firstDeckNum")
 		defer os.Exit(1)
 	}
 	if !(c.General.TypeOfPlay == "playOrig" || c.General.TypeOfPlay == "playAll") {
