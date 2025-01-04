@@ -27,9 +27,6 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
 			}
 			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close")
-			if err != nil {
-				errHandler(cfg.General.OutputTo, table, verb, "Close", err)
-			}
 			// Execute the prepared statement
 			_, err = stmt.Exec(
 				sql.Named("Priority_SHA256", string(cfg.General.PrioritySHA256[:])),
@@ -59,10 +56,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			if err != nil {
 				errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
 			}
-			defer stmt.Close()
-			if err != nil {
-				errHandler(cfg.General.OutputTo, table, verb, "Close", err)
-			}
+			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close")
 			// Execute the prepared statement
 			rows, err = stmt.Query(
 				sql.Named("Priority_SHA256", string(cfg.General.PrioritySHA256[:])),
@@ -96,10 +90,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			if err != nil {
 				errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
 			}
-			defer stmt.Close()
-			if err != nil {
-				errHandler(cfg.General.OutputTo, table, verb, "Close", err)
-			}
+			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close")
 			// Execute the prepared statement
 			_, err = stmt.Exec(
 				sql.Named("Run_ID", cfg.General.RunID),
@@ -130,10 +121,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				if err != nil {
 					errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
 				}
-				defer stmt.Close()
-				if err != nil {
-					errHandler(cfg.General.OutputTo, table, verb, "Close", err)
-				}
+				defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close")
 				// Execute the prepared statement
 				_, err = stmt.Exec(
 					sql.Named("Run_ID", cfg.General.RunID),
@@ -146,10 +134,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			if err != nil {
 				errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
 			}
-			defer stmt.Close()
-			if err != nil {
-				errHandler(cfg.General.OutputTo, table, verb, "Close", err)
-			}
+			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close")
 			// Execute the prepared statement
 			_, err = stmt.Exec(
 				sql.Named("Deck_ID", vPA.TDotherSQL.deckNum),
@@ -180,10 +165,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				if err != nil {
 					errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
 				}
-				defer stmt.Close()
-				if err != nil {
-					errHandler(cfg.General.OutputTo, table, verb, "Close", err)
-				}
+				defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close")
 				// Execute the prepared statement
 				rows, err = stmt.Query(
 					sql.Named("WinningMoves_SHA256", NewNullString(vPA.TDotherSQL.winningMovesSHA256)),
@@ -225,19 +207,13 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 					sql.Named("colCardFlip", vPA.TDotherSQL.winningMoves[k].colCardFlip),
 				)
 			}
-			defer stmt.Close()
-			if err != nil {
-				errHandler(cfg.General.OutputTo, table, verb, "Close", err)
-			}
+			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close")
 		case "boardcode":
 			stmt, err = db.Prepare("INSERT INTO [dbo].[boardCode] (boardCode_str, Deck_ID) VALUES (@boardCode_str, @Deck_ID); ")
 			if err != nil {
 				errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
 			}
-			defer stmt.Close()
-			if err != nil {
-				errHandler(cfg.General.OutputTo, table, verb, "Close", err)
-			}
+			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close")
 			// Execute the prepared statement
 			_, err = stmt.Exec(
 				sql.Named("boardCode_str", vPA.TDotherSQL.boardCodeOfDeckAsString),
@@ -285,7 +261,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			if err != nil {
 				errHandler(cfg.General.OutputTo, table, verb, "Begin", err)
 			}
-			defer tx.Rollback()
+			defer txRollback(tx, cfg.General.OutputTo, table, verb, "Close")
 		case "commit":
 			if err = tx.Commit(); err != nil {
 				errHandler(cfg.General.OutputTo, table, verb, "Commit", err)
@@ -323,6 +299,13 @@ func errHandler(OutputTo string, table string, verb string, doing string, err er
 
 func CloseStatement(stmt *sql.Stmt, OutputTo string, table string, verb string, doing string) {
 	err := stmt.Close()
+	if err != nil {
+		errHandler(OutputTo, table, verb, doing, err)
+	}
+}
+
+func txRollback(tx *sql.Tx, OutputTo string, table string, verb string, doing string) {
+	err := tx.Rollback()
 	if err != nil {
 		errHandler(OutputTo, table, verb, doing, err)
 	}
