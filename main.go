@@ -9,8 +9,9 @@ import (
 	"golang.org/x/text/message"
 	"gopkg.in/yaml.v3"
 	"io"
-	"net/http"         //  DELETE ME MEMORY PROFILING
-	_ "net/http/pprof" //  DELETE ME MEMORY PROFILING
+	/*
+		_ "net/http/pprof" //  DELETE ME MEMORY PROFILING
+	*/
 	"os"
 	"runtime/debug"
 	"sort"
@@ -31,9 +32,10 @@ var SQL_Start_Time time.Time
 
 func main() {
 	//                                                            DELETE ME MEMORY PROFILING
-	go func() {
-		http.ListenAndServe("localhost:8080", nil)
-	}()
+	/*	go func() {
+			http.ListenAndServe("localhost:8080", nil)
+		}()
+	*/
 	//                                                            DELETE ME MEMORY PROFILING
 
 	//***************************************************************
