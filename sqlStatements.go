@@ -190,7 +190,6 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				if err != nil {
 					errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
 				}
-
 				// Execute the prepared statement
 				_, err = stmt.Exec(
 					sql.Named("WinningMoves_ID", WinningMoves_ID_inserted),
@@ -252,7 +251,17 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 	case "update":
 		switch table {
 		case "runcfg":
-			_, err = db.Exec("UPDATE [dbo].[RunCfg] SET [NumberOfDecksWerePlayed] = ?, [LastDeckWasPlayed] = ? WHERE [Run_ID] = ?", cfg.General.NumberOfDecksWerePlayed, cfg.General.LastDeckWasPlayed, cfg.General.RunID)
+			stmt, err = db.Prepare("UPDATE [dbo].[RunCfg] SET [NumberOfDecksWerePlayed] = @w, [LastDeckWasPlayed] = @l WHERE [Run_ID] = @r ;")
+			if err != nil {
+				errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
+			}
+			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close")
+			// Execute the prepared statement
+			_, err = stmt.Exec(
+				sql.Named("w", cfg.General.NumberOfDecksWerePlayed),
+				sql.Named("l", cfg.General.LastDeckWasPlayed),
+				sql.Named("r", cfg.General.RunID),
+			)
 		}
 	case "transaction":
 		switch table {

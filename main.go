@@ -168,14 +168,13 @@ func main() {
 
 			SQL_Start_Time = time.Now()
 
-			sqlExec("Transaction", "Begin", nil, nil, nil)
+			sqlExec("Transaction", "Begin", &cfg, nil, nil)
 			sqlExec("Insert", "Priority", &cfg, nil, nil)
 			// Create row in sql file RunCfg and get back the Run_ID that was created on the insert and assign it to cfg.General.runID !!
 			sqlExec("Insert", "RunCfg", &cfg, nil, nil)
-			sqlExec("Update", "RunCfg", &cfg, nil, nil)
 			// Create row in sql file Cfg_PlayAll
 			sqlExec("Insert", "Cfg_PlayAll", &cfg, nil, nil)
-			sqlExec("Transaction", "Commit", nil, nil, nil)
+			sqlExec("Transaction", "Commit", &cfg, nil, nil)
 
 			SQL_Time_elapsed += time.Since(SQL_Start_Time)
 
