@@ -3,8 +3,8 @@
 general:              # Repeat below with GL 20, 40, 300  then  next Start at 0 and go for 1000 next time change GML to 50
   deck file name: ./DeckFiles/decks-0-410019-with_20_duplicateDecksAtEnd.csv      # Note: forward slash / form: prefix-Start#-End#-suffix no "-" in prefix
   decks: GLE                                          # consecutive or list or GLE (See config.go for more explanation of list and GLE)
-  first deck number: 0                                # non-negative integer less than 410,000
-  number of decks to be played: 2000                  # positive integer no more than 410,000 minus first deck number
+  first deck number: 2015                             # non-negative integer less than 410,000
+  number of decks to be played: 1000                  # positive integer no more than 410,000 minus first deck number
   list: 3,4,5, 6                                      # // a SORTED list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
   type of play: playAll                               # playAll or playOrig
   verbose: 0                                          # non-negative integer
