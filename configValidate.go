@@ -12,7 +12,7 @@ import (
 // bool fields not validated because an attempt to assign a non-bool value to a bool variable causes panic
 func configValidate(c Configuration) {
 	//
-	//General section
+	// General section
 	if !(c.General.Decks == "consecutive" || c.General.Decks == "list" || c.General.Decks == "GLE") {
 		println("General.Decks invalid; must be either 'consecutive' or 'list' or 'GLE'")
 		defer os.Exit(1)

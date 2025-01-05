@@ -91,7 +91,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				errHandler(cfg.General.OutputTo, table, verb, "Prepare", err)
 			}
 			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close")
-			// Execute the prepared statement
+			//  Execute the prepared statement
 			_, err = stmt.Exec(
 				sql.Named("Run_ID", cfg.General.RunID),
 				sql.Named("GameLengthLimit", cfg.PlayAll.GameLengthLimit),

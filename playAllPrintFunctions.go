@@ -79,7 +79,7 @@ func statisticsPrint(TDorAD *Statistics, which string) {
 
 func statisticsPrintOneLine(vPA *variablesSpecificToPlayAll, dN int, s1 string, firstDeckNum int, numberOfDecksToBePlayed int) {
 	var est time.Duration
-	//                      nanosecondsTD   / Decks Played So Far         * remaining decks [remaining decks = numbertobeplayed - decksplayed so far
+	//                     nanosecondsTD   / Decks Played So Far         * remaining decks [remaining decks = numbertobeplayed - decksplayed so far
 	est = time.Duration(float64(time.Since(vPA.ADother.startTime))/float64(dN+1-firstDeckNum)*float64(numberOfDecksToBePlayed-(dN+1-firstDeckNum))) * time.Nanosecond
 	elTimeSinceStartTimeADFormatted := time.Since(vPA.ADother.startTime).Round(100 * time.Millisecond).String()
 	if time.Since(vPA.ADother.startTime) > time.Duration(5*time.Minute) {
