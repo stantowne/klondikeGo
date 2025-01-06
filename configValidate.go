@@ -11,7 +11,7 @@ import (
 
 // validate cfg struct
 // bool fields not validated because an attempt to assign a non-bool value to a bool variable causes panic
-func configValidate(c Configuration) {
+func configValidate(c *Configuration) {
 	//
 	// General section
 	if !(c.General.Decks == "consecutive" || c.General.Decks == "list" || c.General.Decks == "GLE") {
@@ -35,7 +35,7 @@ func configValidate(c Configuration) {
 		}
 		sort.SliceStable(c.General.ListIntSlice, func(i, j int) bool { return c.General.ListIntSlice[i] < c.General.ListIntSlice[j] })
 		if c.General.ListIntSlice[0] < c.General.FirstDeckNum || c.General.ListIntSlice[len(c.General.ListIntSlice)-1] > c.General.FirstDeckNum+c.General.NumberOfDecksToBePlayed-1 {
-			_, _ = pfmt.Println("General.List invalid; DeckNums MUST be in range of %v to %v", c.General.FirstDeckNum, c.General.FirstDeckNum+c.General.NumberOfDecksToBePlayed-1)
+			_, _ = pfmt.Printf("General.List invalid; DeckNums MUST be in range of %v to %v", c.General.FirstDeckNum, c.General.FirstDeckNum+c.General.NumberOfDecksToBePlayed-1)
 			defer os.Exit(1)
 		}
 

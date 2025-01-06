@@ -24,11 +24,17 @@ func playAll(reader csv.Reader, cfg *Configuration) {
 	for deckNum := firstDeckNum; deckNum < (firstDeckNum + numberOfDecksToBePlayed); deckNum++ {
 		vPA.TDotherSQL.deckNum = deckNum
 		// Skip forward if cfg.General.Decks == "list" or  cfg.General.Decks == "GLE"
+		skip = false
 		switch cfg.General.Decks {
 		case "list":
-			if len(cfg.General.ListIntSlice) == 0 || deckNum < cfg.General.ListIntSlice[0] {
+			if len(cfg.General.ListIntSlice) == 0 {
 				skip = true
-				cfg.General.ListIntSlice = cfg.General.ListIntSlice[1:]
+			} else {
+				if deckNum < cfg.General.ListIntSlice[0] {
+					skip = true
+				} else {
+					cfg.General.ListIntSlice = cfg.General.ListIntSlice[1:]
+				}
 			}
 		case "GLE":
 			if sqlExec("query", "playall_statistics_GLE", cfg, &vPA, nil) == "Skip" {

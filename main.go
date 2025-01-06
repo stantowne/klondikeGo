@@ -76,7 +76,7 @@ func main() {
 			cfg.PlayAll.ReportingType.MoveByMove ||
 			cfg.PlayAll.ReportingType.Tree)
 
-	configValidate(cfg)
+	configValidate(&cfg)
 
 	cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMovesDur =
 		time.Duration(cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves*100) * time.Millisecond
