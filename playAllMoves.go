@@ -136,8 +136,8 @@ func playAllMoves(bIn board, moveNum int, deckNum int, cfg *Configuration, vPA *
 			estRemTimeAD := time.Duration(float64(time.Since(vPA.ADother.startTime)) * (float64(cfg.General.NumberOfDecksToBePlayed) - decksPlayed) / decksPlayed)
 			vPA.TD.unqBoards = len(vPA.TDother.priorBoards)
 			// NOTE: THE FOLLOWING PRINT STATEMENT NEVER GOES TO FILE - ALWAYS TO CONSOLE
-			_, _ = pfmt.Printf("\rDk: %d  MvsTD: %vmm  Mvs: %vmm  Strats: %vmm  UnqBoards: %vmm  MaxMoveNum: %v  Elapsed: %s  estRem: %s  W/L/GLE: %v/%v/%v  W/L/GLE %%: %3.1f/%3.1f/%3.1f\r",
-				deckNum, vPA.TD.mvsTried/1000000, (vPA.AD.mvsTried+vPA.TD.mvsTried)/1000000, (vPA.TD.stratNum+vPA.AD.stratNum)/1000000, (vPA.TD.unqBoards+vPA.AD.unqBoards)/1000000, vPA.ADother.moveNumMax, time.Since(vPA.ADother.startTime).Round(6*time.Second).String(), estRemTimeAD.Round(6*time.Second), vPA.ADother.decksWon, vPA.ADother.decksLost, vPA.ADother.decksLostGLE, float64(vPA.ADother.decksWon)/decksCompleted*100.0, float64(vPA.ADother.decksLost)/decksCompleted*100.0, float64(vPA.ADother.decksLostGLE)/decksCompleted*100.0)
+			_, _ = pfmt.Printf("\rDk: %d  MvsTD: %vmm  Mvs: %vmm  Strats: %vmm  UnqBoards: %vmm  MaxMoveNum: %v  Elapsed: %s  estRem: %s  W/L/GLE: %v/%v/%v = %v  W/L/GLE %%: %3.1f/%3.1f/%3.1f\r",
+				deckNum, vPA.TD.mvsTried/1000000, (vPA.AD.mvsTried+vPA.TD.mvsTried)/1000000, (vPA.TD.stratNum+vPA.AD.stratNum)/1000000, (vPA.TD.unqBoards+vPA.AD.unqBoards)/1000000, vPA.ADother.moveNumMax, time.Since(vPA.ADother.startTime).Round(6*time.Second).String(), estRemTimeAD.Round(6*time.Second), vPA.ADother.decksWon, vPA.ADother.decksLost, vPA.ADother.decksLostGLE, cfg.General.NumberOfDecksWerePlayed, float64(vPA.ADother.decksWon)/decksCompleted*100.0, float64(vPA.ADother.decksLost)/decksCompleted*100.0, float64(vPA.ADother.decksLostGLE)/decksCompleted*100.0)
 		}
 
 		// ********** 2nd of the 2 MOST IMPORTANT statements in this function:  ******************************

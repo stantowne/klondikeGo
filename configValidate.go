@@ -35,7 +35,7 @@ func configValidate(c Configuration) {
 		}
 		sort.SliceStable(c.General.ListIntSlice, func(i, j int) bool { return c.General.ListIntSlice[i] < c.General.ListIntSlice[j] })
 		if c.General.ListIntSlice[0] < c.General.FirstDeckNum || c.General.ListIntSlice[len(c.General.ListIntSlice)-1] > c.General.FirstDeckNum+c.General.NumberOfDecksToBePlayed-1 {
-			pfmt.Println("General.List invalid; DeckNums MUST be in range of %v to %v", c.General.FirstDeckNum, c.General.FirstDeckNum+c.General.NumberOfDecksToBePlayed-1)
+			_, _ = pfmt.Println("General.List invalid; DeckNums MUST be in range of %v to %v", c.General.FirstDeckNum, c.General.FirstDeckNum+c.General.NumberOfDecksToBePlayed-1)
 			defer os.Exit(1)
 		}
 
