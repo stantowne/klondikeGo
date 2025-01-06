@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -32,6 +33,12 @@ func configValidate(c Configuration) {
 		for i, s := range listStringSlice {
 			c.General.ListIntSlice[i], _ = strconv.Atoi(s)
 		}
+		sort.SliceStable(c.General.ListIntSlice, func(i, j int) bool { return c.General.ListIntSlice[i] < c.General.ListIntSlice[j] })
+		if c.General.ListIntSlice[0] < c.General.FirstDeckNum || c.General.ListIntSlice[len(c.General.ListIntSlice)-1] > c.General.FirstDeckNum+c.General.NumberOfDecksToBePlayed-1 {
+			pfmt.Println("General.List invalid; DeckNums MUST be in range of %v to %v", c.General.FirstDeckNum, c.General.FirstDeckNum+c.General.NumberOfDecksToBePlayed-1)
+			defer os.Exit(1)
+		}
+
 	}
 
 	// parse c.General.DeckFileName to get the number 410020!!!!!!!!!!!!!!!!

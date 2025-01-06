@@ -90,7 +90,8 @@ func main() {
 		cfg.PlayAll.RestrictReporting = true
 	}
 
-	cfg.General.outWriter = os.Stdout
+	//  MAKE SURE THAT configValidate IS CALLED BEFORE THIS SECTION FOR OutputTo
+	// cfg.General.outWriter = os.Stdout
 	// Fill the Short named package variable "oW" for cfg.General.outWriter
 	oW = os.Stdout
 	if cfg.General.OutputTo != "console" {
