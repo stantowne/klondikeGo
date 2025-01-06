@@ -1,7 +1,7 @@
 #config.yml
 
 general:              # Repeat below with GL 20, 40, 300  then  next Start at 0 and go for 1000 next time change GML to 50
-  deck file name: ./DeckFiles/decks-0-410019-with_20_duplicateDecksAtEnd.csv      # Note: forward slash / form: prefix-Start#-End#-suffix no "-" in prefix
+  deck file name: ./DeckFiles/decks-0-410019-with_20_duplicateDecksAtEnd.csv      # Note: forward slash / form: prefix-Start#-End#-suffix no "-" allowed in prefix
   decks: GLE                                          # consecutive or list or GLE (See config.go for more explanation of list and GLE)
   first deck number: 3000                             # non-negative integer less than 410,000
   number of decks to be played: 5300                  # positive integer no more than 410,000 minus first deck number
