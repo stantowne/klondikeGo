@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"sort"
 	"strconv"
@@ -137,7 +138,7 @@ func playAllMoves(bIn board, moveNum int, deckNum int, cfg *Configuration, vPA *
 			vPA.TD.unqBoards = len(vPA.TDother.priorBoards)
 			// NOTE: THE FOLLOWING PRINT STATEMENT NEVER GOES TO FILE - ALWAYS TO CONSOLE
 			_, _ = pfmt.Printf("\rDk: %d  MvsTD: %vmm  Mvs: %vmm  Strats: %vmm  UnqBoards: %vmm  MaxMoveNum: %v  Elapsed: %s  estRem: %s  W/L/GLE: %v/%v/%v = %v  W/L/GLE %%: %3.1f/%3.1f/%3.1f\r",
-				deckNum, vPA.TD.mvsTried/1000000, (vPA.AD.mvsTried+vPA.TD.mvsTried)/1000000, (vPA.TD.stratNum+vPA.AD.stratNum)/1000000, (vPA.TD.unqBoards+vPA.AD.unqBoards)/1000000, vPA.ADother.moveNumMax, time.Since(vPA.ADother.startTime).Round(6*time.Second).String(), estRemTimeAD.Round(6*time.Second), vPA.ADother.decksWon, vPA.ADother.decksLost, vPA.ADother.decksLostGLE, cfg.General.NumberOfDecksWerePlayed, float64(vPA.ADother.decksWon)/decksCompleted*100.0, float64(vPA.ADother.decksLost)/decksCompleted*100.0, float64(vPA.ADother.decksLostGLE)/decksCompleted*100.0)
+				deckNum, vPA.TD.mvsTried/1000000, (vPA.AD.mvsTried+vPA.TD.mvsTried)/1000000, (vPA.TD.stratNum+vPA.AD.stratNum)/1000000, (vPA.TD.unqBoards+vPA.AD.unqBoards)/1000000, vPA.ADother.moveNumMax, parseD(time.Since(vPA.ADother.startTime)), parseD(estRemTimeAD), vPA.ADother.decksWon, vPA.ADother.decksLost, vPA.ADother.decksLostGLE, cfg.General.NumberOfDecksWerePlayed, float64(vPA.ADother.decksWon)/decksCompleted*100.0, float64(vPA.ADother.decksLost)/decksCompleted*100.0, float64(vPA.ADother.decksLostGLE)/decksCompleted*100.0)
 		}
 
 		// ********** 2nd of the 2 MOST IMPORTANT statements in this function:  ******************************
@@ -166,4 +167,12 @@ func playAllMoves(bIn board, moveNum int, deckNum int, cfg *Configuration, vPA *
 	}
 	prntMDetTreeReturnComment("^Maj SE^", deckNum, recurReturnNum, cfg, vPA)
 	return "SE", recurReturnNum + 1 //  Strategy Exhausted
+}
+
+func parseD(d time.Duration) string {
+	hour := int(d.Hours())
+	minute := int(d.Minutes()) % 60
+	second := int(d.Seconds()) % 60
+	s := fmt.Sprintf("%02dh", hour) + fmt.Sprintf("%02dm", minute) + fmt.Sprintf("%02ds", second)
+	return s
 }
