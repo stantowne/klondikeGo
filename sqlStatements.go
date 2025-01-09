@@ -17,7 +17,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 	var err2 error
 	var stmt *sql.Stmt
 	var rows *sql.Rows
-	//var q string
+
 	switch verb {
 	case "insert":
 		switch table {
@@ -178,6 +178,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			}
 		case "winningmoves_detail":
 			for k := range vPA.TDotherSQL.winningMoves {
+
 				stmt, err = tx.Prepare("INSERT INTO [dbo].[WinningMoves_Detail] (WinningMoves_ID, MoveNum, name, priority, toPile, toCol, fromCol, MovePortionStartIdx, cardToMoveRank, cardToMoveSuit, cardToMoveFaceUp, colCardFlip) VALUES (@WinningMoves_ID, @MoveNum, @name, @priority, @toPile, @toCol, @fromCol, @MovePortionStartIdx, @cardToMoveRank, @cardToMoveSuit, @cardToMoveFaceUp, @colCardFlip); ")
 				if err != nil {
 					errHandler(cfg.General.OutputTo, table, verb, "Prepare p07", err)
@@ -200,16 +201,21 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			}
 			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close c07")
 		case "boardcode":
-			stmt, err = tx.Prepare("INSERT INTO [dbo].[boardCode] (boardCode_str, Deck_ID) VALUES (@boardCode_str, @Deck_ID); ")
+			//stmt, err = tx.Prepare("declare @Deck_ID int;INSERT INTO [dbo].[boardCode] (boardCode_str, Deck_ID) VALUES (@boardCode_str, @Deck_ID); ")
+
+			stmt, err = tx.Prepare("INSERT INTO [dbo].[boardCode] (boardCode_str, Deck_ID) VALUES (?, ?); ")
+
 			if err != nil {
 				errHandler(cfg.General.OutputTo, table, verb, "Prepare p08", err)
 			}
 			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close c08")
 			// Execute the prepared statement
-			_, err = stmt.Exec(
+			/*_, err = stmt.Exec(
 				sql.Named("boardCode_str", vPA.TDotherSQL.boardCodeOfDeckAsString),
 				sql.Named("Deck_ID", vPA.TDotherSQL.deckNum),
-			)
+			)*/
+
+			_, err = stmt.Exec(vPA.TDotherSQL.boardCodeOfDeckAsString, vPA.TDotherSQL.deckNum)
 		}
 	case "query":
 		switch table {
@@ -302,9 +308,11 @@ func CloseStatement(stmt *sql.Stmt, OutputTo string, table string, verb string, 
 	}
 }
 
+/*
 func txRollback(tx *sql.Tx, OutputTo string, table string, verb string, doing string) {
 	err := tx.Rollback()
 	if err != nil {
 		errHandler(OutputTo, table, verb, doing, err)
 	}
 }
+*/
