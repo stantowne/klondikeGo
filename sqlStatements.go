@@ -202,19 +202,19 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			}
 			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close c07")
 		case "boardcode":
-			//stmt, err = tx.Prepare("declare @Deck_ID int;INSERT INTO [dbo].[boardCode] (boardCode_str, Deck_ID) VALUES (@boardCode_str, @Deck_ID); ")
+			stmt, err = tx.Prepare("declare @Deck_ID int;INSERT INTO [dbo].[boardCode] (boardCode_str, Deck_ID) VALUES (@boardCode_str, @Deck_ID); ")
 
-			stmt, err = tx.Prepare("INSERT INTO [dbo].[boardCode] (boardCode_str, Deck_ID) VALUES (?, ?); ")
+			//  DID NOT WORK!!! stmt, err = tx.Prepare("INSERT INTO [dbo].[boardCode] (boardCode_str, Deck_ID) VALUES (?, ?); ")
 
 			if err != nil {
 				errHandler(cfg.General.OutputTo, table, verb, "Prepare p08", err)
 			}
 			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close c08")
 			// Execute the prepared statement
-			/*_, err = stmt.Exec(
+			_, err = stmt.Exec(
 				sql.Named("boardCode_str", vPA.TDotherSQL.boardCodeOfDeckAsString),
 				sql.Named("Deck_ID", vPA.TDotherSQL.deckNum),
-			)*/
+			)
 
 			_, err = stmt.Exec(vPA.TDotherSQL.boardCodeOfDeckAsString, vPA.TDotherSQL.deckNum)
 		}
