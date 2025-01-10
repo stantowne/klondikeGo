@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -223,7 +224,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			var x string
 			var row *sql.Row
 			row = tx.QueryRow("SELECT 'x' x FROM [dbo].[WinningMoves] WHERE WinningMoves_SHA256 = @w; ", sql.Named("w", vPA.TDotherSQL.winningMovesSHA256))
-			if row.Scan(&x) == sql.ErrNoRows {
+			if errors.Is(row.Scan(&x), sql.ErrNoRows) {
 				return "New Set of Winning Moves"
 			} else {
 				return "Old Set of Winning Moves"
@@ -232,7 +233,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			var max_mvsTried int
 			var row *sql.Row
 			row = db.QueryRow("SELECT MAX([mvsTried]) max_mvsTried FROM [dbo].[PlayAll_Statistics] WHERE Deck_ID = @Deck_ID AND [stratLossesGLE] > 0 AND NOT EXISTS (SELECT 'x' x FROM [dbo].[PlayAll_Statistics] WHERE Deck_ID = @Deck_ID AND ([stratWins] > 0 OR [stratLosses] > 0 )); ", sql.Named("Deck_ID", vPA.TDotherSQL.deckNum))
-			if row.Scan(&max_mvsTried) == sql.ErrNoRows || max_mvsTried == 0 {
+			if errors.Is(row.Scan(&max_mvsTried), sql.ErrNoRows) || max_mvsTried == 0 {
 				return "Skip"
 			} else {
 				if max_mvsTried >= cfg.PlayAll.GameLengthLimit*1000000 {

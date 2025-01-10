@@ -68,7 +68,14 @@ play all moves:
     #        "_" + datetime stamp and extension ".txt"
     #
 
-  # NOTE:  540m 9h01m per 1000 decks avg with GLE=280
-  # NOTE:  141m 2h21m per 1000 decks avg with GLE=50
-  # NOTE:   74m 1h14m per 1000 decks avg with GLE=20
-  # NOTE:   47m       per 1000 decks avg with GLE=10
+  #################################################################################
+  #                                                                               #
+  #                        Execution times per 1000 decks                         #
+  #                                                                               #
+  #             DanAcer      PowerEdge B4 overclock   PowerEdge After Overclock   #
+  #   GLE=280:  470m 7h50m      m  h  m                  m 7h  m                  #
+  #   GLE= 50:  141m 2h21m      m  h  m                  m 2h  m                  #
+  #   GLE= 20:   74m 1h14m      m  h  m                  m 1h  m                  #
+  #   GLE= 10:   47m            m                        m                        #
+  #                                                                               #
+  #################################################################################
