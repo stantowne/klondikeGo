@@ -54,6 +54,10 @@ func configValidate(c *Configuration) {
 		println("General.numberOfDecksToBePlayed invalid; must be 1 or more, but not more than deckNumMax + 1 minus firstDeckNum")
 		defer os.Exit(1)
 	}
+	if !(c.General.LogicVersion == "original" || c.General.LogicVersion == "multiflip") {
+		println("General.LogicVersion invalid; must be either 'original' or 'multiflip'")
+		defer os.Exit(1)
+	}
 	if !(c.General.TypeOfPlay == "playOrig" || c.General.TypeOfPlay == "playAll") {
 		println("General.TypeOfPlay invalid; must be either 'playOrig' or 'playAll'")
 		defer os.Exit(1)

@@ -44,7 +44,7 @@ func playAllMoves(bIn board, moveNum int, deckNum int, cfg *Configuration, vPA *
 	}
 
 	// Find Next Moves
-	aMoves = detectAvailableMoves(bIn, moveNum, cfg.General.NumberOfDecksToBePlayed == 1)
+	aMoves = detectAvailableMoves(bIn, moveNum, cfg.General.NumberOfDecksToBePlayed == 1, cfg.General.LogicVersion)
 
 	if len(aMoves) == 0 {
 		m := move{name: "No Moves Available"} // This is a pseudo move not created by detectAvailable Moves it exists to remember

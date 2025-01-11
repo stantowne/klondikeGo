@@ -1,14 +1,23 @@
 package main
 
-func detectAvailableMoves(b board, moveCounter int, singleGame bool) []move {
+func detectAvailableMoves(b board, moveCounter int, singleGame bool, logicVersion string) []move {
 	var aMoves []move //available Moves
-	aMoves = append(aMoves, detectUpMoves(b, moveCounter)...)
-	aMoves = append(aMoves, detectAcrossMoves(b, moveCounter)...)
-	aMoves = append(aMoves, detectMecNotThoughtful(b, moveCounter, singleGame)...)
-	aMoves = append(aMoves, detectDownMoves(b, moveCounter)...)
-	aMoves = append(aMoves, detectPartialColumnMoves(b, moveCounter, singleGame)...)
-	aMoves = append(aMoves, detectFlipStockToWaste(b, moveCounter)...)
-	aMoves = append(aMoves, detectFlipWasteToStock(b, moveCounter)...)
+	if logicVersion == "orig" {
+		aMoves = append(aMoves, detectUpMoves(b, moveCounter)...)
+		aMoves = append(aMoves, detectAcrossMoves(b, moveCounter)...)
+		aMoves = append(aMoves, detectMecNotThoughtful(b, moveCounter, singleGame)...)
+		aMoves = append(aMoves, detectDownMoves(b, moveCounter)...)
+		aMoves = append(aMoves, detectPartialColumnMoves(b, moveCounter, singleGame)...)
+		aMoves = append(aMoves, detectFlipStockToWaste(b, moveCounter)...)
+		aMoves = append(aMoves, detectFlipWasteToStock(b, moveCounter)...)
+	} else {
+		aMoves = append(aMoves, detectUpMoves(b, moveCounter)...)
+		/* ??? */ aMoves = append(aMoves, detectAcrossMoves(b, moveCounter)...)
+		aMoves = append(aMoves, detectMecNotThoughtful(b, moveCounter, singleGame)...)
+		/* ??? */ aMoves = append(aMoves, detectDownMoves(b, moveCounter)...)
+		aMoves = append(aMoves, detectPartialColumnMoves(b, moveCounter, singleGame)...)
+		aMoves = append(aMoves, detectMultiFlip(b, moveCounter, singleGame, logicVersion)...)
+	}
 	return aMoves
 }
 

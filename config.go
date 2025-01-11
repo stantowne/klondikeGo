@@ -26,7 +26,8 @@ type Configuration struct {
 		LastDeckWasPlayed       int
 		List                    string `yaml:"list"` // a sorted list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
 		ListIntSlice            []int
-		TypeOfPlay              string `yaml:"type of play"` // must be "playOrig" or "playAll"
+		TypeOfPlay              string `yaml:"type of play"`  // must be "playOrig" or "playAll"
+		LogicVersion            string `yaml:"logic version"` // must be "original" or "multiflip"
 		Verbose                 int    `yaml:"verbose"`
 		OutputTo                string `yaml:"outputTo"`
 		outWriter               *os.File

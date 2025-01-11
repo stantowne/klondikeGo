@@ -23,6 +23,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 	case "insert":
 		switch table {
 		case "priority":
+			//  TODO Add new Move Types Remove old Move Types
 			stmt, err = tx.Prepare("INSERT INTO [dbo].[Priority] ([Priority_SHA256], [moveAceAcross], [moveDeuceAcross], [move3PlusAcross], [moveDown], [moveEntireColumn], [flipWasteToStock], [flipStockToWaste], [movePartialColumn], [moveAceUp], [moveDeuceUp], [move3PlusUp], [badMove], [flipSt->W Max-0], [flipSt->W Max-1], [flipSt->W Max-2], [flipSt->W Max-3], [flipSt->W Max-4], [flipSt->W Max-5], [flipSt->W Max-6], [flipSt->W Max-7]) VALUES (@Priority_SHA256, @moveAceAcross, @moveDeuceAcross, @move3PlusAcross, @moveDown, @moveEntireColumn, @flipWasteToStock, @flipStockToWaste, @movePartialColumn, @moveAceUp, @moveDeuceUp, @move3PlusUp, @badMove, @flipStToW_Max_0, @flipStToW_Max_1, @flipStToW_Max_2, @flipStToW_Max_3, @flipStToW_Max_4, @flipStToW_Max_5, @flipStToW_Max_6, @flipStToW_Max_7); ")
 			if err != nil {
 				errHandler(cfg.General.OutputTo, table, verb, "Prepare p01", err)
@@ -71,6 +72,8 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("NumberOfDecksWerePlayed", cfg.General.NumberOfDecksWerePlayed),
 				sql.Named("LastDeckWasPlayed", cfg.General.LastDeckWasPlayed),
 				sql.Named("List", cfg.General.List),
+				// TODO add cfg.General.LogicVersion
+				//   Modify table & update
 				sql.Named("TypeOfPlay", cfg.General.TypeOfPlay),
 				sql.Named("Verbose", cfg.General.Verbose),
 				sql.Named("OutputTo", cfg.General.OutputTo),

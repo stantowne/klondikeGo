@@ -6,9 +6,10 @@ general:              # Repeat below with GL 20, 40, 300  then  next Start at 0 
   first deck number: 15000                            # non-negative integer less than 410,000
   number of decks to be played: 10                    # positive integer no more than 410,000 minus first deck number
   list: 410014,410019                                 # list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
+  logic version: multiflip                            # "original" logic or "multiflip"
   type of play: playAll                               # playAll or playOrig
   verbose: 0                                          # non-negative integer
-  outputTo: ./playAllPrintOutput/Decks                # console OR filename WITHOUT extension;
+  outputTo: console                                   # console OR filename WITHOUT extension;             ./playAllPrintOutput/Decks
                                                       # filename will be appended with deck range, GLL and
                                                       #     datetime stamp and extension ".txt" (See below)
                                                       # ./playOrigLossesOutput/filename or ./playAllPrintOutput/filename are suggested
@@ -25,8 +26,8 @@ play all moves:
   find all winning strategies?: false               # true or false   true not yet implemented
 
   reporting:                                        # only one true or no trues permitted   non yaml       cfg.PlayNew.ReportingType.NoReporting set in code
-    deck by deck: true                              # true or false                                   =    cfg.PlayNew.ReportingType.DeckByDeck
-    move by move: false                             # true or false                                     || cfg.PlayNew.ReportingType.MoveByMove
+    deck by deck: false                             # true or false                                   =    cfg.PlayNew.ReportingType.DeckByDeck
+    move by move: true                              # true or false                                     || cfg.PlayNew.ReportingType.MoveByMove
     tree: false                                     # true or false                                     || cfg.PlayNew.ReportingType.Tree
     #                                             NOTE: || == OR (looks like forward slash due to italics)
   deck by deck reporting options:
@@ -51,7 +52,7 @@ play all moves:
                                                     # and only to Deck-by-Deck reporting when OutputTo == "console"
   print final deck by deck W/L record: true         # true or false  #Applies only if cfg.PlayAll.ReportingType.MoveByMove == true
                                                     #                              or cfg.PlayAll.ReportingType.Tree       == true
-  save results to SQL: true                         # true or false
+  save results to SQL: false                        # true or false
   sql connection string: "sqlDbConnect.go"
                                                     # actual connection string or "sqlDbConnect.go" which uses sqlDbConnect.env file
                                                     # example: server=DANACER\\SQLEXPRESS;port=1433;user id=@DANACER\\dan@;password=@password@;database=Klondike
