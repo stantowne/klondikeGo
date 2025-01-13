@@ -109,6 +109,30 @@ func (c *Card) faceSymbol() string {
 	return symbol
 }
 
+func (c *Card) pStrC(colored bool) string {
+	if colored {
+		return c.pStr()
+	} else {
+		var sSuit string
+		var Reset = "" //These are ANSI escape codes for colors
+		var Red = ""
+		var Green = ""
+		if c.Suit == 0 || c.Suit == 2 {
+			sSuit = string(c.suitSymbol())
+		} else {
+			sSuit = Red + string(c.suitSymbol()) + Reset
+		}
+
+		var sFace string
+		if c.FaceUp {
+			sFace = Green + c.faceSymbol() + Reset
+		} else {
+			sFace = c.faceSymbol()
+		}
+		return c.rankSymbol() + sSuit + sFace + " "
+	}
+}
+
 func (c *Card) pStr() string {
 	var sSuit string
 	var Reset = "\033[m" //These are ANSI escape codes for colors

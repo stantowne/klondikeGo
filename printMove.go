@@ -14,17 +14,35 @@ func printMove(m move, useLongName bool) (string, string) {
 	}
 	outS2 = ""
 	switch m.name {
+	case "mMveAceAcross", "mMveDeuceAcross", "mMve3PlusAcross", "mMveDown":
+		outS += "Flip the stock/waste until the " + strconv.Itoa(m.MovePortionStartIdx+1)
+		switch m.MovePortionStartIdx + 1 {
+		case 1:
+			outS += "st "
+		case 2:
+			outS += "nd "
+		case 3:
+			outS += "rd "
+		default:
+			outS += "th "
+		}
+		outS += "card " + m.cardToMove.pStrC() + "is on top of waste pile."
+		if m.name == "mMveDown" {
+			outS2 += "\n                           then move the " + m.cardToMove.pStrC() + "down from waste to column " + strconv.Itoa(m.toCol)
+		} else {
+			outS2 += "\n                           then move  the " + m.cardToMove.pStrC() + "from waste to the " + string(m.cardToMove.suitSymbolColored()) + "Pile"
+		}
 	case "moveAceAcross", "moveDeuceAcross", "move3PlusAcross":
-		outS += "Move the " + m.cardToMove.pStr() + "from waste to the " + string(m.cardToMove.suitSymbolColored()) + "Pile"
+		outS += "Move the " + m.cardToMove.pStrC() + "from waste to the " + string(m.cardToMove.suitSymbolColored()) + "Pile"
 	case "moveAceUp", "moveDeuceUp", "move3PlusUp":
-		outS += "Move the " + m.cardToMove.pStr() + "up from column " + strconv.Itoa(m.fromCol) + " to the " + string(m.cardToMove.suitSymbolColored()) + "Pile"
+		outS += "Move the " + m.cardToMove.pStrC() + "up from column " + strconv.Itoa(m.fromCol) + " to the " + string(m.cardToMove.suitSymbolColored()) + "Pile"
 	case "moveDown":
-		outS += "Move the " + m.cardToMove.pStr() + "down from waste to column " + strconv.Itoa(m.toCol)
+		outS += "Move the " + m.cardToMove.pStrC() + "down from waste to column " + strconv.Itoa(m.toCol)
 	case "moveEntireColumn":
-		outS += "Move the cards starting with " + m.MovePortion[0].pStr() + "from column: " + strconv.Itoa(m.fromCol) + " to column: " + strconv.Itoa(m.toCol)
+		outS += "Move the cards starting with " + m.MovePortion[0].pStrC() + "from column: " + strconv.Itoa(m.fromCol) + " to column: " + strconv.Itoa(m.toCol)
 	case "movePartialColumn":
-		outS += "Move the cards starting with: " + m.MovePortion[0].pStr() + "from column " + strconv.Itoa(m.fromCol) + " to column: " + strconv.Itoa(m.toCol)
-		outS2 += "\n                           then move the card above " + m.MovePortion[0].pStr() + "in column " + strconv.Itoa(m.fromCol) + " to the appropriate pile based on its suit."
+		outS += "Move the cards starting with: " + m.MovePortion[0].pStrC() + "from column " + strconv.Itoa(m.fromCol) + " to column: " + strconv.Itoa(m.toCol)
+		outS2 += "\n                           then move the card above " + m.MovePortion[0].pStrC() + "in column " + strconv.Itoa(m.fromCol) + " to the appropriate pile based on its suit."
 
 		/*outS = "movePartialColumn"*/
 	case "flipStockToWaste":
