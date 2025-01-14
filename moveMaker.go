@@ -6,6 +6,19 @@ import (
 )
 
 func moveMaker(b board, m move) board {
+	if m.name[0:4] == "mMve" {
+		m.name = "move" + m.name[4:]
+		var flipWasteToStockMove move
+		flipWasteToStockMove.name = "flipWasteToStock"
+		b = moveMaker(b, flipWasteToStockMove)
+		for k := 0; k <= m.MovePortionStartIdx; k++ {
+			l := len(b.stock)
+			b.waste = append(b.waste, b.stock[l-1].flipCardUp2())
+			b.stock = b.stock[:l-1]
+		}
+		b = moveMaker(b, m)
+		return b
+	}
 	if m.name == "moveAceAcross" || m.name == "moveDeuceAcross" || m.name == "move3PlusAcross" {
 		_, residue, err := last(b.waste)
 		if err != nil {

@@ -109,8 +109,8 @@ func (c *Card) faceSymbol() string {
 	return symbol
 }
 
-func (c *Card) pStrC(colored bool) string {
-	if colored {
+func (c *Card) pStrC() string {
+	if useColor {
 		return c.pStr()
 	} else {
 		var sSuit string

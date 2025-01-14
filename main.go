@@ -31,6 +31,8 @@ var tx *sql.Tx
 var SQL_Time_elapsed time.Duration
 var SQL_Start_Time time.Time
 
+var useColor bool
+
 func main() {
 	//                                                            DELETE ME MEMORY PROFILING
 	/*	go func() {
@@ -94,7 +96,9 @@ func main() {
 	// cfg.General.outWriter = os.Stdout
 	// Fill the Short named package variable "oW" for cfg.General.outWriter
 	oW = os.Stdout
+	useColor = true
 	if cfg.General.OutputTo != "console" {
+		useColor = false
 		cfg.General.outWriterFileName = cfg.General.OutputTo
 		cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMoves = 0
 		cfg.PlayAll.TreeReportingOptions.TreeSleepBetwnMovesDur = 0
@@ -111,6 +115,19 @@ func main() {
 			cfg.General.outWriterFileName += "_GLE" + strconv.Itoa(cfg.PlayOrig.GameLengthLimit)
 		}
 		cfg.General.outWriterFileName += "__" + cfg.General.RunStartTime.Format("2006.01.02_15.04.05_-0700") + ".txt"
+	}
+	if cfg.General.TypeOfPlay == "playAll" {
+		if cfg.General.LogicVersion == "original" {
+			moveBasePriority = moveBasePriorityPlayAllOriginal
+		} else {
+			moveBasePriority = moveBasePriorityPlayAllMultiflip
+		}
+	} else {
+		if cfg.General.LogicVersion == "original" {
+			moveBasePriority = moveBasePriorityPlayOrigOriginal
+		} else {
+			moveBasePriority = moveBasePriorityPlayOrigMultiflip
+		}
 	}
 	configPrint(cfg) // Print FIRST time to stout
 	if cfg.General.OutputTo != "console" {
@@ -163,7 +180,6 @@ func main() {
 	}
 
 	if cfg.General.TypeOfPlay == "playAll" {
-		moveBasePriority = moveBasePriorityAll
 		cfg.General.PrioritySHA256 = sha256ofMap(moveBasePriority)
 		if cfg.PlayAll.SaveResultsToSQL {
 
@@ -183,7 +199,7 @@ func main() {
 		playAll(*reader, &cfg)
 	}
 	if cfg.General.TypeOfPlay == "playOrig" {
-		moveBasePriority = moveBasePriorityOrig
+		// moveBasePriority now done above configPrint
 		/*
 		   THIS COMMENTED OUT CODE IS INCLUDED HERE IN CASE IT IS DECIDED TO MOVE ADD SAVE RESULTS TO SQL OPTION TO INCLUDE PLAYoRIG
 		   in that case the variables cfg.PlayAll.SaveResultsToSQL and cfg.PlayAll.SQLConnectionString should be moved into cfg.General
