@@ -14,9 +14,9 @@ func printMove(m move, useLongName bool) (string, string) {
 	}
 	outS2 = ""
 	switch m.name {
-	case "mMveAceAcross", "mMveDeuceAcross", "mMve3PlusAcross", "mMveDown":
+	case "mMveAceAcross", "mMveDeuceAcross", "mMve3PlusAcross", "mMveDown": // MultiFlip
 		outS += "Flip the stock/waste until the " + strconv.Itoa(m.MovePortionStartIdx+1)
-		switch m.MovePortionStartIdx + 1 {
+		switch (m.MovePortionStartIdx + 1) % 10 {
 		case 1:
 			outS += "st "
 		case 2:
@@ -28,9 +28,9 @@ func printMove(m move, useLongName bool) (string, string) {
 		}
 		outS += "card " + m.cardToMove.pStrC() + "is on top of waste pile."
 		if m.name == "mMveDown" {
-			outS2 += "\n                           then move the " + m.cardToMove.pStrC() + "down from waste to column " + strconv.Itoa(m.toCol)
+			outS2 += "                           then move the " + m.cardToMove.pStrC() + "down from waste to column " + strconv.Itoa(m.toCol) + "\n"
 		} else {
-			outS2 += "\n                           then move  the " + m.cardToMove.pStrC() + "from waste to the " + string(m.cardToMove.suitSymbolColored()) + "Pile"
+			outS2 += "                           then move  the " + m.cardToMove.pStrC() + "from waste to the " + string(m.cardToMove.suitSymbolColored()) + "Pile\n"
 		}
 	case "moveAceAcross", "moveDeuceAcross", "move3PlusAcross":
 		outS += "Move the " + m.cardToMove.pStrC() + "from waste to the " + string(m.cardToMove.suitSymbolColored()) + "Pile"
@@ -42,7 +42,7 @@ func printMove(m move, useLongName bool) (string, string) {
 		outS += "Move the cards starting with " + m.MovePortion[0].pStrC() + "from column: " + strconv.Itoa(m.fromCol) + " to column: " + strconv.Itoa(m.toCol)
 	case "movePartialColumn":
 		outS += "Move the cards starting with: " + m.MovePortion[0].pStrC() + "from column " + strconv.Itoa(m.fromCol) + " to column: " + strconv.Itoa(m.toCol)
-		outS2 += "\n                           then move the card above " + m.MovePortion[0].pStrC() + "in column " + strconv.Itoa(m.fromCol) + " to the appropriate pile based on its suit."
+		outS2 += "\n                           then move the card above " + m.MovePortion[0].pStrC() + "in column " + strconv.Itoa(m.fromCol) + " to the appropriate pile based on its suit.\n"
 
 		/*outS = "movePartialColumn"*/
 	case "flipStockToWaste":

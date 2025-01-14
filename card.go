@@ -154,9 +154,13 @@ func (c *Card) pStr() string {
 }
 
 func (c *Card) suitSymbolColored() string {
-	var sSuit string
 	var Reset = "\033[m" //These are ANSI escape codes for colors
 	var Red = "\033[31m"
+	if !useColor {
+		Reset = "" //These are ANSI escape codes for colors
+		Red = ""
+	}
+	var sSuit string
 	if c.Suit == 0 || c.Suit == 2 {
 		sSuit = string(c.suitSymbol())
 	} else {
