@@ -23,6 +23,16 @@ func flipStockToWaste(b board) board {
 	return b
 }
 
+/*
+func flipStockToWasteAll(b board) board {
+	for i := len(b.stock) - 1; i >= 0; i-- {
+		b.waste = append(b.waste, b.stock[i].flipCardUp2())
+	}
+	b.stock = make([]Card, 0, len(b.waste))
+	return b
+}
+*/
+
 /*func flipStockToWasteV(b board, v int) board {
 	l := len(b.stock)
 	if l <= 0 {

@@ -187,6 +187,7 @@ func printWinningMoves(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
 				_, _ = fmt.Fprintf(oW, "          %s\n", m2)
 			}
 		}
+		_, _ = fmt.Fprintf(oW, "\n")
 	}
 }
 

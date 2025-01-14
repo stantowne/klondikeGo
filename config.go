@@ -18,7 +18,7 @@ type Configuration struct {
 		//      FirstDeckNum to FirstDeckNum + NumberOfDecksToBePlayed range
 		// GLE will ONLY play decks that are GLE ( i.e. Have NOT Won or Lost) in the
 		//      FirstDeckNum to FirstDeckNum + NumberOfDecksToBePlayed range
-		//IF GLE then SaveResultsToSQL MUST = true
+		// IF GLE then SaveResultsToSQL MUST = true
 		// and a valid sql connection string must exist
 		FirstDeckNum            int `yaml:"first deck number"`            // must be non-negative integer
 		NumberOfDecksToBePlayed int `yaml:"number of decks to be played"` //must be non-negative integer

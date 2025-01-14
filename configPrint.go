@@ -50,18 +50,18 @@ func configPrint(c Configuration) {
 			c.PlayOrig.GameLengthLimit)
 
 		_, _ = pfmt.Fprintf(oW, "\nMove Priority Settings:\n\n")
-		moveTypes := make([]string, 0, len(moveBasePriorityOrig))
+		moveTypes := make([]string, 0, len(moveBasePriority))
 
-		for priority := range moveBasePriorityOrig {
+		for priority := range moveBasePriority {
 			moveTypes = append(moveTypes, priority)
 		}
 
 		// sort by priority before printing
 		sort.SliceStable(moveTypes, func(i, j int) bool {
-			return moveBasePriorityAll[moveTypes[i]] < moveBasePriorityAll[moveTypes[j]]
+			return moveBasePriority[moveTypes[i]] < moveBasePriority[moveTypes[j]]
 		})
 		for i, moveType := range moveTypes {
-			_, _ = pfmt.Fprintf(oW, "   %2v   %17s: %5v\n", i, moveTypes[i], moveBasePriorityAll[moveType])
+			_, _ = pfmt.Fprintf(oW, "   %2v   %17s: %5v\n", i, moveTypes[i], moveBasePriority[moveType])
 		}
 		_, _ = pfmt.Fprintf(oW, "\n\n")
 	} else {
@@ -110,17 +110,17 @@ func configPrint(c Configuration) {
 		}
 
 		_, _ = pfmt.Fprintf(oW, "\n\nMove Priority Settings:\n\n")
-		moveTypes := make([]string, 0, len(moveBasePriorityAll))
-		for priority := range moveBasePriorityAll {
+		moveTypes := make([]string, 0, len(moveBasePriority))
+		for priority := range moveBasePriority {
 			moveTypes = append(moveTypes, priority)
 		}
 
 		// sort by priority before printing
 		sort.SliceStable(moveTypes, func(i, j int) bool {
-			return moveBasePriorityAll[moveTypes[i]] < moveBasePriorityAll[moveTypes[j]]
+			return moveBasePriority[moveTypes[i]] < moveBasePriority[moveTypes[j]]
 		})
 		for i, moveType := range moveTypes {
-			_, _ = pfmt.Fprintf(oW, "   %2v   %17s: %5v\n", i, moveTypes[i], moveBasePriorityAll[moveType])
+			_, _ = pfmt.Fprintf(oW, "   %2v   %17s: %5v\n", i, moveTypes[i], moveBasePriority[moveType])
 		}
 		_, _ = pfmt.Fprintf(oW, "\n\n")
 	}

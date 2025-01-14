@@ -147,15 +147,15 @@ func (b board) boardCode(dN int) bCode { // add filename of deck source file aft
 	}
 	//NOTE: Plus 1 used for rank and suit to ensure that a zero card [0,0,false] is detected
 	if TotalRankCheck != 416 { // 416 = sum(2+3+4+5+6+...14)*4
-		fmt.Printf("\n\n!!!!!!!!!!!!!!\nOn deck %v Card ranks (plus 1) total: %v != 416 on board os.exit(364):\n", TotalRankCheck, dN)
+		fmt.Printf("\n\n!!!!!!!!!!!!!!\nOn deck %v Card ranks (plus 1) total: %v != 416 on board os.exit(364):\n", dN, TotalRankCheck)
 		printBoard(b)
-		fmt.Printf("\n\n!!!!!!!!!!!!!!\nOn deck %v Card ranks (plus 1) total: %v != 416 on board os.exit(364):\n", TotalRankCheck, dN)
+		fmt.Printf("\n\n!!!!!!!!!!!!!!\nOn deck %v Card ranks (plus 1) total: %v != 416 on board os.exit(364):\n", dN, TotalRankCheck)
 		os.Exit(416)
 	}
 	if TotalSuitCheck != 130 { // 40 = sum(1+2+3+4)*13
-		fmt.Printf("\n\n!!!!!!!!!!!!!!\nOn deck %v Card suits (plus 1) total: %v != 40 on board os.exit(364):\n", TotalSuitCheck, dN)
+		fmt.Printf("\n\n!!!!!!!!!!!!!!\nOn deck %v Card suits (plus 1) total: %v != 40 on board os.exit(364):\n", dN, TotalSuitCheck)
 		printBoard(b)
-		fmt.Printf("\n\n!!!!!!!!!!!!!!\nOn deck %v Card suits (plus 1) total: %v != 40 on board os.exit(364):\n", TotalSuitCheck, dN)
+		fmt.Printf("\n\n!!!!!!!!!!!!!!\nOn deck %v Card suits (plus 1) total: %v != 40 on board os.exit(364):\n", dN, TotalSuitCheck)
 		os.Exit(130)
 	}
 	return bC
