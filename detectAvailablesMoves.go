@@ -16,130 +16,125 @@ func detectAvailableMoves(b board, moveCounter int, singleGame bool, logicVersio
 		aMoves = append(aMoves, detectMecNotThoughtful(b, moveCounter, singleGame)...)
 		/* ??? */ aMoves = append(aMoves, detectDownMoves(b, moveCounter)...)
 		aMoves = append(aMoves, detectPartialColumnMoves(b, moveCounter, singleGame)...)
-		aMoves = append(aMoves, detectMultiFlip(b, moveCounter, singleGame, logicVersion)...)
+		aMoves = append(aMoves, detectMultiFlip(b, moveCounter)...) // Does flip stk->Waste, Waste->Stk and moveDown and move Across
 	}
 	return aMoves
 }
 
 var moveBasePriority = map[string]int{}
 
-var moveBasePriorityOrig = map[string]int{
-	"moveAceAcross":     300,
-	"moveDeuceAcross":   400,
-	"move3PlusAcross":   900,
-	"moveDown":          500,
-	"moveEntireColumn":  600,
-	"flipWasteToStock":  1000, //flip moves have the lowest priority
-	"flipStockToWaste":  1100, //flip moves have the lowest priority
-	"movePartialColumn": 700,
+var moveBasePriorityPlayOrigOriginal = map[string]int{
 	"moveAceUp":         100,
 	"moveDeuceUp":       200,
+	"moveAceAcross":     300,
+	"mMveAceAcross":     9600,
+	"moveDeuceAcross":   400,
+	"mMveDeuceAcross":   9700,
+	"moveDown":          500,
+	"mMveDown":          9800,
+	"moveEntireColumn":  600,
+	"movePartialColumn": 700,
 	"move3PlusUp":       800,
+	"move3PlusAcross":   900,
+	"mMve3PlusAcross":   9900,
+	"flipWasteToStock":  1000, //flip moves have the lowest priority
+	"flipStockToWaste":  1100, //flip moves have the lowest priority
 	"badMove":           1200, // a legal move which is worse than a mere flip
-	"flipSt->W Max-0":   9990, //flip MAX - (0 * 3)    i.e. Up to 24 cards    where MAX = len(stock) + len(waste)   Suggest flip waste=>stock then flip cards
-	"flipSt->W Max-1":   9991, //flip MAX - (1 * 3)    i.e. Up to 21 cards
-	"flipSt->W Max-2":   9992, //flip MAX - (2 * 3)    i.e. Up to 18 cards    where 999 > priority of any moves that are between columns
-	"flipSt->W Max-3":   9993, //flip MAX - (3 * 3)    i.e. Up to 15 cards                ????or that expose a new column card ????
-	"flipSt->W Max-4":   9994, //flip MAX - (4 * 3)    i.e. Up to 12 cards              < priority of moves not in >
-	"flipSt->W Max-5":   9995, //flip MAX - (5 * 3)    i.e. Up to  9 cards    ONLY When mod(len(stock)) == 0
-	"flipSt->W Max-6":   9996, //flip MAX - (6 * 3)    i.e. Up to  6 cards
-	"flipSt->W Max-7":   9997, //flip MAX - (7 * 3)    i.e. Up to  3 cards
-
 }
 
-var moveBasePriorityAll = map[string]int{
-	"moveAceAcross":     300,
-	"moveDeuceAcross":   400,
-	"move3PlusAcross":   900,
-	"moveDown":          500,
-	"moveEntireColumn":  600,
-	"flipWasteToStock":  1000, //flip moves have the lowest priority
-	"flipStockToWaste":  1100, //flip moves have the lowest priority
-	"movePartialColumn": 700,
+var moveBasePriorityPlayAllOriginal = map[string]int{
 	"moveAceUp":         100,
 	"moveDeuceUp":       200,
+	"moveAceAcross":     300,
+	"mMveAceAcross":     9700,
+	"moveDeuceAcross":   400,
+	"mMveDeuceAcross":   9800,
+	"moveDown":          500,
+	"mMveDown":          9900,
+	"moveEntireColumn":  600,
+	"movePartialColumn": 700,
 	"move3PlusUp":       800,
+	"move3PlusAcross":   900,
+	"mMve3PlusAcross":   9900,
+	"flipWasteToStock":  1000, //flip moves have the lowest priority
+	"flipStockToWaste":  1100, //flip moves have the lowest priority
 	"badMove":           1200, // a legal move which is worse than a mere flip
-	"flipSt->W Max-0":   9990, //flip MAX - (0 * 3)    i.e. Up to 24 cards    where MAX = len(stock) + len(waste)   Suggest flip waste=>stock then flip cards
-	"flipSt->W Max-1":   9991, //flip MAX - (1 * 3)    i.e. Up to 21 cards
-	"flipSt->W Max-2":   9992, //flip MAX - (2 * 3)    i.e. Up to 18 cards    where 999 > priority of any moves that are between columns
-	"flipSt->W Max-3":   9893, //flip MAX - (3 * 3)    i.e. Up to 15 cards                ????or that expose a new column card ????
-	"flipSt->W Max-4":   9894, //flip MAX - (4 * 3)    i.e. Up to 12 cards              < priority of moves not in >
-	"flipSt->W Max-5":   9895, //flip MAX - (5 * 3)    i.e. Up to  9 cards    ONLY When mod(len(stock)) == 0
-	"flipSt->W Max-6":   9896, //flip MAX - (6 * 3)    i.e. Up to  6 cards
-	"flipSt->W Max-7":   9897, //flip MAX - (7 * 3)    i.e. Up to  3 cards
+}
 
+var moveBasePriorityPlayOrigMultiflip = map[string]int{
+	"moveAceUp":         50,
+	"moveDeuceUp":       100,
+	"moveAceAcross":     200, //                                       PosStkWas = Position of card to be
+	"mMveAceAcross":     200, // + 23 - PosStkWas min, max = 200, 223              moved in combined Stock + Waste
+	"moveDeuceAcross":   250,
+	"mMveDeuceAcross":   250, // + 23 - PosStkWas min, max = 250, 273
+	"moveDown":          300,
+	"mMveDown":          300, // 24 * (12 - Rank - 1) + 23 - PosStkWa min, max = 300, 599 Move highest Rank first
+	"moveEntireColumn":  700,
+	"movePartialColumn": 800,
+	"move3PlusUp":       800,
+	"move3PlusAcross":   800,
+	"mMve3PlusAcross":   800,  // 24 * (Rank - 3) + 23 - PosStkWa min, max = 800, 1063 Move lowest Rank first
+	"flipWasteToStock":  1200, //flip moves have the lowest priority
+	"flipStockToWaste":  1300, //flip moves have the lowest priority
+	"badMove":           1400, // a legal move which is worse than a mere flip
+}
+
+var moveBasePriorityPlayAllMultiflip = map[string]int{
+	"moveAceUp":         50,
+	"moveDeuceUp":       100,
+	"moveAceAcross":     200, //                                       PosStkWas = Position of card to be
+	"mMveAceAcross":     200, // + 23 - PosStkWas min, max = 200, 223              moved in combined Stock + Waste
+	"moveDeuceAcross":   250,
+	"mMveDeuceAcross":   250, // + 23 - PosStkWas min, max = 250, 273
+	"moveDown":          300,
+	"mMveDown":          300, // 24 * (12 - Rank - 1) + 23 - PosStkWa min, max = 300, 599 Move highest Rank first
+	"moveEntireColumn":  700,
+	"movePartialColumn": 800,
+	"move3PlusUp":       800,
+	"move3PlusAcross":   800,
+	"mMve3PlusAcross":   800,  // 24 * (Rank - 3) + 23 - PosStkWa min, max = 800, 1063 Move lowest Rank first
+	"flipWasteToStock":  1200, //flip moves have the lowest priority
+	"flipStockToWaste":  1300, //flip moves have the lowest priority
+	"badMove":           1400, // a legal move which is worse than a mere flip
 }
 
 // ANY CHANGES IN THESE MUST BE MADE IN moveShortName8 BELOW!!!!!!!!!!!!!
 var moveShortName = map[string]string{
-	"moveAceAcross":     "AAccr ",
-	"moveDeuceAcross":   "2Accr ",
-	"move3PlusAcross":   "3+Accr",
-	"moveDown":          " Down ",
-	"moveEntireColumn":  "EntCol",
-	"flipWasteToStock":  "W->Stk", //flip moves have the lowest priority
-	"flipStockToWaste":  "Stk->W", //flip moves have the lowest priority
-	"movePartialColumn": "ParCol",
 	"moveAceUp":         " A Up ",
 	"moveDeuceUp":       " 2 Up ",
+	"moveAceAcross":     "AAccr ",
+	"mMveAceAcross":     "mAAccr",
+	"moveDeuceAcross":   "2Accr ",
+	"mMveDeuceAcross":   "m2Accr",
+	"moveDown":          " Down ",
+	"mMveDown":          "m Down",
+	"moveEntireColumn":  "EntCol",
+	"movePartialColumn": "ParCol",
 	"move3PlusUp":       " 3+Up ",
+	"move3PlusAcross":   "3+Accr",
+	"mMve3PlusAcross":   "m3+Acr",
+	"flipWasteToStock":  "W->Stk", //flip moves have the lowest priority
+	"flipStockToWaste":  "Stk->W", //flip moves have the lowest priority
 	"badMove":           "badMve", // a legal move which is worse than a mere flip
-	"flipSt->W Max-0":   "S>W M0",
-	"flipSt->W Max-1":   "S>W M1",
-	"flipSt->W Max-2":   "S>W M2",
-	"flipSt->W Max-3":   "S>W M3",
-	"flipSt->W Max-4":   "S>W M4",
-	"flipSt->W Max-5":   "S>W M5",
-	"flipSt->W Max-6":   "S>W M6",
-	"flipSt->W Max-7":   "S>W M7",
 }
-
-/*// ANY CHANGES IN THESE MUST BE MADE IN moveShortName ABOVE!!!!!!!!!!!!
-//
-//	These are used in playAllMoves func pmd when printing Board-byBoard detail in "TW" format (see arg[6] in main)
-var moveShortName8 = map[string]string{
-	"moveAceAcross":     " AAccr  ",
-	"moveDeuceAcross":   " 2Accr  ",
-	"move3PlusAcross":   " 3+Accr ",
-	"moveDown":          "  Down  ",
-	"moveEntireColumn":  " EntCol ",
-	"flipWasteToStock":  " W->Stk ", //flip moves have the lowest priority
-	"flipStockToWaste":  " Stk->W ", //flip moves have the lowest priority
-	"movePartialColumn": " ParCol ",
-	"moveAceUp":         "  A Up  ",
-	"moveDeuceUp":       "  2 Up  ",
-	"move3PlusUp":       "  3+Up  ",
-	"badMove":           " badMve ", // a legal move which is worse than a mere flip
-	"flipSt->W Max-0":   " S>W M0 ",
-	"flipSt->W Max-1":   " S>W M1 ",
-	"flipSt->W Max-2":   " S>W M2 ",
-	"flipSt->W Max-3":   " S>W M3 ",
-	"flipSt->W Max-4":   " S>W M4 ",
-	"flipSt->W Max-5":   " S>W M5 ",
-	"flipSt->W Max-6":   " S>W M6 ",
-	"flipSt->W Max-7":   " S>W M7 ",
-}*/
 
 // Used to record how many of each move type is executed during an attempt.
 var moveTypes = map[string]int{
-	"moveAceAcross":     0,
-	"moveDeuceAcross":   0,
-	"move3PlusAcross":   0,
-	"moveDown":          0,
-	"moveEntireColumn":  0,
-	"flipWasteToStock":  0,
-	"flipStockToWaste":  0,
-	"movePartialColumn": 0,
 	"moveAceUp":         0,
 	"moveDeuceUp":       0,
+	"moveAceAcross":     0,
+	"mMveAceAcross":     0,
+	"moveDeuceAcross":   0,
+	"mMveDeuceAcross":   0,
+	"moveDown":          0,
+	"mMveDown":          0,
+	"moveEntireColumn":  0,
+	"movePartialColumn": 0,
 	"move3PlusUp":       0,
+	"move3PlusAcross":   0,
+	"mMve3PlusAcross":   0,
+	"flipWasteToStock":  0,
+	"flipStockToWaste":  0,
 	"badMove":           0,
-	"flipSt->W Max-0":   0,
-	"flipSt->W Max-1":   0,
-	"flipSt->W Max-2":   0,
-	"flipSt->W Max-3":   0,
-	"flipSt->W Max-4":   0,
-	"flipSt->W Max-5":   0,
-	"flipSt->W Max-6":   0,
-	"flipSt->W Max-7":   0}
+}

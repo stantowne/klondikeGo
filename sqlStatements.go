@@ -23,8 +23,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 	case "insert":
 		switch table {
 		case "priority":
-			//  TODO Add new Move Types Remove old Move Types
-			stmt, err = tx.Prepare("INSERT INTO [dbo].[Priority] ([Priority_SHA256], [moveAceAcross], [moveDeuceAcross], [move3PlusAcross], [moveDown], [moveEntireColumn], [flipWasteToStock], [flipStockToWaste], [movePartialColumn], [moveAceUp], [moveDeuceUp], [move3PlusUp], [badMove], [flipSt->W Max-0], [flipSt->W Max-1], [flipSt->W Max-2], [flipSt->W Max-3], [flipSt->W Max-4], [flipSt->W Max-5], [flipSt->W Max-6], [flipSt->W Max-7]) VALUES (@Priority_SHA256, @moveAceAcross, @moveDeuceAcross, @move3PlusAcross, @moveDown, @moveEntireColumn, @flipWasteToStock, @flipStockToWaste, @movePartialColumn, @moveAceUp, @moveDeuceUp, @move3PlusUp, @badMove, @flipStToW_Max_0, @flipStToW_Max_1, @flipStToW_Max_2, @flipStToW_Max_3, @flipStToW_Max_4, @flipStToW_Max_5, @flipStToW_Max_6, @flipStToW_Max_7); ")
+			stmt, err = tx.Prepare("INSERT INTO [dbo].[Priority] ([Priority_SHA256], [moveAceUp], [moveDeuceUp], [moveAceAcross], [mMveAceAcross], [moveDeuceAcross], [mMveDeuceAcross], [moveDown], [mMveDown], [moveEntireColumn], [movePartialColumn], [move3PlusUp], [move3PlusAcross], [mMve3PlusAcross], [flipWasteToStock], [flipStockToWaste], [badMove]) VALUES (@Priority_SHA256, @moveAceUp, @moveDeuceUp, @moveAceAcross, @mMveAceAcross, @moveDeuceAcross, @mMveDeuceAcross, @moveDown, @mMveDown, @moveEntireColumn, @movePartialColumn, @move3PlusUp, @move3PlusAcross, @mMve3PlusAcross, @flipWasteToStock, @flipStockToWaste, @badMove); ")
 			if err != nil {
 				errHandler(cfg.General.OutputTo, table, verb, "Prepare p01", err)
 			}
@@ -32,26 +31,22 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			// Execute the prepared statement
 			_, err = stmt.Exec(
 				sql.Named("Priority_SHA256", string(cfg.General.PrioritySHA256[:])),
-				sql.Named("moveAceAcross", moveBasePriority["moveAceAcross"]),
-				sql.Named("moveDeuceAcross", moveBasePriority["moveDeuceAcross"]),
-				sql.Named("move3PlusAcross", moveBasePriority["move3PlusAcross"]),
-				sql.Named("moveDown", moveBasePriority["moveDown"]),
-				sql.Named("moveEntireColumn", moveBasePriority["moveEntireColumn"]),
-				sql.Named("flipWasteToStock", moveBasePriority["flipWasteToStock"]),
-				sql.Named("flipStockToWaste", moveBasePriority["flipStockToWaste"]),
-				sql.Named("movePartialColumn", moveBasePriority["movePartialColumn"]),
 				sql.Named("moveAceUp", moveBasePriority["moveAceUp"]),
 				sql.Named("moveDeuceUp", moveBasePriority["moveDeuceUp"]),
+				sql.Named("moveAceAcross", moveBasePriority["moveAceAcross"]),
+				sql.Named("mMveAceAcross", moveBasePriority["mMveAceAcross"]),
+				sql.Named("moveDeuceAcross", moveBasePriority["moveDeuceAcross"]),
+				sql.Named("mMveDeuceAcross", moveBasePriority["mMveDeuceAcross"]),
+				sql.Named("moveDown", moveBasePriority["moveDown"]),
+				sql.Named("mMveDown", moveBasePriority["mMveDown"]),
+				sql.Named("moveEntireColumn", moveBasePriority["moveEntireColumn"]),
+				sql.Named("movePartialColumn", moveBasePriority["movePartialColumn"]),
 				sql.Named("move3PlusUp", moveBasePriority["move3PlusUp"]),
+				sql.Named("move3PlusAcross", moveBasePriority["move3PlusAcross"]),
+				sql.Named("mMve3PlusAcross", moveBasePriority["mMve3PlusAcross"]),
+				sql.Named("flipWasteToStock", moveBasePriority["flipWasteToStock"]),
+				sql.Named("flipStockToWaste", moveBasePriority["flipStockToWaste"]),
 				sql.Named("badMove", moveBasePriority["badMove"]),
-				sql.Named("flipStToW_Max_0", moveBasePriority["flipSt->W Max-0"]),
-				sql.Named("flipStToW_Max_1", moveBasePriority["flipSt->W Max-1"]),
-				sql.Named("flipStToW_Max_2", moveBasePriority["flipSt->W Max-2"]),
-				sql.Named("flipStToW_Max_3", moveBasePriority["flipSt->W Max-3"]),
-				sql.Named("flipStToW_Max_4", moveBasePriority["flipSt->W Max-4"]),
-				sql.Named("flipStToW_Max_5", moveBasePriority["flipSt->W Max-5"]),
-				sql.Named("flipStToW_Max_6", moveBasePriority["flipSt->W Max-6"]),
-				sql.Named("flipStToW_Max_7", moveBasePriority["flipSt->W Max-7"]),
 			)
 		case "runcfg":
 			stmt, err = tx.Prepare("INSERT INTO [dbo].[RunCfg] ([Priority_SHA256], [RunStartTime], [GitVersion], [HostName], [DeckFileName], [Decks], [FirstDeckNum], [NumberOfDecksToBePlayed], [NumberOfDecksWerePlayed], [LastDeckWasPlayed], [List], [TypeOfPlay], [Verbose], [OutputTo], [outWriterFileName]) OUTPUT inserted.Run_ID VALUES (@Priority_SHA256, @RunStartTime, @GitVersion, @HostName, @DeckFileName, @Decks, @FirstDeckNum, @NumberOfDecksToBePlayed, @NumberOfDecksWerePlayed, @LastDeckWasPlayed, @List, @TypeOfPlay, @Verbose, @OutputTo, @outWriterFileName);")
