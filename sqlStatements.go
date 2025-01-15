@@ -23,7 +23,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 	case "insert":
 		switch table {
 		case "priority":
-			stmt, err = tx.Prepare("INSERT INTO [dbo].[Priority] ([Priority_SHA256], [moveAceUp], [moveDeuceUp], [moveAceAcross], [mMveAceAcross], [moveDeuceAcross], [mMveDeuceAcross], [moveDown], [mMveDown], [moveEntireColumn], [movePartialColumn], [move3PlusUp], [move3PlusAcross], [mMve3PlusAcross], [flipWasteToStock], [flipStockToWaste], [badMove]) VALUES (@Priority_SHA256, @moveAceUp, @moveDeuceUp, @moveAceAcross, @mMveAceAcross, @moveDeuceAcross, @mMveDeuceAcross, @moveDown, @mMveDown, @moveEntireColumn, @movePartialColumn, @move3PlusUp, @move3PlusAcross, @mMve3PlusAcross, @flipWasteToStock, @flipStockToWaste, @badMove); ")
+			stmt, err = tx.Prepare("INSERT INTO [dbo].[Priority] ([Priority_SHA256], [moveAceUp], [moveDeuceUp], [moveAceAcross], [moveDeuceAcross], [moveDown], [moveEntireColumn], [movePartialColumn], [move3PlusUp], [move3PlusAcross], [flpMMveAceAcross], [flpMMve2Across], [flpMMveDown], [flpMMve3UpAcross], [flipWasteToStock], [flipStockToWaste], [badMove]) VALUES (@Priority_SHA256, @moveAceUp, @moveDeuceUp, @moveAceAcross, @moveDeuceAcross, @moveDown, @moveEntireColumn, @movePartialColumn, @move3PlusUp, @move3PlusAcross, @flpMMveAceAcross, @flpMMve2Across, @flpMMveDown, @flpMMve3UpAcross, @flipWasteToStock, @flipStockToWaste, @badMove); ")
 			if err != nil {
 				errHandler(cfg.General.OutputTo, table, verb, "Prepare p01", err)
 			}
@@ -34,16 +34,16 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("moveAceUp", moveBasePriority["moveAceUp"]),
 				sql.Named("moveDeuceUp", moveBasePriority["moveDeuceUp"]),
 				sql.Named("moveAceAcross", moveBasePriority["moveAceAcross"]),
-				sql.Named("mMveAceAcross", moveBasePriority["mMveAceAcross"]),
 				sql.Named("moveDeuceAcross", moveBasePriority["moveDeuceAcross"]),
-				sql.Named("mMveDeuceAcross", moveBasePriority["mMveDeuceAcross"]),
 				sql.Named("moveDown", moveBasePriority["moveDown"]),
-				sql.Named("mMveDown", moveBasePriority["mMveDown"]),
 				sql.Named("moveEntireColumn", moveBasePriority["moveEntireColumn"]),
 				sql.Named("movePartialColumn", moveBasePriority["movePartialColumn"]),
 				sql.Named("move3PlusUp", moveBasePriority["move3PlusUp"]),
 				sql.Named("move3PlusAcross", moveBasePriority["move3PlusAcross"]),
-				sql.Named("mMve3PlusAcross", moveBasePriority["mMve3PlusAcross"]),
+				sql.Named("flpMMveAceAcross", moveBasePriority["flpMMveAceAcross"]),
+				sql.Named("flpMMve2Across", moveBasePriority["flpMMve2Across"]),
+				sql.Named("flpMMveDown", moveBasePriority["flpMMveDown"]),
+				sql.Named("flpMMve3UpAcross", moveBasePriority["flpMMve3UpAcross"]),
 				sql.Named("flipWasteToStock", moveBasePriority["flipWasteToStock"]),
 				sql.Named("flipStockToWaste", moveBasePriority["flipStockToWaste"]),
 				sql.Named("badMove", moveBasePriority["badMove"]),

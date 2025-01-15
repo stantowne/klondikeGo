@@ -34,8 +34,8 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool, logicVersio
 				// NOTE: detectDownMoves will only ever return 1 move
 				downMove := detectDownMoves(bMultiFlip, moveCounter)
 				if downMove != nil {
-					downMove[0].name = "mMveDown"
-					downMove[0].priority = moveBasePriority["mMveDown"] + 24*(12-downMove[0].cardToMove.Rank-1) + 23 - topWasteCard
+					downMove[0].name = "flpMMveDown"
+					downMove[0].priority = moveBasePriority["flpMMveDown"] + 24*(12-downMove[0].cardToMove.Rank-1) + 23 - topWasteCard
 					downMove[0].MovePortionStartIdx = topWasteCard
 					aMoves = append(aMoves, downMove...)
 				}
@@ -44,14 +44,14 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool, logicVersio
 				if acrossMove != nil {
 					switch acrossMove[0].cardToMove.Rank {
 					case 1: // Ace
-						acrossMove[0].name = "mMveAceAcross"
-						acrossMove[0].priority = moveBasePriority["mMveAceAcross"] + 23 - topWasteCard
+						acrossMove[0].name = "flpMMveAceAcross"
+						acrossMove[0].priority = moveBasePriority["flpMMveAceAcross"] + 23 - topWasteCard
 					case 2: // Deuce
-						acrossMove[0].name = "mMveDeuceAcross"
-						acrossMove[0].priority = moveBasePriority["mMveDeuceAcross"] + 23 - topWasteCard
+						acrossMove[0].name = "flpMMve2Across"
+						acrossMove[0].priority = moveBasePriority["flpMMve2Across"] + 23 - topWasteCard
 					default: // 3+
-						acrossMove[0].name = "mMve3PlusAcross"
-						acrossMove[0].priority = moveBasePriority["mMve3PlusAcross"] + 24*(acrossMove[0].cardToMove.Rank-3) + 23 - topWasteCard
+						acrossMove[0].name = "flpMMve3UpAcross"
+						acrossMove[0].priority = moveBasePriority["flpMMve3UpAcross"] + 24*(acrossMove[0].cardToMove.Rank-3) + 23 - topWasteCard
 					}
 					acrossMove[0].MovePortionStartIdx = topWasteCard
 					aMoves = append(aMoves, acrossMove...)

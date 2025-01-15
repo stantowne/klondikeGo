@@ -178,9 +178,8 @@ func main() {
 			}
 		}
 	}
-
+	cfg.General.PrioritySHA256 = sha256ofMap(moveBasePriority)
 	if cfg.General.TypeOfPlay == "playAll" {
-		cfg.General.PrioritySHA256 = sha256ofMap(moveBasePriority)
 		if cfg.PlayAll.SaveResultsToSQL {
 
 			SQL_Start_Time = time.Now()
@@ -226,7 +225,7 @@ func sha256ofMap(m map[string]int) [32]byte {
 	for k := range m {
 		keys = append(keys, k)
 	}
-	sort.Strings(keys)
+	sort.Strings(keys) // sort by key = move name NOT priority
 	for _, k := range keys {
 		bytesOfSortedMap = append(bytesOfSortedMap, []byte(k)...) //fmt.Println(k, m[k])
 		bytesOfSortedMap = append(bytesOfSortedMap, i32ToBytes(m[k])...)

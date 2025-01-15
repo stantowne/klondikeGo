@@ -14,7 +14,7 @@ func printMove(m move, useLongName bool) (string, string) {
 	}
 	outS2 = ""
 	switch m.name {
-	case "mMveAceAcross", "mMveDeuceAcross", "mMve3PlusAcross", "mMveDown": // MultiFlip
+	case "flpMMveAceAcross", "flpMMve2Across", "flpMMve3UpAcross", "flpMMveDown": // MultiFlip
 		outS += "Flip the stock/waste until the " + strconv.Itoa(m.MovePortionStartIdx+1)
 		switch (m.MovePortionStartIdx + 1) % 10 {
 		case 1:
@@ -27,7 +27,7 @@ func printMove(m move, useLongName bool) (string, string) {
 			outS += "th "
 		}
 		outS += "card " + m.cardToMove.pStrC() + "is on top of waste pile."
-		if m.name == "mMveDown" {
+		if m.name == "flpMMveDown" {
 			outS2 += "                           then move the " + m.cardToMove.pStrC() + "down from waste to column " + strconv.Itoa(m.toCol) + "\n"
 		} else {
 			outS2 += "                           then move  the " + m.cardToMove.pStrC() + "from waste to the " + string(m.cardToMove.suitSymbolColored()) + "Pile\n"
