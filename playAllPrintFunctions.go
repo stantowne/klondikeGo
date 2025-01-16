@@ -130,6 +130,9 @@ func printSummaryStats(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
 	_, _ = fmt.Fprintf(oW, "\n    Avg Time per Deck: %5v\n", averageElapsedTimePerDeck.Round(100*time.Millisecond).String())
 	if cfg.PlayAll.SaveResultsToSQL {
 		_, _ = fmt.Fprintf(oW, "\n     SQL Elapsed Time: %5v", SQL_Time_elapsed.Round(100*time.Microsecond).String())
+		_, _ = fmt.Fprintf(oW, "\n               Run_ID: %5v", cfg.General.RunID)
+		//		_, _ = fmt.Fprintf(oW, "\n Priority_SHA256 Rec#: %v   %v", sqlExec("query", "getPriorityIdentNum", cfg, nil, nil), cfg.General.PrioritySHA256)
+		// TODO get priority ident num
 		averageSQLElapsedTimePerDeck := time.Duration(float64(SQL_Time_elapsed) / float64(cfg.General.NumberOfDecksToBePlayed))
 		_, _ = fmt.Fprintf(oW, "\nAvg SQL Time per Deck: %5v\n", averageSQLElapsedTimePerDeck.Round(100*time.Microsecond).String())
 	}

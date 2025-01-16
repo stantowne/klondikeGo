@@ -241,6 +241,15 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 					return "NoSkip"
 				}
 			}
+			/*		case "getpriorityidentnum":
+					var Priority_Ident_Num int
+					var row *sql.Row
+					row = db.QueryRow("SELECT Priority_Ident_Num FROM [dbo].[Priority] WHERE Priority_SHA256 = @Priority_xSHA256; ", sql.Named("Priority_xSHA256", NewNullString(cfg.General.PrioritySHA256)))
+					if errors.Is(row.Scan(&Priority_Ident_Num), sql.ErrNoRows) {
+						return "Priority_SHA256 not found!"
+					} else {
+						return strconv.Itoa(Priority_Ident_Num)
+					}*/ //todo finish query priority_ident_num
 		}
 	case "update":
 		switch table {
