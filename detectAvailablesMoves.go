@@ -2,7 +2,7 @@ package main
 
 func detectAvailableMoves(b board, moveCounter int, singleGame bool, logicVersion string) []move {
 	var aMoves []move //available Moves
-	if logicVersion == "orig" {
+	if logicVersion == "original" {
 		aMoves = append(aMoves, detectUpMoves(b, moveCounter)...)
 		aMoves = append(aMoves, detectAcrossMoves(b, moveCounter)...)
 		aMoves = append(aMoves, detectMecNotThoughtful(b, moveCounter, singleGame)...)

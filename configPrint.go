@@ -15,6 +15,7 @@ func configPrint(c Configuration) {
 
 	_, _ = pfmt.Fprintf(oW, "General:\n"+
 		"                          Run Start Time: %15s\n"+
+		"                                  Run ID: %v\n"+
 		"                             Git Version: %v\n"+
 		"                           Git Host Name: %v\n"+
 		"                          Deck File Name: %v\n\n"+
@@ -25,6 +26,7 @@ func configPrint(c Configuration) {
 		"                                 Verbose: %v\n\n"+
 		"                               Output To: %v",
 		c.General.RunStartTime.Format("2006.01.02  3:04:05 pm"),
+		c.General.RunID,
 		c.General.GitVersion,
 		c.General.HostName,
 		c.General.DeckFileName,
