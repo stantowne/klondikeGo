@@ -21,6 +21,7 @@ func configPrint(c Configuration) {
 		"            Number Of Decks To Be Played: %v\n"+
 		"                      Starting with deck: %v\n"+
 		"                            Type of Play: %v\n"+
+		"                           Logic Version: %v\n"+
 		"                                 Verbose: %v\n\n"+
 		"                               Output To: %v",
 		c.General.RunStartTime.Format("2006.01.02  3:04:05 pm"),
@@ -30,6 +31,7 @@ func configPrint(c Configuration) {
 		c.General.NumberOfDecksToBePlayed,
 		c.General.FirstDeckNum,
 		c.General.TypeOfPlay,
+		c.General.LogicVersion,
 		c.General.Verbose,
 		c.General.OutputTo)
 	if c.General.OutputTo == "console" {
