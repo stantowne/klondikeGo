@@ -4,7 +4,7 @@ general:              # Repeat below with GL 20, 40, 300  then  next Start at 0 
   deck file name: ./DeckFiles/decks-0-410019-with_20_duplicateDecksAtEnd.csv      # Note: forward slash / form: prefix-Start#-End#-suffix no "-" allowed in prefix
   decks: consecutive                                  # consecutive or list or GLE (See config.go for more explanation of list and GLE)
   first deck number: 10003                            # non-negative integer less than 410,000
-  number of decks to be played: 1                     # positive integer no more than 410,000 minus first deck number
+  number of decks to be played: 4                     # positive integer no more than 410,000 minus first deck number
   list: 410014,410019                                 # list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
   logic version: multiflip                            # "original" logic or "multiflip"
   type of play: playAll                               # playAll or playOrig

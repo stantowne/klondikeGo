@@ -72,12 +72,12 @@ var moveBasePriorityPlayOrigMultiflip = map[string]int{
 	"movePartialColumn": 700,   // TODO TEST IF FLIPPING RANK AND posStkWas is better
 	"move3PlusUp":       800,   //                                                                posStkWas = Position of card to be
 	"move3PlusAcross":   900,   //                                                                moved in combined Stock + Waste
-	"flpMMveAceAcross":  2000,  // + 100 - posStkWas                      min, max = 1076, 1100
-	"flpMMve2Across":    3000,  // + 100 - posStkWas                      min, max = 2076, 2100
-	"flpMMveDown":       4000,  // 50 * (13 - Rank - 1) + 24 - PosStkWa   min, max = 4000, 4624 Move highest Rank first
+	"flpMMveAceAcross":  2000,  // + 24 - posStkWas                       min, max = 2000, 2024
+	"flpMMve2Across":    3000,  // + 24 - posStkWas                       min, max = 3000, 3024
+	"flpMMveDown":       4000,  // 50 * (13 - Rank) + 24 - PosStkWa       min, max = 4000, 4624 Move highest Rank first
 	"flpMMve3UpAcross":  5000,  // 50 * (Rank - 1) + 24 - PosStkWa        min, max = 5000, 5624 Move lowest Rank first
-	"flipWasteToStock":  10000, //flip moves have the lowest priority    NOT USED WHEN LogicVersion = "multiflip"
-	"flipStockToWaste":  11000, //flip moves have the lowest priority    NOT USED WHEN LogicVersion = "multiflip"
+	"flipWasteToStock":  10000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
+	"flipStockToWaste":  11000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
 	"badMove":           12000, // a legal move which is worse than a mere flip
 }
 
@@ -91,12 +91,12 @@ var moveBasePriorityPlayAllMultiflip = map[string]int{
 	"movePartialColumn": 700,   // TODO TEST IF FLIPPING RANK AND posStkWas is better
 	"move3PlusUp":       800,   //                                                                posStkWas = Position of card to be
 	"move3PlusAcross":   900,   //                                                                moved in combined Stock + Waste
-	"flpMMveAceAcross":  2000,  // + 100 - posStkWas                      min, max = 1076, 1100
-	"flpMMve2Across":    3000,  // + 100 - posStkWas                      min, max = 2076, 2100
-	"flpMMveDown":       4000,  // 50 * (13 - Rank - 1) + 24 - PosStkWa   min, max = 4000, 4624 Move highest Rank first
+	"flpMMveAceAcross":  2000,  // + 24 - posStkWas                       min, max = 2000, 2024
+	"flpMMve2Across":    3000,  // + 24 - posStkWas                       min, max = 3000, 3024
+	"flpMMveDown":       4000,  // 50 * (13 - Rank) + 24 - PosStkWa       min, max = 4000, 4624 Move highest Rank first
 	"flpMMve3UpAcross":  5000,  // 50 * (Rank - 1) + 24 - PosStkWa        min, max = 5000, 5624 Move lowest Rank first
-	"flipWasteToStock":  10000, //flip moves have the lowest priority    NOT USED WHEN LogicVersion = "multiflip"
-	"flipStockToWaste":  11000, //flip moves have the lowest priority    NOT USED WHEN LogicVersion = "multiflip"
+	"flipWasteToStock":  10000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
+	"flipStockToWaste":  11000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
 	"badMove":           12000, // a legal move which is worse than a mere flip
 }
 
