@@ -1,6 +1,6 @@
 package main
 
-func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool, logicVersion string*/) []move {
+func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool*/, logicVersion string) []move {
 	var aMoves []move //available Moves
 	var bMultiFlip board
 	fullLengthStockAndWaste := len(bIn.stock) + len(bIn.waste)
@@ -35,7 +35,12 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool, logicVersio
 				downMove := detectDownMoves(bMultiFlip, moveCounter)
 				if downMove != nil {
 					downMove[0].name = "flpMMveDown"
-					downMove[0].priority = moveBasePriority["flpMMveDown"] + 50*(13-downMove[0].cardToMove.Rank) + 24 - topWasteCard
+					switch logicVersion {
+					case "multiflip":
+						downMove[0].priority = moveBasePriority["flpMMveDown"] + 50*(13-downMove[0].cardToMove.Rank) + (24 - topWasteCard)
+					case "multiflip2":
+						downMove[0].priority = moveBasePriority["flpMMveDown"] + 50*(24-topWasteCard) + (13 - downMove[0].cardToMove.Rank)
+					}
 					downMove[0].MovePortionStartIdx = topWasteCard
 					aMoves = append(aMoves, downMove...)
 				}

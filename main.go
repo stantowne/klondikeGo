@@ -117,16 +117,22 @@ func main() {
 		cfg.General.outWriterFileName += "__" + cfg.General.RunStartTime.Format("2006.01.02_15.04.05_-0700") + ".txt"
 	}
 	if cfg.General.TypeOfPlay == "playAll" {
-		if cfg.General.LogicVersion == "original" {
+		switch cfg.General.LogicVersion {
+		case "original":
 			moveBasePriority = moveBasePriorityPlayAllOriginal
-		} else {
+		case "multiflip":
 			moveBasePriority = moveBasePriorityPlayAllMultiflip
+		case "multiflip2":
+			moveBasePriority = moveBasePriorityPlayAllMultiflip2
 		}
 	} else {
-		if cfg.General.LogicVersion == "original" {
+		switch cfg.General.LogicVersion {
+		case "original":
 			moveBasePriority = moveBasePriorityPlayOrigOriginal
-		} else {
+		case "multiflip":
 			moveBasePriority = moveBasePriorityPlayOrigMultiflip
+		case "multiflip2":
+			moveBasePriority = moveBasePriorityPlayOrigMultiflip2
 		}
 	}
 	configPrint(cfg) // Print FIRST time to stout
