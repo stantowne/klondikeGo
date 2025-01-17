@@ -1,8 +1,8 @@
 package main
 
-func detectAvailableMoves(b board, moveCounter int, singleGame bool, logicVersion string) []move {
+func detectAvailableMoves(b board, moveCounter int, singleGame bool, passedLogicVersion string) []move {
 	var aMoves []move //available Moves
-	if logicVersion == "original" {
+	if passedLogicVersion == "original" || passedLogicVersion == "playOrig" {
 		aMoves = append(aMoves, detectUpMoves(b, moveCounter)...)
 		aMoves = append(aMoves, detectAcrossMoves(b, moveCounter)...)
 		aMoves = append(aMoves, detectMecNotThoughtful(b, moveCounter, singleGame)...)
@@ -16,7 +16,7 @@ func detectAvailableMoves(b board, moveCounter int, singleGame bool, logicVersio
 		aMoves = append(aMoves, detectMecNotThoughtful(b, moveCounter, singleGame)...)
 		aMoves = append(aMoves, detectDownMoves(b, moveCounter)...) // TODO consider commenting out
 		aMoves = append(aMoves, detectPartialColumnMoves(b, moveCounter, singleGame)...)
-		aMoves = append(aMoves, detectMultiFlip(b, moveCounter, logicVersion)...) // Does flip stk->Waste, Waste->Stk and moveDown and move Across
+		aMoves = append(aMoves, detectMultiFlip(b, moveCounter, passedLogicVersion)...) // Does flip stk->Waste, Waste->Stk and moveDown and move Across
 	}
 	return aMoves
 }
