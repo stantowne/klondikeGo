@@ -3,11 +3,11 @@
 general:              # Repeat below with GL 20, 40, 300  then  next Start at 0 and go for 1000 next time change GML to 50
   deck file name: ./DeckFiles/decks-0-410019-with_20_duplicateDecksAtEnd.csv      # Note: forward slash / form: prefix-Start#-End#-suffix no "-" allowed in prefix
   decks: consecutive                                  # consecutive or list or GLE (See config.go for more explanation of list and GLE)
-  first deck number: 10000                            # non-negative integer less than 410,000
-  number of decks to be played: 1500                  # positive integer no more than 410,000 minus first deck number
+  first deck number: 10061                            # non-negative integer less than 410,000
+  number of decks to be played: 1                     # positive integer no more than 410,000 minus first deck number
   list: 410014,410019                                 # list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
   logic version: multiflip2                           # "original" logic or "multiflip" or "multiflip2"
-  type of play: playAll                               # playAll or playOrig
+  type of play: playOrig                               # playAll or playOrig
   verbose: 0                                          # non-negative integer
   outputTo: ./playAllPrintOutput/Decks                # console OR filename WITHOUT extension;             ./playAllPrintOutput/Decks
                                                       # filename will be appended with deck range, GLL and
@@ -26,9 +26,9 @@ play all moves:
   find all winning strategies?: false               # true or false   true not yet implemented
 
   reporting:                                        # only one true or no trues permitted   non yaml       cfg.PlayNew.ReportingType.NoReporting set in code
-    deck by deck: true                              # true or false                                   =    cfg.PlayNew.ReportingType.DeckByDeck
+    deck by deck: false                             # true or false                                   =    cfg.PlayNew.ReportingType.DeckByDeck
     move by move: false                             # true or false                                     || cfg.PlayNew.ReportingType.MoveByMove
-    tree: false                                     # true or false                                     || cfg.PlayNew.ReportingType.Tree
+    tree: true                                      # true or false                                     || cfg.PlayNew.ReportingType.Tree
     #                                             NOTE: || == OR (looks like forward slash due to italics)
   deck by deck reporting options:
     type: short                                   # regular, short, very short     Ignored if cfg.PlayAll.ReportingType.DeckByDeck == false
@@ -47,7 +47,7 @@ play all moves:
     starting move number: 0                         # 0 means no restriction
     continue for how many moves: 0                  # 0 means no restriction
 
-  print winning moves: false                        # true or false
+  print winning moves: true                         # true or false
   progress counter in millions: 5                   # Applicable All reporting when OutputTo != "console"
                                                     # and only to Deck-by-Deck reporting when OutputTo == "console"
   print final deck by deck W/L record: true         # true or false  (See Further comments below)
