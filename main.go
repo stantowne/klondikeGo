@@ -198,6 +198,11 @@ func main() {
 			sqlExec("Insert", "Cfg_PlayAll", &cfg, nil, nil)
 			sqlExec("Transaction", "Commit", &cfg, nil, nil)
 
+			fmt.Printf("\n     RunID:  %v\n\n", cfg.General.RunID)
+			if cfg.General.OutputTo != "console" {
+				_, _ = fmt.Fprintf(oW, "\n     RunID:  %v\n\n", cfg.General.RunID)
+			}
+
 			SQL_Time_elapsed += time.Since(SQL_Start_Time)
 
 		}

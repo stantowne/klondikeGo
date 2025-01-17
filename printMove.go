@@ -30,7 +30,7 @@ func printMove(m move, useLongName bool) (string, string) {
 		if m.name == "flpMMveDown" {
 			outS2 += "                           then move the " + m.cardToMove.pStrC() + "down from waste to column " + strconv.Itoa(m.toCol) + "\n"
 		} else {
-			outS2 += "                           then move  the " + m.cardToMove.pStrC() + "from waste to the " + string(m.cardToMove.suitSymbolColored()) + "Pile\n"
+			outS2 += "                           then move the " + m.cardToMove.pStrC() + "across from waste to the " + string(m.cardToMove.suitSymbolColored()) + "Pile\n"
 		}
 	case "moveAceAcross", "moveDeuceAcross", "move3PlusAcross":
 		outS += "Move the " + m.cardToMove.pStrC() + "from waste to the " + string(m.cardToMove.suitSymbolColored()) + "Pile"
