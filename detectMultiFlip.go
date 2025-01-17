@@ -37,9 +37,9 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool*/, logicVers
 					downMove[0].name = "flpMMveDown"
 					switch logicVersion {
 					case "multiflip":
-						downMove[0].priority = moveBasePriority["flpMMveDown"] + 50*(13-downMove[0].cardToMove.Rank) + (24 - topWasteCard)
+						downMove[0].priority = moveBasePriority["flpMMveDown"] + 50*(13-downMove[0].cardToMove.Rank) + (topWasteCard)
 					case "multiflip2":
-						downMove[0].priority = moveBasePriority["flpMMveDown"] + 50*(24-topWasteCard) + (13 - downMove[0].cardToMove.Rank)
+						downMove[0].priority = moveBasePriority["flpMMveDown"] + 50*(topWasteCard) + (13 - downMove[0].cardToMove.Rank)
 					}
 					downMove[0].MovePortionStartIdx = topWasteCard
 					aMoves = append(aMoves, downMove...)
@@ -47,16 +47,31 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool*/, logicVers
 				// NOTE: detectAcrossMoves will only ever return 1 move
 				acrossMove := detectAcrossMoves(bMultiFlip, moveCounter)
 				if acrossMove != nil {
-					switch acrossMove[0].cardToMove.Rank {
-					case 1: // Ace
-						acrossMove[0].name = "flpMMveAceAcross"
-						acrossMove[0].priority = moveBasePriority["flpMMveAceAcross"] + 24 - topWasteCard
-					case 2: // Deuce
-						acrossMove[0].name = "flpMMve2Across"
-						acrossMove[0].priority = moveBasePriority["flpMMve2Across"] + 24 - topWasteCard
-					default: // 3+
-						acrossMove[0].name = "flpMMve3UpAcross"
-						acrossMove[0].priority = moveBasePriority["flpMMve3UpAcross"] + 50*(acrossMove[0].cardToMove.Rank-1) + 24 - topWasteCard
+					switch logicVersion {
+					case "multiflip":
+						switch acrossMove[0].cardToMove.Rank {
+						case 1: // Ace
+							acrossMove[0].name = "flpMMveAceAcross"
+							acrossMove[0].priority = moveBasePriority["flpMMveAceAcross"] + 50*(13-acrossMove[0].cardToMove.Rank) + (topWasteCard)
+						case 2: // Deuce
+							acrossMove[0].name = "flpMMve2Across"
+							acrossMove[0].priority = moveBasePriority["flpMMve2Across"] + 50*(13-acrossMove[0].cardToMove.Rank) + (topWasteCard)
+						default: // 3+
+							acrossMove[0].name = "flpMMve3UpAcross"
+							acrossMove[0].priority = moveBasePriority["flpMMve3UpAcross"] + 50*(13-acrossMove[0].cardToMove.Rank) + (topWasteCard)
+						}
+					case "multiflip2":
+						switch acrossMove[0].cardToMove.Rank {
+						case 1: // Ace
+							acrossMove[0].name = "flpMMveAceAcross"
+							acrossMove[0].priority = moveBasePriority["flpMMveAceAcross"] + 50*(topWasteCard) + (13 - acrossMove[0].cardToMove.Rank)
+						case 2: // Deuce
+							acrossMove[0].name = "flpMMve2Across"
+							acrossMove[0].priority = moveBasePriority["flpMMve2Across"] + 50*(topWasteCard) + (13 - acrossMove[0].cardToMove.Rank)
+						default: // 3+
+							acrossMove[0].name = "flpMMve3UpAcross"
+							acrossMove[0].priority = moveBasePriority["flpMMve3UpAcross"] + 50*(topWasteCard) + (13 - acrossMove[0].cardToMove.Rank)
+						}
 					}
 					acrossMove[0].MovePortionStartIdx = topWasteCard
 					aMoves = append(aMoves, acrossMove...)
