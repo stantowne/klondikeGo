@@ -122,8 +122,8 @@ func main() {
 			moveBasePriority = moveBasePriorityPlayAllOriginal
 		case "multiflip":
 			moveBasePriority = moveBasePriorityPlayAllMultiflip
-		case "multiflip2":
-			moveBasePriority = moveBasePriorityPlayAllMultiflip2
+		case "multifliptest":
+			moveBasePriority = moveBasePriorityPlayAllMultiflipTest
 		}
 	} else {
 		switch cfg.General.LogicVersion {
@@ -131,8 +131,8 @@ func main() {
 			moveBasePriority = moveBasePriorityPlayOrigOriginal
 		case "multiflip":
 			moveBasePriority = moveBasePriorityPlayOrigMultiflip
-		case "multiflip2":
-			moveBasePriority = moveBasePriorityPlayOrigMultiflip2
+		case "multifliptest":
+			moveBasePriority = moveBasePriorityPlayOrigMultiflipTest
 		}
 	}
 	configPrint(cfg) // Print FIRST time to stout

@@ -27,10 +27,10 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool*/, logicVers
 			l := len(bMultiFlip.stock)
 			bMultiFlip.waste = append(bMultiFlip.waste, bMultiFlip.stock[l-1].flipCardUp2())
 			bMultiFlip.stock = bMultiFlip.stock[:l-1]
-			if (topWasteCard%3 == 2) || // 3rd, 6th, 9th etc
-				(topWasteCard == fullLengthStockAndWaste-1) || // the last card in stock + waste
+			if (topWasteCard%3 == 2) || // 3rd, 6th, 9th etc flip all the way around and back again = "*" in ModAnalysis.txt
+				(topWasteCard == fullLengthStockAndWaste-1) || // the last card in stock + waste    = "L" in ModAnalysis.txt
 				(topWasteCard >= startingLenOfWaste-1 &&
-					topWasteCard%3 == modOfStartingTopWasteCard) {
+					topWasteCard%3 == modOfStartingTopWasteCard) { // Normal Flips of 3 (or fewer)  = "3" in ModAnalysis.txt
 				// NOTE: detectDownMoves will only ever return 1 move
 				downMove := detectDownMoves(bMultiFlip, moveCounter)
 				if downMove != nil {
@@ -38,7 +38,7 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool*/, logicVers
 					switch logicVersion {
 					case "multiflip":
 						downMove[0].priority = moveBasePriority["flpMMveDown"] + 50*(13-downMove[0].cardToMove.Rank) + (topWasteCard)
-					case "multiflip2":
+					case "multifliptest":
 						downMove[0].priority = moveBasePriority["flpMMveDown"] + 50*(topWasteCard) + (13 - downMove[0].cardToMove.Rank)
 					}
 					downMove[0].MovePortionStartIdx = topWasteCard
@@ -60,7 +60,7 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool*/, logicVers
 							acrossMove[0].name = "flpMMve3UpAcross"
 							acrossMove[0].priority = moveBasePriority["flpMMve3UpAcross"] + 50*(13-acrossMove[0].cardToMove.Rank) + (topWasteCard)
 						}
-					case "multiflip2":
+					case "multifliptest":
 						switch acrossMove[0].cardToMove.Rank {
 						case 1: // Ace
 							acrossMove[0].name = "flpMMveAceAcross"

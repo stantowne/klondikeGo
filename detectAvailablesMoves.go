@@ -1,8 +1,8 @@
 package main
 
 func detectAvailableMoves(b board, moveCounter int, singleGame bool, passedLogicVersion string) []move {
-	var aMoves []move //available Moves
-	if passedLogicVersion == "original" || passedLogicVersion == "playOrig" {
+	var aMoves []move                                                         //available Moves
+	if passedLogicVersion == "original" || passedLogicVersion == "playOrig" { // TODO Figure out why is needed ????
 		aMoves = append(aMoves, detectUpMoves(b, moveCounter)...)
 		aMoves = append(aMoves, detectAcrossMoves(b, moveCounter)...)
 		aMoves = append(aMoves, detectMecNotThoughtful(b, moveCounter, singleGame)...)
@@ -33,14 +33,22 @@ var moveBasePriorityPlayOrigOriginal = map[string]int{
 	"movePartialColumn": 700,
 	"move3PlusUp":       800,
 	"move3PlusAcross":   900,
-	"flpMMveAceAcross":  9600, // NOT USED WHEN LogicVersion = "original
-	"flpMMve2Across":    9700, // NOT USED WHEN LogicVersion = "original
-	"flpMMveDown":       9800, // NOT USED WHEN LogicVersion = "original
-	"flpMMve3UpAcross":  9900, // NOT USED WHEN LogicVersion = "original
-	"flipWasteToStock":  1000, //flip moves have the lowest priority
-	"flipStockToWaste":  1100, //flip moves have the lowest priority
-	"badMove":           1200, // a legal move which is worse than a mere flip
+	// "flpMMveAceAcross":  9600, //                                            NOT USED WHEN LogicVersion = "original   See TODO in detectAvailableMoves! as of now needs ' or cfg.General.Type = "playOrig" '
+	// "flpMMve2Across":    9700, //                                            NOT USED WHEN LogicVersion = "original
+	// "flpMMveDown":       9800, //                                            NOT USED WHEN LogicVersion = "original
+	// "flpMMve3UpAcross":  9900, //                                            NOT USED WHEN LogicVersion = "original
+	"flipWasteToStock": 1000,          //flip moves have the lowest priority            NOT USED WHEN LogicVersion = any "multiflip"
+	"flipStockToWaste": 1100,          //flip moves have the lowest priority            NOT USED WHEN LogicVersion = any "multiflip"
+	"badMove":          2_147_483_647, // a legal move which is worse than a mere flip (Max of int32 = 2,147,483,647)
+}
 
+// Need these in future when TODO in detectAvailableMoves is fixed
+var moveBasePriorityPlayOrigMultiflip = map[string]int{
+	"badMove": 2_147_483_647, // a legal move which is worse than a mere flip (Max of int32 = 2,147,483,647)
+}
+
+var moveBasePriorityPlayOrigMultiflipTest = map[string]int{
+	"badMove": 2_147_483_647, // a legal move which is worse than a mere flip (Max of int32 = 2,147,483,647)
 }
 
 var moveBasePriorityPlayAllOriginal = map[string]int{
@@ -53,52 +61,23 @@ var moveBasePriorityPlayAllOriginal = map[string]int{
 	"movePartialColumn": 700,
 	"move3PlusUp":       800,
 	"move3PlusAcross":   900,
-	"flpMMveAceAcross":  9600, // NOT USED WHEN LogicVersion = "original
-	"flpMMve2Across":    9700, // NOT USED WHEN LogicVersion = "original
-	"flpMMveDown":       9800, // NOT USED WHEN LogicVersion = "original
-	"flpMMve3UpAcross":  9900, // NOT USED WHEN LogicVersion = "original
-	"flipWasteToStock":  1000, //flip moves have the lowest priority
-	"flipStockToWaste":  1100, //flip moves have the lowest priority
-	"badMove":           1200, // a legal move which is worse than a mere flip
+	// "flpMMveAceAcross":  9600, //                                	        NOT USED WHEN LogicVersion = "original   See TODO in detectAvailableMoves! as of now needs ' or cfg.General.Type = "playOrig" '
+	// "flpMMve2Across":    9700, //                                	        NOT USED WHEN LogicVersion = "original
+	// "flpMMveDown":       9800, //                                	        NOT USED WHEN LogicVersion = "original
+	// "flpMMve3UpAcross":  9900, //                                	        NOT USED WHEN LogicVersion = "original
+	"flipWasteToStock": 1000, //flip moves have the lowest priority            NOT USED WHEN LogicVersion = any "multiflip"
+	"flipStockToWaste": 1100, //flip moves have the lowest priority            NOT USED WHEN LogicVersion = any "multiflip"
+	"badMove":          1200, // a legal move which is worse than a mere flip
 }
 
-var moveBasePriorityPlayOrigMultiflip = map[string]int{
-	"moveAceUp":         100,
-	"moveDeuceUp":       200,
-	"moveAceAcross":     300,
-	"moveDeuceAcross":   450,
-	"moveDown":          500,
-	"moveEntireColumn":  600,   // TODO TEST IF interlacing flpMMveDown and flpMMve3UpAcross is better
-	"movePartialColumn": 700,   // TODO TEST IF FLIPPING RANK AND posStkWas is better
-	"move3PlusUp":       800,   //                                                                posStkWas = Position of card to be
-	"move3PlusAcross":   900,   //                                                                moved in combined Stock + Waste
-	"flpMMveAceAcross":  2000,  // + 24 - posStkWas                       min, max = 2000, 2024
-	"flpMMve2Across":    3000,  // + 24 - posStkWas                       min, max = 3000, 3024
-	"flpMMveDown":       4000,  // 50 * (13 - Rank) + PosStkWa            min, max = 4000, 4624 Move highest Rank first
-	"flpMMve3UpAcross":  5000,  // 50 * (Rank - 1) + PosStkWa             min, max = 5000, 5624 Move lowest Rank first
+/*	"flpMMveAceAcross":  4000,  // + 50 * (24 - posStkWa) + (rank - 1 )   min, max = 4000, 5212
+	"flpMMve2Across":    4001,  // + 50 * (24 - posStkWa) + (rank - 1 )   min, max = 4001, 5213
+	"flpMMveDown":       4002,  // + 50 * (24 - posStkWa) + (13 - rank)   min, max = 4002, 5214 Move highest rank first
+	"flpMMve3UpAcross":  4003,  // + 50 * (24 - posStkWa) + (rank - 1 )   min, max = 4003, 5215 Move lowest rank first
 	"flipWasteToStock":  10000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
 	"flipStockToWaste":  11000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
-	"badMove":           12000, // a legal move which is worse than a mere flip
-}
-
-var moveBasePriorityPlayOrigMultiflip2 = map[string]int{
-	"moveAceUp":         100,
-	"moveDeuceUp":       200,
-	"moveAceAcross":     300,
-	"moveDeuceAcross":   450,
-	"moveDown":          500,
-	"moveEntireColumn":  600,   // TODO TEST IF interlacing flpMMveDown and flpMMve3UpAcross is better
-	"movePartialColumn": 700,   // TODO TEST IF FLIPPING RANK AND posStkWas is better
-	"move3PlusUp":       800,   //                                                                posStkWas = Position of card to be
-	"move3PlusAcross":   900,   //                                                                moved in combined Stock + Waste
-	"flpMMveAceAcross":  4000,  // + 50 * (PosStkWa) + (Rank - 1 )        min, max = 4000, 5212
-	"flpMMve2Across":    4001,  // + 50 * (PosStkWa) + (Rank - 1 )        min, max = 4001, 5213
-	"flpMMveDown":       4002,  // + 50 * (PosStkWa) + (13 - Rank)        min, max = 4002, 5214 Move highest Rank first
-	"flpMMve3UpAcross":  4003,  // + 50 * (PosStkWa) + (Rank - 1 )        min, max = 4003, 5215 Move lowest Rank first
-	"flipWasteToStock":  10000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
-	"flipStockToWaste":  11000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
-	"badMove":           12000, // a legal move which is worse than a mere flip
-}
+	"badMove":   2_147_483_647, // a legal move which is worse than a mere flip (Max of int32 = 2,147,483,647)
+*/
 
 var moveBasePriorityPlayAllMultiflip = map[string]int{
 	"moveAceUp":         100,
@@ -106,36 +85,42 @@ var moveBasePriorityPlayAllMultiflip = map[string]int{
 	"moveAceAcross":     300,
 	"moveDeuceAcross":   450,
 	"moveDown":          500,
-	"moveEntireColumn":  600,   // TODO TEST IF interlacing flpMMveDown and flpMMve3UpAcross is better
-	"movePartialColumn": 700,   // TODO TEST IF FLIPPING RANK AND posStkWas is better
-	"move3PlusUp":       800,   //                                                                posStkWas = Position of card to be
-	"move3PlusAcross":   900,   //                                                                moved in combined Stock + Waste
-	"flpMMveAceAcross":  2000,  // + (24 - PosStkWa)                      min, max = 2000, 2024
-	"flpMMve2Across":    3000,  // + (24 - PosStkWa)                      min, max = 3000, 3024
-	"flpMMveDown":       4000,  // + 50 * (13 - Rank) + (24 - PosStkWa)   min, max = 4000, 4624 Move highest Rank first
-	"flpMMve3UpAcross":  5000,  // + 50 * (Rank - 1 ) + (24 - PosStkWa)   min, max = 5000, 5624 Move lowest Rank first
-	"flipWasteToStock":  10000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
-	"flipStockToWaste":  11000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
-	"badMove":           12000, // a legal move which is worse than a mere flip
+	"moveEntireColumn":  600,  // TODO TEST IF interlacing flpMMveDown and flpMMve3UpAcross is better
+	"movePartialColumn": 700,  // TODO TEST IF FLIPPING RANK AND posStkWas is better
+	"move3PlusUp":       800,  //                                                                posStkWas = Position of card to be
+	"move3PlusAcross":   900,  //                                                                moved in combined Stock + Waste
+	"flpMMveAceAcross":  4000, // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4000, 5212 Move lowest rank first
+	"flpMMve2Across":    4001, // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4001, 5213 Move lowest rank first
+	"flpMMveDown":       4002, // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (13 - rank)   min, max = 4002, 5214 Move highest rank first
+	"flpMMve3UpAcross":  4003, // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4003, 5215 Move lowest rank first
+	//"flipWasteToStock":  10000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
+	//"flipStockToWaste":  11000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
+	"posStkWaBase":     24,            //
+	"posStkWaSign":     -1,            //
+	"posStkWaMultiple": 50,            //
+	"badMove":          2_147_483_647, // a legal move which is worse than a mere flip (Max of int32 = 2,147,483,647)
 }
 
-var moveBasePriorityPlayAllMultiflip2 = map[string]int{
+var moveBasePriorityPlayAllMultiflipTest = map[string]int{
 	"moveAceUp":         100,
 	"moveDeuceUp":       200,
 	"moveAceAcross":     300,
 	"moveDeuceAcross":   450,
 	"moveDown":          500,
-	"moveEntireColumn":  600,   // TODO TEST IF interlacing flpMMveDown and flpMMve3UpAcross is better
-	"movePartialColumn": 700,   // TODO TEST IF FLIPPING RANK AND posStkWas is better
-	"move3PlusUp":       800,   //                                                                posStkWas = Position of card to be
-	"move3PlusAcross":   900,   //                                                                moved in combined Stock + Waste
-	"flpMMveAceAcross":  4000,  // + 50 * (24 - PosStkWa) + (Rank - 1 )   min, max = 4000, 5212
-	"flpMMve2Across":    4001,  // + 50 * (24 - PosStkWa) + (Rank - 1 )   min, max = 4001, 5213
-	"flpMMveDown":       4002,  // + 50 * (24 - PosStkWa) + (13 - Rank)   min, max = 4002, 5214 Move highest Rank first
-	"flpMMve3UpAcross":  4003,  // + 50 * (24 - PosStkWa) + (Rank - 1 )   min, max = 4003, 5215 Move lowest Rank first
-	"flipWasteToStock":  10000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
-	"flipStockToWaste":  11000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
-	"badMove":           12000, // a legal move which is worse than a mere flip
+	"moveEntireColumn":  600,  // TODO TEST IF interlacing flpMMveDown and flpMMve3UpAcross is better
+	"movePartialColumn": 700,  // TODO TEST IF FLIPPING RANK AND posStkWas is better
+	"move3PlusUp":       800,  //                                                                posStkWas = Position of card to be
+	"move3PlusAcross":   900,  //                                                                moved in combined Stock + Waste
+	"flpMMveAceAcross":  4000, // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4000, 5212 Move lowest rank first
+	"flpMMve2Across":    4001, // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4001, 5213 Move lowest rank first
+	"flpMMveDown":       4002, // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (13 - rank)   min, max = 4002, 5214 Move highest rank first
+	"flpMMve3UpAcross":  4003, // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4003, 5215 Move lowest rank first
+	//"flipWasteToStock":  10000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
+	//"flipStockToWaste":  11000, //flip moves have the lowest priority     NOT USED WHEN LogicVersion = "multiflip"
+	"posStkWaBase":     24,            //
+	"posStkWaSign":     -1,            //
+	"posStkWaMultiple": 50,            //
+	"badMove":          2_147_483_647, // a legal move which is worse than a mere flip (Max of int32 = 2,147,483,647)
 }
 
 var moveShortName = map[string]string{
