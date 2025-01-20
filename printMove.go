@@ -14,7 +14,7 @@ func printMove(m move, useLongName bool) (string, string) {
 	}
 	outS2 = ""
 	switch m.name {
-	case "flpMMveAceAcross", "flpMMve2Across", "flpMMve3UpAcross", "flpMMveDown": // MultiFlip
+	case "mFlMAceAcross", "mFlMDeuceAcross", "flpMMve3UpAcross", "flpMMveDown": // MultiFlip
 		outS += "Flip the stock/waste until the " + strconv.Itoa(m.MovePortionStartIdx+1)
 		switch (m.MovePortionStartIdx + 1) % 10 {
 		case 1:

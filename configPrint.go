@@ -113,16 +113,30 @@ func configPrint(c Configuration) {
 
 		_, _ = pfmt.Fprintf(oW, "\n\nMove Priority Settings:\n\n")
 		moveTypes := make([]string, 0, len(moveBasePriority))
-		for priority := range moveBasePriority {
-			moveTypes = append(moveTypes, priority)
+		for typeName := range moveBasePriority {
+			moveTypes = append(moveTypes, typeName)
+			if (typeName + "        ")[0:8] == "posStkWa" {
+				moveBasePriority[typeName] += 2_000_000_000 // DO temporarily adjust "posStkWa..." appear at the bottom of the printout
+			}
 		}
 
 		// sort by priority before printing
 		sort.SliceStable(moveTypes, func(i, j int) bool {
 			return moveBasePriority[moveTypes[i]] < moveBasePriority[moveTypes[j]]
 		})
-		for i, moveType := range moveTypes {
-			_, _ = pfmt.Fprintf(oW, "   %2v   %17s: %5v\n", i, moveTypes[i], moveBasePriority[moveType])
+
+		firstposStkWa := true
+		for i, typeName := range moveTypes {
+			if (typeName + "        ")[0:8] == "posStkWa" {
+				moveBasePriority[typeName] -= 2_000_000_000 // UNDO adjust "posStkWa..." appear at the bottom of the printout
+				if firstposStkWa {
+					firstposStkWa = false
+					_, _ = pfmt.Fprintf(oW, "\n")
+				}
+				_, _ = pfmt.Fprintf(oW, "        %17s: %5v\n", moveTypes[i], moveBasePriority[typeName])
+			} else {
+				_, _ = pfmt.Fprintf(oW, "   %2v   %17s: %5v\n", i, moveTypes[i], moveBasePriority[typeName])
+			}
 		}
 		_, _ = pfmt.Fprintf(oW, "\n\n")
 	}

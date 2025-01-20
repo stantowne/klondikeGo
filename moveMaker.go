@@ -6,17 +6,8 @@ import (
 )
 
 func moveMaker(b board, m move) board {
-	if m.name[0:7] == "flpMMve" {
-		switch m.name {
-		case "flpMMveAceAcross":
-			m.name = "moveAceAcross"
-		case "flpMMve2Across":
-			m.name = "moveDeuceAcross"
-		case "flpMMveDown":
-			m.name = "moveDown"
-		case "flpMMve3UpAcross":
-			m.name = "move3PlusAcross"
-		}
+	if m.name[0:4] == "mFlM" {
+		m.name = "move" + m.name[5:]
 		var flipWasteToStockMove move
 		flipWasteToStockMove.name = "flipWasteToStock"
 		b = moveMaker(b, flipWasteToStockMove)
