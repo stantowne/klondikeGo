@@ -1,0 +1,61 @@
+Cards Available by Flipping
+
+
+
+Stk/Was = Stock + Recycled Waste i.e. "flipWasteToStock" followed by ONE "flipStockToWaste" (of 1, 2, or 3 cards)
+fullLengthStockAndWaste := len(bIn.stock) + len(bIn.waste) == 23 in All the examples below
+startingLenOfWaste := len(bMultiFlip.waste) = 5 in Initial State = A, 4 in Initial State = B, 3 in Initial State = C
+
+       TopWaste:    0     1     2     3     4     5     6     7     8     9    10    11    12    13    14    15    16    17    18    19    20    21    22    23
+MOD(TopWaste,3):    0     1     2     0     1     2     0     1     2     0     1     2     0     1     2     0     1     2     0     1     2     0     1     2     
+  Card# Stk/Was:    1     2     3     4     5     6     7     8     9    10    11    12    13    14    15    16    17    18    19    20    21    22    23    24 
+
+ALL STATES BELOW
+     Stk/Was is:  08♥DN 04♣DN 02♦DN 01♥DN 06♣DN 02♥DN 10♣DN 09♠DN 12♣DN 04♥DN 11♦DN 11♠DN 13♥DN 12♦DN 07♥DN 12♥DN 01♠DN 13♦DN 07♠UP 13♣UP 12♠UP 06♦UP 13♠UP 
+Avail marked */L    L           *                 *                 *                 *                 *                 *                 *                i.e. MOD(TopWaste,3)=2 ("*") or TopWaste=0 ("L")  
+
+Assume Initial State = A:
+stock(18):        08♥DN 04♣DN 02♦DN 01♥DN 06♣DN 02♥DN 10♣DN 09♠DN 12♣DN 04♥DN 11♦DN 11♠DN 13♥DN 12♦DN 07♥DN 12♥DN 01♠DN 13♦DN 
+ waste(5):        13♠UP 06♦UP 12♠UP 13♣UP 07♠UP 
+   Flip 3:                                      13♦UP 01♠UP 12♥UP 
+   Flip 3:                                                        07♥UP 12♦UP 13♥UP 
+   Flip 3:                                                                          11♠UP 11♦UP 04♥UP 
+   Flip 3:                                                                                            12♣UP 09♠UP 10♣UP 
+   Flip 3:                                                                                                              02♥UP 06♣UP 01♥UP 
+                                                                                                                                          02♦UP 04♣UP 08♥UP  i.e. MOD(TopWaste,3)=MOD(startingLenOfWaste - 1,3) 
+                                            3                3                  3                 3                 3                 3                 3         AND TopWaste >= startingLenOfWaste - 1                           
+
+
+Assume Initial State = B:
+stock(19):        08♥DN 04♣DN 02♦DN 01♥DN 06♣DN 02♥DN 10♣DN 09♠DN 12♣DN 04♥DN 11♦DN 11♠DN 13♥DN 12♦DN 07♥DN 12♥DN 01♠DN 13♦DN 07♠UP 
+ waste(4):        13♠UP 06♦UP 12♠UP 13♣UP  
+   Flip 3:                                07♠UP 13♦UP 01♠UP         
+   Flip 3:                             	                    12♥UP 07♥UP 12♦UP    
+   Flip 3:			                  13♥UP 11♠UP 11♦UP 
+   Flip 3:				                04♥UP 12♣UP 09♠UP 
+   Flip 3:					              10♣UP 02♥UP 06♣UP 
+   Flip 3:					                                01♥UP 02♦UP 04♣UP 
+   Flip 1:							          08♥UP  i.e. MOD(TopWaste,3)=MOD(startingLenOfWaste - 1,3) 
+                                      3                 3                 3                 3                 3                 3                 3               AND TopWaste >= startingLenOfWaste - 1        
+
+
+Assume Initial State = B:
+stock(20):        08♥DN 04♣DN 02♦DN 01♥DN 06♣DN 02♥DN 10♣DN 09♠DN 12♣DN 04♥DN 11♦DN 11♠DN 13♥DN 12♦DN 07♥DN 12♥DN 01♠DN 13♦DN 07♠UP 13♣UP 
+ waste(3):        13♠UP 06♦UP 12♠UP  
+   Flip 3:                          13♣UP 07♠UP 13♦UP      
+   Flip 3:		              01♠UP 12♥UP 07♥UP      
+   Flip 3:			            12♦UP 13♥UP 11♠UP
+   Flip 3:				          11♦UP 04♥UP 12♣UP
+   Flip 3:					        09♠UP 10♣UP 02♥UP
+   Flip 3:						      06♣UP 01♥UP 02♦UP
+   Flip 2:							    04♣UP 08♥UP  i.e. MOD(TopWaste,3)=MOD(startingLenOfWaste - 1,3) 
+                                3                 3                 3                 3                 3                 3                 3                     AND TopWaste >= startingLenOfWaste - 1        
+
+
+
+                                3                 3                 3                 3                 3                 3            L     
+           
+
+
+ 
+           
