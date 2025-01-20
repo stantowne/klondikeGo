@@ -74,6 +74,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("outWriterFileName", cfg.General.outWriterFileName),
 			)
 			for rows.Next() {
+				// TODO LOOK INTO WARNING
 				err2 = rows.Scan(&cfg.General.RunID)
 				if err2 != nil {
 					errHandler(cfg.General.OutputTo, table, verb, "Getting Run_ID g01", err2)
@@ -176,7 +177,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 			}
 		case "winningmoves_detail":
 			for k := range vPA.TDotherSQL.winningMoves {
-				stmt, err = tx.Prepare("INSERT INTO [dbo].[WinningMoves_Detail] (WinningMoves_ID, MoveNum, name, priority, toPile, toCol, fromCol, MovePortionStartIdx, cardToMoveRank, cardToMoveSuit, cardToMoveFaceUp, colCardFlip) VALUES (@WinningMoves_ID, @MoveNum, @name, @priority, @toPile, @toCol, @fromCol, @MovePortionStartIdx, @cardToMoveRank, @cardToMoveSuit, @cardToMoveFaceUp, @colCardFlip); ")
+				stmt, err = tx.Prepare("INSERT INTO [dbo].[WinningMoves_Detail] (WinningMoves_ID, MoveNum, name, priority, toPile, toCol, fromCol, MovePortionStartIdx, cardToMoveRank, cardToMoveSuit, cardToMoveFaceUp, colCardFlip, multiFlipCardsToFlip) VALUES (@WinningMoves_ID, @MoveNum, @name, @priority, @toPile, @toCol, @fromCol, @MovePortionStartIdx, @cardToMoveRank, @cardToMoveSuit, @cardToMoveFaceUp, @colCardFlip, @multiFlipCardsToFlip); ")
 				if err != nil {
 					errHandler(cfg.General.OutputTo, table, verb, "Prepare p07", err)
 				}
@@ -194,6 +195,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 					sql.Named("cardToMoveSuit", vPA.TDotherSQL.winningMoves[k].cardToMove.Suit),
 					sql.Named("cardToMoveFaceUp", vPA.TDotherSQL.winningMoves[k].cardToMove.FaceUp),
 					sql.Named("colCardFlip", vPA.TDotherSQL.winningMoves[k].colCardFlip),
+					sql.Named("multiFlipCardsToFlip", vPA.TDotherSQL.winningMoves[k].multiFlipCardsToFlip),
 				)
 			}
 			defer CloseStatement(stmt, cfg.General.OutputTo, table, verb, "Close c07")

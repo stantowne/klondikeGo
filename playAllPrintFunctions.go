@@ -177,6 +177,7 @@ func printWinningMoves(cfg *Configuration, vPA *variablesSpecificToPlayAll) {
 			colCardFlip = 0x00000000
 		}
 		winningMovesAsBytes = append(winningMovesAsBytes, colCardFlip)
+		winningMovesAsBytes = append(winningMovesAsBytes, i32ToBytes(vPA.TDotherSQL.winningMoves[i].multiFlipCardsToFlip)...)
 	}
 	winningMovesSHA256array = sha256.Sum256(winningMovesAsBytes)
 	vPA.TDotherSQL.winningMovesSHA256 = hex.EncodeToString(winningMovesSHA256array[:])

@@ -20,7 +20,7 @@ func moveMaker(b board, m move) board {
 		var flipWasteToStockMove move
 		flipWasteToStockMove.name = "flipWasteToStock"
 		b = moveMaker(b, flipWasteToStockMove)
-		for k := 0; k <= m.MovePortionStartIdx; k++ {
+		for k := 0; k <= m.multiFlipCardsToFlip; k++ {
 			l := len(b.stock)
 			b.waste = append(b.waste, b.stock[l-1].flipCardUp2())
 			b.stock = b.stock[:l-1]
