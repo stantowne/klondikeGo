@@ -168,7 +168,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 					for rows.Next() {
 						err2 = rows.Scan(&WinningMoves_ID_inserted)
 						if err2 != nil {
-							errHandler(cfg.General.OutputTo, table, verb, "Getting Run_ID g02", err2)
+							errHandler(cfg.General.OutputTo, table, verb, "Getting WinningMoves_ID g02", err2)
 						}
 					}
 					sqlExec("Insert", "WinningMoves_Detail", cfg, vPA, nil)

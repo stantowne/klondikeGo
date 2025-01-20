@@ -86,8 +86,8 @@ var moveBasePriorityPlayAllMultiflip = map[string]int{
 	"moveDeuceAcross":   450,
 	"moveDown":          500,
 	"moveEntireColumn":  600,  // TODO TEST IF interlacing flpMMveDown and flpMMve3UpAcross is better
-	"movePartialColumn": 700,  // TODO TEST IF FLIPPING RANK AND posStkWas is better
-	"move3PlusUp":       800,  //                                                                posStkWas = Position of card to be
+	"movePartialColumn": 700,  // TODO TEST IF FLIPPING RANK AND posStkWa is better
+	"move3PlusUp":       800,  //                                                                posStkWa = Position of card to be
 	"move3PlusAcross":   900,  //                                                                moved in combined Stock + Waste
 	"flpMMveAceAcross":  4000, // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4000, 5212 Move lowest rank first
 	"flpMMve2Across":    4001, // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4001, 5213 Move lowest rank first
@@ -108,8 +108,8 @@ var moveBasePriorityPlayAllMultiflipTest = map[string]int{
 	"moveDeuceAcross":   450,
 	"moveDown":          500,
 	"moveEntireColumn":  600,  // TODO TEST IF interlacing flpMMveDown and flpMMve3UpAcross is better
-	"movePartialColumn": 700,  // TODO TEST IF FLIPPING RANK AND posStkWas is better
-	"move3PlusUp":       800,  //                                                                posStkWas = Position of card to be
+	"movePartialColumn": 700,  // TODO TEST IF FLIPPING RANK AND posStkWa is better
+	"move3PlusUp":       800,  //                                                                posStkWa = Position of card to be
 	"move3PlusAcross":   900,  //                                                                moved in combined Stock + Waste
 	"flpMMveAceAcross":  4000, // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4000, 5212 Move lowest rank first
 	"flpMMve2Across":    4001, // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4001, 5213 Move lowest rank first
