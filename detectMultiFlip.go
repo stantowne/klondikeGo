@@ -34,7 +34,7 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool*/, logicVers
 				// NOTE: detectDownMoves will only ever return 1 move
 				downMove := detectDownMoves(bMultiFlip, moveCounter)
 				if downMove != nil {
-					downMove[0].name = "flpMMveDown"
+					downMove[0].name = "mFlMDown"
 					/*
 					   "mFlMAceAcross":     4000,          // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4000, 5212 Move lowest rank first  NOT USED WHEN LogicVersion = "original
 					   						"mFlMDeuceAcross":   4001,          // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4001, 5213 Move lowest rank first  NOT USED WHEN LogicVersion = "original
@@ -43,10 +43,10 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool*/, logicVers
 					*/
 					switch logicVersion {
 					case "multiflip":
-						downMove[0].priority = moveBasePriority["flpMMveDown"] + 50*(13-downMove[0].cardToMove.Rank) + (topWasteCard)
+						downMove[0].priority = moveBasePriority["mFlMDown"] + 50*(13-downMove[0].cardToMove.Rank) + (topWasteCard)
 					case "multifliptest":
-						//						downMove[0].priority = moveBasePriority["flpMMveDown"] + 50*(topWasteCard) + (13 - downMove[0].cardToMove.Rank)
-						downMove[0].priority = moveBasePriority["flpMMveDown"] + 50*(topWasteCard) + (13 - downMove[0].cardToMove.Rank)
+						//						downMove[0].priority = moveBasePriority["mFlMDown"] + 50*(topWasteCard) + (13 - downMove[0].cardToMove.Rank)
+						downMove[0].priority = moveBasePriority["mFlMDown"] + 50*(topWasteCard) + (13 - downMove[0].cardToMove.Rank)
 					}
 					downMove[0].multiFlipCardsToFlip = topWasteCard
 					aMoves = append(aMoves, downMove...)
@@ -65,8 +65,8 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool*/, logicVers
 							acrossMove[0].name = "mFlMDeuceAcross"
 							acrossMove[0].priority = moveBasePriority["mFlMDeuceAcross"] + 50*(13-acrossMove[0].cardToMove.Rank) + (topWasteCard)
 						default: // 3+
-							acrossMove[0].name = "flpMMve3UpAcross"
-							acrossMove[0].priority = moveBasePriority["flpMMve3UpAcross"] + 50*(13-acrossMove[0].cardToMove.Rank) + (topWasteCard)
+							acrossMove[0].name = "mFlM3PlusAcross"
+							acrossMove[0].priority = moveBasePriority["mFlM3PlusAcross"] + 50*(13-acrossMove[0].cardToMove.Rank) + (topWasteCard)
 						}
 					case "multifliptest":
 						switch acrossMove[0].cardToMove.Rank {
@@ -77,8 +77,8 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool*/, logicVers
 							acrossMove[0].name = "mFlMDeuceAcross"
 							acrossMove[0].priority = moveBasePriority["mFlMDeuceAcross"] + 50*(topWasteCard) + (13 - acrossMove[0].cardToMove.Rank)
 						default: // 3+
-							acrossMove[0].name = "flpMMve3UpAcross"
-							acrossMove[0].priority = moveBasePriority["flpMMve3UpAcross"] + 50*(topWasteCard) + (13 - acrossMove[0].cardToMove.Rank)
+							acrossMove[0].name = "mFlM3PlusAcross"
+							acrossMove[0].priority = moveBasePriority["mFlM3PlusAcross"] + 50*(topWasteCard) + (13 - acrossMove[0].cardToMove.Rank)
 						}
 					}
 					acrossMove[0].multiFlipCardsToFlip = topWasteCard

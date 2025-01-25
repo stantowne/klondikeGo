@@ -7,7 +7,7 @@ import (
 
 func moveMaker(b board, m move) board {
 	if m.name[0:4] == "mFlM" {
-		m.name = "move" + m.name[5:]
+		m.name = "move" + m.name[4:]
 		var flipWasteToStockMove move
 		flipWasteToStockMove.name = "flipWasteToStock"
 		b = moveMaker(b, flipWasteToStockMove)
