@@ -136,9 +136,9 @@ func (b board) boardCode(dN int) bCode { // add filename of deck source file aft
 			TotalRankCheck += c.Rank + 1
 			TotalSuitCheck += c.Suit + 1
 			for i >= 65 {
-				fmt.Printf("\n\nMore Than 65 cards on board %v os.exit(65):\n", dN)
+				fmt.Printf("\n\nMore Than 52 cards on board (more than 52 + 13 flags = 65 items in boardcode) %v os.exit(65):\n", dN)
 				printBoard(b)
-				fmt.Printf("\nMore Than 65 cards on board %v os.exit(65)   TotalRankCheck: %v   TotalSuitCheck: %v \n", dN, TotalRankCheck, TotalSuitCheck)
+				fmt.Printf("\nMore Than 52 cards on board %v os.exit(65)   TotalRankCheck: %v   TotalSuitCheck: %v \n", dN, TotalRankCheck, TotalSuitCheck)
 				os.Exit(65)
 			}
 			bC[i] = c.packCard()

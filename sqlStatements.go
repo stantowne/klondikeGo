@@ -23,7 +23,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 	case "insert":
 		switch table {
 		case "priority":
-			stmt, err = tx.Prepare("INSERT INTO [dbo].[Priority] ([Priority_SHA256], [moveAceUp], [moveDeuceUp], [moveAceAcross], [moveDeuceAcross], [moveDown], [moveEntireColumn], [movePartialColumn], [move3PlusUp], [move3PlusAcross], [flipWasteToStock], [flipStockToWaste], [mFlMAceUp], [mFlMDeuceUp], [mFlMAceAcross], [mFlMDeuceAcross], [mFlMDown], [mFlMEntireColumn], [mFlMPartialColumn], [mFlM3PlusUp], [mFlM3PlusAcross], [badMove]) VALUES (@Priority_SHA256, @moveAceUp, @moveDeuceUp, @moveAceAcross, @moveDeuceAcross, @moveDown, @moveEntireColumn, @movePartialColumn, @move3PlusUp, @move3PlusAcross, @flipWasteToStock, @flipStockToWaste, @mFlMAceUp, @mFlMDeuceUp, @mFlMAceAcross, @mFlMDeuceAcross, @mFlMDown, @mFlMEntireColumn, @mFlMPartialColumn, @mFlM3PlusUp, @mFlM3PlusAcross, @badMove); ")
+			stmt, err = tx.Prepare("INSERT INTO [dbo].[Priority] ([Priority_SHA256], [moveAceUp], [moveDeuceUp], [moveAceAcross], [moveDeuceAcross], [moveDown], [moveEntireColumn], [movePartialColumn], [move3PlusUp], [move3PlusAcross], [flipWasteToStock], [flipStockToWaste], [mFlMAceUp], [mFlMDeuceUp], [mFlMAceAcross], [mFlMDeuceAcross], [mFlMDown], [mFlMEntireColumn], [mFlMPartialColumn], [mFlM3PlusUp], [mFlM3PlusAcross], [badMove], [posStkWaBase], [posStkWaSign], [posStkWaMultiple], [origPrityMultiple], [rankMultiple]) VALUES (@Priority_SHA256, @moveAceUp, @moveDeuceUp, @moveAceAcross, @moveDeuceAcross, @moveDown, @moveEntireColumn, @movePartialColumn, @move3PlusUp, @move3PlusAcross, @flipWasteToStock, @flipStockToWaste, @mFlMAceUp, @mFlMDeuceUp, @mFlMAceAcross, @mFlMDeuceAcross, @mFlMDown, @mFlMEntireColumn, @mFlMPartialColumn, @mFlM3PlusUp, @mFlM3PlusAcross, @badMove, @posStkWaBase, @posStkWaSign, @posStkWaMultiple, @origPrityMultiple, @rankMultiple); ")
 			if err != nil {
 				errHandler(cfg.General.OutputTo, table, verb, "Prepare p01", err)
 			}
@@ -51,9 +51,12 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("mFlMPartialColumn", moveBasePriority["mFlMPartialColumn"]),
 				sql.Named("mFlM3PlusUp", moveBasePriority["mFlM3PlusUp"]),
 				sql.Named("mFlM3PlusAcross", moveBasePriority["mFlM3PlusAcross"]),
-				sql.Named("flipWasteToStock", moveBasePriority["flipWasteToStock"]),
-				sql.Named("flipStockToWaste", moveBasePriority["flipStockToWaste"]),
 				sql.Named("badMove", moveBasePriority["badMove"]),
+				sql.Named("posStkWaBase", moveBasePriority["posStkWaBase"]),
+				sql.Named("posStkWaSign", moveBasePriority["posStkWaSign"]),
+				sql.Named("posStkWaMultiple", moveBasePriority["posStkWaMultiple"]),
+				sql.Named("origPrityMultiple", moveBasePriority["origPrityMultiple"]),
+				sql.Named("rankMultiple", moveBasePriority["rankMultiple"]),
 			)
 		case "runcfg":
 			stmt, err = tx.Prepare("INSERT INTO [dbo].[RunCfg] ([Priority_SHA256], [RunStartTime], [GitVersion], [HostName], [DeckFileName], [Decks], [FirstDeckNum], [NumberOfDecksToBePlayed], [NumberOfDecksWerePlayed], [LastDeckWasPlayed], [List], [LogicVersion], [TypeOfPlay], [Verbose], [OutputTo], [outWriterFileName]) OUTPUT inserted.Run_ID VALUES (@Priority_SHA256, @RunStartTime, @GitVersion, @HostName, @DeckFileName, @Decks, @FirstDeckNum, @NumberOfDecksToBePlayed, @NumberOfDecksWerePlayed, @LastDeckWasPlayed, @List, @LogicVersion, @TypeOfPlay, @Verbose, @OutputTo, @outWriterFileName);")

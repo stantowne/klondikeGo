@@ -6,7 +6,7 @@ general:              # Repeat below with GL 20, 40, 300  then  next Start at 0 
   first deck number: 10061                            # non-negative integer less than 410,000
   number of decks to be played: 1                     # positive integer no more than 410,000 minus first deck number
   list: 410014,410019                                 # list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
-  logic version: multiflip                            # "original" logic or "multiflip1" or "multiflip2" or "multiflip3"
+  logic version: multiflip1                           # "original" logic or "multiflip1" or "multiflip2" or "multiflip3"
   type of play: playAll                               # playAll or playOrig
   verbose: 0                                          # non-negative integer
   outputTo: ./playAllPrintOutput/Decks                # console OR filename WITHOUT extension;             ./playAllPrintOutput/Decks
