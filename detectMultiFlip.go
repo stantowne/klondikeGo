@@ -35,16 +35,10 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool*/, logicVers
 				downMove := detectDownMoves(bMultiFlip, moveCounter)
 				if downMove != nil {
 					downMove[0].name = "mFlMDown"
-					/*
-					   "mFlMAceAcross":     4000,          // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4000, 5212 Move lowest rank first  NOT USED WHEN LogicVersion = "original
-					   						"mFlMDeuceAcross":   4001,          // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4001, 5213 Move lowest rank first  NOT USED WHEN LogicVersion = "original
-					   						"mFlMDown":          4002,          // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (13 - rank)   min, max = 4002, 5214 Move highest rank first NOT USED WHEN LogicVersion = "original
-					   						"mFlM3PlusAcross":   4003,          // + posStkWaMultiple * (posStkWaBase + posStkWaSign * posStkWa) + (rank - 1 )   min, max = 4003, 5215 Move lowest rank first  NOT USED WHEN LogicVersion = "original
-					*/
 					switch logicVersion {
-					case "multiflip":
+					case "multiflip1":
 						downMove[0].priority = moveBasePriority["mFlMDown"] + 50*(13-downMove[0].cardToMove.Rank) + (topWasteCard)
-					case "multifliptest":
+					case "multiflip2":
 						//						downMove[0].priority = moveBasePriority["mFlMDown"] + 50*(topWasteCard) + (13 - downMove[0].cardToMove.Rank)
 						downMove[0].priority = moveBasePriority["mFlMDown"] + 50*(topWasteCard) + (13 - downMove[0].cardToMove.Rank)
 					}
@@ -55,7 +49,7 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool*/, logicVers
 				acrossMove := detectAcrossMoves(bMultiFlip, moveCounter)
 				if acrossMove != nil {
 					switch logicVersion {
-					case "multiflip":
+					case "multiflip1":
 						switch acrossMove[0].cardToMove.Rank {
 						// TODO IMPLEMENT NEW PRIORITY CALCULATIONS
 						case 1: // Ace
@@ -68,7 +62,7 @@ func detectMultiFlip(bIn board, moveCounter int /*, singleGame bool*/, logicVers
 							acrossMove[0].name = "mFlM3PlusAcross"
 							acrossMove[0].priority = moveBasePriority["mFlM3PlusAcross"] + 50*(13-acrossMove[0].cardToMove.Rank) + (topWasteCard)
 						}
-					case "multifliptest":
+					case "multiflip2":
 						switch acrossMove[0].cardToMove.Rank {
 						case 1: // Ace
 							acrossMove[0].name = "mFlMAceAcross"
