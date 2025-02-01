@@ -2,10 +2,10 @@
 
 general:              # Repeat below with GL 20, 40, 300  then  next Start at 0 and go for 1000 next time change GML to 50
   deck file name: ./DeckFiles/decks-0-410019-with_20_duplicateDecksAtEnd.csv      # Note: forward slash / form: prefix-Start#-End#-suffix no "-" allowed in prefix
-  decks: consecutive                                  # consecutive or list or GLE (See config.go for more explanation of list and GLE)
-  first deck number: 0                                # non-negative integer less than 410,000
-  number of decks to be played: 10000                 # positive integer no more than 410,000 minus first deck number
-  list: 10629,10666,10705,10780,10970,10986,10998,11229,11415                             # list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
+  decks: list                                         # consecutive or list or GLE (See config.go for more explanation of list and GLE)
+  first deck number: 10000                            # non-negative integer less than 410,000
+  number of decks to be played: 1500                  # positive integer no more than 410,000 minus first deck number
+  list: 10026,10061,10101,10140,10336,10360,10573,10629,10666,10705,10780,10970,10986,10998,11229,11415                             # list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
   logic version: multiflip1                           # "original" logic or "multiflip1" or "multiflip2" or "multiflip3"
   type of play: playOrig                              # playAll or playOrig
   verbose: 0                                          # non-negative integer
@@ -79,7 +79,7 @@ play all moves:
 
   #################################################################################
   #                                                                               #
-  #                         playAllExecution times per 1000 decks                 #
+  #         playAllExecution times per 1000 decks LogicVersion=Original           #
   #                                                                               #
   #             DanAcer      PowerEdge B4 overclock   PowerEdge After Overclock   #
   #   GLE=280:  470m 7h50m      m  h  m                  m  h  m                  #
@@ -87,4 +87,12 @@ play all moves:
   #   GLE= 20:   74m 1h14m      m  h  m                  m  h  m                  #
   #   GLE= 10:   47m            m                        m                        #
   #                                                                               #
-  #################################################################################
+  #                                                                               #
+  #         playAllExecution times per 1000 decks LogicVersion=MultiFlip1          #
+  #                                                                               #
+  #             DanAcer      PowerEdge B4 overclock   PowerEdge After Overclock   #
+  #   GLE=280:     m  h  m      m  h  m                  m  h  m                  #
+  #   GLE= 50:     m  h  m      m  h  m                  m  h  m                  #
+  #   GLE= 20:     m  h  m      m  h  m                  m  h  m                  #
+  #   GLE= 10:     m            m                        m                        #
+  #                                                                               # #################################################################################
