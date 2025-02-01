@@ -107,10 +107,6 @@ func adjustMoves(logicVersion string, topWasteCard int, moves []move) []move {
 				moves[i].priority += (moves[i].cardToMove.Rank - 1) * moveBasePriority["rankMultiple"] // Lowest rank first
 			case "mFlMDown":
 				moves[i].priority += (12 - moves[i].cardToMove.Rank) * moveBasePriority["rankMultiple"] // Highest rank first
-			case "mFlMEntireColumn":
-				moves[i].priority += (12 - moves[i].cardToMove.Rank) * moveBasePriority["rankMultiple"] // Highest rank first
-			case "mFlMPartialColumn":
-				moves[i].priority += (12 - moves[i].cardToMove.Rank) * moveBasePriority["rankMultiple"] // Highest rank first
 			}
 		case "multiflip2":
 		case "multiflip3":

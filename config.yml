@@ -3,11 +3,11 @@
 general:              # Repeat below with GL 20, 40, 300  then  next Start at 0 and go for 1000 next time change GML to 50
   deck file name: ./DeckFiles/decks-0-410019-with_20_duplicateDecksAtEnd.csv      # Note: forward slash / form: prefix-Start#-End#-suffix no "-" allowed in prefix
   decks: consecutive                                  # consecutive or list or GLE (See config.go for more explanation of list and GLE)
-  first deck number: 10061                            # non-negative integer less than 410,000
-  number of decks to be played: 1                     # positive integer no more than 410,000 minus first deck number
-  list: 410014,410019                                 # list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
+  first deck number: 0                                # non-negative integer less than 410,000
+  number of decks to be played: 10000                 # positive integer no more than 410,000 minus first deck number
+  list: 10629,10666,10705,10780,10970,10986,10998,11229,11415                             # list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
   logic version: multiflip1                           # "original" logic or "multiflip1" or "multiflip2" or "multiflip3"
-  type of play: playAll                               # playAll or playOrig
+  type of play: playOrig                              # playAll or playOrig
   verbose: 0                                          # non-negative integer
   outputTo: ./playAllPrintOutput/Decks                # console OR filename WITHOUT extension;             ./playAllPrintOutput/Decks
                                                       # filename will be appended with deck range, GLL and
@@ -15,7 +15,7 @@ general:              # Repeat below with GL 20, 40, 300  then  next Start at 0 
                                                       # ./playOrigLossesOutput/filename or ./playAllPrintOutput/filename are suggested
 
 play original:
-  length of initial override strategy: 8             # non-negative integer
+  length of initial override strategy: 0             # non-negative integer
   game length limit in moves made: 150                # non-negative integer
 
 
@@ -26,8 +26,8 @@ play all moves:
   find all winning strategies?: false               # true or false   true not yet implemented
 
   reporting:                                        # only one true or no trues permitted   non yaml       cfg.PlayNew.ReportingType.NoReporting set in code
-    deck by deck: false                             # true or false                                   =    cfg.PlayNew.ReportingType.DeckByDeck
-    move by move: true                              # true or false                                     || cfg.PlayNew.ReportingType.MoveByMove
+    deck by deck: true                              # true or false                                   =    cfg.PlayNew.ReportingType.DeckByDeck
+    move by move: false                             # true or false                                     || cfg.PlayNew.ReportingType.MoveByMove
     tree: false                                     # true or false                                     || cfg.PlayNew.ReportingType.Tree
     #                                             NOTE: || == OR (looks like forward slash due to italics)
   deck by deck reporting options:
@@ -47,7 +47,7 @@ play all moves:
     starting move number: 0                         # 0 means no restriction
     continue for how many moves: 0                  # 0 means no restriction
 
-  print winning moves: true                         # true or false
+  print winning moves: false                        # true or false
   progress counter in millions: 5                   # Applicable All reporting when OutputTo != "console"
                                                     # and only to Deck-by-Deck reporting when OutputTo == "console"
   print final deck by deck W/L record: true         # true or false  (See Further comments below)
@@ -79,12 +79,12 @@ play all moves:
 
   #################################################################################
   #                                                                               #
-  #                        Execution times per 1000 decks                         #
+  #                         playAllExecution times per 1000 decks                 #
   #                                                                               #
   #             DanAcer      PowerEdge B4 overclock   PowerEdge After Overclock   #
-  #   GLE=280:  470m 7h50m      m  h  m                  m 7h  m                  #
-  #   GLE= 50:  141m 2h21m      m  h  m                  m 2h  m                  #
-  #   GLE= 20:   74m 1h14m      m  h  m                  m 1h  m                  #
+  #   GLE=280:  470m 7h50m      m  h  m                  m  h  m                  #
+  #   GLE= 50:  141m 2h21m      m  h  m                  m  h  m                  #
+  #   GLE= 20:   74m 1h14m      m  h  m                  m  h  m                  #
   #   GLE= 10:   47m            m                        m                        #
   #                                                                               #
   #################################################################################
