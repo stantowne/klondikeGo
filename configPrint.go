@@ -20,6 +20,8 @@ func configPrint(c Configuration) {
 		"                          Deck File Name: %v\n\n"+
 		"            Number Of Decks To Be Played: %v\n"+
 		"                      Starting with deck: %v\n"+
+		"                    Which decks in Range: %v\n"+
+		"         If above='list' then just these: %v\n"+
 		"                            Type of Play: %v\n"+
 		"                           Logic Version: %v\n"+
 		"                                 Verbose: %v\n\n"+
@@ -30,6 +32,8 @@ func configPrint(c Configuration) {
 		c.General.DeckFileName,
 		c.General.NumberOfDecksToBePlayed,
 		c.General.FirstDeckNum,
+		c.General.Decks,
+		c.General.List,
 		c.General.TypeOfPlay,
 		c.General.LogicVersion,
 		c.General.Verbose,
