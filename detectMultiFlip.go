@@ -31,6 +31,7 @@ func detectMultiFlip(bIn board, moveCounter int, singleGame bool, logicVersion s
 				(topWasteCard == fullLengthStockAndWaste-1) || // the last card in stock + waste    = "L" in ModAnalysis.txt
 				(topWasteCard >= startingLenOfWaste-1 &&
 					topWasteCard%3 == modOfStartingTopWasteCard) { // Normal Flips of 3 (or fewer)  = "3" in ModAnalysis.txt
+				aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectUpMoves(bMultiFlip, moveCounter))...)
 				aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectAcrossMoves(bMultiFlip, moveCounter))...)
 				aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectDownMoves(bMultiFlip, moveCounter))...)
 				/*				// NOTE: detectDownMoves will only ever return 1 move
@@ -100,6 +101,8 @@ func adjustMoves(logicVersion string, topWasteCard int, moves []move) []move {
 				moveBasePriority[moves[i].name] +
 				(moveBasePriority["posStkWaBase"]+moveBasePriority["posStkWaSign"]*topWasteCard)*moveBasePriority["posStkWaMultiple"]
 			switch moves[i].name {
+			case "mFlMAceUp", "mFlMDeuceUp", "mFlM3PlusUp":
+				moves[i].priority += (moves[i].cardToMove.Rank - 1) * moveBasePriority["rankMultiple"] // Lowest rank first
 			case "mFlMAceAcross", "mFlMDeuceAcross", "mFlM3PlusAcross":
 				moves[i].priority += (moves[i].cardToMove.Rank - 1) * moveBasePriority["rankMultiple"] // Lowest rank first
 			case "mFlMDown":

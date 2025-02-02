@@ -18,7 +18,6 @@ func detectAvailableMoves(b board, moveCounter int, singleGame bool, passedLogic
 		aMoves = append(aMoves, detectFlipWasteToStock(b, moveCounter)...)
 	} else {
 		aMoves = append(aMoves, detectMecNotThoughtful(b, moveCounter, singleGame)...)
-		aMoves = append(aMoves, detectUpMoves(b, moveCounter)...)
 		aMoves = append(aMoves, detectPartialColumnMoves(b, moveCounter, singleGame)...)
 		aMoves = append(aMoves, detectMultiFlip(b, moveCounter, singleGame, passedLogicVersion)...) // Does flip stk->Waste, Waste->Stk and moveDown and move Across
 	}
