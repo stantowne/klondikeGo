@@ -91,7 +91,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				}
 			}
 		case "cfg_playall":
-			stmt, err = tx.Prepare("INSERT INTO [dbo].[Cfg_PlayAll] (Run_ID, GameLengthLimit, DeckByDeck, MoveByMove, Tree, NoReporting, DbD_Type, MbM_Type, Tree_Type, TreeSleepBetwnMoves, TreeSleepBetwnMovesDur, TreeSleepBetwnStrategies, TreeSleepBetwnStrategiesDur, RestrictReporting, RestrictRept_DeckStartVal, RestrictRept_DeckContinueFor, RestrictRept_MovesTriedStartVal, RestrictRept_MovesTriedContinueFor, ProgressCounter, SaveResultsToSQL, SQLConnectionString) VALUES (@Run_ID, @GameLengthLimit, @DeckByDeck, @MoveByMove, @Tree, @NoReporting, @DbD_Type, @MbM_Type, @Tree_Type, @TreeSleepBetwnMoves, @TreeSleepBetwnMovesDur, @TreeSleepBetwnStrategies, @TreeSleepBetwnStrategiesDur, @RestrictReporting, @RestrictRept_DeckStartVal, @RestrictRept_DeckContinueFor, @RestrictRept_MovesTriedStartVal, @RestrictRept_MovesTriedContinueFor, @ProgressCounter, @SaveResultsToSQL, @SQLConnectionString); ")
+			stmt, err = tx.Prepare("INSERT INTO [dbo].[Cfg_PlayAll] (Run_ID, GameLengthLimit, DeckByDeck, MoveByMove, Tree, NoReporting, DbD_Type, MbM_Type, Tree_Type, TreeSleepBetwnMoves, TreeSleepBetwnMovesDur, TreeSleepBetwnStrategies, TreeSleepBetwnStrategiesDur, RestrictReporting, RestrictRept_DeckStartVal, RestrictRept_DeckContinueFor, RestrictRept_MovesTriedStartVal, RestrictRept_MovesTriedContinueFor, PrintWinningMoves, ProgressCounter, SaveResultsToSQL, SQLConnectionString) VALUES (@Run_ID, @GameLengthLimit, @DeckByDeck, @MoveByMove, @Tree, @NoReporting, @DbD_Type, @MbM_Type, @Tree_Type, @TreeSleepBetwnMoves, @TreeSleepBetwnMovesDur, @TreeSleepBetwnStrategies, @TreeSleepBetwnStrategiesDur, @RestrictReporting, @RestrictRept_DeckStartVal, @RestrictRept_DeckContinueFor, @RestrictRept_MovesTriedStartVal, @RestrictRept_MovesTriedContinueFor, @PrintWinningMoves, @ProgressCounter, @SaveResultsToSQL, @SQLConnectionString); ")
 			if err != nil {
 				errHandler(cfg.General.OutputTo, table, verb, "Prepare p03", err)
 			}
@@ -116,6 +116,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 				sql.Named("RestrictRept_DeckContinueFor", cfg.PlayAll.RestrictReportingTo.DeckContinueFor),
 				sql.Named("RestrictRept_MovesTriedStartVal", cfg.PlayAll.RestrictReportingTo.MovesTriedStartVal),
 				sql.Named("RestrictRept_MovesTriedContinueFor", cfg.PlayAll.RestrictReportingTo.MovesTriedContinueFor),
+				sql.Named("PrintWinningMoves", cfg.PlayAll.PrintWinningMoves),
 				sql.Named("ProgressCounter", cfg.PlayAll.ProgressCounter),
 				sql.Named("SaveResultsToSQL", cfg.PlayAll.SaveResultsToSQL),
 				sql.Named("SQLConnectionString", cfg.PlayAll.SQLConnectionString),
