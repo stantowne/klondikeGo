@@ -6,7 +6,7 @@ general:              # Repeat below with GL 20, 40, 300  then  next Start at 0 
   first deck number: 10000                            # non-negative integer less than 410,000
   number of decks to be played: 1500                  # positive integer no more than 410,000 minus first deck number
   list: 10026,10061,10101,10140,10141,10336,10360,10573,10629,10666,10705,10780,10970,10986,10998,11229,11415                             # list separated by commas #'s MUST be between FirstDeckNum and FirstDeckNum + NumberOfDecksToBePlayed - 1
-  logic version: original                             # "original" logic or "multiflip1" or "multiflip2" or "multiflip3"
+  logic version: multiflip1                           # "original" logic or "multiflip1" or "multiflip2" or "multiflip3"
   type of play: playAll                               # playAll or playOrig
   verbose: 0                                          # non-negative integer
   outputTo: ./playAllPrintOutput/Decks                # console OR filename WITHOUT extension;             ./playAllPrintOutput/Decks
@@ -21,7 +21,7 @@ play original:
 
 
 play all moves:
-  game length limit in million moves tried: 280     # IN MILLIONS non-negative integer
+  game length limit in million moves tried: 20      # IN MILLIONS non-negative integer
 
   find all winning strategies?: false               # true or false   true not yet implemented
 
@@ -80,19 +80,20 @@ play all moves:
   #################################################################################
   #                                                                               #
   #         playAllExecution times per 1000 decks LogicVersion=Original           #
+  #                                                                               #        Run_IDs
+  #             DanAcer      PowerEdge B4 overclock   PowerEdge After Overclock   #  DanAcer  Precision
+  #   GLE=280:  471m 7h50m       306m  5h6m                  m  h  m              #    xxx    188    xxx
+  #   GLE= 50:  141m 2h21m          m  h  m                  m  h  m              #    xxx    xxx*   xxx
+  #   GLE= 20:   74m 1h14m          m  h  m                  m  h  m              #    xxx    xxx*   xxx
+  #   GLE= 10:   47m                m                        m                    #    xxx    xxx*   xxx
   #                                                                               #
-  #             DanAcer      PowerEdge B4 overclock   PowerEdge After Overclock   #
-  #   GLE=280:  470m 7h50m      m  h  m                  m  h  m                  #
-  #   GLE= 50:  141m 2h21m      m  h  m                  m  h  m                  #
-  #   GLE= 20:   74m 1h14m      m  h  m                  m  h  m                  #
-  #   GLE= 10:   47m            m                        m                        #
   #                                                                               #
+  #         playAllExecution times per 1000 decks LogicVersion=MultiFlip1         #
+  #                                                                               #        Run_IDs
+  #             DanAcer      PowerEdge B4 overclock   PowerEdge After Overclock   #  DanAcer  Precision
+  #   GLE=280:     m  h  m          m  h  m                  m  h  m              #    xxx    xxx    xxx
+  #   GLE= 50:     m  h  m          m  h  m                  m  h  m              #    xxx    190    xxx
+  #   GLE= 20:     m  h  m          m  h  m                  m  h  m              #    xxx    xxx    xxx
+  #   GLE= 10:     m                m                        m                    #    xxx    191*   xxx
   #                                                                               #
-  #         playAllExecution times per 1000 decks LogicVersion=MultiFlip1          #
-  #                                                                               #
-  #             DanAcer      PowerEdge B4 overclock   PowerEdge After Overclock   #
-  #   GLE=280:     m  h  m      m  h  m                  m  h  m                  #
-  #   GLE= 50:     m  h  m      m  h  m                  m  h  m                  #
-  #   GLE= 20:     m  h  m      m  h  m                  m  h  m                  #
-  #   GLE= 10:     m            m                        m                        #
-  #                                                                               # #################################################################################
+  #################################################################################
