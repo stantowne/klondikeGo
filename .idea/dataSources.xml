@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="klondikeDBox@localhost" uuid="9a8bc624-4d65-4521-adb4-df4775863ab3">
+    <data-source source="LOCAL" name="KlondikeOnPrecision" uuid="c80f1e7a-cd26-45af-a8f3-d7e2ec8c1abf">
       <driver-ref>sqlserver.ms</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
-      <jdbc-url>jdbc:sqlserver://localhost:1433;database=klondikeDBox</jdbc-url>
+      <jdbc-url>jdbc:sqlserver://localhost;database=KlondikeOnPrecision</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
