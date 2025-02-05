@@ -81,19 +81,21 @@ play all moves:
   #                                                                               #
   #         playAllExecution times per 1000 decks LogicVersion=Original           #
   #                                                                               #        Run_IDs
-  #             DanAcer      PowerEdge B4 overclock   PowerEdge After Overclock   #  DanAcer  Precision
-  #   GLE=280:  471m 7h50m       306m  5h6m                  m  h  m              #    xxx    188    xxx
-  #   GLE= 50:  141m 2h21m          m  h  m                  m  h  m              #    xxx    xxx*   xxx
-  #   GLE= 20:   74m 1h14m          m  h  m                  m  h  m              #    xxx    xxx*   xxx
-  #   GLE= 10:   47m                m                        m                    #    xxx    xxx*   xxx
+  #             DanAcer      Precision B4 overclock   Precision After Overclock   #  DanAcer  Precision
+  #   GLE=280:  472m  7h52m       306m  5h06m                 m   h  m            #    67!    188    xxx
+  #   GLE= 50:  141m  2h21m          m   h  m                 m   h  m            #    xxx    xxx    xxx
+  #   GLE= 20:   74m  1h14m          m   h  m                 m   h  m            #    xxx    xxx    xxx
+  #   GLE= 10:   47m                 m                        m                   #    xxx    xxx    xxx
   #                                                                               #
+  #                                                                               #   ! = with PrintWinningMoves=True
+  #                                                                               #   + = Older "multiflip"
   #                                                                               #
   #         playAllExecution times per 1000 decks LogicVersion=MultiFlip1         #
   #                                                                               #        Run_IDs
-  #             DanAcer      PowerEdge B4 overclock   PowerEdge After Overclock   #  DanAcer  Precision
-  #   GLE=280:     m  h  m          m  h  m                  m  h  m              #    xxx    xxx    xxx
-  #   GLE= 50:     m  h  m          m  h  m                  m  h  m              #    xxx    190    xxx
-  #   GLE= 20:     m  h  m          m  h  m                  m  h  m              #    xxx    xxx    xxx
-  #   GLE= 10:     m                m                        m                    #    xxx    191*   xxx
+  #             DanAcer      Precision B4 overclock   Precision After Overclock   #  DanAcer  Precision
+  #   GLE=280:  442m  7h22m          m   h  m                 m   h  m            #    78!+   xxx    xxx
+  #   GLE= 50:     m   h  m       469m  5h13m                 m   h  m            #    xxx    190    xxx
+  #   GLE= 20:     m   h  m          m   h  m                 m   h  m            #    xxx    xxx    xxx
+  #   GLE= 10:     m                 m                        m                   #    xxx    191*   xxx
   #                                                                               #
   #################################################################################
