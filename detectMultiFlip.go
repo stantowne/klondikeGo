@@ -31,57 +31,18 @@ func detectMultiFlip(bIn board, moveCounter int, singleGame bool, logicVersion s
 				(topWasteCard == fullLengthStockAndWaste-1) || // the last card in stock + waste    = "L" in ModAnalysis.txt
 				(topWasteCard >= startingLenOfWaste-1 &&
 					topWasteCard%3 == modOfStartingTopWasteCard) { // Normal Flips of 3 (or fewer)  = "3" in ModAnalysis.txt
-				aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectUpMoves(bMultiFlip, moveCounter))...)
-				aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectAcrossMoves(bMultiFlip, moveCounter))...)
-				aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectDownMoves(bMultiFlip, moveCounter))...)
-				/*				// NOTE: detectDownMoves will only ever return 1 move
-									downMove := detectDownMoves(bMultiFlip, moveCounter)
-									if downMove != nil {
-										downMove[0].name = "mFlMDown"
-										switch logicVersion {
-										case "multiflip1":
-											downMove[0].priority = moveBasePriority["mFlMDown"] + 50*(13-downMove[0].cardToMove.Rank) + (topWasteCard)
-										case "multiflip2":
-											//						downMove[0].priority = moveBasePriority["mFlMDown"] + 50*(topWasteCard) + (13 - downMove[0].cardToMove.Rank)
-											downMove[0].priority = moveBasePriority["mFlMDown"] + 50*(topWasteCard) + (13 - downMove[0].cardToMove.Rank)
-										}
-										downMove[0].multiFlipCardsToFlip = topWasteCard
-										aMoves = append(aMoves, downMove...)
-									}
-								// NOTE: detectAcrossMoves will only ever return 1 move
-									acrossMove := detectAcrossMoves(bMultiFlip, moveCounter)
-									if acrossMove != nil {
-										switch logicVersion {
-										case "multiflip1":
-											switch acrossMove[0].cardToMove.Rank {
-											// TODO IMPLEMENT NEW PRIORITY CALCULATIONS
-											case 1: // Ace
-												acrossMove[0].name = "mFlMAceAcross"
-												acrossMove[0].priority = moveBasePriority["mFlMAceAcross"] + 50*(13-acrossMove[0].cardToMove.Rank) + (topWasteCard)
-											case 2: // Deuce
-												acrossMove[0].name = "mFlMDeuceAcross"
-												acrossMove[0].priority = moveBasePriority["mFlMDeuceAcross"] + 50*(13-acrossMove[0].cardToMove.Rank) + (topWasteCard)
-											default: // 3+
-												acrossMove[0].name = "mFlM3PlusAcross"
-												acrossMove[0].priority = moveBasePriority["mFlM3PlusAcross"] + 50*(13-acrossMove[0].cardToMove.Rank) + (topWasteCard)
-											}
-										case "multiflip2":
-											switch acrossMove[0].cardToMove.Rank {
-											case 1: // Ace
-												acrossMove[0].name = "mFlMAceAcross"
-												acrossMove[0].priority = moveBasePriority["mFlMAceAcross"] + 50*(topWasteCard) + (13 - acrossMove[0].cardToMove.Rank)
-											case 2: // Deuce
-												acrossMove[0].name = "mFlMDeuceAcross"
-												acrossMove[0].priority = moveBasePriority["mFlMDeuceAcross"] + 50*(topWasteCard) + (13 - acrossMove[0].cardToMove.Rank)
-											default: // 3+
-												acrossMove[0].name = "mFlM3PlusAcross"
-												acrossMove[0].priority = moveBasePriority["mFlM3PlusAcross"] + 50*(topWasteCard) + (13 - acrossMove[0].cardToMove.Rank)
-											}
-										}
-										acrossMove[0].multiFlipCardsToFlip = topWasteCard
-										aMoves = append(aMoves, acrossMove...)
-									}
-				*/
+				switch logicVersion {
+				case "multiflip1":
+					aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectUpMoves(bMultiFlip, moveCounter))...)
+					aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectAcrossMoves(bMultiFlip, moveCounter))...)
+					aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectDownMoves(bMultiFlip, moveCounter))...)
+				case "multiflip2":
+					aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectUpMoves(bMultiFlip, moveCounter))...)
+					aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectAcrossMoves(bMultiFlip, moveCounter))...)
+					aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectDownMoves(bMultiFlip, moveCounter))...)
+					aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectMecNotThoughtful(bMultiFlip, moveCounter, singleGame))...) // Added 2/16/2025 after discussion with LST
+					aMoves = append(aMoves, adjustMoves(logicVersion, topWasteCard, detectPartialColumnMoves(bMultiFlip, moveCounter, singleGame))...)
+				}
 			}
 		}
 
@@ -109,7 +70,9 @@ func adjustMoves(logicVersion string, topWasteCard int, moves []move) []move {
 				moves[i].priority += (12 - moves[i].cardToMove.Rank) * moveBasePriority["rankMultiple"] // Highest rank first
 			}
 		case "multiflip2":
+			// Currently just uses original move priority!
 		case "multiflip3":
+			// Currently just uses original move priority!
 		}
 	}
 	return moves

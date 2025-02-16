@@ -314,7 +314,7 @@ func errHandler(OutputTo string, table string, verb string, doing string, err er
 	if OutputTo != "console" {
 		// Print a second time to Stdout
 		oW = os.Stdout
-		_, _ = fmt.Fprintf(oW, "Table: %v   Verb: %v   Doing: %v   Error: %v ", table, verb, doing, err)
+		_, _ = fmt.Fprintf( oW,"Table: %v   Verb: %v   Doing: %v   Error: %v ", table, verb, doing, err)
 	}
 	os.Exit(1)
 }

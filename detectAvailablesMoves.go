@@ -1,5 +1,7 @@
 package main
-
+import (
+	"os"
+)
 func detectAvailableMoves(b board, moveCounter int, singleGame bool, passedLogicVersion string) []move {
 
 	moveBasePriorityPlayOrigMultiflip2 = moveBasePriorityPlayOrigMultiflip1
@@ -8,7 +10,8 @@ func detectAvailableMoves(b board, moveCounter int, singleGame bool, passedLogic
 	moveBasePriorityPlayAllMultiflip3 = moveBasePriorityPlayAllMultiflip1
 
 	var aMoves []move                     //available Moves
-	if passedLogicVersion == "original" { // TODO Figure out why is needed ????
+	switch passedLogicVersion {
+	case "original":
 		aMoves = append(aMoves, detectUpMoves(b, moveCounter)...)
 		aMoves = append(aMoves, detectAcrossMoves(b, moveCounter)...)
 		aMoves = append(aMoves, detectMecNotThoughtful(b, moveCounter, singleGame)...)
@@ -16,10 +19,17 @@ func detectAvailableMoves(b board, moveCounter int, singleGame bool, passedLogic
 		aMoves = append(aMoves, detectPartialColumnMoves(b, moveCounter, singleGame)...)
 		aMoves = append(aMoves, detectFlipStockToWaste(b, moveCounter)...)
 		aMoves = append(aMoves, detectFlipWasteToStock(b, moveCounter)...)
-	} else {
+	case "multiflip1":
 		aMoves = append(aMoves, detectMecNotThoughtful(b, moveCounter, singleGame)...)
 		aMoves = append(aMoves, detectPartialColumnMoves(b, moveCounter, singleGame)...)
-		aMoves = append(aMoves, detectMultiFlip(b, moveCounter, singleGame, passedLogicVersion)...) // Does flip stk->Waste, Waste->Stk and moveDown and move Across
+		aMoves = append(aMoves, detectMultiFlip(b, moveCounter, singleGame, passedLogicVersion)...) // Does flip stk->Waste, Waste->Stk and moveDown, moveUp and moveAcross
+	case "multiflip2":     // Added 2/16/2025 after discussion with LST
+		aMoves = append(aMoves, detectMultiFlip(b, moveCounter, singleGame, passedLogicVersion)...) // Does flip stk->Waste, Waste->Stk and all move types dded 2/16/2025 after discussion with LST
+	case "multiflip3":
+		// TBD
+	default:
+		println("Unknown Multiflipx in detect AvailableMoves")
+		os.Exit(1)
 	}
 	return aMoves
 }
