@@ -44,7 +44,7 @@ func playAllMoves(bIn board, moveNum int, deckNum int, cfg *Configuration, vPA *
 	}
 
 	// Find Next Moves
-	aMoves = detectAvailableMoves(bIn, moveNum, cfg.General.NumberOfDecksToBePlayed == 1, cfg.General.LogicVersion)
+	aMoves = detectAvailableMoves(bIn, moveNum, cfg.General.NumberOfDecksToBePlayed == 1 /* = singleGame */, cfg.General.LogicVersion)
 
 	if len(aMoves) == 0 {
 		m := move{name: "No Moves Available"} // This is a pseudo move not created by detectAvailable Moves it exists to remember
@@ -131,10 +131,20 @@ func playAllMoves(bIn board, moveNum int, deckNum int, cfg *Configuration, vPA *
 		prntMDet(bIn, aMoves, i, deckNum, moveNum, "MbM_S", 2, "\n      bIn: %v\n", "", "", cfg, vPA)
 		prntMDet(bNew, aMoves, i, deckNum, moveNum, "MbM_S", 2, "     bNew: %v", "", "", cfg, vPA)
 
+		var decksToBePlayed int
 		if cfg.PlayAll.ProgressCounter > 0 && math.Mod(float64(vPA.TD.mvsTried+vPA.AD.mvsTried), float64(cfg.PlayAll.ProgressCounter)) <= 0.1 {
+			switch cfg.General.Decks {
+			case "consecutive":
+				decksToBePlayed = cfg.General.NumberOfDecksToBePlayed
+			case "list":
+				decksToBePlayed = len(cfg.General.ListIntSlice)
+			case "GLE":
+				decksToBePlayed = cfg.General.NumberOfDecksToBePlayed
+				// TODO Write call to sqlStatements("GLEcountInRange") and move this whole switchstatement to config.Validate
+			}
 			decksPlayed := float64(deckNum-cfg.General.FirstDeckNum) + .5
 			decksCompleted := float64(vPA.ADother.decksWon + vPA.ADother.decksLost + vPA.ADother.decksLostGLE)
-			estRemTimeAD := time.Duration(float64(time.Since(vPA.ADother.startTime)) * (float64(cfg.General.NumberOfDecksToBePlayed) - decksPlayed) / decksPlayed)
+			estRemTimeAD := time.Duration(float64(time.Since(vPA.ADother.startTime)) * (float64(decksToBePlayed) - decksPlayed) / decksPlayed)
 			vPA.TD.unqBoards = len(vPA.TDother.priorBoards)
 			// NOTE: THE FOLLOWING PRINT STATEMENT NEVER GOES TO FILE - ALWAYS TO CONSOLE
 			_, _ = pfmt.Printf("\rDk: %d  MvsTD: %vmm  Mvs: %vmm  Strats: %vmm  UnqBoards: %vmm  MaxMoveNum: %v  Elapsed: %s  estRem: %s  W/L/GLE: %v/%v/%v = %v  W/L/GLE %%: %3.1f/%3.1f/%3.1f\r",

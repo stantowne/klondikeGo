@@ -240,6 +240,7 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 		case "playall_statistics_gle":
 			var max_mvsTried int
 			var row *sql.Row
+//TODO fix this so it is logicVersion specific
 			row = db.QueryRow("SELECT MAX([mvsTried]) max_mvsTried FROM [dbo].[PlayAll_Statistics] WHERE Deck_ID = @Deck_ID AND [stratLossesGLE] > 0 AND NOT EXISTS (SELECT 'x' x FROM [dbo].[PlayAll_Statistics] WHERE Deck_ID = @Deck_ID AND ([stratWins] > 0 OR [stratLosses] > 0 )); ", sql.Named("Deck_ID", vPA.TDotherSQL.deckNum))
 			if errors.Is(row.Scan(&max_mvsTried), sql.ErrNoRows) || max_mvsTried == 0 {
 				return "Skip"
@@ -254,17 +255,10 @@ func sqlExec(verb string, table string, cfg *Configuration, vPA *variablesSpecif
 					return "NoSkip"
 				}
 			}
-			/*		case "getpriorityidentnum":
-					var Priority_Ident_Num int
-					var row *sql.Row
-					row = db.QueryRow("SELECT Priority_Ident_Num FROM [dbo].[Priority] WHERE Priority_SHA256 = @Priority_xSHA256; ", sql.Named("Priority_xSHA256", NewNullString(cfg.General.PrioritySHA256)))
-					if errors.Is(row.Scan(&Priority_Ident_Num), sql.ErrNoRows) {
-						return "Priority_SHA256 not found!"
-					} else {
-						return strconv.Itoa(Priority_Ident_Num)
-					}*/ //todo finish query priority_ident_num
 		}
-	case "update":
+	case "GLEcountInRange":
+		//TODO WRITE THIS
+		case "update":
 		switch table {
 		case "runcfg":
 			stmt, err = tx.Prepare("UPDATE [dbo].[RunCfg] SET [NumberOfDecksWerePlayed] = @w, [LastDeckWasPlayed] = @l WHERE [Run_ID] = @r ;")
